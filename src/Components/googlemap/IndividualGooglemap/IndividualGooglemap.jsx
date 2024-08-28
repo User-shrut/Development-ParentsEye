@@ -522,20 +522,74 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
   // Logic for stop points
   useEffect(() => {
+    let resetTime = null;
+    let count = 0;
+    let latitude;
+    let longitude;
+
     if (playbackData) {
+      console.log("this is for stop data : ", playbackData);
       const stopPoints = playbackData.reduce((acc, row, index) => {
-        if (
-          row.attributes?.ignition === true &&
-          playbackData[index + 1] &&
-          playbackData[index + 1].attributes?.ignition === false
+        if (index == 0 && resetTime == null) {
+          resetTime = new Date(row.deviceTime);
+          count += 1;
+          latitude = row.latitude;
+          longitude = row.longitude;
+          acc.push({
+            startTime: resetTime,
+            latitude: row.latitude,
+            longitude: row.longitude,
+            index: count,
+          });
+
+          resetTime = null;
+        } else if (
+          index !== playbackData.length - 1 &&
+          row.attributes?.ignition === false &&
+          resetTime == null
         ) {
+          resetTime = new Date(row.deviceTime);
+          count += 1;
+          latitude = row.latitude;
+          longitude = row.longitude;
+        } else if (row.attributes.ignition && resetTime !== null) {
+          let ignitionOnTime = new Date(row.deviceTime);
+          let duration = ignitionOnTime - resetTime;
+
+          let Hrs = Math.floor(duration / (1000 * 60 * 60));
+          let Mins = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+          let Sec = Math.floor((duration % (1000 * 60)) / 1000);
+
           acc.push({
             latitude: row.latitude,
             longitude: row.longitude,
+            duration: `${Hrs}:${Mins}:${Sec}`,
+            index: count,
+            arrivalTime: resetTime,
+            departureTime: ignitionOnTime,
           });
+
+          resetTime = null;
+        } else if (index == playbackData.length - 1) {
+          resetTime = new Date(row.deviceTime);
+          count += 1;
+          latitude = row.latitude;
+          longitude = row.longitude;
+          acc.push({
+            endTime: resetTime,
+            latitude: row.latitude,
+            longitude: row.longitude,
+            index: count,
+          });
+
+          resetTime = null;
         }
         return acc;
       }, []);
+
+      
+
+      console.log("this is stop poinst : ", stopPoints);
       setStoppedPositions(stopPoints);
     }
   }, [playbackData]);
@@ -784,12 +838,15 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
                         <p>IND</p>
                          </div> */}
                         <div className="name indexgeofence">
-                          <p style={{ marginRight: "5px" }}>{index}</p>
+                          <p style={{ marginRight: "5px" }}>{index + 1}</p>
                         </div>
                         <div className="name">
                           <PopupElement
                             // imgSrc={clockimg} // Use image source
-                            text="12/07/2024 12:51:40"
+                            text={(() => {
+                              const departure = String(stop.departureTime);
+                              return departure.slice(0, -30);
+                            })()}
                           />
                         </div>
                       </div>
@@ -803,7 +860,10 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
                         // imgSrc={clockimg} // Use image source
                         icon={<FaDownload style={{ color: "black" }} />}
                         // text="Arrival Time:12/07/2024 12:51:46"
-                         text={`Arrival Time: ${stop.arrivalTime}`}
+                         text={`Arrival Time: ${(() => {
+                          const arrival = String(stop.arrivalTime);
+                          return arrival.slice(0, -30);
+                        })()}`}
 
                       />
                       <PopupElement
@@ -811,13 +871,16 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
                         icon={<FaUpload style={{ color: "black" }} />}
                         //  text="Depsture Time:12/07/2024 12:51:46"
-                         text={`Depsture Time: ${individualDataObj.departureTime}`}
+                         text={`Depsture Time: ${(() => {
+                          const departure = String(stop.departureTime);
+                          return departure.slice(0, -30);
+                        })()}`}
                       />
                       <PopupElement
                         // imgSrc={clockimg} // Use image source
                         icon={<GiDuration style={{ color: "black" }} />}
                         // text="Duration Time:12/07/2024 12:51:46"
-                         text={`Duration Time: ${individualDataObj.durationFromPrevious}`}
+                         text={`Duration Time: ${stop.duration}`}
                       />
                       <PopupElement
                         // imgSrc={clockimg} // Use image source
@@ -830,11 +893,11 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
                         text={address}
                         // text={`${individualDataObj.address}`}
                       />
-                       <PopupElement
+                       {/* <PopupElement
                     icon={<MdLocationPin style={{ color: "black" }} />}
                     text={`latitude: ${stop.latitude} and longitude: ${stop.longitude} `}
-                    // text={`${individualDataObj.address}`}
-                  />
+                    text={`${individualDataObj.address}`}
+                  /> */}
                     </div>
 
                      
@@ -924,6 +987,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
  export default IndividualGooglemap;
 
 //  http://104.251.216.99:8082/api/reports/stops?deviceId=${individualDataObj.deviceId}&from=${startDateTime}&to=${endDateTime}
+
 
 
 // import React, { useRef, useState, useEffect, useCallback } from "react";
