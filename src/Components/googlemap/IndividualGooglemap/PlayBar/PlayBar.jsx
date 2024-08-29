@@ -23,11 +23,7 @@ const PlayBar = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
-  const [pairedData , setPairedData] = useState();
 
-
-
-  console.log("current index",currentIndex);
 
   const showMyLocation = (locate) => {
     mapRef.current.flyTo(locate, 22, {
@@ -71,17 +67,11 @@ const PlayBar = ({
       isAnimating &&
         setProgress((currentIndex / (pairedArray.length - 1)) * 100);
 
-
-
-        setCurrentIndex((prev) => prev + 1)
     }, 1000);
     return () => clearInterval(interval);
   }, [currentIndex, pairedArray.length, isPlaying]);
 
   
-
-  
-
   return (
     <>
       <hr style={{height:"2px", color:"black"}} />
@@ -90,7 +80,7 @@ const PlayBar = ({
       <div className="playBarInfo">
           <div className="dataInfo">
             <div className="head">Speed</div>
-            <div className="headData">{`${pairedData.speed} kmph`}</div>
+            <div className="headData">{`0 kmph`}</div>
           </div>
           <div className="dataInfo">
             <div className="head">Distance</div>

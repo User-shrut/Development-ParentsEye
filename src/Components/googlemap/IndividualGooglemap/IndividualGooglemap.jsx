@@ -367,7 +367,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
   // console.log("geofencingngg", geofenceData);
 
   const pairedArray = playbackData
-    ? playbackData.map((row) => [row.latitude, row.longitude, row.course, row.speed, row.attributes.distance, row.deviceTime]) // Ensure course is included
+    ? playbackData.map((row) => [row.latitude, row.longitude, row.course]) // Ensure course is included
     : [];
 
   // Use the course from the playback data to create custom icons
