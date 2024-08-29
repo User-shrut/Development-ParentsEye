@@ -15,10 +15,15 @@ import { BsFillFuelPumpFill } from "react-icons/bs";
 import "../googlemap/googlemap.css";
 import { PiPlugsFill } from "react-icons/pi";
 
-import carIcon from "./SVG/Car/C1.svg";
-import motorcycleIcon from "./SVG/Bike/bike1.svg";
-import truckIcon from "./SVG/Truck/b1.svg";
+// import carIcon from "./SVG/Car/C1.svg";
+// import motorcycleIcon from "./SVG/Bike/bike1.svg";
+// import truckIcon from "./SVG/Truck/b1.svg";
 
+
+// import carIcon from "../SVG/car-s.png";
+import carIcon from "./SVG/car-s.png";
+import motorcycleIcon from "./SVG/bike-s.png";
+import truckIcon from "./SVG/truck-s.png";
 import axios from "axios";
 
 import { MdLocationPin, MdAccessTime } from "react-icons/md";
