@@ -21,4 +21,9 @@ export const COLUMNS = () => [
       return Object.entries(value).map(([key, val]) => `${key}: ${val}`).join(', ');
     },
   },
+  {
+    Header: 'Attributes',
+    accessor: 'attributes',
+    Cell: ({ value }) => JSON.stringify(value), // Display attributes as JSON string
+  },
 ];
