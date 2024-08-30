@@ -86,6 +86,7 @@ import { Userrr } from "./Components/VariousTables/MASTERUPDATED/Userrr/Userrr.j
 import { Combined } from "./Components/VariousTables/ReportsUpdated/Combined/Combined.jsx";
 import { Route } from "./Components/VariousTables/ReportsUpdated/Route/Route.jsx";
 import { Events } from "./Components/VariousTables/ReportsUpdated/Events/Events.jsx"
+import { Newdemo } from "./Components/VariousTables/Institutestudent/Newdemo/Newdemo.jsx";
 // import { ComputedAttributes } from "./Components/VariousTables/MASTERUPDATED/ComputedAttributes/ComputedAttributes.jsx";
 //import { TotalResponsesProvider } from './TotalResponsesContext';
 function App() {
@@ -338,6 +339,8 @@ function App() {
       setComponent("Route");
     }else if (item === "Events") {
       setComponent("Events");
+    }else if (item === "Newdemo") {
+      setComponent("Newdemo");
     }
    
    
@@ -494,6 +497,7 @@ function App() {
           {component === "Combined" && <Combined data={mergedData} />}
           {component === "Route" && <Route data={mergedData} />}
           {component === "Events" && <Events data={mergedData} />}
+          {component === "Newdemo" && <Newdemo data={mergedData} />}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
           {/* {component === "School" && <AssetsType data={mergedData} />} */}
           <BasicSpeedDial />
@@ -572,6 +576,7 @@ function App() {
            "Userrr",
            "Combined",
            "Route",
+           "Newdemo"
           ].includes(component) && <Tablee data={mergedData} />}
         </div>
       </div>
