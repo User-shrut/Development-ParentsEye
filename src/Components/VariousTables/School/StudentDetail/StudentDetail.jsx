@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useContext, Component } from "react";
 import axios from "axios";
 import Paper from "@mui/material/Paper";
@@ -87,10 +85,9 @@ export const StudentDetail = () => {
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-1-hurx.onrender.com/school/read/all-children",
+        "https://schoolmanagement-a26e.onrender.com/superadmin/children-by-school ",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -98,10 +95,15 @@ export const StudentDetail = () => {
         }
       );
 
-      console.log("fetch data", response.data); // Log the entire response data
+      console.log("fetch data", response.data.children); // Log the entire response data
       // fetchgeofencepoint();
-      if (Array.isArray(response.data.children)) {
-        const allData = response.data.children;
+      if (Array.isArray(response.data)) {
+        const allData = response.data
+          .filter(
+            (school) =>
+              Array.isArray(school.children) && school.children.length > 0
+          ) // Filter schools with non-empty children arrays
+          .flatMap((school) => school.children);
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -899,22 +901,22 @@ export const StudentDetail = () => {
                             <Switch checked={row.isSelected} color="primary" />
                           </TableCell>
                           <TableCell
-            style={{
-              minWidth: 70, // Adjust width if needed
-              borderRight: "1px solid #e0e0e0",
-              paddingTop: "4px",
-              paddingBottom: "4px",
-              borderBottom: "none",
-              textAlign: "center",
-              fontSize: "smaller",
-              backgroundColor:
-              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-            // borderBottom: "none",
-            }}
-            
-          >
-            {page * rowsPerPage + index + 1} {/* Serial number starts from 1 */}
-          </TableCell>
+                            style={{
+                              minWidth: 70, // Adjust width if needed
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              textAlign: "center",
+                              fontSize: "smaller",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              // borderBottom: "none",
+                            }}
+                          >
+                            {page * rowsPerPage + index + 1}{" "}
+                            {/* Serial number starts from 1 */}
+                          </TableCell>
                           {COLUMNS()
                             .filter((col) => columnVisibility[col.accessor])
                             .map((column) => {
@@ -1200,14 +1202,6 @@ export const StudentDetail = () => {
     </>
   );
 };
-
-
-
-
-
-
-
-
 
 // import React, { useState, useEffect, useContext, Component } from "react";
 // import axios from "axios";
@@ -2243,7 +2237,7 @@ export const StudentDetail = () => {
 //             </FormControl>
 //             {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
 //       <InputLabel>{lastthirdColumn.Header}</InputLabel>
-     
+
 //        <Select
 //           value={formData[lastthirdColumn.accessor] || ""}
 //           onChange={handleSelectChange2}

@@ -6,11 +6,11 @@ import { Link } from 'react-router-dom';
 import {Signupp} from './Signupp.jsx';
 import {useNavigate } from 'react-router-dom';
 const Logoprac = () => { 
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate(); // Initialize the navigate function
   const handleEmailChange = (e) => {
-    setUsername(e.target.value);
+    setEmail(e.target.value);
   };
 
   const handlePasswordChange = (e) => {
@@ -19,11 +19,11 @@ const Logoprac = () => {
 
   const handleLoginClick = () => {
     console.log('button of login has been clicked')
-    console.log(username,password)
-    axios.post("https://schoolmanagement-10.onrender.com/school/login", { username, password })
+    console.log(email,password)
+    axios.post("https://schoolmanagement-b1ko.onrender.com/superadmin/login", { email, password })
       .then(response => {
         console.log(response.data);
-        console.log(username,password)
+        console.log(email,password)
         // Store the token in local storage or state
         localStorage.setItem("token", response.data.token);
         // Redirect or update the UI as needed
@@ -31,7 +31,7 @@ const Logoprac = () => {
        alert('login successful')
       })
       .catch(error => {
-        alert('Incorrect username password !')
+        alert('Incorrect email password !')
         console.error("There was an error logging in!", error);
       });
   };
@@ -52,12 +52,12 @@ const Logoprac = () => {
 
             <div data-mdb-input-init className="form-outline mb-4 setinput">
               <input
-                type="text"
+                type="email"
                 id="form2Example1"
                 className="form-control"
-                placeholder="Enter Your username"
-                value={username}
-                autoComplete="username"
+                placeholder="Enter Your email"
+                value={email}
+                autoComplete="email"
                 onChange={handleEmailChange}
               />
             </div>

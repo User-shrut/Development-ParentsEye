@@ -79,10 +79,9 @@ const SchoolMaster = () => {
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-7-apby.onrender.com/school/read/allsupervisors",
+        "https://schoolmanagement-a26e.onrender.com/superadmin/getschools ",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -92,8 +91,8 @@ const SchoolMaster = () => {
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data.supervisors)) {
-        const allData = response.data.supervisors;
+      if (Array.isArray(response.data.schools)) {
+        const allData = response.data.schools;
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -442,12 +441,15 @@ const SchoolMaster = () => {
         isSelected: false,
       };
 
+      let token = localStorage.getItem('token');
+
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/supervisor/register",
+        "https://schoolmanagement-a26e.onrender.com/superadmin/school-register",
         {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(newRow),
@@ -853,7 +855,7 @@ const SchoolMaster = () => {
             <Button
               variant="contained"
               color="primary"
-              // onClick={handleAddSubmit}
+              onClick={handleAddSubmit}
             >
               Submit
             </Button>
