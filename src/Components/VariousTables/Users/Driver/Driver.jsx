@@ -1492,7 +1492,7 @@ export const Driver = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(0, -1)
+              .slice(1, -1)
               .map((col) => (
                 <TextField
                   key={col.accessor}

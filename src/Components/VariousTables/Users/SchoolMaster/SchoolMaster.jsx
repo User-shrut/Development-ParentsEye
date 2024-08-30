@@ -81,7 +81,7 @@ const SchoolMaster = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-a26e.onrender.com/superadmin/getschools ",
+        "https://schoolmanagement-2-56zr.onrender.com/superadmin/getschools ",
         {
           headers: {
             Authorization: `Bearer ${token}`,
