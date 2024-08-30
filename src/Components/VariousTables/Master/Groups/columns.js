@@ -47,6 +47,11 @@ export const COLUMNS = () => [
     accessor: 'id',
   },
   {
+    Header: 'Attributes',
+    accessor: 'attributes',
+    Cell: ({ value }) => JSON.stringify(value), // Display attributes as JSON string
+  },
+  {
     Header: 'Name',
     accessor: 'name',
   },
@@ -54,9 +59,5 @@ export const COLUMNS = () => [
     Header: 'Group ID',
     accessor: 'groupId',
   },
-  {
-    Header: 'Attributes',
-    accessor: 'attributes',
-    Cell: ({ value }) => JSON.stringify(value), // Display attributes as JSON string
-  },
+ 
 ];

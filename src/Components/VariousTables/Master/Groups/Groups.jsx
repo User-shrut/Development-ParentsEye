@@ -29,9 +29,12 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
-
+import { Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import AddIcon from '@mui/icons-material/Add';
 //import { TextField } from '@mui/material';
-
+// import CloseIcon from '@mui/icons-material/Close';
+// import AddCircleIcon from '@mui/icons-material/AddCircle';
 const style = {
   position: "absolute",
   top: "50%",
@@ -70,7 +73,7 @@ export const Groups = () => {
   const [importData, setImportData] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [formData, setFormData] = useState({});
+  // const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
@@ -78,36 +81,6 @@ export const Groups = () => {
 
 
  
-// const fetchData = async () => {
-//   console.log('Fetching data...');
-//   setLoading(true); // Set loading to true when starting fetch
-//   try {
-//     const username = "test";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get("https://rocketsalestracker.com/api/Groupss", {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//     });
-
-//     console.log('fetch data', response.data);
-
-//     if (response.data && typeof response.data === 'object') {
-//       const wrappedData = [response.data];
-//       setFilteredRows(wrappedData.map(row => ({ ...row, isSelected: false })));
-//       setTotalResponses(wrappedData.length);
-//     } else {
-//       console.error('Expected an object but got:', response.data);
-//     }
-//   } catch (error) {
-//     console.error('Fetch data error:', error);
-//     alert('An error occurred while fetching data.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 
 
 const fetchData = async () => {
@@ -232,78 +205,7 @@ const fetchData = async () => {
     }
   };
 
-  // const handleDeleteSelected = async () => {
-  //   // Log filteredRows to check its structure
-  //   console.log("Filtered rows:", filteredRows);
 
-  //   // Get selected row IDs
-  //   const selectedIds = filteredRows
-  //     .filter((row) => row.isSelected)
-  //     .map((row) => {
-  //       // Log each row to check its structure
-  //       console.log("Processing row:", row);
-  //       return row._id; // Ensure id exists and is not undefined
-  //     });
-
-  //   console.log("Selected IDs:", selectedIds);
-
-  //   if (selectedIds.length === 0) {
-  //     alert("No rows selected for deletion.");
-  //     return;
-  //   }
-  //   const userConfirmed = window.confirm(
-  //     `Are you sure you want to delete ${selectedIds.length} record(s)?`
-  //   );
-
-  //   if (!userConfirmed) {
-  //     // If the user clicks "Cancel", exit the function
-  //     return;
-  //   }
-  //   try {
-  //     // Define the API endpoint and token
-  //     const apiUrl =
-  //       "https://rocketsalestracker.com/api/groups";
-  //       const username = "test";
-  //       const password = "123456";
-  //       const token = btoa(`${username}:${password}`);
-  //     // const token =
-  //     //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
-  //     // Send delete requests for each selected ID
-  //     const deleteRequests = selectedIds.map((id) =>
-  //       fetch(`${apiUrl}/${id}`, {
-  //         method: "DELETE",
-  //         headers: {
-  //           Authorization: `Basic ${token}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }).then((response) => {
-  //         if (!response.ok) {
-  //           throw new Error(
-  //             `Error deleting record with ID ${id}: ${response.statusText}`
-  //           );
-  //         }
-  //         return response.json();
-  //       })
-  //     );
-
-  //     // Wait for all delete requests to complete
-  //     await Promise.all(deleteRequests);
-
-  //     // Filter out deleted rows
-  //     const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
-
-  //     // Update state
-  //     setFilteredRows(newFilteredRows);
-  //     setSelectAll(false);
-
-  //     alert("Selected records deleted successfully.");
-  //   } catch (error) {
-  //     console.error("Error during deletion:", error);
-  //     alert("Failed to delete selected records.");
-  //   }
-  //   fetchData();
-  // };
 
 
   const handleDeleteSelected = async () => {
@@ -435,80 +337,20 @@ const fetchData = async () => {
     setSnackbarOpen(false);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  
 
  
 
+
+
 // const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/Groups`; // Ensure this is correct
+//   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
 //   const username = "test";
 //   const password = "123456";
 //   const token = btoa(`${username}:${password}`);
 
-//   // Ensure formData contains the full structure with nested attributes
-//   const updatedData = {
-//       ...formData, // formData should have the same structure as the object you are retrieving
-//       isSelected: false,
-//   };
-
-//   try {
-//       console.log("Sending request to:", apiUrl);
-//       console.log("Request payload:", updatedData);
-
-//       const response = await fetch(apiUrl, {
-//           method: "PUT", // PUT method to update the resource
-//           headers: {
-//               "Authorization": `Basic ${token}`,
-//               "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify(updatedData), // Convert updatedData to JSON
-//       });
-
-//       console.log("Response status:", response.status);
-//       console.log("Response headers:", response.headers);
-
-//       if (!response.ok) {
-//           const errorResult = await response.json();
-//           console.error("Error response:", errorResult);
-//           throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
-//       }
-
-//       const result = await response.json();
-//       console.log("Update successful:", result);
-//       alert("Updated successfully");
-
-//       // Update filteredRows in state
-//       const updatedRows = filteredRows.map((row) =>
-//           row.id === selectedRow.id
-//               ? { ...row, ...formData, isSelected: false } // Ensure the updated data includes nested fields
-//               : row
-//       );
-//       setFilteredRows(updatedRows);
-
-//       handleModalClose();
-//       fetchData(); // Refetch data to ensure the UI is up-to-date
-//   } catch (error) {
-//       console.error("Error updating row:", error.message, error.stack);
-//       alert("Error updating code");
-//   }
-// };
-// const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/Groups`; // Ensure this is correct
-//   const username = "test";
-//   const password = "123456";
-//   const token = btoa(`${username}:${password}`);
-
-//   // Ensure formData contains the full structure with nested attributes
-//   const updatedData = {
-//     ...formData, // formData should have the same structure as the object you are retrieving
-//     isSelected: false,
-//   };
+//   // Ensure formData contains only necessary fields
+//   const { isSelected, ...updatedData } = formData; // Exclude isSelected
 
 //   try {
 //     console.log("Sending request to:", apiUrl);
@@ -539,7 +381,7 @@ const fetchData = async () => {
 //     // Update filteredRows in state
 //     const updatedRows = filteredRows.map((row) =>
 //       row.id === selectedRow.id
-//         ? { ...row, ...updatedData, isSelected: false } // Ensure the updated data includes nested fields
+//         ? { ...row, ...updatedData } // Ensure the updated data includes nested fields
 //         : row
 //     );
 //     setFilteredRows(updatedRows);
@@ -551,21 +393,38 @@ const fetchData = async () => {
 //     alert("Error updating data");
 //   }
 // };
+ 
+ 
 const handleEditSubmit = async () => {
-  const apiUrl = `https://rocketsalestracker.com/api/groups`; // Ensure this is correct
-  const username = "test";
-  const password = "123456";
-  const token = btoa(`${username}:${password}`);
+  const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
+  const username = "test"; // Replace with your actual username
+  const password = "123456"; // Replace with your actual password
+  const token = btoa(`${username}:${password}`); // Encode credentials in Base64
 
-  // Ensure formData contains the full structure with nested attributes
-  const updatedData = {
-    ...formData, // formData should have the same structure as the object you are retrieving
-    isSelected: false,
-    attributes: {
-      ...formData.attributes,
-      // speedUnit: "kmh", // Ensure this is updated correctly
+  // Extract and transform attributes for submission
+  const transformedAttributes = Object.keys(formData.attributes || {}).reduce((acc, key) => {
+    const attribute = formData.attributes[key];
+    let value;
+
+    // Transform value based on type
+    switch (attribute.type) {
+      case "Boolean":
+        value = attribute.value ? "true" : "false";
+        break;
+      case "Number":
+        value = attribute.value.toString(); // Convert number to string
+        break;
+      default:
+        value = attribute.value || ""; // Default to empty string for String type
     }
-  };
+
+    acc[key] = value;
+    return acc;
+  }, {});
+
+  // Ensure formData contains only necessary fields, including transformed attributes
+  const { isSelected, ...updatedData } = formData; // Exclude isSelected
+  updatedData.attributes = transformedAttributes; // Add transformed attributes to updatedData
 
   try {
     console.log("Sending request to:", apiUrl);
@@ -596,7 +455,7 @@ const handleEditSubmit = async () => {
     // Update filteredRows in state
     const updatedRows = filteredRows.map((row) =>
       row.id === selectedRow.id
-        ? { ...row, ...updatedData, isSelected: false } // Ensure the updated data includes nested fields
+        ? { ...row, ...updatedData } // Ensure the updated data includes nested fields
         : row
     );
     setFilteredRows(updatedRows);
@@ -609,143 +468,65 @@ const handleEditSubmit = async () => {
   }
 };
 
- 
+  
+  
+  
   // const handleAddSubmit = async () => {
   //   try {
-  //     const newRow = {
-  //       ...formData,
-  //       id: filteredRows.length + 1,
-  //       isSelected: false,
-  //     };
-
-  //     // POST request to the Groups
-  //     const response = await fetch(
-  //       "https://rocketsalestracker.com/api/groups",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(newRow),
-  //       }
-  //     );
-  //     alert('record created successfully');
-    
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-
-  //     // Assuming the Groups returns the created object
-  //     const result = await response.json();
-
-  //     // Update the state with the new row
-  //     setFilteredRows([...filteredRows, result]);
-
-  //     // Close the modal
-  //     handleModalClose();
-  //     fetchData();
-  //     console.log("error occured in post method");
-  //   } catch (error) {
-  //     console.error("Error during POST request:", error);
-  //     alert('unable to create record');
-  //     // Handle the error appropriately (e.g., show a notification to the user)
-  //   }
-  // };
-
-
-  // const handleAddSubmit = async () => {
-  //   try {
-  //     const username = "test"; // Replace with your email
-  //     const password = "123456"; // Replace with your password
-  //     const token = btoa(`${username}:${password}`);
-  
-  //     const newRow = {
-  //       ...formData,
-  //       id: filteredRows.length + 1, // Assuming the id is auto-incremented
-  //       isSelected: false,
-  //     };
-  
-  //     // POST request to the Groups
-  //     const response = await fetch("https://rocketsalestracker.com/api/groups", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": `Basic ${token}`,
-  //       },
-  //       body: JSON.stringify(newRow),
-  //     });
-  
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-  
-  //     // Assuming the API returns the created object
-  //     const result = await response.json();
-  
-  //     // Update the state with the new row
-  //     setFilteredRows([...filteredRows, result]);
-  
-  //     // Close the modal and refresh data
-  //     handleModalClose();
-  //     fetchData();
-  
-  //     console.log("Record created successfully:", result);
-  //   } catch (error) {
-  //     console.error("Error during POST request:", error);
-  //     alert('Unable to create record');
-  //     // Handle the error appropriately (e.g., show a notification to the user)
-  //   }
-  // };
-  // const handleAddSubmit = async () => {
-  //   try {
-    
-  //     // const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
+  //     // Define the API endpoint and credentials
+  //     const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
   //     const username = "test"; // Replace with your actual username
   //     const password = "123456"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
+  //     // Extract only attributes for submission
+  //     const attributesToSubmit = { ...formData.attributes };
+  
+  //     // Log or send attributes to server
+  //     console.log('Attributes to submit:', attributesToSubmit);
+  
+  //     // Prepare the new row object based on the expected schema
   //     const newRow = {
-  //       ...formData,
-  //       id: filteredRows.length + 1, // Assuming the id is auto-incremented
-  //       isSelected: false,
+  //       id: filteredRows.length + 1, // Ensure id is provided correctly
+  //       name: formData.name || '', // Ensure formData has 'name' with default value if not provided
+  //       groupId: formData.groupId || '', // Ensure formData has 'groupId' with default value if not provided
+  //       attributes: attributesToSubmit, // Submit only the attributes
   //     };
   
   //     // POST request to the server with Basic Auth
-  //     const response = await fetch(
-  //       "https://rocketsalestracker.com/api/groups",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Authorization": `Basic ${token}`, // Add Basic Auth header
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(newRow),
-  //       }
-  //     );
+  //     const response = await fetch(apiUrl, {
+  //       method: "POST",
+  //       headers: {
+  //         "Authorization": `Basic ${token}`, // Add Basic Auth header
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(newRow),
+  //     });
   
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
+  //     if (response.ok) { // Use response.ok to check for success
+  //       // Assuming the server returns the created object
+  //       const result = await response.json();
+  
+  //       // Update the state with the new row
+  //       setFilteredRows((prevRows) => [...prevRows, result]);
+  
+  //       // Close the modal and refresh data
+  //       handleModalClose();
+  //       fetchData();
+  
+  //       console.log("Record created successfully:", result);
+  //       alert("Record created successfully");
+  //     } else if (response.status === 400) {
+  //       throw new Error("Bad request or no permission");
+  //     } else {
+  //       throw new Error(`Network response was not ok: ${response.statusText}`);
   //     }
-  
-  //     // Assuming the server returns the created object
-  //     const result = await response.json();
-  
-  //     // Update the state with the new row
-  //     setFilteredRows([...filteredRows, result]);
-  
-  //     // Close the modal and refresh data
-  //     handleModalClose();
-  //     fetchData();
-  
-  //     console.log("Record created successfully:", result);
-  //     alert("Record created successfully");
   //   } catch (error) {
   //     console.error("Error during POST request:", error);
   //     alert("Unable to create record");
   //     // Handle the error appropriately (e.g., show a notification to the user)
   //   }
   // };
-  
   const handleAddSubmit = async () => {
     try {
       // Define the API endpoint and credentials
@@ -754,18 +535,37 @@ const handleEditSubmit = async () => {
       const password = "123456"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
+      // Extract and transform attributes for submission
+      const transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {
+        const attribute = formData.attributes[key];
+        let value;
+  
+        // Transform value based on type
+        switch (attribute.type) {
+          case "Boolean":
+            value = attribute.value ? "true" : "false";
+            break;
+          case "Number":
+            value = attribute.value.toString(); // Convert number to string
+            break;
+          default:
+            value = attribute.value || ""; // Default to empty string for String type
+        }
+  
+        acc[key] = value;
+        return acc;
+      }, {});
+  
+      // Log or send transformed attributes to server
+      console.log('Attributes to submit:', transformedAttributes);
+  
       // Prepare the new row object based on the expected schema
       const newRow = {
         id: filteredRows.length + 1, // Ensure id is provided correctly
-        name: formData.name, // Ensure formData has 'name'
-        groupId: formData.groupId, // Ensure formData has 'groupId'
-        attributes: formData.attributes || {}, // Ensure formData has 'attributes' (empty object if not provided)
+        name: formData.name || '', // Ensure formData has 'name' with default value if not provided
+        groupId: formData.groupId || '', // Ensure formData has 'groupId' with default value if not provided
+        attributes: transformedAttributes, // Submit the transformed attributes
       };
-      //       const newRow = {
-      //   ...formData,
-      //   id: filteredRows.length + 1, // Assuming the id is auto-incremented
-      //   isSelected: false,
-      // };
   
       // POST request to the server with Basic Auth
       const response = await fetch(apiUrl, {
@@ -777,12 +577,12 @@ const handleEditSubmit = async () => {
         body: JSON.stringify(newRow),
       });
   
-      if (response.status === 200) {
+      if (response.ok) { // Use response.ok to check for success
         // Assuming the server returns the created object
         const result = await response.json();
   
         // Update the state with the new row
-        setFilteredRows([...filteredRows, result]);
+        setFilteredRows((prevRows) => [...prevRows, result]);
   
         // Close the modal and refresh data
         handleModalClose();
@@ -791,9 +591,9 @@ const handleEditSubmit = async () => {
         console.log("Record created successfully:", result);
         alert("Record created successfully");
       } else if (response.status === 400) {
-        throw new Error("No permission or bad request");
+        throw new Error("Bad request or no permission");
       } else {
-        throw new Error("Network response was not ok");
+        throw new Error(`Network response was not ok: ${response.statusText}`);
       }
     } catch (error) {
       console.error("Error during POST request:", error);
@@ -802,47 +602,196 @@ const handleEditSubmit = async () => {
     }
   };
   
-  // const handleAddSubmit = async () => {
-  //   try {
-  //     const newRow = {
-  //       ...formData,
-  //       id: filteredRows.length + 1,
-  //       isSelected: false,
-  //     };
+  const [groups, setGroups] = useState([]);
+// const [error, setError] = useState(null);
+const [error, setError] = useState(null);
 
-  //     // POST request to the server
-  //     const response = await fetch(
-  //       "https://schoolmanagement-4-pzsf.onrender.com/parent/register",
-  //       {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(newRow),
-  //       }
-  //     );
-  //     alert("record created successfully");
+const [showAddButton, setShowAddButton] = useState(false);
+const [attributeName, setAttributeName] = useState('');
+const [attributeType, setAttributeType] = useState('string');
+const [attributes, setAttributes] = useState([]);
 
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
+useEffect(() => {
+  const fetchGroups = async () => {
+    try {
+      const response = await fetch('https://rocketsalestracker.com/api/groups', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Basic ' + btoa('test:123456') // Replace with actual credentials
+        }
+      });
 
-  //     // Assuming the server returns the created object
-  //     const result = await response.json();
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
 
-  //     // Update the state with the new row
-  //     setFilteredRows([...filteredRows, result]);
+      const data = await response.json();
+      setGroups(data); // Assuming the API returns { groups: [...] }
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
-  //     // Close the modal
-  //     handleModalClose();
-  //     fetchData();
-  //     console.log("error occured in post method");
-  //   } catch (error) {
-  //     console.error("Error during POST request:", error);
-  //     alert("unable to create record");
-  //     // Handle the error appropriately (e.g., show a notification to the user)
-  //   }
-  // };
+  fetchGroups();
+}, []);
+
+
+const [showAttributeFields, setShowAttributeFields] = useState(false);
+
+// // Other states and handlers...
+
+// const handleAddAttribute = () => {
+//   setShowAttributeFields(true);
+// };
+
+// const handleInputChange = (event) => {
+//   const { name, value } = event.target;
+//   setFormData({
+//     ...formData,
+//     [name]: value,
+//   });
+// };
+
+
+
+
+// const [showAttributeFields, setShowAttributeFields] = useState(false);
+
+// // Handler for adding new attribute fields
+// const handleAddAttribute = () => {
+//   setShowAttributeFields(true);
+// };
+
+// // Handler for input changes, including attributes
+// const handleInputChange = (event) => {
+//   const { name, value } = event.target;
+
+//   // Handle attributes separately
+//   if (name === "attribute" || name === "type") {
+//     setFormData((prevFormData) => {
+//       const newAttributes = { ...prevFormData.attributes };
+      
+//       // Assuming you want to add a new attribute with an incrementing key (for example)
+//       const attributeKey = Object.keys(newAttributes).length + 1;
+      
+//       if (name === "attribute") {
+//         newAttributes[attributeKey] = {
+//           ...newAttributes[attributeKey],
+//           value: value,
+//         };
+//       } else if (name === "type") {
+//         newAttributes[attributeKey] = {
+//           ...newAttributes[attributeKey],
+//           type: value,
+//         };
+//       }
+
+//       return {
+//         ...prevFormData,
+//         attributes: newAttributes,
+//       };
+//     });
+//   } else {
+//     // Handle other fields normally
+//     setFormData({
+//       ...formData,
+//       [name]: value,
+//     });
+//   }
+// };
+//const [showAttributeFields, setShowAttributeFields] = useState(false);
+const [formData, setFormData] = useState({
+  attributes: {},
+  groupId: '',
+  name: '',
+  currentAttributeKey: '', // To track the current attribute key for editing
+});
+
+// Function to get default value based on type
+const getDefaultValueForType = (type) => {
+  switch (type) {
+    case 'Boolean':
+      return false;
+    case 'Number':
+      return 0;
+    default:
+      return ''; // For "String" and any other types
+  }
+};
+
+// Handler for input changes
+const handleInputChange = (event) => {
+  const { name, value } = event.target;
+
+  if (name.startsWith('attribute-key')) {
+    setFormData((prevFormData) => {
+      const newAttributes = { ...prevFormData.attributes };
+      const key = value;
+
+      // Remove previous key if it's different
+      if (prevFormData.currentAttributeKey && prevFormData.currentAttributeKey !== key) {
+        delete newAttributes[prevFormData.currentAttributeKey];
+      }
+
+      // Add or update the new key
+      newAttributes[key] = {
+        value: newAttributes[key]?.value || getDefaultValueForType(newAttributes[key]?.type || 'String'),
+        type: newAttributes[key]?.type || 'String', // Default type
+      };
+
+      return {
+        ...prevFormData,
+        attributes: newAttributes,
+        currentAttributeKey: key,
+      };
+    });
+  } else if (name.startsWith('attribute-type')) {
+    setFormData((prevFormData) => {
+      const newAttributes = { ...prevFormData.attributes };
+      const key = prevFormData.currentAttributeKey;
+      newAttributes[key] = {
+        ...newAttributes[key],
+        type: value,
+        value: getDefaultValueForType(value), // Set default value based on type
+      };
+
+      return {
+        ...prevFormData,
+        attributes: newAttributes,
+      };
+    });
+  } else if (name.startsWith('attribute-value')) {
+    setFormData((prevFormData) => {
+      const newAttributes = { ...prevFormData.attributes };
+      const key = prevFormData.currentAttributeKey;
+      newAttributes[key] = {
+        ...newAttributes[key],
+        value: value,
+      };
+
+      return {
+        ...prevFormData,
+        attributes: newAttributes,
+      };
+    });
+  } else {
+    // Handle other fields normally
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  }
+};
+
+// Handler for adding new attribute fields
+const handleAddAttribute = () => {
+  setShowAttributeFields(true);
+  setFormData((prevFormData) => ({
+    ...prevFormData,
+    currentAttributeKey: '', // Reset current key for new attribute
+  }));
+};
+
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
@@ -928,53 +877,7 @@ const handleEditSubmit = async () => {
             Export
           </Button>
         </div>
-        {/* <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <input
-            type="date"
-            id="startDate"
-            placeholder="DD-MM-YYYY"
-            style={{
-              width: "140px",
-              marginRight: "10px",
-              padding: "2px",
-              marginLeft: "3px",
-              border: " 0.1px solid black",
-              borderRadius: "3px",
-            }}
-          />
-          <input
-            type="date"
-            id="endDate"
-            placeholder="DD-MM-YYYY"
-            style={{
-              width: "140px",
-              marginRight: "10px",
-              padding: "2px",
-              marginLeft: "3px",
-              border: " 0.1px solid black",
-              borderRadius: "3px",
-            }}
-          />
-          <button
-            onClick={handleApplyDateRange}
-            style={{
-              backgroundColor: "#1976d2",
-              color: "white",
-              border: "none",
-              padding: "6px 10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            Apply Date Range
-          </button>
-        </div> */}
+     
 
         {loading ? (
           <div
@@ -996,131 +899,7 @@ const handleEditSubmit = async () => {
                 borderRadius: "7px",
               }}
             >
-              {/* <Table
-                stickyHeader
-                aria-label="sticky table"
-                style={{ border: "1px solid black" }}
-              >
-                <TableHead>
-                  <TableRow
-                    style={{
-                      borderBottom: "1px solid black",
-                      borderTop: "1px solid black",
-                    }}
-                  >
-                    <TableCell
-                      padding="checkbox"
-                      style={{
-                        borderRight: "1px solid #e0e0e0",
-                        borderBottom: "2px solid black",
-                      }}
-                    >
-                      <Switch
-                        checked={selectAll}
-                        onChange={handleSelectAll}
-                        color="primary"
-                      />
-                    </TableCell>
-                    {COLUMNS()
-                      .filter((col) => columnVisibility[col.accessor])
-                      .map((column) => (
-                        <TableCell
-                          key={column.accessor}
-                          align={column.align}
-                          style={{
-                            minWidth: column.minWidth,
-                            cursor: "pointer",
-                            borderRight: "1px solid #e0e0e0",
-                            borderBottom: "2px solid black",
-                            padding: "4px 4px",
-                            textAlign: "center",
-                            fontWeight: "bold",
-                          }}
-                          onClick={() => requestSort(column.accessor)}
-                        >
-                          {column.Header}
-                          {sortConfig.key === column.accessor ? (
-                            sortConfig.direction === "ascending" ? (
-                              <ArrowUpwardIcon fontSize="small" />
-                            ) : (
-                              <ArrowDownwardIcon fontSize="small" />
-                            )
-                          ) : null}
-                        </TableCell>
-                      ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {
-                  sortedData.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
-                        style={{
-                          textAlign: 'center',
-                          padding: '16px',
-                          fontSize: '16px',
-                          color: '#757575',
-                          // fontStyle: 'italic',
-                        }}
-                      >
-                        {/* <img src="emptyicon.png" alt="" /> */}
-                       {/* <h4>No Data Available</h4>
-                      </TableCell>
-                    </TableRow>
-                  ) :(sortedData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() =>
-                          handleRowSelect(page * rowsPerPage + index)
-                        }
-                        selected={row.isSelected}
-                        style={{
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          borderBottom: "none", // White for even rows, light grey for odd rows
-                        }}
-                      >
-                        <TableCell
-                          padding="checkbox"
-                          style={{ borderRight: "1px solid #e0e0e0" }}
-                        >
-                          <Switch checked={row.isSelected} color="primary" />
-                        </TableCell>
-                        {COLUMNS()
-                          .filter((col) => columnVisibility[col.accessor])
-                          .map((column) => {
-                            const value = row[column.accessor];
-                            return (
-                              <TableCell
-                                key={column.accessor}
-                                align={column.align}
-                                style={{
-                                  borderRight: "1px solid #e0e0e0",
-                                  paddingTop: "4px",
-                                  paddingBottom: "4px",
-                                  borderBottom: "none",
-                                  backgroundColor:
-                                    index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                  fontSize: "smaller", // White for even rows, light grey for odd rows
-                                }}
-                              >
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                      </TableRow>)
-                    ))
-                  }
-                </TableBody>
-              </Table> */} 
+              
               <Table
   stickyHeader
   aria-label="sticky table"
@@ -1277,8 +1056,129 @@ const handleEditSubmit = async () => {
           </Box>
         </Modal>
         <Modal open={editModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        marginBottom: "20px",
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+
+    {COLUMNS().map((col) => {
+      if (col.accessor === 'groupId' && col.Header === 'Group ID') {
+        return (
+          <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+            <InputLabel>Group ID</InputLabel>
+            <Select
+              name={col.accessor}
+              value={formData[col.accessor] || ''}
+              onChange={handleInputChange}
+              variant="outlined"
+            >
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
+      }
+
+      if (col.accessor === 'attributes' && col.Header === 'Attributes') {
+        return (
+          <Box key={col.accessor} sx={{ marginBottom: '10px' }}>
+            <FormControl fullWidth>
+              <InputLabel>Attributes</InputLabel>
+              <Select
+                value=""
+                displayEmpty
+                variant="outlined"
+                IconComponent={() => <ArrowDropDownIcon />}
+              >
+                <MenuItem disabled value="">
+                  Attributes
+                </MenuItem>
+                <MenuItem>
+                  <Button
+                    onClick={handleAddAttribute}
+                    startIcon={<AddIcon />}
+                  >
+                    +Add
+                  </Button>
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+            {showAttributeFields && (
+              <Box sx={{ marginTop: '10px' }}>
+                <TextField
+                  label="Attribute Key"
+                  variant="outlined"
+                  name="attribute-key"
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: '10px' }}
+                  fullWidth
+                />
+                <FormControl fullWidth sx={{ marginBottom: '10px' }}>
+                  <InputLabel>Type</InputLabel>
+                  <Select
+                    name="attribute-type"
+                    onChange={handleInputChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="Boolean">Boolean</MenuItem>
+                    <MenuItem value="String">String</MenuItem>
+                    <MenuItem value="Number">Number</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  label="Attribute Value"
+                  variant="outlined"
+                  name="attribute-value"
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: '10px' }}
+                  fullWidth
+                />
+              </Box>
+            )}
+          </Box>
+        );
+      }
+
+      return (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ''}
+          onChange={handleInputChange}
+          sx={{ marginBottom: '10px' }}
+          fullWidth
+        />
+      );
+    })}
+
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleEditSubmit}
+    >
+      Submit
+    </Button>
+  </Box>
+</Modal>
+
+       {/* <Modal open={editModalOpen} onClose={handleModalClose}>
           <Box sx={style}>
-            {/* <h2>Edit Row</h2> */}
+            {/* <h2>Edit Row</h2> 
             <Box
               sx={{
                 display: "flex",
@@ -1291,9 +1191,7 @@ const handleEditSubmit = async () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
+            {COLUMNS().map((col) => (
                 <TextField
                   key={col.accessor}
                   label={col.Header}
@@ -1313,45 +1211,489 @@ const handleEditSubmit = async () => {
               Submit
             </Button>
           </Box>
-        </Modal>
-        <Modal open={addModalOpen} onClose={handleModalClose}>
-          <Box sx={style}>
-            {/* <h2>Add Row</h2> */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
+        </Modal>*/}
+       
+ 
+{/* <Modal open={addModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        marginBottom: "20px",
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+    
+    {COLUMNS().map((col) => {
+      if (col.accessor === 'groupId' && col.Header === 'Group ID') {
+        return (
+          <FormControl fullWidth sx={{ marginBottom: "10px" }} key={col.accessor}>
+            <InputLabel>Group ID</InputLabel>
+            <Select
+              name={col.accessor}
+              value={formData[col.accessor] || ""}
+              onChange={handleInputChange}
+              variant="outlined"
             >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
+      }
+
+      if (col.accessor === 'attributes' && col.Header === 'Attributes') {
+        return (
+          <Box key={col.accessor} sx={{ marginBottom: "10px" }}>
+            <FormControl fullWidth>
+              <InputLabel>Attributes</InputLabel>
+              <Select
+                value=""
+                displayEmpty
+                variant="outlined"
+                IconComponent={() => <ArrowDropDownIcon />}
+              >
+                <MenuItem disabled value="">
+                  Attributes
+                </MenuItem>
+                <MenuItem>
+                  <Button
+                    onClick={handleAddAttribute}
+                    startIcon={<AddIcon />}
+                  >
+                    +Add
+                  </Button>
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+            {showAttributeFields && (
+              <Box sx={{ marginTop: "10px" }}>
                 <TextField
-                  key={col.accessor}
-                  label={col.Header}
+                  label="Attribute"
                   variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
+                  name="attribute"
+                  value={formData.attribute || ""}
                   onChange={handleInputChange}
                   sx={{ marginBottom: "10px" }}
                   fullWidth
                 />
-              ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddSubmit}
-            >
-              Submit
-            </Button>
+                <FormControl fullWidth>
+                  <InputLabel>Type</InputLabel>
+                  <Select
+                    name="type"
+                    value={formData.type || ""}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="Boolean">Boolean</MenuItem>
+                    <MenuItem value="String">String</MenuItem>
+                    <MenuItem value="Number">Number</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            )}
           </Box>
-        </Modal>
+        );
+      }
+
+      return (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ""}
+          onChange={handleInputChange}
+          sx={{ marginBottom: "10px" }}
+          fullWidth
+        />
+      );
+    })}
+
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleAddSubmit}
+    >
+      Submit
+    </Button>
+  </Box>
+</Modal> */}
+{/*<Modal open={addModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        marginBottom: "20px",
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+    
+    {COLUMNS().map((col) => {
+      if (col.accessor === 'groupId' && col.Header === 'Group ID') {
+        return (
+          <FormControl fullWidth sx={{ marginBottom: "10px" }} key={col.accessor}>
+            <InputLabel>Group ID</InputLabel>
+            <Select
+              name={col.accessor}
+              value={formData[col.accessor] || ""}
+              onChange={handleInputChange}
+              variant="outlined"
+            >
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
+      }
+
+      if (col.accessor === 'attributes' && col.Header === 'Attributes') {
+        return (
+          <Box key={col.accessor} sx={{ marginBottom: "10px" }}>
+            <FormControl fullWidth>
+              <InputLabel>Attributes</InputLabel>
+              <Select
+                value=""
+                displayEmpty
+                variant="outlined"
+                IconComponent={() => <ArrowDropDownIcon />}
+              >
+                <MenuItem disabled value="">
+                  Attributes
+                </MenuItem>
+                <MenuItem>
+                  <Button
+                    onClick={handleAddAttribute}
+                    startIcon={<AddIcon />}
+                  >
+                    +Add
+                  </Button>
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+            {showAttributeFields && (
+              <Box sx={{ marginTop: "10px" }}>
+                <TextField
+                  label="Attribute"
+                  variant="outlined"
+                  name="attribute"
+                  value={formData.attribute || ""}
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                />
+                <FormControl fullWidth>
+                  <InputLabel>Type</InputLabel>
+                  <Select
+                    name="type"
+                    value={formData.type || ""}
+                    onChange={handleInputChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="Boolean">Boolean</MenuItem>
+                    <MenuItem value="String">String</MenuItem>
+                    <MenuItem value="Number">Number</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            )}
+          </Box>
+        );
+      }
+
+      return (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ""}
+          onChange={handleInputChange}
+          sx={{ marginBottom: "10px" }}
+          fullWidth
+        />
+      );
+    })}
+
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleAddSubmit}
+    >
+      Submit
+    </Button>
+  </Box>
+</Modal>*/}
+
+
+
+
+
+
+
+
+
+
+  {/* <Modal open={addModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        marginBottom: "20px",
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+
+    {COLUMNS().map((col) => {
+      if (col.accessor === 'groupId' && col.Header === 'Group ID') {
+        return (
+          <FormControl fullWidth sx={{ marginBottom: "10px" }} key={col.accessor}>
+            <InputLabel>Group ID</InputLabel>
+            <Select
+              name={col.accessor}
+              value={formData[col.accessor] || ""}
+              onChange={handleInputChange}
+              variant="outlined"
+            >
+              {groups.map((group) => (
+                <MenuItem key={group.id} value={group.id}>
+                  {group.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        );
+      }
+
+      if (col.accessor === 'attributes' && col.Header === 'Attributes') {
+        return (
+          <Box key={col.accessor} sx={{ marginBottom: "10px" }}>
+            <FormControl fullWidth>
+              <InputLabel>Attributes</InputLabel>
+              <Select
+                value=""
+                displayEmpty
+                variant="outlined"
+                IconComponent={() => <ArrowDropDownIcon />}
+              >
+                <MenuItem disabled value="">
+                  Attributes
+                </MenuItem>
+                <MenuItem>
+                  <Button
+                    onClick={handleAddAttribute}
+                    startIcon={<AddIcon />}
+                  >
+                    +Add
+                  </Button>
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+            {showAttributeFields && (
+              <Box sx={{ marginTop: "10px" }}>
+                <TextField
+                  label="Attribute Key"
+                  variant="outlined"
+                  name="attribute-key"
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                />
+                <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+                  <InputLabel>Type</InputLabel>
+                  <Select
+                    name="attribute-type"
+                    onChange={handleInputChange}
+                    variant="outlined"
+                  >
+                    <MenuItem value="Boolean">Boolean</MenuItem>
+                    <MenuItem value="String">String</MenuItem>
+                    <MenuItem value="Number">Number</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  label="Attribute Value"
+                  variant="outlined"
+                  name="attribute-value"
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                />
+              </Box>
+            )}
+          </Box>
+        );
+      }
+
+      return (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ""}
+          onChange={handleInputChange}
+          sx={{ marginBottom: "10px" }}
+          fullWidth
+        />
+      );
+    })}
+
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleAddSubmit}
+    >
+      Submit
+    </Button>
+  </Box>
+</Modal> */}
+<Modal open={addModalOpen} onClose={handleModalClose}>
+<Box sx={style}>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        marginBottom: "20px",
+      }}
+    >
+          <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+          <IconButton onClick={handleModalClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        {COLUMNS().map((col) => {
+          if (col.accessor === 'groupId' && col.Header === 'Group ID') {
+            return (
+              <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+                <InputLabel>Group ID</InputLabel>
+                <Select
+                  name={col.accessor}
+                  value={formData[col.accessor] || ''}
+                  onChange={handleInputChange}
+                  variant="outlined"
+                >
+                  {groups.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            );
+          }
+
+          if (col.accessor === 'attributes' && col.Header === 'Attributes') {
+            return (
+              <Box key={col.accessor} sx={{ marginBottom: '10px' }}>
+                <FormControl fullWidth>
+                  <InputLabel>Attributes</InputLabel>
+                  <Select
+                    value=""
+                    displayEmpty
+                    variant="outlined"
+                    IconComponent={() => <ArrowDropDownIcon />}
+                  >
+                    <MenuItem disabled value="">
+                      Attributes
+                    </MenuItem>
+                    <MenuItem>
+                      <Button
+                        onClick={handleAddAttribute}
+                        startIcon={<AddIcon />}
+                      >
+                        +Add
+                      </Button>
+                    </MenuItem>
+                  </Select>
+                </FormControl>
+
+                {showAttributeFields && (
+                  <Box sx={{ marginTop: '10px' }}>
+                    <TextField
+                      label="Attribute Key"
+                      variant="outlined"
+                      name="attribute-key"
+                      onChange={handleInputChange}
+                      sx={{ marginBottom: '10px' }}
+                      fullWidth
+                    />
+                    <FormControl fullWidth sx={{ marginBottom: '10px' }}>
+                      <InputLabel>Type</InputLabel>
+                      <Select
+                        name="attribute-type"
+                        onChange={handleInputChange}
+                        variant="outlined"
+                      >
+                        <MenuItem value="Boolean">Boolean</MenuItem>
+                        <MenuItem value="String">String</MenuItem>
+                        <MenuItem value="Number">Number</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <TextField
+                      label="Attribute Value"
+                      variant="outlined"
+                      name="attribute-value"
+                      onChange={handleInputChange}
+                      sx={{ marginBottom: '10px' }}
+                      fullWidth
+                    />
+                  </Box>
+                )}
+              </Box>
+            );
+          }
+
+          return (
+            <TextField
+              key={col.accessor}
+              label={col.Header}
+              variant="outlined"
+              name={col.accessor}
+              value={formData[col.accessor] || ''}
+              onChange={handleInputChange}
+              sx={{ marginBottom: '10px' }}
+              fullWidth
+            />
+          );
+        })}
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleAddSubmit}
+        >
+          Submit
+        </Button>
+      </Box>
+    </Modal>
+
+
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
           <Box sx={style}>
             <h2>Import Data</h2>

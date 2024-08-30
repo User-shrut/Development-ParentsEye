@@ -1074,7 +1074,7 @@ const fetchData = async (url) => {
         Show
       </button>
 
-      {/* {apiUrl && (
+       {apiUrl && (
         <div style={{ marginTop: '10px' }}>
           <label htmlFor="api-url">Generated API URL:</label>
           <textarea
@@ -1085,7 +1085,7 @@ const fetchData = async (url) => {
             style={{ width: '100%', padding: '5px' }}
           ></textarea>
         </div>
-      )} */}
+      )} 
     </div>
 
        

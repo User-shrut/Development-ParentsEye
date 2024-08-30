@@ -3,7 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import axios from 'axios';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import CarIcon from '../../SVG/Vehicle Top View/Car/Car-Y.png';
+// import CarIcon from '../../SVG/Vehicle Top View/Car/Car-Y.png';
+import CarIcon from '../../SVG/car-s.png';
 import './LiveTracking.css';
 import { IoIosSpeedometer } from "react-icons/io";
 import { FaTruckFast } from "react-icons/fa6";
