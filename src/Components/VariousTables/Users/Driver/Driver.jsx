@@ -715,18 +715,24 @@ export const Driver = () => {
       const token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
       const response = await axios.get(
-        "https://schoolmanagement-4-pzsf.onrender.com/school/read/alldrivers",
+        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/drivers-by-school ",
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
+        
       );
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data.drivers)) {
-        const allData = response.data.drivers;
+      if (Array.isArray(response.data)) {
+        const allData = response.data
+          .filter(
+            (drivers) =>
+              Array.isArray(drivers.drivers) && drivers.drivers.length > 0
+          ) 
+          .flatMap((drivers) => drivers.drivers);
 
         // Apply local date filtering if dates are provided
         const filteredData =

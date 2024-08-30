@@ -87,7 +87,7 @@ export const StudentDetail = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-a26e.onrender.com/superadmin/children-by-school ",
+        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/children-by-school ",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ export const StudentDetail = () => {
         }
       );
 
-      console.log("fetch data", response.data.children); // Log the entire response data
+      console.log("fetch data", response.data); // Log the entire response data
       // fetchgeofencepoint();
       if (Array.isArray(response.data)) {
         const allData = response.data

@@ -81,7 +81,7 @@ const SchoolMaster = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-2-56zr.onrender.com/superadmin/getschools ",
+        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/getschools",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -445,7 +445,7 @@ const SchoolMaster = () => {
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-a26e.onrender.com/superadmin/school-register",
+        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/school-register",
         {
           method: "POST",
           headers: {
@@ -455,6 +455,8 @@ const SchoolMaster = () => {
           body: JSON.stringify(newRow),
         }
       );
+
+      
       alert("record created successfully");
 
       if (!response.ok) {
