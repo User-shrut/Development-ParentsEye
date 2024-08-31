@@ -292,6 +292,7 @@ export const Tablee = ({ data }) => {
   };
 
   const sortedData = [...filteredRows];
+
   if (sortConfig.key !== null) {
     sortedData.sort((a, b) => {
       if (a[sortConfig.key] < b[sortConfig.key]) {

@@ -21,11 +21,11 @@ export const COLUMNS = () => [
   },
   {
     Header: 'User Name',
-    accessor: 'userName',
+    accessor: 'username',
   },
   {
     Header: 'Phone',
-    accessor: 'phone',
+    accessor: 'mobileNo',
     Cell: ({ value }) => (value ? value.toString() : 'N/A'),
   },
   {
