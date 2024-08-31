@@ -25,13 +25,22 @@ import JCBIcon from "../SVG/jcb-s.png";
 import truckIcon from "../SVG/truck-s.png";
 import autoIcon from "../SVG/auto-s.png";
 
-import truckIconTop from "../SVG/Vehicle Top View/Truck/Truck-Y.png";
-import motorcycleIconTop from "../SVG/Vehicle Top View/Bike/Bike-R.png";
-import carIconTop from "../SVG/Vehicle Top View/Car/Car-R.png";
-import JCBIconTop from "../SVG/Vehicle Top View/JCB/JCB-Y.png";
-import TractorIconTop from "../SVG/Vehicle Top View/Tractor/Tractor-G.png";
-import AutoIconTop from "../SVG/Vehicle Top View/Auto/Auto-O.png";
+// import truckIconTop from "../SVG/Vehicle Top View/Truck/Truck-Y.png";
+import truckIconTop from "../SVG/truck-s.png";
+// import motorcycleIconTop from "../SVG/Vehicle Top View/Bike/Bike-R.png";
+import motorcycleIconTop from "../SVG/bike-s.png";
 
+// import carIconTop from "../SVG/Vehicle Top View/Car/Car-R.png";
+import carIconTop from "../SVG/car-s.png";
+
+// import JCBIconTop from "../SVG/Vehicle Top View/JCB/JCB-Y.png";
+import JCBIconTop from  "../SVG/jcb-s.png";
+
+// import TractorIconTop from "../SVG/Vehicle Top View/Tractor/Tractor-G.png";
+import TractorIconTop from "../SVG/truck-s.png";
+
+// import AutoIconTop from "../SVG/Vehicle Top View/Auto/Auto-O.png";
+import AutoIconTop from "../SVG/auto-s.png";
 // import pointerIcon from "../SVG/pointer.svg";
 // import pointerIcon from "../SVG/locationimg.jpg";
 import pointerIcon from "../SVG/stopp.png";
