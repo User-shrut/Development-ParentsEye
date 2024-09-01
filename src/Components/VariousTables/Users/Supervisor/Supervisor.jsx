@@ -710,7 +710,7 @@ export const Supervisor = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/supervisors-by-school",
+        "https://schoolmanagement-6-ts84.onrender.com/superadmin/supervisors-by-school",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -914,10 +914,8 @@ export const Supervisor = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete/supervisor";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
+        "https://schoolmanagement-6-ts84.onrender.com/superadmin/delete/supervisor";
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {

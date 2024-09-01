@@ -87,7 +87,7 @@ export const StudentDetail = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/children-by-school ",
+        "https://schoolmanagement-6-ts84.onrender.com/superadmin/children-by-school ",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -299,10 +299,8 @@ export const StudentDetail = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-1-hurx.onrender.com/school/delete";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
+        "https://schoolmanagement-6-ts84.onrender.com/superadmin/delete/child";
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
@@ -394,56 +392,109 @@ export const StudentDetail = () => {
     setSnackbarOpen(false);
   };
 
+  // const handleEditSubmit = async () => {
+  //   // Define the API URL and authentication token
+  //   const apiUrl = `https://schoolmanagement-5-zr7q.onrender.com/superadmin/update-child/${selectedRow._id}`; // Replace with your actual API URL
+  //   const token = localStorage.getItem('token');
+  //   // Prepare the updated data
+  //   const updatedData = {
+  //     ...formData,
+  //     isSelected: false,
+  //   };
+
+  //   try {
+  //     // Perform the PUT request
+  //     const response = await fetch(apiUrl, {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify(updatedData),
+  //     });
+
+  //     // Check if the response is okay (status code 200-299)
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+  //     // Optionally: Process the response data if needed
+  //     const result = await response.json();
+  //     console.log("Update successful:", result);
+  //     alert("updated successfully");
+  //     // Update local state after successful API call
+  //     const updatedRows = filteredRows.map((row) =>
+  //       row.id === selectedRow.id
+  //         ? { ...row, ...formData, isSelected: false }
+  //         : row
+  //     );
+  //     setFilteredRows(updatedRows);
+
+  //     // Close the modal
+  //     handleModalClose();
+  //     fetchData();
+  //   } catch (error) {
+  //     console.error("Error updating row:", error);
+  //     alert("error updating code");
+  //     // Optionally: Handle the error (e.g., show a notification or message to the user)
+  //   }
+  //   fetchData();
+  // };
+
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-1-hurx.onrender.com/school/update-child/${selectedRow._id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
-
+    const token = localStorage.getItem('token');
+    const apiUrl = `https://schoolmanagement-5-zr7q.onrender.com/superadmin/update-child/${selectedRow._id}`;
+  
     // Prepare the updated data
     const updatedData = {
-      ...formData,
-      isSelected: false,
+        ...formData,
+        isSelected: false,
     };
 
     try {
-      // Perform the PUT request
-      const response = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
+        // Perform the PUT request
+        const response = await fetch(apiUrl, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedData),
+        });
 
-      // Check if the response is okay (status code 200-299)
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+        // Check if the response is okay (status code 200-299)
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-      // Optionally: Process the response data if needed
-      const result = await response.json();
-      console.log("Update successful:", result);
-      alert("updated successfully");
-      // Update local state after successful API call
-      const updatedRows = filteredRows.map((row) =>
-        row.id === selectedRow.id
-          ? { ...row, ...formData, isSelected: false }
-          : row
-      );
-      setFilteredRows(updatedRows);
+        // Optionally: Process the response data if needed
+        const result = await response.json();
+        console.log("Update successful:", result);
+        alert("Updated successfully");
 
-      // Close the modal
-      handleModalClose();
-      fetchData();
+        // Update local state after successful API call
+        const updatedRows = filteredRows.map((row) =>
+            row._id === selectedRow._id // Make sure to use the correct ID property
+                ? { ...row, ...formData, isSelected: false }
+                : row
+        );
+        setFilteredRows(updatedRows);
+
+        // Close the modal
+        handleModalClose();
+
+        // Fetch the latest data
+        fetchData();
     } catch (error) {
-      console.error("Error updating row:", error);
-      alert("error updating code");
-      // Optionally: Handle the error (e.g., show a notification or message to the user)
+        console.error("Error updating row:", error);
+        alert(`Error updating row: ${error.message}`);
     }
-    fetchData();
-  };
+};
+
+  
+
+
 
   const handleAddSubmit = async () => {
     try {
@@ -455,7 +506,7 @@ export const StudentDetail = () => {
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-1-hurx.onrender.com/parent/register",
+        "https://schoolmanagement-5-zr7q.onrender.com/parent/register",
         {
           method: "POST",
           headers: {
@@ -494,7 +545,7 @@ export const StudentDetail = () => {
   useEffect(() => {
     const fetchGeofenceData = async () => {
       try {
-        const username = "test"; // Replace with your actual username
+        const username = "vinod@gmail.com"; // Replace with your actual username
         const password = "123456"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
@@ -508,7 +559,7 @@ export const StudentDetail = () => {
         );
 
         const data = response.data;
-        console.log(response.data);
+        console.log("pickup points: ",response.data);
         // Transform data to create dropdown options
         const options = data.map((item) => ({
           value: item.name,
@@ -527,7 +578,7 @@ export const StudentDetail = () => {
   useEffect(() => {
     const fetchOtherData = async () => {
       try {
-        const username = "test"; // Replace with your actual username
+        const username = "vinod@gmail.com"; // Replace with your actual username
         const password = "123456"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 

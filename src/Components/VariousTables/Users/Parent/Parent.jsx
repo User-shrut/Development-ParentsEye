@@ -85,9 +85,9 @@ export const Parent = () => {
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual token
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-9.onrender.com/school/parents",
+        "https://schoolmanagement-6-ts84.onrender.com/superadmin/all-parents",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -97,8 +97,15 @@ export const Parent = () => {
   
       console.log("fetch data", response.data); // Log the entire response data
   
-      if (Array.isArray(response.data.parents)) {
-        const allData = response.data.parents;
+      if (Array.isArray(response.data)) {
+        const allData = response.data
+          .filter(
+            (parent) =>
+              Array.isArray(parent.parents) && parent.parents.length > 0
+          ) // Filter schools with non-empty children arrays
+          .flatMap((parent) => parent.parents);
+
+          console.log(allData)
   
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -290,10 +297,8 @@ export const Parent = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-9.onrender.com/school/delete-parent";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
+        `https://schoolmanagement-6-ts84.onrender.com/superadmin/delete-parent`;
+      const token = localStorage.getItem('token');
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {

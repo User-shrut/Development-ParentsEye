@@ -90,7 +90,7 @@ const Logoprac = () => {
       // Sequentially try to log in as superadmin, school, or branch
       if (
         await login(
-          "https://schoolmanagement-4-e1x2.onrender.com/superadmin/login",
+          "https://schoolmanagement-6-ts84.onrender.com/superadmin/login",
           1,
           "Super Admin login successful"
         )
@@ -98,7 +98,7 @@ const Logoprac = () => {
         return;
       if (
         await login(
-          "https://schoolmanagement-4-e1x2.onrender.com/school/login",
+          "https://schoolmanagement-6-ts84.onrender.com/school/login",
           2,
           "School login successful"
         )
@@ -106,7 +106,7 @@ const Logoprac = () => {
         return;
       if (
         await login(
-          "https://schoolmanagement-4-e1x2.onrender.com/branch/login",
+          "https://schoolmanagement-6-ts84.onrender.com/branch/login",
           3,
           "Branch login successful"
         )

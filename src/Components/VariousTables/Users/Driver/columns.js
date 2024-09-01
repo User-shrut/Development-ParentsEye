@@ -34,8 +34,16 @@ export const COLUMNS = () => [
     accessor: 'email',
   },
   {
+    Header: 'Bus Name',
+    accessor: 'busName',
+  },
+  {
     Header: 'Device Id',
     accessor: 'deviceId',
+  },
+  {
+    Header: 'School Name',
+    accessor: 'schoolName',
   },
   {
     Header: 'Registration Date',
