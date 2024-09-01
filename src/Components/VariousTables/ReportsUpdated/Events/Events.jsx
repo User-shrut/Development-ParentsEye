@@ -82,7 +82,7 @@ export const Events = () => {
 //   console.log('Fetching data...');
 //   setLoading(true); // Set loading to true when starting fetch
 //   try {
-//     const username = "test";
+//     const username = "school";
 //     const password = "123456";
 //     const token = btoa(`${username}:${password}`);
 
@@ -336,7 +336,7 @@ export const Events = () => {
 
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-//   const username = "test";
+//   const username = "school";
 //   const password = "123456";
 //   const token = btoa(`${username}:${password}`);
 
@@ -389,7 +389,7 @@ export const Events = () => {
 // };
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-//   const username = "test";
+//   const username = "school";
 //   const password = "123456";
 //   const token = btoa(`${username}:${password}`);
 
@@ -442,7 +442,7 @@ export const Events = () => {
 // };
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-  const username = "test";
+  const username = "school";
   const password = "123456";
   const token = btoa(`${username}:${password}`);
 
@@ -677,7 +677,7 @@ const handleEditSubmit = async () => {
   //   console.log('Fetching data...');
   //   setLoading(true); // Set loading to true when starting fetch
   //   try {
-  //     const username = "test";
+  //     const username = "school";
   //     const password = "123456";
   //     const token = btoa(`${username}:${password}`);
 
@@ -708,7 +708,7 @@ const handleEditSubmit = async () => {
   //   setLoading(true); // Set loading to true when starting fetch
     
   //   try {
-  //     const username = "test";
+  //     const username = "school";
   //     const password = "123456";
   //     const token = btoa(`${username}:${password}`);
   
@@ -752,7 +752,7 @@ const handleEditSubmit = async () => {
   //   setLoading(true); // Set loading to true when starting fetch
     
   //   try {
-  //     const username = "test";
+  //     const username = "school";
   //     const password = "123456";
   //     const token = btoa(`${username}:${password}`);
   
@@ -814,7 +814,7 @@ const handleEditSubmit = async () => {
 //     setLoading(true); // Set loading to true when starting fetch
 
 //     try {
-//         const username = "test";
+//         const username = "school";
 //         const password = "123456";
 //         const token = btoa(`${username}:${password}`);
 
@@ -880,7 +880,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-      const username = "test";
+      const username = "school";
       const password = "123456";
       const token = btoa(`${username}:${password}`);
 

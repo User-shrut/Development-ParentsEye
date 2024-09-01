@@ -82,7 +82,7 @@ export const ComputedAttributes = () => {
 //   console.log('Fetching data...');
 //   setLoading(true); // Set loading to true when starting fetch
 //   try {
-//     const username = "test";
+//     const username = "school";
 //     const password = "123456";
 //     const token = btoa(`${username}:${password}`);
 
@@ -114,7 +114,7 @@ const fetchData = async () => {
   console.log('Fetching data...');
   setLoading(true); // Set loading to true when starting fetch
   try {
-    const username = "test";
+    const username = "school";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -263,7 +263,7 @@ const fetchData = async () => {
       // Define the API endpoint and token
       const apiUrl =
         "https://rocketsalestracker.com/api/devices";
-        const username = "test";
+        const username = "school";
         const password = "123456";
         const token = btoa(`${username}:${password}`);
       // const token =
@@ -372,7 +372,7 @@ const fetchData = async () => {
 
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/Device`; // Ensure this is correct
-//   const username = "test";
+//   const username = "school";
 //   const password = "123456";
 //   const token = btoa(`${username}:${password}`);
 
@@ -425,7 +425,7 @@ const fetchData = async () => {
 // };
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/Device`; // Ensure this is correct
-//   const username = "test";
+//   const username = "school";
 //   const password = "123456";
 //   const token = btoa(`${username}:${password}`);
 
@@ -478,7 +478,7 @@ const fetchData = async () => {
 // };
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/devices`; // Ensure this is correct
-  const username = "test";
+  const username = "school";
   const password = "123456";
   const token = btoa(`${username}:${password}`);
 
