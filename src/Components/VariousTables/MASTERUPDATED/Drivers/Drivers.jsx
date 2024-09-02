@@ -87,7 +87,7 @@ const fetchData = async () => {
   console.log('Fetching data...');
   setLoading(true); // Set loading to true when starting fetch
   try {
-    const username = "test";
+    const username = "school";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -240,7 +240,7 @@ const fetchData = async () => {
     try {
       // Define the API endpoint and credentials
       const apiUrl = "https://rocketsalestracker.com/api/drivers"; // Replace with actual API endpoint
-      const username = "test"; // Replace with your actual username
+      const username = "school"; // Replace with your actual username
       const password = "123456"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
@@ -347,7 +347,7 @@ const fetchData = async () => {
  
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/drivers/${selectedRow.id}`;
-  const username = "test"; // Replace with your actual username
+  const username = "school"; // Replace with your actual username
   const password = "123456"; // Replace with your actual password
   const token = btoa(`${username}:${password}`); // Encode credentials in Base64
 
@@ -426,7 +426,7 @@ const handleEditSubmit = async () => {
   //   try {
   //     // Define the API endpoint and credentials
   //     const apiUrl = "https://rocketsalestracker.com/api/drivers"; // Replace with actual API endpoint
-  //     const username = "test"; // Replace with your actual username
+  //     const username = "school"; // Replace with your actual username
   //     const password = "123456"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
@@ -503,7 +503,7 @@ const handleEditSubmit = async () => {
     try {
       // Define the API endpoint and credentials
       const apiUrl = "https://rocketsalestracker.com/api/drivers"; // Replace with actual API endpoint
-      const username = "test"; // Replace with your actual username
+      const username = "school"; // Replace with your actual username
       const password = "123456"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
       const transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {

@@ -545,7 +545,7 @@ export const StudentDetail = () => {
   useEffect(() => {
     const fetchGeofenceData = async () => {
       try {
-        const username = "vinod@gmail.com"; // Replace with your actual username
+        const username = "school"; // Replace with your actual username
         const password = "123456"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
@@ -578,7 +578,8 @@ export const StudentDetail = () => {
   useEffect(() => {
     const fetchOtherData = async () => {
       try {
-        const username = "vinod@gmail.com"; // Replace with your actual username
+
+        const username = "school"; // Replace with your actual username
         const password = "123456"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
@@ -1746,7 +1747,7 @@ export const StudentDetail = () => {
 //   useEffect(() => {
 //     const fetchGeofenceData = async () => {
 //       try {
-//         const username = "test"; // Replace with your actual username
+//         const username = "school"; // Replace with your actual username
 //         const password = "123456"; // Replace with your actual password
 //         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
@@ -1779,7 +1780,7 @@ export const StudentDetail = () => {
 //   useEffect(() => {
 //     const fetchOtherData = async () => {
 //       try {
-//         const username = "test"; // Replace with your actual username
+//         const username = "school"; // Replace with your actual username
 //         const password = "123456"; // Replace with your actual password
 //         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
