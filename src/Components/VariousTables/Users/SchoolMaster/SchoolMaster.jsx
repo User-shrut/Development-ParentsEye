@@ -81,7 +81,7 @@ const SchoolMaster = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-6-ts84.onrender.com/superadmin/getschools",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -443,7 +443,7 @@ const SchoolMaster = () => {
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-6-ts84.onrender.com/superadmin/school-register",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/school-register`,
         {
           method: "POST",
           headers: {

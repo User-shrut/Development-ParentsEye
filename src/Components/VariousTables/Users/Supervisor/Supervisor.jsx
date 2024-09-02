@@ -710,7 +710,7 @@ export const Supervisor = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-6-ts84.onrender.com/superadmin/supervisors-by-school",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/supervisors-by-school`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -724,11 +724,12 @@ export const Supervisor = () => {
         const allData = response.data
           .filter(
             (supervisor) =>
-              Array.isArray(supervisor.supervisors) && supervisor.supervisors.length > 0
-          ) 
+              Array.isArray(supervisor.supervisors) &&
+              supervisor.supervisors.length > 0
+          )
           .flatMap((supervisor) => supervisor.supervisors);
 
-        console.log("supervisirs",allData);
+        console.log("supervisirs", allData);
         // Apply local date filtering if dates are provided
         const filteredData =
           startDate || endDate
@@ -894,7 +895,7 @@ export const Supervisor = () => {
       .map((row) => {
         // Log each row to check its structure
         console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
+        return row.supervisorId; // Ensure id exists and is not undefined
       });
 
     console.log("Selected IDs:", selectedIds);
@@ -914,7 +915,7 @@ export const Supervisor = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-6-ts84.onrender.com/superadmin/delete/supervisor";
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/supervisor`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -1017,10 +1018,8 @@ export const Supervisor = () => {
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-4-pzsf.onrender.com/school/update-supervisor/${selectedRow.id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
-
+    const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor/${selectedRow.supervisorId}`; // Replace with your actual API URL
+    const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
       ...formData,
@@ -1049,7 +1048,7 @@ export const Supervisor = () => {
       alert("updated successfully");
       // Update local state after successful API call
       const updatedRows = filteredRows.map((row) =>
-        row.id === selectedRow.id
+        row.supervisorId === selectedRow.supervisorId
           ? { ...row, ...formData, isSelected: false }
           : row
       );
@@ -1437,7 +1436,7 @@ export const Supervisor = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(0, -1)
+              .slice(1, -1)
               .map((col) => (
                 <TextField
                   key={col.accessor}

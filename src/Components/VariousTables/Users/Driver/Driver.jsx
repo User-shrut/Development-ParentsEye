@@ -702,7 +702,7 @@ export const Driver = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-6-ts84.onrender.com/superadmin/drivers-by-school",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/drivers-by-school`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -890,7 +890,7 @@ export const Driver = () => {
       .map((row) => {
         // Log each row to check its structure
         console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
+        return row.driverId; // Ensure id exists and is not undefined
       });
 
     console.log("Selected IDs:", selectedIds);
@@ -909,7 +909,7 @@ export const Driver = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl = `https://schoolmanagement-6-ts84.onrender.com/superadmin/delete/driver`;
+      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/driver`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -1027,7 +1027,7 @@ export const Driver = () => {
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-6-ts84.onrender.com/superadmin/update-driver/${selectedRow.id}`; // Replace with your actual API URL
+    const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`; // Replace with your actual API URL
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
@@ -1445,7 +1445,7 @@ export const Driver = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(0, -1)
+              .slice(1, -2)
               .map((col) => (
                 <TextField
                   key={col.accessor}

@@ -87,7 +87,7 @@ export const Parent = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-6-ts84.onrender.com/superadmin/all-parents",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/all-parents`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -297,7 +297,7 @@ export const Parent = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        `https://schoolmanagement-6-ts84.onrender.com/superadmin/delete-parent`;
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-parent`;
       const token = localStorage.getItem('token');
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -401,10 +401,8 @@ export const Parent = () => {
   
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-9.onrender.com/school/update-paren/${selectedRow.id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
-
+    const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent/${selectedRow._id}`; // Replace with your actual API URL
+    const token = localStorage.getItem('token');
     // Prepare the updated data
     const updatedData = {
       ...formData,
@@ -495,16 +493,18 @@ export const Parent = () => {
 
   const handleApprove = async (_id) => {
     try {
-      const response = await axios.post(`https://schoolmanagement-9.onrender.com/school/registerStatus/66c2ef6c8f609a5f925a90dd`, {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`, {
         action: 'approve'
       }, {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0`, // Replace with your token
+          Authorization: `Bearer ${token}`, // Replace with your token
         },
       });
       if (response.status === 200) {
         setSnackbarOpen(true);
-        fetchData(); // Refresh data
+        fetchData();
+        alert("your request is aprove") // Refresh data
       }
     } catch (error) {
       console.error('Error approving request:', error);
@@ -516,16 +516,18 @@ export const Parent = () => {
 
   const handleReject = async (_id) => {
     try {
-      const response = await axios.post(`https://schoolmanagement-9.onrender.com/school/registerStatus/${_id}`, {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(`${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`, {
         action: 'reject'
       }, {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0`, // Replace with your token
+          Authorization: `Bearer ${token}`, // Replace with your token
         },
       });
       if (response.status === 200) {
         setSnackbarOpen(true);
         fetchData(); // Refresh data
+        alert("request is rejected");
       }
     } catch (error) {
       console.error('Error rejecting request:', error);
@@ -925,7 +927,7 @@ export const Parent = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(0, -1)
+              .slice(1, -1)
               .map((col) => (
                 <TextField
                   key={col.accessor}

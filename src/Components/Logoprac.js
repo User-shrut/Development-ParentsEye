@@ -90,7 +90,7 @@ const Logoprac = () => {
       // Sequentially try to log in as superadmin, school, or branch
       if (
         await login(
-          "https://schoolmanagement-6-ts84.onrender.com/superadmin/login",
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/login`,
           1,
           "Super Admin login successful"
         )

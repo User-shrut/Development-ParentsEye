@@ -80,10 +80,9 @@ export const Absent = () => {
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-3-i2wi.onrender.com/school/absent-children",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -93,8 +92,13 @@ export const Absent = () => {
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data.children)) {
-        const allData = response.data.children;
+      if (Array.isArray(response.data)) {
+        const allData = response.data
+          .filter(
+            (school) =>
+              Array.isArray(school.children) && school.children.length > 0
+          ) // Filter schools with non-empty children arrays
+          .flatMap((school) => school.children);
 
         // Apply local date filtering if dates are provided
         const filteredData =

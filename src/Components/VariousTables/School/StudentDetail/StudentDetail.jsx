@@ -87,7 +87,7 @@ export const StudentDetail = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-6-ts84.onrender.com/superadmin/children-by-school ",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/children-by-school`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -279,7 +279,7 @@ export const StudentDetail = () => {
       .map((row) => {
         // Log each row to check its structure
         console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
+        return row.childId; // Ensure id exists and is not undefined
       });
 
     console.log("Selected IDs:", selectedIds);
@@ -299,7 +299,7 @@ export const StudentDetail = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-6-ts84.onrender.com/superadmin/delete/child";
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/child`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -444,7 +444,7 @@ export const StudentDetail = () => {
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
     const token = localStorage.getItem('token');
-    const apiUrl = `https://schoolmanagement-5-zr7q.onrender.com/superadmin/update-child/${selectedRow._id}`;
+    const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child/${selectedRow.childId}`;
   
     // Prepare the updated data
     const updatedData = {
