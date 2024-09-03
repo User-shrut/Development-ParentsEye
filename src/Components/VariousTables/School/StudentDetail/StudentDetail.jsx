@@ -55,6 +55,7 @@ export const StudentDetail = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
+  const { role } = useContext(TotalResponsesContext);
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
@@ -85,25 +86,55 @@ export const StudentDetail = () => {
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/children-by-school`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+      if (role == 1) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/children-by-school`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read/all-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
       console.log("fetch data", response.data); // Log the entire response data
       // fetchgeofencepoint();
-      if (Array.isArray(response.data)) {
-        const allData = response.data
-          .filter(
-            (school) =>
-              Array.isArray(school.children) && school.children.length > 0
-          ) // Filter schools with non-empty children arrays
-          .flatMap((school) => school.children);
+      if (response?.data) {
+        const allData =
+          role == 1
+            ? response.data
+                .filter(
+                  (school) =>
+                    Array.isArray(school.children) && school.children.length > 0
+                ) // Filter schools with non-empty children arrays
+                .flatMap((school) => school.children)
+            : response.data.children;
+
+        // if (role == 1) {
+        //   allData = response.data
+        //     .filter(
+        //       (school) =>
+        //         Array.isArray(school.children) && school.children.length > 0
+        //     ) // Filter schools with non-empty children arrays
+        //     .flatMap((school) => school.children);
+
+        //   console.log("admin response : ", allData);
+        // } else if (role == 2) {
+        //   allData = response.data.children;
+        //   console.log("school wise data: ", allData);
+        // }
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -298,8 +329,8 @@ export const StudentDetail = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl =
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/child`;
+    
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/child` : `${process.env.REACT_APP_SCHOOL_API}/delete/child`
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -443,58 +474,54 @@ export const StudentDetail = () => {
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const token = localStorage.getItem('token');
-    const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child/${selectedRow.childId}`;
-  
+    const token = localStorage.getItem("token");
+    const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child/${selectedRow.childId}` : `${process.env.REACT_APP_SCHOOL_API}/update-child/${selectedRow.childId}`;
+
     // Prepare the updated data
     const updatedData = {
-        ...formData,
-        isSelected: false,
+      ...formData,
+      isSelected: false,
     };
 
     try {
-        // Perform the PUT request
-        const response = await fetch(apiUrl, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(updatedData),
-        });
+      // Perform the PUT request
+      const response = await fetch(apiUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedData),
+      });
 
-        // Check if the response is okay (status code 200-299)
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+      // Check if the response is okay (status code 200-299)
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
 
-        // Optionally: Process the response data if needed
-        const result = await response.json();
-        console.log("Update successful:", result);
-        alert("Updated successfully");
+      // Optionally: Process the response data if needed
+      const result = await response.json();
+      console.log("Update successful:", result);
+      alert("Updated successfully");
 
-        // Update local state after successful API call
-        const updatedRows = filteredRows.map((row) =>
-            row._id === selectedRow._id // Make sure to use the correct ID property
-                ? { ...row, ...formData, isSelected: false }
-                : row
-        );
-        setFilteredRows(updatedRows);
+      // Update local state after successful API call
+      const updatedRows = filteredRows.map((row) =>
+        row._id === selectedRow._id // Make sure to use the correct ID property
+          ? { ...row, ...formData, isSelected: false }
+          : row
+      );
+      setFilteredRows(updatedRows);
 
-        // Close the modal
-        handleModalClose();
+      // Close the modal
+      handleModalClose();
 
-        // Fetch the latest data
-        fetchData();
+      // Fetch the latest data
+      fetchData();
     } catch (error) {
-        console.error("Error updating row:", error);
-        alert(`Error updating row: ${error.message}`);
+      console.error("Error updating row:", error);
+      alert(`Error updating row: ${error.message}`);
     }
-};
-
-  
-
-
+  };
 
   const handleAddSubmit = async () => {
     try {
@@ -545,8 +572,8 @@ export const StudentDetail = () => {
   useEffect(() => {
     const fetchGeofenceData = async () => {
       try {
-        const username = "school"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
+        const username = "harshal"; // Replace with your actual username
+        const password = "123456@"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
         const response = await axios.get(
@@ -559,7 +586,7 @@ export const StudentDetail = () => {
         );
 
         const data = response.data;
-        console.log("pickup points: ",response.data);
+        console.log("pickup points: ", response.data);
         // Transform data to create dropdown options
         const options = data.map((item) => ({
           value: item.name,
@@ -578,9 +605,8 @@ export const StudentDetail = () => {
   useEffect(() => {
     const fetchOtherData = async () => {
       try {
-
-        const username = "school"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
+        const username = "harshal"; // Replace with your actual username
+        const password = "123456@"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
         const response = await axios.get(
@@ -1147,7 +1173,7 @@ export const StudentDetail = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Student</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>

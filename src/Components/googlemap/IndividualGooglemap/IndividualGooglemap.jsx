@@ -600,7 +600,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
       console.log("This is stop poinst : ", stopPoints);
       setStoppedPositions(stopPoints);
-      mapRef.current.flyTo([playbackData[0].latitude, playbackData[0].longitude], 14, {
+      mapRef.current.flyTo([stopPoints[0]?.latitude, stopPoints[0]?.longitude], 14, {
         animate: true,
         duration: 3,
       });

@@ -39,6 +39,10 @@ export const COLUMNS = () => [
     accessor: 'deviceId',
   },
   {
+    Header: 'School Name',
+    accessor: 'schoolName',
+  },
+  {
     Header: 'Registration Date',
     accessor: 'formattedRegistrationDate',
     Cell: ({ value }) => {

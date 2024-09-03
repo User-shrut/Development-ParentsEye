@@ -49,7 +49,7 @@ const style = {
 };
 
 export const Present = () => {
-  const { setTotalResponsesPresent } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponsesPresent , role } = useContext(TotalResponsesContext); // Get the context value
   
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -81,8 +81,9 @@ export const Present = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children` : `${process.env.REACT_APP_SCHOOL_API}/present-children`;
       const response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children`,
+        apiUrl,
         {
           headers: {
             Authorization: `Bearer ${token}`,

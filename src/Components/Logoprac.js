@@ -98,7 +98,7 @@ const Logoprac = () => {
         return;
       if (
         await login(
-          "https://schoolmanagement-6-ts84.onrender.com/school/login",
+          `${process.env.REACT_APP_SCHOOL_API}/login`,
           2,
           "School login successful"
         )
@@ -106,7 +106,7 @@ const Logoprac = () => {
         return;
       if (
         await login(
-          "https://schoolmanagement-6-ts84.onrender.com/branch/login",
+          `${process.env.REACT_APP_BRANCH_API}/login`,
           3,
           "Branch login successful"
         )
@@ -273,11 +273,12 @@ const Logoprac = () => {
               </div>
             </div>
 
-            <div className="text-center">
+            {/* <div className="text-center">
               <p>
-                Not a member? <Link to="/signup">Register</Link>
+                Not a member?
+                 <Link to="/signup">Register</Link>
               </p>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>

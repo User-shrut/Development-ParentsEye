@@ -847,13 +847,16 @@ export const DeniedRequest = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { role } = useContext(TotalResponsesContext);
 
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
+      let response;
+      if(role == 1){
+      response = await axios.get(
         `${process.env.REACT_APP_SUPER_ADMIN_API}/all-denied-requests`,
         {
           headers: {
@@ -861,16 +864,27 @@ export const DeniedRequest = () => {
           },
         }
       );
+    }else if( role == 2){
+      response = await axios.get(
+        `${process.env.REACT_APP_SCHOOL_API}/denied-requests`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data)) {
-        const allData = response.data
+      if (response.data) {
+        const allData = role == 1 ? response.data
           .filter(
             (school) =>
               Array.isArray(school.requests) && school.requests.length > 0
           ) // Filter schools with non-empty children arrays
-          .flatMap((school) => school.requests);
+          .flatMap((school) => school.requests)
+          : response.data.requests;
 
         // Apply local date filtering if dates are provided
         const filteredData =

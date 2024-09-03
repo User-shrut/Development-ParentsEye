@@ -704,30 +704,47 @@ export const Supervisor = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { role } = useContext(TotalResponsesContext);
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/supervisors-by-school`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/supervisors-by-school`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read/allsupervisors`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data)) {
-        const allData = response.data
-          .filter(
-            (supervisor) =>
-              Array.isArray(supervisor.supervisors) &&
-              supervisor.supervisors.length > 0
-          )
-          .flatMap((supervisor) => supervisor.supervisors);
+      if (response?.data) {
+        const allData =
+          role == 1
+            ? response.data
+                .filter(
+                  (supervisor) =>
+                    Array.isArray(supervisor.supervisors) &&
+                    supervisor.supervisors.length > 0
+                )
+                .flatMap((supervisor) => supervisor.supervisors)
+            : response.data.supervisors;
 
         console.log("supervisirs", allData);
         // Apply local date filtering if dates are provided
@@ -914,8 +931,7 @@ export const Supervisor = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl =
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/supervisor`;
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/supervisor` : `${process.env.REACT_APP_SCHOOL_API}/delete/supervisor`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -1018,7 +1034,7 @@ export const Supervisor = () => {
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor/${selectedRow.supervisorId}`; // Replace with your actual API URL
+    const apiUrl = role ?  `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor/${selectedRow.supervisorId}` : `${process.env.REACT_APP_SCHOOL_API}/update-supervisor/${selectedRow.supervisorId}`
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {

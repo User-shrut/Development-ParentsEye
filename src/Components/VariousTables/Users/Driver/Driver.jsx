@@ -696,29 +696,45 @@ export const Driver = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { role } = useContext(TotalResponsesContext);
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/drivers-by-school`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/drivers-by-school`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read/alldrivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
-      console.log("fetch data", response.data); // Log the entire response data
+      console.log("fetch data", response.data);
 
-      if (Array.isArray(response.data)) {
-        const allData = response.data
-          .filter(
-            (driver) =>
-              Array.isArray(driver.drivers) && driver.drivers.length > 0
-          )
-          .flatMap((driver) => driver.drivers);
+      if (response?.data) {
+        const allData =
+          role == 1
+            ? response.data
+                .filter(
+                  (driver) =>
+                    Array.isArray(driver.drivers) && driver.drivers.length > 0
+                )
+                .flatMap((driver) => driver.drivers)
+            : response.data.drivers;
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -909,7 +925,7 @@ export const Driver = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/driver`;
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/driver` : `${process.env.REACT_APP_SCHOOL_API}/delete/driver`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -1027,7 +1043,7 @@ export const Driver = () => {
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`; // Replace with your actual API URL
+    const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}` : `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.driverId}`;
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {

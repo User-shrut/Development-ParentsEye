@@ -78,6 +78,7 @@ export const Parent = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { role } = useContext(TotalResponsesContext);
 
 
 
@@ -86,7 +87,9 @@ export const Parent = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
+      let response;
+      if(role == 1){
+        response = await axios.get(
         `${process.env.REACT_APP_SUPER_ADMIN_API}/all-parents`,
         {
           headers: {
@@ -94,16 +97,27 @@ export const Parent = () => {
           },
         }
       );
+    }else if(role == 2){
+      response = await axios.get(
+        `${process.env.REACT_APP_SCHOOL_API}/parents`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
   
       console.log("fetch data", response.data); // Log the entire response data
   
-      if (Array.isArray(response.data)) {
-        const allData = response.data
+      if (response.data) {
+        const allData = role == 1 ? response.data
           .filter(
             (parent) =>
               Array.isArray(parent.parents) && parent.parents.length > 0
           ) // Filter schools with non-empty children arrays
-          .flatMap((parent) => parent.parents);
+          .flatMap((parent) => parent.parents)
+          : response.data.parents;
 
           console.log(allData)
   
@@ -296,8 +310,7 @@ export const Parent = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl =
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-parent`;
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-parent` : `${process.env.REACT_APP_SCHOOL_API}/delete-parent`;
       const token = localStorage.getItem('token');
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -401,7 +414,7 @@ export const Parent = () => {
   
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent/${selectedRow._id}`; // Replace with your actual API URL
+    const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent/${selectedRow._id}` : `${process.env.REACT_APP_SCHOOL_API}/update-parent/${selectedRow._id}`;
     const token = localStorage.getItem('token');
     // Prepare the updated data
     const updatedData = {

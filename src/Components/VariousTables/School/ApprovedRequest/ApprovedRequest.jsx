@@ -72,7 +72,7 @@
 //         }
 //       );
 //       console.log('fetch data', response.data); // Log the entire response data
-     
+
 //   //     if (Array.isArray(response.data.children)) {
 //   //       setFilteredRows(response.data.children.map(row => ({ ...row, isSelected: false })));
 //   //       setTotalResponses(response.data.children.length);
@@ -167,13 +167,10 @@
 //     }
 //   };
 
- 
-
-
 //   const handleDeleteSelected = async () => {
 //     // Log filteredRows to check its structure
 //     console.log("Filtered rows:", filteredRows);
-  
+
 //     // Get selected row IDs
 //     const selectedIds = filteredRows
 //       .filter(row => row.isSelected)
@@ -182,19 +179,19 @@
 //         console.log("Processing row:", row);
 //         return row._id; // Ensure id exists and is not undefined
 //       });
-  
+
 //     console.log("Selected IDs:", selectedIds);
-  
+
 //     if (selectedIds.length === 0) {
 //       alert("No rows selected for deletion.");
 //       return;
 //     }
-  
+
 //     try {
 //       // Define the API endpoint and token
 //       const apiUrl = 'https://schoolmanagement-10.onrender.com/school/delete';
 //       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0'; // Replace with actual token
-  
+
 //       // Send delete requests for each selected ID
 //       const deleteRequests = selectedIds.map(id =>
 //         fetch(`${apiUrl}/${id}`, {
@@ -210,17 +207,17 @@
 //           return response.json();
 //         })
 //       );
-  
+
 //       // Wait for all delete requests to complete
 //       await Promise.all(deleteRequests);
-  
+
 //       // Filter out deleted rows
 //       const newFilteredRows = filteredRows.filter(row => !row.isSelected);
-  
+
 //       // Update state
 //       setFilteredRows(newFilteredRows);
 //       setSelectAll(false);
-  
+
 //       alert('Selected records deleted successfully.');
 //     } catch (error) {
 //       console.error('Error during deletion:', error);
@@ -228,9 +225,6 @@
 //     }
 //     fetchData();
 //   };
-  
-  
-  
 
 //   const handleExport = () => {
 //     const dataToExport = filteredRows.map(row => {
@@ -272,8 +266,6 @@
 //     });
 //   }
 
-  
-  
 //   const handleAddButtonClick = () => {
 //     setFormData({});
 //     setAddModalOpen(true);
@@ -309,13 +301,13 @@
 //     // Define the API URL and authentication token
 //     const apiUrl = `https://schoolmanagement-10.onrender.com/school/update/${selectedRow._id}`; // Replace with your actual API URL
 //     const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0'; // Replace with your actual authentication token
-  
+
 //     // Prepare the updated data
 //     const updatedData = {
 //       ...formData,
 //       isSelected: false
 //     };
-  
+
 //     try {
 //       // Perform the PUT request
 //       const response = await fetch(apiUrl, {
@@ -326,32 +318,31 @@
 //         },
 //         body: JSON.stringify(updatedData)
 //       });
-  
+
 //       // Check if the response is okay (status code 200-299)
 //       if (!response.ok) {
 //         throw new Error(`HTTP error! Status: ${response.status}`);
 //       }
-  
+
 //       // Optionally: Process the response data if needed
 //       const result = await response.json();
 //       console.log('Update successful:', result);
-  
+
 //       // Update local state after successful API call
 //       const updatedRows = filteredRows.map(row =>
 //         row.id === selectedRow.id ? { ...row, ...formData, isSelected: false } : row
 //       );
 //       setFilteredRows(updatedRows);
-  
+
 //       // Close the modal
 //       handleModalClose();
-  
+
 //     } catch (error) {
 //       console.error('Error updating row:', error);
 //       // Optionally: Handle the error (e.g., show a notification or message to the user)
 //     }
 //     fetchData();
 //   };
-  
 
 //   // const handleAddSubmit = () => {
 //   //   const newRow = { ...formData, id: filteredRows.length + 1, isSelected: false };
@@ -362,7 +353,7 @@
 //   const handleAddSubmit = async () => {
 //     try {
 //       const newRow = { ...formData, id: filteredRows.length + 1, isSelected: false };
-  
+
 //       // POST request to the server
 //       const response = await fetch('https://schoolmanagement-10.onrender.com/parent/register', {
 //         method: 'POST',
@@ -371,17 +362,17 @@
 //         },
 //         body: JSON.stringify(newRow),
 //       });
-  
+
 //       if (!response.ok) {
 //         throw new Error('Network response was not ok');
 //       }
-  
+
 //       // Assuming the server returns the created object
 //       const result = await response.json();
-  
+
 //       // Update the state with the new row
 //       setFilteredRows([...filteredRows, result]);
-  
+
 //       // Close the modal
 //       handleModalClose();
 //       console.log('error occured in post method')
@@ -390,7 +381,6 @@
 //       // Handle the error appropriately (e.g., show a notification to the user)
 //     }
 //   };
-  
 
 //   return (
 //     <>
@@ -468,7 +458,7 @@
 //           </Button>
 //         </div>
 //         <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-         
+
 //           <Table stickyHeader aria-label="sticky table" style={{border:'1px solid black',borderRadius:'10px'}}>
 //   <TableHead >
 //     <TableRow style={{borderBottom:'1px solid black'}}>
@@ -717,7 +707,6 @@
 //   const [startDate, setStartDate] = useState("");
 //   const [endDate, setEndDate] = useState("");
 
-
 //   const fetchData = async (startDate = "", endDate = "") => {
 //     setLoading(true);
 //     try {
@@ -730,26 +719,26 @@
 //           },
 //         }
 //       );
-  
+
 //       console.log("fetch data", response.data); // Log the entire response data
-  
+
 //       if (Array.isArray(response.data.requests)) {
 //         const allData = response.data.requests;
-  
+
 //         // Apply local date filtering
 //         const filteredData = allData.filter((row) => {
 //           const registrationDate = parseDate(row.registrationDate);
 //           const start = parseDate(startDate);
 //           const end = parseDate(endDate);
-  
+
 //           return (!startDate || registrationDate >= start) &&
 //                  (!endDate || registrationDate <= end);
 //         });
-  
+
 //         // Log the date range and filtered data
 //         console.log(`Data fetched between ${startDate} and ${endDate}:`);
 //         console.log(filteredData);
-  
+
 //         setFilteredRows(filteredData.map((row) => ({ ...row, isSelected: false })));
 //         setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
 //         setTotalResponses(filteredData.length);
@@ -762,8 +751,7 @@
 //       setLoading(false); // Set loading to false after fetching completes
 //     }
 //   };
-  
-  
+
 //   const parseDate = (dateString) => {
 //     const [day, month, year] = dateString.split('-').map(Number);
 //     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -774,7 +762,6 @@
 //     const endDate = document.getElementById('endDate').value;
 //     fetchData(startDate, endDate);
 //   };
-  
 
 //   useEffect(() => {
 //     fetchData();
@@ -784,8 +771,6 @@
 //     filterData(filterText);
 //   }, [filterText]);
 
- 
-  
 //   useEffect(() => {
 //     fetchData(); // Fetch data when startDate or endDate changes
 // }, [startDate, endDate]);
@@ -804,17 +789,16 @@
 //     setFilterText(text);
 //   };
 
-  
 //   const filterData = (text) => {
 //     let dataToFilter = originalRows;
-  
+
 //     if (startDate && endDate) {
 //       dataToFilter = dataToFilter.filter(row => {
 //         const rowDate = new Date(row.dateOfBirth); // Replace `row.date` with the actual date field
 //         return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
 //       });
 //     }
-  
+
 //     if (text === '') {
 //       setFilteredRows(dataToFilter); // Reset to filtered data
 //     } else {
@@ -830,8 +814,6 @@
 //       setFilteredRows(filteredData);
 //     }
 //   };
-  
-
 
 //   const requestSort = (key) => {
 //     let direction = "ascending";
@@ -1172,7 +1154,7 @@
 //           <Button variant="contained" color="primary" onClick={handleExport}>
 //             Export
 //           </Button>
-        
+
 //         </div>
 //         <div
 //   style={{
@@ -1183,8 +1165,8 @@
 // >
 //  <input type="text" id="startDate" placeholder="DD-MM-YYYY" />
 // <input type="text" id="endDate" placeholder="DD-MM-YYYY" />
-// <button onClick={handleApplyDateRange}>Apply Date Range</button> 
- 
+// <button onClick={handleApplyDateRange}>Apply Date Range</button>
+
 // </div>
 
 //         {loading ? (
@@ -1199,7 +1181,7 @@
 //           </div>
 //         ) : (
 //           <>
-          
+
 //             <TableContainer component={Paper} sx={{ maxHeight: 440,border:'1.5px solid black',borderRadius: "7px" }}>
 //               <Table
 //                 stickyHeader
@@ -1491,38 +1473,51 @@ export const ApprovedRequest = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
+  const { role } = useContext(TotalResponsesContext);
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/all-approved-requests`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/all-approved-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/approved-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data)) {
-        const allData = response.data
-          .filter(
-            (school) =>
-              Array.isArray(school.requests) && school.requests.length > 0
-          ) // Filter schools with non-empty children arrays
-          .flatMap((school) => school.requests);
+      if (response.data) {
+        const allData =
+          role == 1
+            ? response.data
+                .filter(
+                  (school) =>
+                    Array.isArray(school.requests) && school.requests.length > 0
+                ) // Filter schools with non-empty children arrays
+                .flatMap((school) => school.requests)
+            : response.data.requests;
 
         // Apply local date filtering if dates are provided
         const filteredData =
           startDate || endDate
             ? allData.filter((row) => {
-                const registrationDate = parseDate(
-                  row.formattedRequestDate
-                );
+                const registrationDate = parseDate(row.formattedRequestDate);
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);
 
@@ -1532,15 +1527,15 @@ export const ApprovedRequest = () => {
                 );
               })
             : allData; // If no date range, use all data
-            const reversedData = filteredData.reverse();
-            // Log the date range and filtered data
-            console.log(`Data fetched between ${startDate} and ${endDate}:`);
-            console.log(filteredData);
-            setFilteredRows(
-              reversedData.map((row) => ({ ...row, isSelected: false }))
-            );
-            setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-            setTotalResponses(reversedData.length);
+        const reversedData = filteredData.reverse();
+        // Log the date range and filtered data
+        console.log(`Data fetched between ${startDate} and ${endDate}:`);
+        console.log(filteredData);
+        setFilteredRows(
+          reversedData.map((row) => ({ ...row, isSelected: false }))
+        );
+        setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+        setTotalResponses(reversedData.length);
         // Log the date range and filtered data
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(filteredData);
@@ -1559,7 +1554,7 @@ export const ApprovedRequest = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
-  
+
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -1883,8 +1878,8 @@ export const ApprovedRequest = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert('record created successfully');
-    
+      alert("record created successfully");
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -1901,7 +1896,7 @@ export const ApprovedRequest = () => {
       console.log("error occured in post method");
     } catch (error) {
       console.error("Error during POST request:", error);
-      alert('unable to create record');
+      alert("unable to create record");
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
@@ -1909,7 +1904,7 @@ export const ApprovedRequest = () => {
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Approved Request List
+        Approved Request List
       </h1>
       <div>
         <div
@@ -2114,74 +2109,81 @@ export const ApprovedRequest = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {
-                  sortedData.length === 0 ? (
+                  {sortedData.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
+                        colSpan={
+                          COLUMNS().filter(
+                            (col) => columnVisibility[col.accessor]
+                          ).length
+                        }
                         style={{
-                          textAlign: 'center',
-                          padding: '16px',
-                          fontSize: '16px',
-                          color: '#757575',
+                          textAlign: "center",
+                          padding: "16px",
+                          fontSize: "16px",
+                          color: "#757575",
                           // fontStyle: 'italic',
                         }}
                       >
                         {/* <img src="emptyicon.png" alt="" /> */}
-                       <h4>No Data Available</h4>
+                        <h4>No Data Available</h4>
                       </TableCell>
                     </TableRow>
-                  ) :(sortedData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() =>
-                          handleRowSelect(page * rowsPerPage + index)
-                        }
-                        selected={row.isSelected}
-                        style={{
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          borderBottom: "none", // White for even rows, light grey for odd rows
-                        }}
-                      >
-                        <TableCell
-                          padding="checkbox"
-                          style={{ borderRight: "1px solid #e0e0e0" }}
+                  ) : (
+                    sortedData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row, index) => (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={row.id}
+                          onClick={() =>
+                            handleRowSelect(page * rowsPerPage + index)
+                          }
+                          selected={row.isSelected}
+                          style={{
+                            backgroundColor:
+                              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                            borderBottom: "none", // White for even rows, light grey for odd rows
+                          }}
                         >
-                          <Switch checked={row.isSelected} color="primary" />
-                        </TableCell>
-                        {COLUMNS()
-                          .filter((col) => columnVisibility[col.accessor])
-                          .map((column) => {
-                            const value = row[column.accessor];
-                            return (
-                              <TableCell
-                                key={column.accessor}
-                                align={column.align}
-                                style={{
-                                  borderRight: "1px solid #e0e0e0",
-                                  paddingTop: "4px",
-                                  paddingBottom: "4px",
-                                  borderBottom: "none",
-                                  backgroundColor:
-                                    index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                  fontSize: "smaller", // White for even rows, light grey for odd rows
-                                }}
-                              >
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                      </TableRow>)
-                    ))
-                  }
+                          <TableCell
+                            padding="checkbox"
+                            style={{ borderRight: "1px solid #e0e0e0" }}
+                          >
+                            <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          {COLUMNS()
+                            .filter((col) => columnVisibility[col.accessor])
+                            .map((column) => {
+                              const value = row[column.accessor];
+                              return (
+                                <TableCell
+                                  key={column.accessor}
+                                  align={column.align}
+                                  style={{
+                                    borderRight: "1px solid #e0e0e0",
+                                    paddingTop: "4px",
+                                    paddingBottom: "4px",
+                                    borderBottom: "none",
+                                    backgroundColor:
+                                      index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                                    fontSize: "smaller", // White for even rows, light grey for odd rows
+                                  }}
+                                >
+                                  {column.format && typeof value === "number"
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

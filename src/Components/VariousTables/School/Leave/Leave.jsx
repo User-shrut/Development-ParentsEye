@@ -1306,6 +1306,7 @@ export const Leave = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { role } =useContext(TotalResponsesContext);
 
   //const[totalresponse,setTotalResponses]=useState(0);
   // const fetchData = async () => {
@@ -1336,7 +1337,10 @@ export const Leave = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
+      let response;
+
+      if(role == 1){
+      response = await axios.get(
         `${process.env.REACT_APP_SUPER_ADMIN_API}/all-pending-requests`,
         {
           headers: {
@@ -1344,16 +1348,27 @@ export const Leave = () => {
           },
         }
       );
+    }else if(role == 2){
+      response = await axios.get(
+        `${process.env.REACT_APP_SCHOOL_API}/pending-requests`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data)) {
-        const allData = response.data
+      if (response.data) {
+        const allData = role == 1 ? response.data
           .filter(
             (school) =>
               Array.isArray(school.requests) && school.requests.length > 0
           ) // Filter schools with non-empty children arrays
-          .flatMap((school) => school.requests);
+          .flatMap((school) => school.requests)
+          : response.data.requests;
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -1743,9 +1758,10 @@ export const Leave = () => {
     try {
 
       const token = localStorage.getItem('token');
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}` : `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`;
 
       const response = await axios.post(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}`,
+        apiUrl,
         {
           statusOfRequest: "approved",
         },
@@ -1767,8 +1783,10 @@ export const Leave = () => {
   const handleReject = async (requestId) => {
     try {
       const token = localStorage.getItem('token');
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}` : `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`;
+
       const response = await axios.post(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}`,
+        apiUrl,
         {
           statusOfRequest: "denied",
         },
