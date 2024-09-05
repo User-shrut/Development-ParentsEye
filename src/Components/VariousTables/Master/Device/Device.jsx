@@ -82,8 +82,8 @@ export const Device = () => {
 //   console.log('Fetching data...');
 //   setLoading(true); // Set loading to true when starting fetch
 //   try {
-//     const username = "test";
-//     const password = "123456";
+//     const username = "harshal";
+//     const password = "123456@";
 //     const token = btoa(`${username}:${password}`);
 
 //     const response = await axios.get("https://rocketsalestracker.com/api/devices", {
@@ -114,8 +114,8 @@ const fetchData = async () => {
   console.log('Fetching data...');
   setLoading(true); // Set loading to true when starting fetch
   try {
-    const username = "test";
-    const password = "123456";
+    const username = "harshal";
+    const password = "123456@";
     const token = btoa(`${username}:${password}`);
 
     const response = await axios.get("https://rocketsalestracker.com/api/devices", {
@@ -263,8 +263,8 @@ const fetchData = async () => {
       // Define the API endpoint and token
       const apiUrl =
         "https://rocketsalestracker.com/api/devices";
-        const username = "test";
-        const password = "123456";
+        const username = "harshal";
+        const password = "123456@";
         const token = btoa(`${username}:${password}`);
       // const token =
       //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
@@ -372,8 +372,8 @@ const fetchData = async () => {
 
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/Device`; // Ensure this is correct
-//   const username = "test";
-//   const password = "123456";
+//   const username = "harshal";
+//   const password = "123456@";
 //   const token = btoa(`${username}:${password}`);
 
 //   // Ensure formData contains the full structure with nested attributes
@@ -425,8 +425,8 @@ const fetchData = async () => {
 // };
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/Device`; // Ensure this is correct
-//   const username = "test";
-//   const password = "123456";
+//   const username = "harshal";
+//   const password = "123456@";
 //   const token = btoa(`${username}:${password}`);
 
 //   // Ensure formData contains the full structure with nested attributes
@@ -478,8 +478,8 @@ const fetchData = async () => {
 // };
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/devices`; // Ensure this is correct
-  const username = "test";
-  const password = "123456";
+  const username = "harshal";
+  const password = "123456@";
   const token = btoa(`${username}:${password}`);
 
   // Ensure formData contains the full structure with nested attributes

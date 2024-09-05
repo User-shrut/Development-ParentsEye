@@ -38,7 +38,7 @@ const pages = [
   { title: 'Masterupdated', icon: <DriveEtaIcon />, arr: ['Preferences','Notifications','Account','Devices','Geofences','Groups','Drivers','Calendars','Computed Attributes','Maintenance','Saved Commands','Server','Userrr'] },
   
   { title: 'School', icon: <DriveEtaIcon />, arr:['Student Detail','Geofence','Pickup And Drop List', 'Absent','Present','Leave','Status','User','Approved Request','Denied Request'] },
-  { title: 'Users', icon: <DriveEtaIcon />, arr:["SchoolMaster", "BranchMaster",'Driver', 'Parent','Supervisor'] },
+  { title: 'Users', icon: <DriveEtaIcon />, arr:["SchoolMaster", "BranchMaster",'Driver', 'Parent','Supervisor','AddDevices'] },
   { title: 'Geofencing', icon: <DriveEtaIcon />, arr: ['Create Landmark', 'Edit Landmarks','Create Route','Edit Routes','Create Area','Edit Areas','Create Zone','Edit Zones','Trips'] },
   //  { title: 'Reports', icon: <BarChartIcon />, arr: ['Summary', 'Stop Report', 'Area In/Out Report', 'Area Report', 'Landmark Distance', 'Landmark Report', 'Location Wise Distance', 'Distance Report', 'Run Report', 'Distance Graph', 'Speed Graph', 'Trip Report', 'All Point Report','RFID','Distance Between Report','Vehicle Average','Alerts','Data Logs','AC Report', 'Petrolling Report','Bin Details Report','ETA details report','ETA details'] },
    { title: 'ReportsUpdated', icon: <BarChartIcon />, arr: ['Combined','Route','Events'] },

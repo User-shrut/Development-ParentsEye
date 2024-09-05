@@ -80,6 +80,7 @@ export const Parent = () => {
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
+
       const token = localStorage.getItem("token");
       let response;
       if (role == 1) {
@@ -110,6 +111,7 @@ export const Parent = () => {
           }
         );
       }
+
 
       console.log("fetch data", response.data); // Log the entire response data
 
