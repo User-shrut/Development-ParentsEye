@@ -712,7 +712,6 @@ export const Supervisor = () => {
   const [endDate, setEndDate] = useState("");
   const { role } = useContext(TotalResponsesContext);
   const [schools, setSchools] = useState([]);
-  const [school, setSchool] = useState();
   const [branches, setBranches] = useState([]);
   const [buses, setBuses] = useState([]);
   const [targetSchool, setTargetSchool] = useState();
@@ -1221,7 +1220,7 @@ export const Supervisor = () => {
           const allData = response.data.schools;
           setSchools(allData);
 
-          console.log(school);
+         
 
           console.log(allData);
         } else {
@@ -1261,7 +1260,7 @@ export const Supervisor = () => {
     fetchBuses();
 
     fetchSchool();
-  }, [addModalOpen]);
+  }, [addModalOpen , editModalOpen]);
 
   return (
     <>
@@ -1586,13 +1585,13 @@ export const Supervisor = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Edit Supervisor</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1, -1)
+              .slice(1, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1605,6 +1604,66 @@ export const Supervisor = () => {
                   fullWidth
                 />
               ))}
+              <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"School Name"}</InputLabel>
+
+              <Select
+                value={formData["schoolName"] || ""}
+                onChange={handleInputChange}
+                name="schoolName"
+                label={"School Name"}
+              >
+                {schools.map((option) => (
+                  <MenuItem key={option._id} value={option.schoolName}>
+                    {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Branch Name"}</InputLabel>
+
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label={"Branch Name"}
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
               color="primary"
@@ -1624,13 +1683,13 @@ export const Supervisor = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Supervisor</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1, -4)
+              .slice(1, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}

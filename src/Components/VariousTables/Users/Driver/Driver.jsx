@@ -705,6 +705,7 @@ export const Driver = () => {
   const [endDate, setEndDate] = useState("");
   const { role } = useContext(TotalResponsesContext);
   const [schools, setSchools] = useState([]);
+  const [branches, setBranches] = useState([]);
   const [buses, setBuses] = useState([]);
 
   const fetchData = async (startDate = "", endDate = "") => {
@@ -1064,6 +1065,37 @@ export const Driver = () => {
       ...formData,
       [name]: value,
     });
+    if (name == "schoolName") {
+      const selectedSchoolData = schools.find(
+        (school) => school.schoolName === value
+      );
+
+      console.log(selectedSchoolData);
+      if (selectedSchoolData) {
+        // Combine branchName and branches
+        const allBranches = [];
+        if (selectedSchoolData.branchName) {
+          allBranches.push({
+            branchName: selectedSchoolData.branchName,
+            branchId: selectedSchoolData._id,
+          });
+        }
+
+        if (
+          selectedSchoolData.branches &&
+          selectedSchoolData.branches.length > 0
+        ) {
+          selectedSchoolData.branches.forEach((branch) => {
+            allBranches.push({
+              branchName: branch.branchName,
+              branchId: branch._id,
+            });
+          });
+        }
+
+        setBranches(allBranches);
+      }
+    }
   };
 
   const handleBusChange = (e) => {
@@ -1239,7 +1271,7 @@ export const Driver = () => {
 
     fetchBuses();
     fetchSchool();
-  }, [addModalOpen]);
+  }, [addModalOpen , editModalOpen]);
 
   return (
     <>
@@ -1608,7 +1640,7 @@ export const Driver = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1, -4)
+              .slice(1, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1630,14 +1662,34 @@ export const Driver = () => {
               <InputLabel>{"School Name"}</InputLabel>
 
               <Select
-                value={formData["schoolId"] || ""}
+                value={formData["schoolName"] || ""}
                 onChange={handleInputChange}
-                name="schoolId"
+                name="schoolName"
                 label={"School Name"}
               >
                 {schools.map((option) => (
-                  <MenuItem key={option._id} value={option._id}>
+                  <MenuItem key={option._id} value={option.schoolName}>
                     {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Branch Name"}</InputLabel>
+
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label={"Branch Name"}
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
                   </MenuItem>
                 ))}
               </Select>
