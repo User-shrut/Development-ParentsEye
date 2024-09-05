@@ -16,16 +16,16 @@ export const COLUMNS = () => [
     accessor: 'schoolName',
   },
   {
-    Header: 'Branch',
-    accessor: 'branch',
+    Header: 'Branch Name',
+    accessor: 'branchName',
   },
   {
     Header: 'User Name',
-    accessor: 'userName',
+    accessor: 'username',
   },
   {
     Header: 'Phone',
-    accessor: 'phone',
+    accessor: 'mobileNo',
     Cell: ({ value }) => (value ? value.toString() : 'N/A'),
   },
   {

@@ -28,7 +28,7 @@ import Logout from '@mui/icons-material/Logout';
 import ChangePassword from '../ChangePassword.jsx';
 import LockResetTwoToneIcon from '@mui/icons-material/LockResetTwoTone';
 import { Login } from '@mui/icons-material';
-import {Link} from 'react-router-dom';
+import {Link, Navigate, useNavigate} from 'react-router-dom';
 import { TotalResponsesContext } from '../../TotalResponsesContext.jsx';
 
 
@@ -52,6 +52,7 @@ export const Navbar = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [filteredPages, setFilteredPages] = useState([]);
   const { role } = useContext(TotalResponsesContext);
+  const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -60,7 +61,14 @@ export const Navbar = (props) => {
     setAnchorEl(null);
   };
 
+
+
   useEffect(() => {
+
+    if(!role){
+      navigate('/login');
+    }
+
     if (role == 1) {
       setFilteredPages(pages);
     } else if (role == 2 || role == 3) {

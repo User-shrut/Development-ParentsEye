@@ -26,17 +26,20 @@ export const COLUMNS = () => [
     accessor: 'address',
   },
   {
-    Header: 'password',
-    accessor: 'password',
-  },
- 
-  {
     Header: 'Email',
     accessor: 'email',
   },
   {
-    Header: 'Vehicle Id',
+    Header: 'password',
+    accessor: 'password',
+  },
+  {
+    Header: 'Device Id',
     accessor: 'deviceId',
+  },
+  {
+    Header: 'Bus Name',
+    accessor: 'busName',
   },
   {
     Header: 'School Name',

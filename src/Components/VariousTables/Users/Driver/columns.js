@@ -34,16 +34,24 @@ export const COLUMNS = () => [
     accessor: 'email',
   },
   {
+    Header: 'Licence Number',
+    accessor: 'licenseNumber',
+  },
+  {
+    Header: 'FCM Token',
+    accessor: 'fcmToken',
+  },
+  {
+    Header: 'School Name',
+    accessor: 'schoolName',
+  },
+  {
     Header: 'Bus Name',
     accessor: 'busName',
   },
   {
     Header: 'Device Id',
     accessor: 'deviceId',
-  },
-  {
-    Header: 'School Name',
-    accessor: 'schoolName',
   },
   {
     Header: 'Registration Date',

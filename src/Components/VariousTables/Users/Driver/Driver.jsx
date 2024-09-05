@@ -649,7 +649,14 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "@mui/material";
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 
 //import { TextField } from '@mui/material';
 
@@ -697,6 +704,8 @@ export const Driver = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const { role } = useContext(TotalResponsesContext);
+  const [schools, setSchools] = useState([]);
+  const [buses, setBuses] = useState([]);
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
@@ -721,6 +730,15 @@ export const Driver = () => {
             },
           }
         );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read/alldrivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       console.log("fetch data", response.data);
@@ -734,6 +752,8 @@ export const Driver = () => {
                     Array.isArray(driver.drivers) && driver.drivers.length > 0
                 )
                 .flatMap((driver) => driver.drivers)
+            : role == 2
+            ? response.data.drivers
             : response.data.drivers;
 
         // Apply local date filtering if dates are provided
@@ -925,7 +945,12 @@ export const Driver = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/driver` : `${process.env.REACT_APP_SCHOOL_API}/delete/driver`;
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/driver`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete/driver`
+          : `${process.env.REACT_APP_BRANCH_API}/delete/driver/`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -1041,9 +1066,27 @@ export const Driver = () => {
     });
   };
 
+  const handleBusChange = (e) => {
+    const { value } = e.target;
+
+  // Find the selected bus object based on the selected deviceId
+  const selectedBus = buses.find((bus) => bus.id === value);
+
+  // Update formData with both deviceId and busName
+  setFormData({
+    ...formData,
+    deviceId: selectedBus.id,    // Store deviceId
+    busName: selectedBus.name,    // Store busName
+  });
+  };
+
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}` : `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.driverId}`;
+    const apiUrl =
+      role == 1
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`
+        : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.driverId}` : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.driverId}`;
+    
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
@@ -1094,29 +1137,31 @@ export const Driver = () => {
     try {
       const newRow = {
         ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
+        // id: filteredRows.length + 1,
+        // isSelected: false,
       };
+
+      console.log("form data for add : ", newRow);
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-6-ts84.onrender.com/driver/register",
+        `${process.env.REACT_APP_API}/driver/register`,
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            // "Content-Type": "application/json",
           },
           body: JSON.stringify(newRow),
         }
       );
-      alert("record created successfully");
-
+      
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-
+      
       // Assuming the server returns the created object
       const result = await response.json();
+      alert("record created successfully");
 
       // Update the state with the new row
       setFilteredRows([...filteredRows, result]);
@@ -1124,13 +1169,77 @@ export const Driver = () => {
       // Close the modal
       handleModalClose();
       fetchData();
-      console.log("error occured in post method");
     } catch (error) {
       console.error("Error during POST request:", error);
       alert("unable to create record");
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
+
+  useEffect(() => {
+    const fetchSchool = async (startDate = "", endDate = "") => {
+      setLoading(true);
+      if (role == 1) {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log("fetch data", response.data); // Log the entire response data
+
+          if (Array.isArray(response.data.schools)) {
+            const allData = response.data.schools;
+            setSchools(allData);
+            console.log(allData);
+          } else {
+            console.error(
+              "Expected an array but got:",
+              response.data.supervisors
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        const token = localStorage.getItem("token");
+        const decodedToken = jwtDecode(token);
+
+        console.log("decoded data: ", decodedToken);
+      }
+    };
+
+    const fetchBuses = async () => {
+      const url = "http://104.251.216.99:8082/api/devices";
+      const username = 'school';
+      const password = '123456';
+
+      // Encode credentials to base64 using btoa
+      const token = btoa(`${username}:${password}`);
+
+      try {
+        const response = await axios.get(url , {
+          headers: {
+              'Authorization': `Basic ${token}`,
+          },
+      });
+        setBuses(response.data);
+        console.log("Buses Data:", response.data);
+      } catch (error) {
+        console.error("Error fetching buses data:", error);
+      }
+    };
+
+    fetchBuses();
+    fetchSchool();
+  }, [addModalOpen]);
 
   return (
     <>
@@ -1493,13 +1602,13 @@ export const Driver = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Driver</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1, -1)
+              .slice(1, -4)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1512,6 +1621,47 @@ export const Driver = () => {
                   fullWidth
                 />
               ))}
+
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"School Name"}</InputLabel>
+
+              <Select
+                value={formData["schoolId"] || ""}
+                onChange={handleInputChange}
+                name="schoolId"
+                label={"School Name"}
+              >
+                {schools.map((option) => (
+                  <MenuItem key={option._id} value={option._id}>
+                    {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
               color="primary"

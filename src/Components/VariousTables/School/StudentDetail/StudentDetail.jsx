@@ -107,6 +107,16 @@ export const StudentDetail = () => {
             },
           }
         );
+      } else if (role == 3) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read/all-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       console.log("fetch data", response.data); // Log the entire response data
@@ -329,8 +339,14 @@ export const StudentDetail = () => {
     }
     try {
       // Define the API endpoint and token
-    
-      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/child` : `${process.env.REACT_APP_SCHOOL_API}/delete/child`
+
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/child`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete/child`
+          : `${process.env.REACT_APP_BRANCH_API}/delete/child`;
+          
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -475,7 +491,10 @@ export const StudentDetail = () => {
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
     const token = localStorage.getItem("token");
-    const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child/${selectedRow.childId}` : `${process.env.REACT_APP_SCHOOL_API}/update-child/${selectedRow.childId}`;
+    const apiUrl =
+      role == 1
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child/${selectedRow.childId}`
+        : `${process.env.REACT_APP_SCHOOL_API}/update-child/${selectedRow.childId}`;
 
     // Prepare the updated data
     const updatedData = {
@@ -572,8 +591,8 @@ export const StudentDetail = () => {
   useEffect(() => {
     const fetchGeofenceData = async () => {
       try {
-        const username = "harshal"; // Replace with your actual username
-        const password = "123456@"; // Replace with your actual password
+        const username = "school"; // Replace with your actual username
+        const password = "123456"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
         const response = await axios.get(
@@ -605,8 +624,8 @@ export const StudentDetail = () => {
   useEffect(() => {
     const fetchOtherData = async () => {
       try {
-        const username = "harshal"; // Replace with your actual username
-        const password = "123456@"; // Replace with your actual password
+        const username = "school"; // Replace with your actual username
+        const password = "123456"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
         const response = await axios.get(

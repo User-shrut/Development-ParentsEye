@@ -16,8 +16,8 @@ export const COLUMNS = () => [
     accessor: 'schoolName',
   },
   {
-    Header: 'Branch',
-    accessor: 'branch',
+    Header: 'Branch Name',
+    accessor: 'branchName',
   },
   {
     Header: 'User Name',

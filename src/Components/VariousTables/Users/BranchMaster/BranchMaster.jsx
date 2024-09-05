@@ -35,6 +35,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 
 //import { TextField } from '@mui/material';
 
@@ -82,25 +83,39 @@ const BranchMaster = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [schools, setSchools] = useState([]);
+  const { role } = useContext(TotalResponsesContext);
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-      const response = await axios.get(
-        "https://schoolmanagement-7-apby.onrender.com/school/read/allsupervisors",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const token = localStorage.getItem("token");
+      const decodedToken = jwtDecode(token);
 
-      console.log("fetch data", response.data); // Log the entire response data
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/branches/${decodedToken.id}`
+          : `${process.env.REACT_APP_SCHOOL_API}/branches/${decodedToken.id}`;
 
-      if (Array.isArray(response.data.supervisors)) {
-        const allData = response.data.supervisors;
+          
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("fetch data branches :", response.data.schools.branches); // Log the entire response data
+
+      if (response.data) {
+        const allData = response.data.schools.flatMap((school) =>
+          school.branches.map((branch) => ({
+            ...branch,
+            schoolName: school.schoolName,
+          }))
+        );
+
+        console.log("branches data : ", allData);
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -445,33 +460,37 @@ const BranchMaster = () => {
     try {
       const newRow = {
         ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
+        // id: filteredRows.length + 1,
+        // isSelected: false,
       };
+      const token = localStorage.getItem("token");
+
+      console.log("this is data for post :", newRow);
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/supervisor/register",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/add-branch`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(newRow),
         }
       );
-      alert("record created successfully");
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       const result = await response.json();
+      alert("record created successfully");
       setFilteredRows([...filteredRows, result]);
 
       handleModalClose();
       fetchData();
-      console.log("error occured in post method");
+      // console.log("error occured in post method");
     } catch (error) {
       console.error("Error during POST request:", error);
       alert("unable to create record");
@@ -499,10 +518,7 @@ const BranchMaster = () => {
           setSchools(allData);
           console.log(allData);
         } else {
-          console.error(
-            "Expected an array but got:",
-            response.data.supervisors
-          );
+          console.error("Expected an array but got:", response.data.schools);
         }
       } catch (error) {
         console.error("Error:", error);
@@ -887,13 +903,13 @@ const BranchMaster = () => {
               <InputLabel>{"School Name"}</InputLabel>
 
               <Select
-                value={formData["schoolName"] || ""}
+                value={formData["schoolId"] || ""}
                 onChange={handleInputChange}
-                name="schoolName"
+                name="schoolId"
                 label={"School Name"}
               >
                 {schools.map((option) => (
-                  <MenuItem key={option.id} value={option.schoolName}>
+                  <MenuItem key={option._id} value={option._id}>
                     {option.schoolName}
                   </MenuItem>
                 ))}
