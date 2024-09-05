@@ -49,7 +49,7 @@ const style = {
   padding: "1rem",
 };
 
-export const Devices = () => {
+export const AddDevices = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
@@ -286,7 +286,7 @@ const fetchData = async () => {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Device.xlsx");
+    XLSX.writeFile(workbook, "AddDevices.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -523,8 +523,7 @@ useEffect(() => {
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Device 
-      </h1>
+      Add Devices      </h1>
       <div>
         <div
           style={{
@@ -798,9 +797,7 @@ useEffect(() => {
         <CloseIcon />
       </IconButton>
     </Box>
-    {COLUMNS()
-      .slice(0, -1)
-      .map((col) => (
+    {COLUMNS().map((col) => (
         col.accessor === 'groupId' && col.Header === 'Group ID' ? (
           <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
             <InputLabel id="group-select-label">Group ID</InputLabel>
@@ -908,9 +905,7 @@ useEffect(() => {
         <CloseIcon />
       </IconButton>
     </Box>
-    {COLUMNS()
-      .slice(0, -1)
-      .map((col) => (
+    {COLUMNS().map((col) => (
         col.accessor === 'groupId' && col.Header === 'Group ID' ? (
           <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
             <InputLabel id="group-select-label">Group ID</InputLabel>

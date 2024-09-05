@@ -442,7 +442,7 @@ export const Route = () => {
 // };
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-  const username = "school";
+  const username = "test";
   const password = "123456";
   const token = btoa(`${username}:${password}`);
 
@@ -925,7 +925,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-    const username = "school";
+    const username = "test";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 

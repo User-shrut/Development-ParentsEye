@@ -87,7 +87,7 @@ export const Parent = () => {
     try {
       const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual token
       const response = await axios.get(
-        "https://schoolmanagement-9.onrender.com/school/parents",
+        "https://schoolmanagement-6-ts84.onrender.com/school/parents",
         {
           headers: {
             Authorization: `Bearer ${token}`,

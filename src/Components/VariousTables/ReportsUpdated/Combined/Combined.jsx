@@ -83,7 +83,7 @@ export const Combined = () => {
 //   setLoading(true); // Set loading to true when starting fetch
 //   try {
 //     const username = "vinod@credence.com";
-//     const password = "123456";
+//     const password = "123456@";
 //     const token = btoa(`${username}:${password}`);
 
 //     const response = await axios.get("https://rocketsalestracker.com/api/server", {
@@ -337,7 +337,7 @@ export const Combined = () => {
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
 //   const username = "vinod@credence.com";
-//   const password = "123456";
+//   const password = "123456@";
 //   const token = btoa(`${username}:${password}`);
 
 //   // Ensure formData contains the full structure with nested attributes
@@ -390,7 +390,7 @@ export const Combined = () => {
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
 //   const username = "vinod@credence.com";
-//   const password = "123456";
+//   const password = "123456@";
 //   const token = btoa(`${username}:${password}`);
 
 //   // Ensure formData contains the full structure with nested attributes
@@ -442,8 +442,8 @@ export const Combined = () => {
 // };
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-  const username = "vinod@credence.com";
-  const password = "123456";
+  const username = "harshal";
+  const password = "123456@";
   const token = btoa(`${username}:${password}`);
 
   // Ensure formData contains the full structure with nested attributes
@@ -551,7 +551,7 @@ const handleEditSubmit = async () => {
       try {
         const response = await fetch('https://rocketsalestracker.com/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('vinod@credence.com:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('test:123456'), // Replace with your username and password
           },
         });
 
@@ -580,7 +580,7 @@ const handleEditSubmit = async () => {
         const response = await fetch('https://rocketsalestracker.com/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('vinod@credence.com:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('test:123456') // Replace with actual credentials
           }
         });
 
@@ -678,7 +678,7 @@ const handleEditSubmit = async () => {
   //   setLoading(true); // Set loading to true when starting fetch
   //   try {
   //     const username = "vinod@credence.com";
-  //     const password = "123456";
+  //     const password = "123456@";
   //     const token = btoa(`${username}:${password}`);
 
   //     const response = await axios.get(url, {
@@ -709,7 +709,7 @@ const handleEditSubmit = async () => {
     
   //   try {
   //     const username = "vinod@credence.com";
-  //     const password = "123456";
+  //     const password = "123456@";
   //     const token = btoa(`${username}:${password}`);
   
   //     const response = await axios.get(url, {
@@ -753,7 +753,7 @@ const handleEditSubmit = async () => {
     
   //   try {
   //     const username = "vinod@credence.com";
-  //     const password = "123456";
+  //     const password = "123456@";
   //     const token = btoa(`${username}:${password}`);
   
   //     const response = await axios.get(url, {
@@ -815,7 +815,7 @@ const handleEditSubmit = async () => {
 
 //     try {
 //         const username = "vinod@credence.com";
-//         const password = "123456";
+//         const password = "123456@";
 //         const token = btoa(`${username}:${password}`);
 
 //         const response = await axios.get(url, {
@@ -885,7 +885,7 @@ const handleEditSubmit = async () => {
 
 //   try {
 //       const username = "vinod@credence.com";
-//       const password = "123456";
+//       const password = "123456@";
 //       const token = btoa(`${username}:${password}`);
 
 //       const response = await axios.get(url, {
@@ -926,13 +926,59 @@ const handleEditSubmit = async () => {
 // };
 
 
+// const fetchData = async (url) => {
+//   // console.log('Fetching data...');
+//   setLoading(true);
+
+//   try {
+//       const username = "harshal";
+//       const password = "123456@";
+//       const token = btoa(`${username}:${password}`);
+
+//       const response = await axios.get(url, {
+//           headers: {
+//               Authorization: `Basic ${token}`,
+//           },
+//       });
+
+//       console.log('Fetched data:', response.data);
+
+//       if (Array.isArray(response.data) && response.data.length > 0) {
+//           const data = response.data[0];
+
+//           console.log('Processing data for deviceId:', data.deviceId);
+
+//           const processedEvents = (data.events || []).map(event => ({
+//               deviceId: data.deviceId,
+//               eventTime: new Date(event.eventTime).toLocaleString(),
+//               type: event.type.replace(/([A-Z])/g, ' $1').trim() // Optional: Format type
+//           }));
+
+//           console.log('Processed Events:', processedEvents);
+
+//           setFilteredRows(processedEvents.map(event => ({
+//               ...event,
+//               isSelected: false
+//           })));
+
+//           setTotalResponses(processedEvents.length);
+//       } else {
+//           console.error('Expected an array but got:', response.data);
+//           alert('Unexpected data format.');
+//       }
+//   } catch (error) {
+//       console.error('Fetch data error:', error);
+//       alert('An error occurred while fetching data.');
+//   } finally {
+//       setLoading(false);
+//   }
+// };
 const fetchData = async (url) => {
-  // console.log('Fetching data...');
   setLoading(true);
 
   try {
-      const username = "vinod@credence.com";
-      const password = "123456";
+      const username = "harshal";
+      const password = "123456@";
       const token = btoa(`${username}:${password}`);
 
       const response = await axios.get(url, {
@@ -941,20 +987,22 @@ const fetchData = async (url) => {
           },
       });
 
-      console.log('Fetched data:', response.data);
+      const responseData = response.data;
 
-      if (Array.isArray(response.data) && response.data.length > 0) {
-          const data = response.data[0];
+      if (Array.isArray(responseData) && responseData.length > 0) {
+          const data = responseData[0];
 
-          console.log('Processing data for deviceId:', data.deviceId);
+          if (!data.deviceId || !data.events) {
+              console.error('Missing expected fields in the response data:', data);
+              alert('Unexpected data format.');
+              return;
+          }
 
-          const processedEvents = (data.events || []).map(event => ({
+          const processedEvents = data.events.map(event => ({
               deviceId: data.deviceId,
               eventTime: new Date(event.eventTime).toLocaleString(),
               type: event.type.replace(/([A-Z])/g, ' $1').trim() // Optional: Format type
           }));
-
-          console.log('Processed Events:', processedEvents);
 
           setFilteredRows(processedEvents.map(event => ({
               ...event,
@@ -963,12 +1011,12 @@ const fetchData = async (url) => {
 
           setTotalResponses(processedEvents.length);
       } else {
-          console.error('Expected an array but got:', response.data);
+          console.error('Expected an array but got:', responseData);
           alert('Unexpected data format.');
       }
   } catch (error) {
-      console.error('Fetch data error:', error);
-      alert('An error occurred while fetching data.');
+      console.error('Fetch data error:', error.message);
+      alert('An error occurred while fetching data. Please try again.');
   } finally {
       setLoading(false);
   }

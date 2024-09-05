@@ -87,7 +87,7 @@ const fetchData = async () => {
   console.log('Fetching data...');
   setLoading(true); // Set loading to true when starting fetch
   try {
-    const username = "test";
+    const username = "school";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -240,7 +240,7 @@ const fetchData = async () => {
     try {
       // Define the API endpoint and credentials
       const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
-      const username = "test"; // Replace with your actual username
+      const username = "school"; // Replace with your actual username
       const password = "123456"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
@@ -345,7 +345,7 @@ const fetchData = async () => {
 
 // const handleEditSubmit = async () => {
 //   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
-//   const username = "test";
+//   const username = "school";
 //   const password = "123456";
 //   const token = btoa(`${username}:${password}`);
 
@@ -395,68 +395,305 @@ const fetchData = async () => {
 // };
  
  
+// const handleEditSubmit = async () => {
+//   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
+//   const username = "school"; // Replace with your actual username
+//   const password = "123456"; // Replace with your actual password
+//   const token = btoa(`${username}:${password}`); // Encode credentials in Base64
+
+//   // Extract and transform attributes for submission
+//   const transformedAttributes = Object.keys(formData.attributes || {}).reduce((acc, key) => {
+//     const attribute = formData.attributes[key];
+//     let value;
+
+//     // Transform value based on type
+//     switch (attribute.type) {
+//       case "Boolean":
+//         value = attribute.value ? "true" : "false";
+//         break;
+//       case "Number":
+//         value = attribute.value.toString(); // Convert number to string
+//         break;
+//       default:
+//         value = attribute.value || ""; // Default to empty string for String type
+//     }
+
+//     acc[key] = value;
+//     return acc;
+//   }, {});
+
+//   // Ensure formData contains only necessary fields, including transformed attributes
+//   const { isSelected, ...updatedData } = formData; // Exclude isSelected
+//   updatedData.attributes = transformedAttributes; // Add transformed attributes to updatedData
+
+//   try {
+//     console.log("Sending request to:", apiUrl);
+//     console.log("Request payload:", JSON.stringify(updatedData, null, 2));
+
+//     const response = await fetch(apiUrl, {
+//       method: "PUT", // PUT method to update the resource
+//       headers: {
+//         "Authorization": `Basic ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(updatedData), // Convert updatedData to JSON
+//     });
+
+//     console.log("Response status:", response.status);
+//     console.log("Response headers:", response.headers);
+
+//     if (!response.ok) {
+//       const errorResult = await response.json();
+//       console.error("Error response:", errorResult);
+//       throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
+//     }
+
+//     const result = await response.json();
+//     console.log("Update successful:", result);
+//     alert("Updated successfully");
+
+//     // Update filteredRows in state
+//     const updatedRows = filteredRows.map((row) =>
+//       row.id === selectedRow.id
+//         ? { ...row, ...updatedData } // Ensure the updated data includes nested fields
+//         : row
+//     );
+//     setFilteredRows(updatedRows);
+
+//     handleModalClose();
+//     fetchData(); // Refetch data to ensure the UI is up-to-date
+//   } catch (error) {
+//     console.error("Error updating row:", error.message, error.stack);
+//     alert("Error updating data");
+//   }
+// };
+
+  
+// const handleEditSubmit = async () => {
+//   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
+//   const username = "school"; // Replace with your actual username
+//   const password = "123456"; // Replace with your actual password
+//   const token = btoa(`${username}:${password}`); // Encode credentials in Base64
+
+//   // Initialize transformedAttributes as an empty object
+//   let transformedAttributes = {};
+
+//   // If attributes exist and are an object, transform them
+//   if (formData.attributes && typeof formData.attributes === 'object') {
+//     transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {
+//       const attribute = formData.attributes[key];
+//       let value;
+
+//       // Transform value based on type
+//       switch (attribute.type) {
+//         case "Boolean":
+//           value = attribute.value ? "true" : "false";
+//           break;
+//         case "Number":
+//           value = attribute.value.toString(); // Convert number to string
+//           break;
+//         default:
+//           value = attribute.value || ""; // Default to empty string for String type
+//       }
+
+//       acc[key] = value;
+//       return acc;
+//     }, {});
+//   }
+
+//   // Ensure formData contains only necessary fields, including transformed attributes
+//   const { isSelected, ...updatedData } = formData; // Exclude isSelected
+//   updatedData.attributes = transformedAttributes; // Add transformed attributes to updatedData
+
+//   try {
+//     console.log("Sending request to:", apiUrl);
+//     console.log("Request payload:", JSON.stringify(updatedData, null, 2));
+
+//     const response = await fetch(apiUrl, {
+//       method: "PUT", // PUT method to update the resource
+//       headers: {
+//         "Authorization": `Basic ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(updatedData), // Convert updatedData to JSON
+//     });
+
+//     console.log("Response status:", response.status);
+//     console.log("Response headers:", response.headers);
+
+//     if (!response.ok) {
+//       const errorResult = await response.json();
+//       console.error("Error response:", errorResult);
+//       throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
+//     }
+
+//     const result = await response.json();
+//     console.log("Update successful:", result);
+//     alert("Updated successfully");
+
+//     // Update filteredRows in state
+//     const updatedRows = filteredRows.map((row) =>
+//       row.id === selectedRow.id
+//         ? { ...row, ...updatedData } // Ensure the updated data includes nested fields
+//         : row
+//     );
+//     setFilteredRows(updatedRows);
+
+//     handleModalClose();
+//     fetchData(); // Refetch data to ensure the UI is up-to-date
+//   } catch (error) {
+//     console.error("Error updating row:", error.message, error.stack);
+//     alert("Error updating data");
+//   }
+// };
+// const handleEditSubmit = async () => {
+//   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
+//   const username = "school";
+//   const password = "123456";
+//   const token = btoa(`${username}:${password}`);
+
+//   let transformedAttributes = {};
+
+//   if (formData.attributes && typeof formData.attributes === 'object') {
+//     transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {
+//       const attribute = formData.attributes[key];
+//       let value;
+
+//       switch (attribute.type) {
+//         case "Boolean":
+//           value = attribute.value ? "true" : "false";
+//           break;
+//         case "Number":
+//           value = attribute.value.toString();
+//           break;
+//         default:
+//           value = attribute.value || "";
+//       }
+
+//       acc[key] = value;
+//       return acc;
+//     }, {});
+//   }
+
+//   const { isSelected, ...updatedData } = formData;
+//   updatedData.attributes = transformedAttributes;
+
+//   try {
+//     console.log("Sending request to:", apiUrl);
+//     console.log("Request payload:", JSON.stringify(updatedData, null, 2));
+
+//     const response = await fetch(apiUrl, {
+//       method: "PUT",
+//       headers: {
+//         "Authorization": `Basic ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(updatedData),
+//     });
+
+//     console.log("Response status:", response.status);
+//     console.log("Response headers:", response.headers);
+
+//     let result;
+
+//     const contentType = response.headers.get("Content-Type");
+//     if (contentType && contentType.includes("application/json")) {
+//       result = await response.json();
+//     } else {
+//       result = await response.text(); // Handle non-JSON responses
+//     }
+
+//     if (!response.ok) {
+//       console.error("Error response:", result);
+//       throw new Error(`HTTP error! Status: ${response.status}, Message: ${result}`);
+//     }
+
+//     console.log("Update successful:", result);
+//     alert("Updated successfully");
+
+//     const updatedRows = filteredRows.map((row) =>
+//       row.id === selectedRow.id ? { ...row, ...updatedData } : row
+//     );
+//     setFilteredRows(updatedRows);
+
+//     handleModalClose();
+//     fetchData(); // Refetch data to ensure the UI is up-to-date
+//   } catch (error) {
+//     console.error("Error updating row:", error.message, error.stack);
+//     alert(`Error updating data: ${error.message}`);
+//   }
+// };
+
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
-  const username = "test"; // Replace with your actual username
-  const password = "123456"; // Replace with your actual password
-  const token = btoa(`${username}:${password}`); // Encode credentials in Base64
+  const username = "school";
+  const password = "123456";
+  const token = btoa(`${username}:${password}`);
 
-  // Extract and transform attributes for submission
-  const transformedAttributes = Object.keys(formData.attributes || {}).reduce((acc, key) => {
-    const attribute = formData.attributes[key];
-    let value;
+  let transformedAttributes = {};
 
-    // Transform value based on type
-    switch (attribute.type) {
-      case "Boolean":
-        value = attribute.value ? "true" : "false";
-        break;
-      case "Number":
-        value = attribute.value.toString(); // Convert number to string
-        break;
-      default:
-        value = attribute.value || ""; // Default to empty string for String type
-    }
+  if (formData.attributes && typeof formData.attributes === 'object') {
+    transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {
+      // Avoid adding currentAttributeKey to the payload
+      if (key === 'currentAttributeKey') return acc;
 
-    acc[key] = value;
-    return acc;
-  }, {});
+      const attribute = formData.attributes[key];
+      let value;
 
-  // Ensure formData contains only necessary fields, including transformed attributes
-  const { isSelected, ...updatedData } = formData; // Exclude isSelected
-  updatedData.attributes = transformedAttributes; // Add transformed attributes to updatedData
+      switch (attribute.type) {
+        case "Boolean":
+          value = attribute.value ? "true" : "false";
+          break;
+        case "Number":
+          value = attribute.value.toString();
+          break;
+        default:
+          value = attribute.value || "";
+      }
+
+      acc[key] = value;
+      return acc;
+    }, {});
+  }
+
+  const { isSelected, currentAttributeKey, ...updatedData } = formData;
+  updatedData.attributes = transformedAttributes;
 
   try {
     console.log("Sending request to:", apiUrl);
     console.log("Request payload:", JSON.stringify(updatedData, null, 2));
 
     const response = await fetch(apiUrl, {
-      method: "PUT", // PUT method to update the resource
+      method: "PUT",
       headers: {
         "Authorization": `Basic ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedData), // Convert updatedData to JSON
+      body: JSON.stringify(updatedData),
     });
 
     console.log("Response status:", response.status);
     console.log("Response headers:", response.headers);
 
-    if (!response.ok) {
-      const errorResult = await response.json();
-      console.error("Error response:", errorResult);
-      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
+    let result;
+
+    const contentType = response.headers.get("Content-Type");
+    if (contentType && contentType.includes("application/json")) {
+      result = await response.json();
+    } else {
+      result = await response.text(); // Handle non-JSON responses
     }
 
-    const result = await response.json();
+    if (!response.ok) {
+      console.error("Error response:", result);
+      throw new Error(`HTTP error! Status: ${response.status}, Message: ${result}`);
+    }
+
     console.log("Update successful:", result);
     alert("Updated successfully");
 
-    // Update filteredRows in state
     const updatedRows = filteredRows.map((row) =>
-      row.id === selectedRow.id
-        ? { ...row, ...updatedData } // Ensure the updated data includes nested fields
-        : row
+      row.id === selectedRow.id ? { ...row, ...updatedData } : row
     );
     setFilteredRows(updatedRows);
 
@@ -464,18 +701,15 @@ const handleEditSubmit = async () => {
     fetchData(); // Refetch data to ensure the UI is up-to-date
   } catch (error) {
     console.error("Error updating row:", error.message, error.stack);
-    alert("Error updating data");
+    alert(`Error updating data: ${error.message}`);
   }
 };
 
-  
-  
-  
   // const handleAddSubmit = async () => {
   //   try {
   //     // Define the API endpoint and credentials
   //     const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
-  //     const username = "test"; // Replace with your actual username
+  //     const username = "school"; // Replace with your actual username
   //     const password = "123456"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
@@ -527,34 +761,192 @@ const handleEditSubmit = async () => {
   //     // Handle the error appropriately (e.g., show a notification to the user)
   //   }
   // };
+  // const handleAddSubmit = async () => {
+  //   try {
+  //     // Define the API endpoint and credentials
+  //     const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
+  //     const username = "school"; // Replace with your actual username
+  //     const password = "123456"; // Replace with your actual password
+  //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
+  
+  //     // Extract and transform attributes for submission
+  //     const transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {
+  //       const attribute = formData.attributes[key];
+  //       let value;
+  
+  //       // Transform value based on type
+  //       switch (attribute.type) {
+  //         case "Boolean":
+  //           value = attribute.value ? "true" : "false";
+  //           break;
+  //         case "Number":
+  //           value = attribute.value.toString(); // Convert number to string
+  //           break;
+  //         default:
+  //           value = attribute.value || ""; // Default to empty string for String type
+  //       }
+  
+  //       acc[key] = value;
+  //       return acc;
+  //     }, {});
+  
+  //     // Log or send transformed attributes to server
+  //     console.log('Attributes to submit:', transformedAttributes);
+  
+  //     // Prepare the new row object based on the expected schema
+  //     const newRow = {
+  //       id: filteredRows.length + 1, // Ensure id is provided correctly
+  //       name: formData.name || '', // Ensure formData has 'name' with default value if not provided
+  //       groupId: formData.groupId || '', // Ensure formData has 'groupId' with default value if not provided
+  //       attributes: transformedAttributes, // Submit the transformed attributes
+  //     };
+  
+  //     // POST request to the server with Basic Auth
+  //     const response = await fetch(apiUrl, {
+  //       method: "POST",
+  //       headers: {
+  //         "Authorization": `Basic ${token}`, // Add Basic Auth header
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(newRow),
+  //     });
+  
+  //     if (response.ok) { // Use response.ok to check for success
+  //       // Assuming the server returns the created object
+  //       const result = await response.json();
+  
+  //       // Update the state with the new row
+  //       setFilteredRows((prevRows) => [...prevRows, result]);
+  
+  //       // Close the modal and refresh data
+  //       handleModalClose();
+  //       fetchData();
+  
+  //       console.log("Record created successfully:", result);
+  //       alert("Record created successfully");
+  //     } else if (response.status === 400) {
+  //       throw new Error("Bad request or no permission");
+  //     } else {
+  //       throw new Error(`Network response was not ok: ${response.statusText}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during POST request:", error);
+  //     alert("Unable to create record");
+  //     // Handle the error appropriately (e.g., show a notification to the user)
+  //   }
+  // };
+  // const handleAddSubmit = async () => {
+  //   try {
+  //     // Define the API endpoint and credentials
+  //     const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
+  //     const username = "school"; // Replace with your actual username
+  //     const password = "123456"; // Replace with your actual password
+  //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
+  
+  //     // Ensure formData.attributes is defined and is an object
+  //     if (!formData.attributes || typeof formData.attributes !== 'object') {
+  //       throw new Error("Attributes data is missing or not in correct format.");
+  //     }
+  
+  //     // Extract and transform attributes for submission
+  //     const transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {
+  //       const attribute = formData.attributes[key];
+  //       let value;
+  
+  //       // Transform value based on type
+  //       switch (attribute.type) {
+  //         case "Boolean":
+  //           value = attribute.value ? "true" : "false";
+  //           break;
+  //         case "Number":
+  //           value = attribute.value.toString(); // Convert number to string
+  //           break;
+  //         default:
+  //           value = attribute.value || ""; // Default to empty string for String type
+  //       }
+  
+  //       acc[key] = value;
+  //       return acc;
+  //     }, {});
+  
+  //     // Log or send transformed attributes to server
+  //     console.log('Attributes to submit:', transformedAttributes);
+  
+  //     // Prepare the new row object based on the expected schema
+  //     const newRow = {
+  //       id: filteredRows.length + 1, // Ensure id is provided correctly
+  //       name: formData.name || '', // Ensure formData has 'name' with default value if not provided
+  //       groupId: formData.groupId || 0, // Ensure formData has 'groupId' with a default value of 0
+  //       attributes: transformedAttributes, // Submit the transformed attributes
+  //     };
+  
+  //     // POST request to the server with Basic Auth
+  //     const response = await fetch(apiUrl, {
+  //       method: "POST",
+  //       headers: {
+  //         "Authorization": `Basic ${token}`, // Add Basic Auth header
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(newRow),
+  //     });
+  
+  //     if (response.ok) { // Use response.ok to check for success
+  //       // Assuming the server returns the created object
+  //       const result = await response.json();
+  
+  //       // Update the state with the new row
+  //       setFilteredRows((prevRows) => [...prevRows, result]);
+  
+  //       // Close the modal and refresh data
+  //       handleModalClose();
+  //       fetchData();
+  
+  //       console.log("Record created successfully:", result);
+  //       alert("Record created successfully");
+  //     } else if (response.status === 400) {
+  //       throw new Error("Bad request or no permission");
+  //     } else {
+  //       throw new Error(`Network response was not ok: ${response.statusText}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during POST request:", error);
+  //     alert("Unable to create record");
+  //     // Handle the error appropriately (e.g., show a notification to the user)
+  //   }
+  // };
   const handleAddSubmit = async () => {
     try {
       // Define the API endpoint and credentials
       const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
-      const username = "test"; // Replace with your actual username
+      const username = "school"; // Replace with your actual username
       const password = "123456"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
-      // Extract and transform attributes for submission
-      const transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {
-        const attribute = formData.attributes[key];
-        let value;
+      // Initialize transformedAttributes as an empty object
+      let transformedAttributes = {};
   
-        // Transform value based on type
-        switch (attribute.type) {
-          case "Boolean":
-            value = attribute.value ? "true" : "false";
-            break;
-          case "Number":
-            value = attribute.value.toString(); // Convert number to string
-            break;
-          default:
-            value = attribute.value || ""; // Default to empty string for String type
-        }
+      // If attributes exist and are an object, transform them
+      if (formData.attributes && typeof formData.attributes === 'object') {
+        transformedAttributes = Object.keys(formData.attributes).reduce((acc, key) => {
+          const attribute = formData.attributes[key];
+          let value;
   
-        acc[key] = value;
-        return acc;
-      }, {});
+          // Transform value based on type
+          switch (attribute.type) {
+            case "Boolean":
+              value = attribute.value ? "true" : "false";
+              break;
+            case "Number":
+              value = attribute.value.toString();// Convert number to string
+              break;
+            default:
+              value = attribute.value || ""; // Default to empty string for String type
+          }
+  
+          acc[key] = value;
+          return acc;
+        }, {});
+      }
   
       // Log or send transformed attributes to server
       console.log('Attributes to submit:', transformedAttributes);
@@ -563,8 +955,8 @@ const handleEditSubmit = async () => {
       const newRow = {
         id: filteredRows.length + 1, // Ensure id is provided correctly
         name: formData.name || '', // Ensure formData has 'name' with default value if not provided
-        groupId: formData.groupId || '', // Ensure formData has 'groupId' with default value if not provided
-        attributes: transformedAttributes, // Submit the transformed attributes
+        groupId: formData.groupId || 0, // Ensure formData has 'groupId' with a default value of 0
+        attributes: transformedAttributes, // Submit the transformed attributes (empty object if not provided)
       };
   
       // POST request to the server with Basic Auth
@@ -617,7 +1009,7 @@ useEffect(() => {
       const response = await fetch('https://rocketsalestracker.com/api/groups', {
         method: 'GET',
         headers: {
-          'Authorization': 'Basic ' + btoa('test:123456') // Replace with actual credentials
+          'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
         }
       });
 

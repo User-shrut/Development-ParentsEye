@@ -29,6 +29,10 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 //import { TextField } from '@mui/material';
 
@@ -472,6 +476,72 @@ const BranchMaster = () => {
     }
   };
 
+
+  // useEffect(() => {
+  //   const fetchOtherData = async () => {
+  //     try {
+  //       const username = "school"; // Replace with your actual username
+  //       const password = "123456"; // Replace with your actual password
+  //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
+
+  //       const response = await axios.get(
+  //         "https://rocketsalestracker.com/api/devices", // Modify the endpoint if different
+  //         {
+  //           headers: {
+  //             Authorization: `Basic ${token}`,
+  //           },
+  //         }
+  //       );
+
+  //       const data = response.data;
+  //       console.log(response.data);
+
+  //       // Transform data to create dropdown options
+  //       const options = data.map((item) => ({
+  //         value: item.id,
+  //         label: item.name,
+  //       }));
+
+  //       setOtherDropdownOptions(options);
+  //     } catch (error) {
+  //       console.error("Error fetching other data:", error);
+  //     }
+  //   };
+
+  //   fetchOtherData();
+  // }, []);
+  const [otherDropdownOptions, setOtherDropdownOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchOtherData = async () => {
+      try {
+        const username = "school";
+        const password = "123456";
+        const token = btoa(`${username}:${password}`);
+  
+        const response = await axios.get(
+          "https://rocketsalestracker.com/api/devices",
+          {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          }
+        );
+  
+        const options = response.data.map((item) => ({
+          value: item.id,
+          label: item.name,
+        }));
+  
+        setOtherDropdownOptions(options);
+      } catch (error) {
+        console.error("Error fetching other data:", error);
+      }
+    };
+  
+    fetchOtherData();
+  }, []);
+  
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>Branch Master</h1>
@@ -675,7 +745,9 @@ const BranchMaster = () => {
                           ) : null}
                         </TableCell>
                       ))}
+                       
                   </TableRow>
+
                 </TableHead>
                 <TableBody>
                   {sortedData.length === 0 ? (
@@ -798,9 +870,7 @@ const BranchMaster = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
+            {COLUMNS().map((col) => (
                 <TextField
                   key={col.accessor}
                   label={col.Header}
@@ -821,9 +891,9 @@ const BranchMaster = () => {
             </Button>
           </Box>
         </Modal>
-        <Modal open={addModalOpen} onClose={handleModalClose}>
+        {/* <Modal open={addModalOpen} onClose={handleModalClose}>
           <Box sx={style}>
-            {/* <h2>Add Row</h2> */}
+            {/* <h2>Add Row</h2> 
             <Box
               sx={{
                 display: "flex",
@@ -836,9 +906,7 @@ const BranchMaster = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            {COLUMNS()
-              .slice(1)
-              .map((col) => (
+            {COLUMNS().map((col) => (
                 <TextField
                   key={col.accessor}
                   label={col.Header}
@@ -858,7 +926,56 @@ const BranchMaster = () => {
               Submit
             </Button>
           </Box>
-        </Modal>
+        </Modal> */}
+        <Modal open={addModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box sx={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
+      <h2 style={{ flexGrow: 1 }}>Add School Master</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+    {COLUMNS().map((col) => (
+      col.accessor === 'specificAccessor' && col.Header === 'Specific Header' ? (
+        <FormControl key={col.accessor} fullWidth sx={{ marginBottom: "10px" }}>
+          <InputLabel id={`${col.accessor}-label`}>{col.Header}</InputLabel>
+          <Select
+            labelId={`${col.accessor}-label`}
+            name={col.accessor}
+            value={formData[col.accessor] || ""}
+            onChange={handleInputChange}
+            label={col.Header}
+          >
+            {otherDropdownOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ""}
+          onChange={handleInputChange}
+          sx={{ marginBottom: "10px" }}
+          fullWidth
+        />
+      )
+    ))}
+    <Button
+      variant="contained"
+      color="primary"
+      // onClick={handleAddSubmit}
+    >
+      Submit
+    </Button>
+  </Box>
+</Modal>
+
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
           <Box sx={style}>
             <h2>Import Data</h2>
