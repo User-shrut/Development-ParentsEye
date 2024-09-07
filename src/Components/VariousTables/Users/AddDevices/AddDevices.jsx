@@ -473,22 +473,22 @@ useEffect(() => {
   fetchGroups();
 }, []);
 
-const handleInputChange = (e) => {
-  const { name, value, type, checked } = e.target;
+// const handleInputChange = (e) => {
+//   const { name, value, type, checked } = e.target;
 
-  // For checkbox inputs, use the checked property
-  if (type === 'checkbox') {
-    setFormData({
-      ...formData,
-      [name]: checked,
-    });
-  } else {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  }
-};
+//   // For checkbox inputs, use the checked property
+//   if (type === 'checkbox') {
+//     setFormData({
+//       ...formData,
+//       [name]: checked,
+//     });
+//   } else {
+//     setFormData({
+//       ...formData,
+//       [name]: value,
+//     });
+//   }
+// };
 
 
 
@@ -518,7 +518,188 @@ useEffect(() => {
 
   fetchCalendars();
 }, []);
+// const [schools, setSchools] = useState([]);
+// useEffect(() => {
+//   if (addModalOpen) {
+//     // Fetch the schools data when the modal opens
+//     const fetchSchools = async () => {
+//       try {
+//         const response = await axios.get('https://schoolmanagement-8.onrender.com/superadmin/getschools', {
+//           headers: {
+//             Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI1NTE5MTc3fQ.bdjnmN2c20DjmMAvNL1L_TN59iGOa_MnblhcQQK5d4w`
+//           }
+//         });
+//         setSchools(response.data.schools);
+//       } catch (error) {
+//         console.error('Error fetching schools:', error);
+//       }
+//     };
 
+//     fetchSchools();
+//   }
+// }, [addModalOpen]);
+const [schools, setSchools] = useState([]); // State for schools
+const [branches, setBranches] = useState([]); // State for branches
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setFormData({
+    ...formData,
+    [name]: value,
+  });
+  if (name === "schoolName") {
+    const selectedSchoolData = schools.find(
+      (school) => school.schoolName === value
+    );
+
+    console.log(selectedSchoolData);
+    if (selectedSchoolData) {
+      // Combine branchName and branches
+      const allBranches = [];
+      if (selectedSchoolData.branchName) {
+        allBranches.push({
+          branchName: selectedSchoolData.branchName,
+          branchId: selectedSchoolData._id,
+        });
+      }
+
+      if (
+        selectedSchoolData.branches &&
+        selectedSchoolData.branches.length > 0
+      ) {
+        selectedSchoolData.branches.forEach((branch) => {
+          allBranches.push({
+            branchName: branch.branchName,
+            branchId: branch._id,
+          });
+        });
+      }
+
+      setBranches(allBranches);
+    }
+  }
+};
+useEffect(() => {
+  const fetchSchool = async (startDate = "", endDate = "") => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+       "https://schoolmanagement-8.onrender.com/superadmin/getschools",
+        {
+          headers: {
+            Authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI1NTE5MTc3fQ.bdjnmN2c20DjmMAvNL1L_TN59iGOa_MnblhcQQK5d4w",
+          },
+        }
+      );
+
+      console.log("fetch data", response.data); // Log the entire response data
+
+      if (Array.isArray(response.data.schools)) {
+        const allData = response.data.schools;
+        setSchools(allData);
+
+        // console.log(school);
+
+        console.log(allData);
+      } else {
+        console.error(
+          "Expected an array but got:",
+          response.data.supervisors
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+ 
+
+  fetchSchool();
+}, [addModalOpen]);
+
+
+// const handleAddSubmit = async () => {
+//   try {
+//     // Define the API endpoints and credentials
+//     const apiUrl1 = "https://rocketsalestracker.com/api/devices"; // First API endpoint
+//     const apiUrl2 = "https://schoolmanagement-8.onrender.com"; // Second API endpoint
+//     const username = "school"; // Replace with your actual username
+//     const password = "123456"; // Replace with your actual password
+//     const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
+//     const token2 = "zxcvbnm"; // Token for the second URL
+
+//     // Prepare the data for the first API
+//     const newRow = {
+//       name: formData.name,
+//       uniqueId: formData.uniqueId,
+//       groupId: formData.groupId,
+//       attributes: formData.attributes || {},
+//       calendarId: formData.calendarId,
+//       status: formData.status,
+//       phone: formData.phone,
+//       model: formData.model,
+//       expirationTime: formData.expirationTime,
+//       contact: formData.contact,
+//       category: formData.category,
+//     };
+
+//     // Prepare the data for the second API
+//     const schoolData = {
+//       name: formData.name,
+//       schoolName: formData.schoolName,
+//       branchName: formData.branchName,
+//     };
+
+//     // Post data to the first URL
+//     const response1 = await fetch(apiUrl1, {
+//       method: "POST",
+//       headers: {
+//         "Authorization": `Basic ${token1}`, // Add Basic Auth header for the first URL
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(newRow),
+//     });
+
+//     const result1 = await response1.json();
+
+//     if (response1.ok) {
+//       console.log("Record created successfully in the first API:", result1);
+
+//       // Post data to the second URL
+//       const response2 = await fetch(apiUrl2, {
+//         method: "POST",
+//         headers: {
+//           "Authorization": `Bearer ${token2}`, // Add Bearer Auth header for the second URL
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(schoolData),
+//       });
+
+//       const result2 = await response2.json();
+
+//       if (response2.ok) {
+//         // Update the state and close the modal if both requests succeed
+//         setFilteredRows([...filteredRows, result1]);
+//         handleModalClose();
+//         fetchData();
+//         console.log("Record created successfully in the second API:", result2);
+//         alert("Record created successfully");
+//       } else {
+//         console.error("Server responded with an error for the second API:", result2);
+//         alert(`Unable to create record in the second API: ${result2.message || response2.statusText}`);
+//       }
+//     } else {
+//       console.error("Server responded with an error for the first API:", result1);
+//       alert(`Unable to create record in the first API: ${result1.message || response1.statusText}`);
+//     }
+//   } catch (error) {
+//     console.error("Error during POST requests:", error);
+//     alert("Unable to create record");
+//     // Handle the error appropriately (e.g., show a notification to the user)
+//   }
+// };
 
   return (
     <>
@@ -891,7 +1072,7 @@ useEffect(() => {
 
   
    
-    <Modal open={addModalOpen} onClose={handleModalClose}>
+    {/* <Modal open={addModalOpen} onClose={handleModalClose}>
   <Box sx={style}>
     <Box
       sx={{
@@ -969,7 +1150,7 @@ useEffect(() => {
             >
               {calendars.map((calendar) => (
                 <MenuItem key={calendar.id} value={calendar.id}>
-                  {calendar.name} {/* Replace with actual property names */}
+                  {calendar.name} {/* Replace with actual property names 
                 </MenuItem>
               ))}
             </Select>
@@ -992,6 +1173,367 @@ useEffect(() => {
       color="primary"
       onClick={handleAddSubmit}
     >
+      Submit
+    </Button>
+  </Box>
+</Modal> */}
+{/* <Modal open={addModalOpen} onClose={handleModalClose}>
+      <Box sx={style}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '20px',
+          }}
+        >
+          <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+          <IconButton onClick={handleModalClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        {COLUMNS().map((col) =>
+          col.accessor === 'groupId' && col.Header === 'Group ID' ? (
+            <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+              <InputLabel id="group-select-label">Group ID</InputLabel>
+              <Select
+                labelId="group-select-label"
+                label="Group ID"
+                name={col.accessor}
+                value={formData[col.accessor] || ''}
+                onChange={handleInputChange}
+              >
+                {groups.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          // ) : col.accessor === 'SchoolMaster' && col.Header === 'School Master' ? (
+          //   <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          //     <InputLabel id="school-select-label">School Master</InputLabel>
+          //     <Select
+          //       labelId="school-select-label"
+          //       label="School Master"
+          //       name={col.accessor}
+          //       value={formData[col.accessor] || ''}
+          //       onChange={handleInputChange}
+          //     >
+          //       {schools.map((school) => (
+          //         <MenuItem key={school._id} value={school._id}>
+          //           {school.schoolName}
+          //         </MenuItem>
+          //       ))}
+          //     </Select>
+          //   </FormControl>
+          // ) 
+           ): (
+            <TextField
+              key={col.accessor}
+              label={col.Header}
+              variant="outlined"
+              name={col.accessor}
+              value={formData[col.accessor] || ''}
+              onChange={handleInputChange}
+              sx={{ marginBottom: '10px' }}
+              fullWidth
+            />
+          )
+        )}
+          <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"School Name"}</InputLabel>
+
+              <Select
+                value={formData["schoolName"] || ""}
+                onChange={handleInputChange}
+                name="schoolName"
+                label={"School Name"}
+              >
+                {schools.map((option) => (
+                  <MenuItem key={option._id} value={option.schoolName}>
+                    {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Branch Name"}</InputLabel>
+
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label={"Branch Name"}
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddSubmit}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Modal> */}
+
+{/* <Modal open={addModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+
+    {COLUMNS().map((col) =>
+      col.accessor === 'groupId' && col.Header === 'Group ID' ? (
+        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          <InputLabel id="group-select-label">Group ID</InputLabel>
+          <Select
+            labelId="group-select-label"
+            label="Group ID"
+            name={col.accessor}
+            value={formData[col.accessor] || ''}
+            onChange={handleInputChange}
+          >
+            {groups.map((group) => (
+              <MenuItem key={group.id} value={group.id}>
+                {group.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ''}
+          onChange={handleInputChange}
+          sx={{ marginBottom: '10px' }}
+          fullWidth
+        />
+      )
+    )}
+
+    {/* School Name dropdown */}
+    {/* <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>School Name</InputLabel>
+      <Select
+        value={formData['schoolName'] || ''}
+        onChange={handleInputChange}
+        name="schoolName"
+        label="School Name"
+      >
+        {schools.map((option) => (
+          <MenuItem key={option._id} value={option.schoolName}>
+            {option.schoolName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    {/* Branch Name dropdown 
+    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>Branch Name</InputLabel>
+      <Select
+        value={formData['branchName'] || ''}
+        onChange={handleInputChange}
+        name="branchName"
+        label="Branch Name"
+      >
+        {branches?.map((option) => (
+          <MenuItem key={option.branchId} value={option.branchName}>
+            {option.branchName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+   
+
+     Submit button 
+    <Button variant="contained" color="primary" onClick={handleAddSubmit}>
+      Submit
+    </Button>
+  </Box>
+</Modal> */} 
+<Modal open={addModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+
+    {COLUMNS().map((col) =>
+      col.accessor === 'groupId' && col.Header === 'Group ID' ? (
+        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          <InputLabel id="group-select-label">Group ID</InputLabel>
+          <Select
+            labelId="group-select-label"
+            label="Group ID"
+            name={col.accessor}
+            value={formData[col.accessor] || ''}
+            onChange={handleInputChange}
+          >
+            {groups.map((group) => (
+              <MenuItem key={group.id} value={group.id}>
+                {group.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : col.accessor === 'category' && col.Header === 'Category' ? (
+        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          <InputLabel id="category-select-label">Category</InputLabel>
+          <Select
+            labelId="category-select-label"
+            label="Category"
+            name={col.accessor}
+            value={formData[col.accessor] || ''}
+            onChange={handleInputChange}
+          >
+            <MenuItem value={"Default"}>Default</MenuItem>
+            <MenuItem value={"Animal"}>Animal</MenuItem>
+            <MenuItem value={"Bicycle"}>Bicycle</MenuItem>
+            <MenuItem value={"Boat"}>Boat</MenuItem>
+            <MenuItem value={"Bus"}>Bus</MenuItem>
+            <MenuItem value={"Car"}>Car</MenuItem>
+            <MenuItem value={"Camper"}>Camper</MenuItem>
+            <MenuItem value={"Crane"}>Crane</MenuItem>
+            <MenuItem value={"Helicopter"}>Helicopter</MenuItem>
+            <MenuItem value={"Motorcycle"}>Motorcycle</MenuItem>
+            <MenuItem value={"Offroad"}>Offroad</MenuItem>
+            <MenuItem value={"Person"}>Person</MenuItem>
+            <MenuItem value={"Pickup"}>Pickup</MenuItem>
+            <MenuItem value={"Plane"}>Plane</MenuItem>
+            <MenuItem value={"Ship"}>Ship</MenuItem>
+            <MenuItem value={"Tractor"}>Tractor</MenuItem>
+            <MenuItem value={"Train"}>Train</MenuItem>
+            <MenuItem value={"Tram"}>Tram</MenuItem>
+            <MenuItem value={"Trolleybus"}>Trolleybus</MenuItem>
+            <MenuItem value={"Truck"}>Truck</MenuItem>
+            <MenuItem value={"Van"}>Van</MenuItem>
+            <MenuItem value={"Scooter"}>Scooter</MenuItem>
+          </Select>
+        </FormControl>
+      ) : col.accessor === 'calendarId' && col.Header === 'Calendar ID' ? (
+        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          <InputLabel id="calendar-select-label">Calendar ID</InputLabel>
+          <Select
+            labelId="calendar-select-label"
+            label="Calendar ID"
+            name={col.accessor}
+            value={formData[col.accessor] || ''}
+            onChange={handleInputChange}
+          >
+            {calendars.map((calendar) => (
+              <MenuItem key={calendar.id} value={calendar.id}>
+                {calendar.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ''}
+          onChange={handleInputChange}
+          sx={{ marginBottom: '10px' }}
+          fullWidth
+        />
+      )
+    )}
+
+    {/* School Name dropdown */}
+    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>School Name</InputLabel>
+      <Select
+        value={formData['schoolName'] || ''}
+        onChange={handleInputChange}
+        name="schoolName"
+        label="School Name"
+      >
+        {schools.map((option) => (
+          <MenuItem key={option._id} value={option.schoolName}>
+            {option.schoolName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    {/* Branch Name dropdown */}
+    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>Branch Name</InputLabel>
+      <Select
+        value={formData['branchName'] || ''}
+        onChange={handleInputChange}
+        name="branchName"
+        label="Branch Name"
+      >
+        {branches?.map((option) => (
+          <MenuItem key={option.branchId} value={option.branchName}>
+            {option.branchName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    {/* Submit button */}
+    <Button variant="contained" color="primary" onClick={handleAddSubmit}>
       Submit
     </Button>
   </Box>
