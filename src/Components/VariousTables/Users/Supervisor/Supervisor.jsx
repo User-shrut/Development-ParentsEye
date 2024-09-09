@@ -724,7 +724,7 @@ export const Supervisor = () => {
 
       if (role == 1) {
         response = await axios.get(
-          `${process.env.REACT_APP_SUPER_ADMIN_API}/supervisors-by-school`,
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-supervisors`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -756,13 +756,13 @@ export const Supervisor = () => {
       if (response?.data) {
         const allData =
           role == 1
-            ? response.data
-                .filter(
-                  (supervisor) =>
-                    Array.isArray(supervisor.supervisors) &&
-                    supervisor.supervisors.length > 0
-                )
-                .flatMap((supervisor) => supervisor.supervisors)
+            ? response?.data.data.flatMap((school) =>
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.supervisors) && branch.supervisors.length > 0
+                  ? branch.supervisors
+                  : []
+              )
+            )
             : role == 2
             ? response.data.supervisors
             : response.data.supervisors;
@@ -954,7 +954,7 @@ export const Supervisor = () => {
       // Define the API endpoint and token
       const apiUrl =
         role == 1
-          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/supervisor`
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-supervisor`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/delete/supervisor`
           : `${process.env.REACT_APP_BRANCH_API}/delete/supervisor`;
@@ -1108,7 +1108,7 @@ export const Supervisor = () => {
     // Define the API URL and authentication token
     const apiUrl =
       role == 1
-        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor/${selectedRow.supervisorId}`
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor`
         : role == 2
         ? `${process.env.REACT_APP_SCHOOL_API}/update-supervisor/${selectedRow.supervisorId}`
         : `${process.env.REACT_APP_BRANCH_API}/update-supervisor/`;
@@ -1119,9 +1119,11 @@ export const Supervisor = () => {
       isSelected: false,
     };
 
+    console.log(updatedData);
+
     try {
       // Perform the PUT request
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${apiUrl}/${updatedData.supervisorId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -1165,6 +1167,8 @@ export const Supervisor = () => {
         // id: filteredRows.length + 1,
         // isSelected: false,
       };
+
+      console.log(newRow)
 
       // POST request to the server
       const response = await fetch(

@@ -1341,7 +1341,7 @@ export const Leave = () => {
 
       if(role == 1){
       response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/all-pending-requests`,
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/pending-requests`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -1362,12 +1362,13 @@ export const Leave = () => {
       console.log("fetch data", response.data); // Log the entire response data
 
       if (response.data) {
-        const allData = role == 1 ? response.data
-          .filter(
-            (school) =>
-              Array.isArray(school.requests) && school.requests.length > 0
-          ) // Filter schools with non-empty children arrays
-          .flatMap((school) => school.requests)
+        const allData = role == 1 ? response?.data.data.flatMap((school) =>
+          school.branches.flatMap((branch) =>
+            Array.isArray(branch.requests) && branch.requests.length > 0
+              ? branch.requests
+              : []
+          )
+        )
           : response.data.requests;
 
         // Apply local date filtering if dates are provided

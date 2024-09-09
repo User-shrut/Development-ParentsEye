@@ -118,12 +118,13 @@ export const Parent = () => {
       if (response.data) {
         const allData =
           role == 1
-            ? response.data
-                .filter(
-                  (parent) =>
-                    Array.isArray(parent.parents) && parent.parents.length > 0
-                ) // Filter schools with non-empty children arrays
-                .flatMap((parent) => parent.parents)
+            ? response?.data.data.flatMap((school) =>
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.parents) && branch.parents.length > 0
+                  ? branch.parents
+                  : []
+              )
+            )
             : role == 2
             ? response.data.parents
             : response.data.parents;
@@ -306,7 +307,7 @@ export const Parent = () => {
       .map((row) => {
         // Log each row to check its structure
         console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
+        return row.parentId; // Ensure id exists and is not undefined
       });
 
     console.log("Selected IDs:", selectedIds);
@@ -435,7 +436,7 @@ export const Parent = () => {
     // Define the API URL and authentication token
     const apiUrl =
       role == 1
-        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent/${selectedRow._id}`
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent`
         : role == 2
         ? `${process.env.REACT_APP_SCHOOL_API}/update-parent/${selectedRow._id}`
         : `${process.env.REACT_APP_BRANCH_API}/update-parent/${selectedRow._id}`;
@@ -446,9 +447,12 @@ export const Parent = () => {
       isSelected: false,
     };
 
+    console.log(updatedData);
+
+
     try {
       // Perform the PUT request
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${apiUrl}/${updatedData.parentId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -994,7 +998,7 @@ export const Parent = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1, -1)
+              .slice(1, -2)
               .map((col) => (
                 <TextField
                   key={col.accessor}

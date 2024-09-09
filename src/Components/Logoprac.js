@@ -266,7 +266,7 @@ const Logoprac = () => {
                   data-mdb-button-init
                   data-mdb-ripple-init
                   className="btn btn-primary btn-block mb-4"
-                  // onClick={handleLoginClick}
+                  onClick={handleLoginClick}
                 >
                   Login
                 </button>

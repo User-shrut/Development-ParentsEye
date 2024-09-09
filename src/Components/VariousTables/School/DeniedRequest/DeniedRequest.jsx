@@ -73,7 +73,6 @@
 //   const [startDate, setStartDate] = useState("");
 //   const [endDate, setEndDate] = useState("");
 
-
 //   const fetchData = async (startDate = "", endDate = "") => {
 //     setLoading(true);
 //     try {
@@ -86,26 +85,26 @@
 //           },
 //         }
 //       );
-  
+
 //       console.log("fetch data", response.data); // Log the entire response data
-  
+
 //       if (Array.isArray(response.data.children)) {
 //         const allData = response.data.children;
-  
+
 //         // Apply local date filtering
 //         const filteredData = allData.filter((row) => {
 //           const registrationDate = parseDate(row.registrationDate);
 //           const start = parseDate(startDate);
 //           const end = parseDate(endDate);
-  
+
 //           return (!startDate || registrationDate >= start) &&
 //                  (!endDate || registrationDate <= end);
 //         });
-  
+
 //         // Log the date range and filtered data
 //         console.log(`Data fetched between ${startDate} and ${endDate}:`);
 //         console.log(filteredData);
-  
+
 //         setFilteredRows(filteredData.map((row) => ({ ...row, isSelected: false })));
 //         setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
 //         setTotalResponses(filteredData.length);
@@ -118,8 +117,7 @@
 //       setLoading(false); // Set loading to false after fetching completes
 //     }
 //   };
-  
-  
+
 //   const parseDate = (dateString) => {
 //     const [day, month, year] = dateString.split('-').map(Number);
 //     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -130,7 +128,6 @@
 //     const endDate = document.getElementById('endDate').value;
 //     fetchData(startDate, endDate);
 //   };
-  
 
 //   useEffect(() => {
 //     fetchData();
@@ -140,8 +137,6 @@
 //     filterData(filterText);
 //   }, [filterText]);
 
- 
-  
 //   useEffect(() => {
 //     fetchData(); // Fetch data when startDate or endDate changes
 // }, [startDate, endDate]);
@@ -160,17 +155,16 @@
 //     setFilterText(text);
 //   };
 
-  
 //   const filterData = (text) => {
 //     let dataToFilter = originalRows;
-  
+
 //     if (startDate && endDate) {
 //       dataToFilter = dataToFilter.filter(row => {
 //         const rowDate = new Date(row.dateOfBirth); // Replace `row.date` with the actual date field
 //         return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
 //       });
 //     }
-  
+
 //     if (text === '') {
 //       setFilteredRows(dataToFilter); // Reset to filtered data
 //     } else {
@@ -186,8 +180,6 @@
 //       setFilteredRows(filteredData);
 //     }
 //   };
-  
-
 
 //   const requestSort = (key) => {
 //     let direction = "ascending";
@@ -528,7 +520,7 @@
 //           <Button variant="contained" color="primary" onClick={handleExport}>
 //             Export
 //           </Button>
-        
+
 //         </div>
 //         <div
 //   style={{
@@ -539,8 +531,8 @@
 // >
 //  <input type="text" id="startDate" placeholder="DD-MM-YYYY" />
 // <input type="text" id="endDate" placeholder="DD-MM-YYYY" />
-// <button onClick={handleApplyDateRange}>Apply Date Range</button> 
- 
+// <button onClick={handleApplyDateRange}>Apply Date Range</button>
+
 // </div>
 
 //         {loading ? (
@@ -555,7 +547,7 @@
 //           </div>
 //         ) : (
 //           <>
-          
+
 //             <TableContainer component={Paper} sx={{ maxHeight: 440,border:'1.5px solid black',borderRadius: "7px" }}>
 //               <Table
 //                 stickyHeader
@@ -849,50 +841,50 @@ export const DeniedRequest = () => {
   const [endDate, setEndDate] = useState("");
   const { role } = useContext(TotalResponsesContext);
 
-
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       let response;
-      if(role == 1){
-      response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/all-denied-requests`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    }else if( role == 2){
-      response = await axios.get(
-        `${process.env.REACT_APP_SCHOOL_API}/denied-requests`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    }
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/denied-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/denied-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
       console.log("fetch data", response.data); // Log the entire response data
 
       if (response.data) {
-        const allData = role == 1 ? response.data
-          .filter(
-            (school) =>
-              Array.isArray(school.requests) && school.requests.length > 0
-          ) // Filter schools with non-empty children arrays
-          .flatMap((school) => school.requests)
-          : response.data.requests;
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.requests) && branch.requests.length > 0
+                    ? branch.requests
+                    : []
+                )
+              )
+            : response.data.requests;
 
         // Apply local date filtering if dates are provided
         const filteredData =
           startDate || endDate
             ? allData.filter((row) => {
-                const registrationDate = parseDate(
-                  row.formattedRequestDate
-                );
+                const registrationDate = parseDate(row.formattedRequestDate);
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);
 
@@ -902,15 +894,15 @@ export const DeniedRequest = () => {
                 );
               })
             : allData; // If no date range, use all data
-            const reversedData = filteredData.reverse();
-            // Log the date range and filtered data
-            console.log(`Data fetched between ${startDate} and ${endDate}:`);
-            console.log(filteredData);
-            setFilteredRows(
-              reversedData.map((row) => ({ ...row, isSelected: false }))
-            );
-            setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-            setTotalResponses(reversedData.length);
+        const reversedData = filteredData.reverse();
+        // Log the date range and filtered data
+        console.log(`Data fetched between ${startDate} and ${endDate}:`);
+        console.log(filteredData);
+        setFilteredRows(
+          reversedData.map((row) => ({ ...row, isSelected: false }))
+        );
+        setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+        setTotalResponses(reversedData.length);
         // Log the date range and filtered data
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(filteredData);
@@ -929,7 +921,7 @@ export const DeniedRequest = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
-  
+
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -1253,8 +1245,8 @@ export const DeniedRequest = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert('record created successfully');
-    
+      alert("record created successfully");
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -1271,7 +1263,7 @@ export const DeniedRequest = () => {
       console.log("error occured in post method");
     } catch (error) {
       console.error("Error during POST request:", error);
-      alert('unable to create record');
+      alert("unable to create record");
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
@@ -1484,74 +1476,81 @@ export const DeniedRequest = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {
-                  sortedData.length === 0 ? (
+                  {sortedData.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
+                        colSpan={
+                          COLUMNS().filter(
+                            (col) => columnVisibility[col.accessor]
+                          ).length
+                        }
                         style={{
-                          textAlign: 'center',
-                          padding: '16px',
-                          fontSize: '16px',
-                          color: '#757575',
+                          textAlign: "center",
+                          padding: "16px",
+                          fontSize: "16px",
+                          color: "#757575",
                           // fontStyle: 'italic',
                         }}
                       >
                         {/* <img src="emptyicon.png" alt="" /> */}
-                       <h4>No Data Available</h4>
+                        <h4>No Data Available</h4>
                       </TableCell>
                     </TableRow>
-                  ) :(sortedData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() =>
-                          handleRowSelect(page * rowsPerPage + index)
-                        }
-                        selected={row.isSelected}
-                        style={{
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          borderBottom: "none", // White for even rows, light grey for odd rows
-                        }}
-                      >
-                        <TableCell
-                          padding="checkbox"
-                          style={{ borderRight: "1px solid #e0e0e0" }}
+                  ) : (
+                    sortedData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row, index) => (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={row.id}
+                          onClick={() =>
+                            handleRowSelect(page * rowsPerPage + index)
+                          }
+                          selected={row.isSelected}
+                          style={{
+                            backgroundColor:
+                              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                            borderBottom: "none", // White for even rows, light grey for odd rows
+                          }}
                         >
-                          <Switch checked={row.isSelected} color="primary" />
-                        </TableCell>
-                        {COLUMNS()
-                          .filter((col) => columnVisibility[col.accessor])
-                          .map((column) => {
-                            const value = row[column.accessor];
-                            return (
-                              <TableCell
-                                key={column.accessor}
-                                align={column.align}
-                                style={{
-                                  borderRight: "1px solid #e0e0e0",
-                                  paddingTop: "4px",
-                                  paddingBottom: "4px",
-                                  borderBottom: "none",
-                                  backgroundColor:
-                                    index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                  fontSize: "smaller", // White for even rows, light grey for odd rows
-                                }}
-                              >
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                      </TableRow>)
-                    ))
-                  }
+                          <TableCell
+                            padding="checkbox"
+                            style={{ borderRight: "1px solid #e0e0e0" }}
+                          >
+                            <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          {COLUMNS()
+                            .filter((col) => columnVisibility[col.accessor])
+                            .map((column) => {
+                              const value = row[column.accessor];
+                              return (
+                                <TableCell
+                                  key={column.accessor}
+                                  align={column.align}
+                                  style={{
+                                    borderRight: "1px solid #e0e0e0",
+                                    paddingTop: "4px",
+                                    paddingBottom: "4px",
+                                    borderBottom: "none",
+                                    backgroundColor:
+                                      index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                                    fontSize: "smaller", // White for even rows, light grey for odd rows
+                                  }}
+                                >
+                                  {column.format && typeof value === "number"
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

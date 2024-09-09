@@ -124,12 +124,13 @@ export const StudentDetail = () => {
       if (response?.data) {
         const allData =
           role == 1
-            ? response.data
-                .filter(
-                  (school) =>
-                    Array.isArray(school.children) && school.children.length > 0
-                ) // Filter schools with non-empty children arrays
-                .flatMap((school) => school.children)
+            ? response?.data.data.flatMap((school) =>
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.children) && branch.children.length > 0
+                  ? branch.children
+                  : []
+              )
+            )
             : response.data.children;
 
         // if (role == 1) {
@@ -493,7 +494,7 @@ export const StudentDetail = () => {
     const token = localStorage.getItem("token");
     const apiUrl =
       role == 1
-        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child/${selectedRow.childId}`
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child`
         : `${process.env.REACT_APP_SCHOOL_API}/update-child/${selectedRow.childId}`;
 
     // Prepare the updated data
@@ -504,7 +505,7 @@ export const StudentDetail = () => {
 
     try {
       // Perform the PUT request
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${apiUrl}/${updatedData.childId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

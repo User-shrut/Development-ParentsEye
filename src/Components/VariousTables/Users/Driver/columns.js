@@ -28,18 +28,9 @@ export const COLUMNS = () => [
     Header: 'password',
     accessor: 'password',
   },
- 
   {
     Header: 'Email',
     accessor: 'email',
-  },
-  {
-    Header: 'Licence Number',
-    accessor: 'licenseNumber',
-  },
-  {
-    Header: 'FCM Token',
-    accessor: 'fcmToken',
   },
   {
     Header: 'School Name',
