@@ -301,11 +301,8 @@ const BranchMaster = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete/supervisor";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
+      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/branch-delete`;
+      const token = localStorage.getItem('token');
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {

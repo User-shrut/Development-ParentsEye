@@ -84,7 +84,7 @@ export const Parent = () => {
       let response;
       if (role == 1) {
         response = await axios.get(
-          `${process.env.REACT_APP_SUPER_ADMIN_API}/all-parents`,
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-parents`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -434,7 +434,9 @@ export const Parent = () => {
     const apiUrl =
       role == 1
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent/${selectedRow._id}`
-        : `${process.env.REACT_APP_SCHOOL_API}/update-parent/${selectedRow._id}`;
+        : role == 2
+        ? `${process.env.REACT_APP_SCHOOL_API}/update-parent/${selectedRow._id}`
+        : `${process.env.REACT_APP_BRANCH_API}/update-parent/${selectedRow._id}`;
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {

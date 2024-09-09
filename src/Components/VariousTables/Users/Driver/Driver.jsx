@@ -715,7 +715,7 @@ export const Driver = () => {
       let response;
       if (role == 1) {
         response = await axios.get(
-          `${process.env.REACT_APP_SUPER_ADMIN_API}/drivers-by-school`,
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-drivers`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -745,17 +745,22 @@ export const Driver = () => {
       console.log("fetch data", response.data);
 
       if (response?.data) {
+        console.log(response.data);
         const allData =
           role == 1
-            ? response.data
-                .filter(
-                  (driver) =>
-                    Array.isArray(driver.drivers) && driver.drivers.length > 0
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.drivers) && branch.drivers.length > 0
+                    ? branch.drivers
+                    : []
                 )
-                .flatMap((driver) => driver.drivers)
+              )
             : role == 2
             ? response.data.drivers
             : response.data.drivers;
+
+        console.log("hey drivers");
+        console.log("drivers : ", response?.data.data);
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -951,7 +956,7 @@ export const Driver = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/driver`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/delete/driver`
-          : `${process.env.REACT_APP_BRANCH_API}/delete/driver/`;
+          : `${process.env.REACT_APP_BRANCH_API}/delete/driver`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -1101,15 +1106,15 @@ export const Driver = () => {
   const handleBusChange = (e) => {
     const { value } = e.target;
 
-  // Find the selected bus object based on the selected deviceId
-  const selectedBus = buses.find((bus) => bus.id === value);
+    // Find the selected bus object based on the selected deviceId
+    const selectedBus = buses.find((bus) => bus.id === value);
 
-  // Update formData with both deviceId and busName
-  setFormData({
-    ...formData,
-    deviceId: selectedBus.id,    // Store deviceId
-    busName: selectedBus.name,    // Store busName
-  });
+    // Update formData with both deviceId and busName
+    setFormData({
+      ...formData,
+      deviceId: selectedBus.id, // Store deviceId
+      busName: selectedBus.name, // Store busName
+    });
   };
 
   const handleEditSubmit = async () => {
@@ -1117,8 +1122,10 @@ export const Driver = () => {
     const apiUrl =
       role == 1
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`
-        : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.driverId}` : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.driverId}`;
-    
+        : role == 2
+        ? `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.driverId}`
+        : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.driverId}`;
+
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
@@ -1186,11 +1193,11 @@ export const Driver = () => {
           body: JSON.stringify(newRow),
         }
       );
-      
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      
+
       // Assuming the server returns the created object
       const result = await response.json();
       alert("record created successfully");
@@ -1250,18 +1257,18 @@ export const Driver = () => {
 
     const fetchBuses = async () => {
       const url = "http://104.251.216.99:8082/api/devices";
-      const username = 'school';
-      const password = '123456';
+      const username = "school";
+      const password = "123456";
 
       // Encode credentials to base64 using btoa
       const token = btoa(`${username}:${password}`);
 
       try {
-        const response = await axios.get(url , {
+        const response = await axios.get(url, {
           headers: {
-              'Authorization': `Basic ${token}`,
+            Authorization: `Basic ${token}`,
           },
-      });
+        });
         setBuses(response.data);
         console.log("Buses Data:", response.data);
       } catch (error) {
@@ -1271,7 +1278,7 @@ export const Driver = () => {
 
     fetchBuses();
     fetchSchool();
-  }, [addModalOpen , editModalOpen]);
+  }, [addModalOpen, editModalOpen]);
 
   return (
     <>

@@ -90,7 +90,7 @@ export const StudentDetail = () => {
       if (role == 1) {
         const token = localStorage.getItem("token");
         response = await axios.get(
-          `${process.env.REACT_APP_SUPER_ADMIN_API}/children-by-school`,
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
