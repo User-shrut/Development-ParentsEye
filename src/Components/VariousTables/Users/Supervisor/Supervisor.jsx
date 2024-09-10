@@ -664,6 +664,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 
 //import { TextField } from '@mui/material';
 
@@ -733,7 +734,7 @@ export const Supervisor = () => {
         );
       } else if (role == 2) {
         response = await axios.get(
-          `${process.env.REACT_APP_SCHOOL_API}/read/allsupervisors`,
+          `${process.env.REACT_APP_SCHOOL_API}/read-supervisors`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -742,7 +743,7 @@ export const Supervisor = () => {
         );
       } else if (role == 3) {
         response = await axios.get(
-          `${process.env.REACT_APP_BRANCH_API}/read/allsupervisors`,
+          `${process.env.REACT_APP_BRANCH_API}/read-supervisors`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -757,14 +758,20 @@ export const Supervisor = () => {
         const allData =
           role == 1
             ? response?.data.data.flatMap((school) =>
-              school.branches.flatMap((branch) =>
-                Array.isArray(branch.supervisors) && branch.supervisors.length > 0
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.supervisors) &&
+                  branch.supervisors.length > 0
+                    ? branch.supervisors
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.supervisors) &&
+                branch.supervisors.length > 0
                   ? branch.supervisors
                   : []
               )
-            )
-            : role == 2
-            ? response.data.supervisors
             : response.data.supervisors;
 
         console.log("supervisirs", allData);
@@ -928,13 +935,32 @@ export const Supervisor = () => {
     console.log("Filtered rows:", filteredRows);
 
     // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row.supervisorId; // Ensure id exists and is not undefined
-      });
+    let selectedIds;
+    if (role == 1) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.supervisorId; // Ensure id exists and is not undefined
+        });
+    } else if (role == 2) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.id; // Ensure id exists and is not undefined
+        });
+    } else {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.id; // Ensure id exists and is not undefined
+        });
+    }
 
     console.log("Selected IDs:", selectedIds);
 
@@ -956,8 +982,8 @@ export const Supervisor = () => {
         role == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-supervisor`
           : role == 2
-          ? `${process.env.REACT_APP_SCHOOL_API}/delete/supervisor`
-          : `${process.env.REACT_APP_BRANCH_API}/delete/supervisor`;
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete-supervisor`
+          : `${process.env.REACT_APP_BRANCH_API}/delete-supervisor`;
 
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
@@ -1110,8 +1136,8 @@ export const Supervisor = () => {
       role == 1
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor`
         : role == 2
-        ? `${process.env.REACT_APP_SCHOOL_API}/update-supervisor/${selectedRow.supervisorId}`
-        : `${process.env.REACT_APP_BRANCH_API}/update-supervisor/`;
+        ? `${process.env.REACT_APP_SCHOOL_API}/update-supervisor`
+        : `${process.env.REACT_APP_BRANCH_API}/update-supervisor`;
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
@@ -1123,14 +1149,26 @@ export const Supervisor = () => {
 
     try {
       // Perform the PUT request
-      const response = await fetch(`${apiUrl}/${updatedData.supervisorId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
+      let response;
+      if (role == 1) {
+        response = await fetch(`${apiUrl}/${updatedData.supervisorId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      } else if (role == 2) {
+        response = await fetch(`${apiUrl}/${updatedData.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      }
 
       // Check if the response is okay (status code 200-299)
       if (!response.ok) {
@@ -1162,13 +1200,22 @@ export const Supervisor = () => {
 
   const handleAddSubmit = async () => {
     try {
-      const newRow = {
-        ...formData,
-        // id: filteredRows.length + 1,
-        // isSelected: false,
-      };
+      let newRow;
+      let decoded = jwtDecode(localStorage.getItem("token"));
+      if (role == 1) {
+        newRow = {
+          ...formData,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      } else if (role == 2) {
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+        };
+      }
 
-      console.log(newRow)
+      console.log(newRow);
 
       // POST request to the server
       const response = await fetch(
@@ -1181,7 +1228,6 @@ export const Supervisor = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert("record created successfully");
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -1190,6 +1236,7 @@ export const Supervisor = () => {
       // Assuming the server returns the created object
       const result = await response.json();
 
+      alert("record created successfully");
       // Update the state with the new row
       setFilteredRows([...filteredRows, result]);
 
@@ -1207,36 +1254,51 @@ export const Supervisor = () => {
   useEffect(() => {
     const fetchSchool = async (startDate = "", endDate = "") => {
       setLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log("fetch data", response.data); // Log the entire response data
-
-        if (Array.isArray(response.data.schools)) {
-          const allData = response.data.schools;
-          setSchools(allData);
-
-         
-
-          console.log(allData);
-        } else {
-          console.error(
-            "Expected an array but got:",
-            response.data.supervisors
+      if (role == 1) {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
+
+          console.log("fetch data", response.data); // Log the entire response data
+
+          if (Array.isArray(response.data.schools)) {
+            const allData = response.data.schools;
+            setSchools(allData);
+
+            console.log(allData);
+          } else {
+            console.error(
+              "Expected an array but got:",
+              response.data.supervisors
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Error:", error);
-      } finally {
-        setLoading(false);
+      } else if (role == 2) {
+        const apiUrl = `${process.env.REACT_APP_SCHOOL_API}/branches`;
+        const token = localStorage.getItem("token");
+
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("fetch data branches :", response.data); // Log the entire response data
+
+        if (response.data) {
+          setBranches(response.data.branches);
+        }
       }
     };
 
@@ -1264,7 +1326,7 @@ export const Supervisor = () => {
     fetchBuses();
 
     fetchSchool();
-  }, [addModalOpen , editModalOpen]);
+  }, [addModalOpen, editModalOpen]);
 
   return (
     <>
@@ -1608,7 +1670,7 @@ export const Supervisor = () => {
                   fullWidth
                 />
               ))}
-              <FormControl
+            {/* <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
               fullWidth
@@ -1647,7 +1709,7 @@ export const Supervisor = () => {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl> */}
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -1706,26 +1768,28 @@ export const Supervisor = () => {
                   fullWidth
                 />
               ))}
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"School Name"}</InputLabel>
-
-              <Select
-                value={formData["schoolName"] || ""}
-                onChange={handleInputChange}
-                name="schoolName"
-                label={"School Name"}
+            {role == 1 && (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
               >
-                {schools.map((option) => (
-                  <MenuItem key={option._id} value={option.schoolName}>
-                    {option.schoolName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel>{"School Name"}</InputLabel>
+
+                <Select
+                  value={formData["schoolName"] || ""}
+                  onChange={handleInputChange}
+                  name="schoolName"
+                  label={"School Name"}
+                >
+                  {schools.map((option) => (
+                    <MenuItem key={option._id} value={option.schoolName}>
+                      {option.schoolName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}

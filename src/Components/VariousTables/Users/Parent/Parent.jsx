@@ -94,7 +94,7 @@ export const Parent = () => {
         );
       } else if (role == 2) {
         response = await axios.get(
-          `${process.env.REACT_APP_SCHOOL_API}/parents`,
+          `${process.env.REACT_APP_SCHOOL_API}/read-parents`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ export const Parent = () => {
         );
       } else if (role == 3) {
         response = await axios.get(
-          `${process.env.REACT_APP_BRANCH_API}/parents`,
+          `${process.env.REACT_APP_BRANCH_API}/read-parents`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -126,7 +126,12 @@ export const Parent = () => {
               )
             )
             : role == 2
-            ? response.data.parents
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.parents) && branch.parents.length > 0
+                  ? branch.parents
+                  : []
+              )
+            
             : response.data.parents;
 
         console.log(allData);
@@ -302,13 +307,25 @@ export const Parent = () => {
     console.log("Filtered rows:", filteredRows);
 
     // Get selected row IDs
-    const selectedIds = filteredRows
+    let selectedIds;
+    if(role == 3){
+      selectedIds = filteredRows
+      .filter((row) => row.isSelected)
+      .map((row) => {
+        // Log each row to check its structure
+        console.log("Processing row:", row);
+        return row._id; // Ensure id exists and is not undefined
+      });
+    }else {
+      selectedIds = filteredRows
       .filter((row) => row.isSelected)
       .map((row) => {
         // Log each row to check its structure
         console.log("Processing row:", row);
         return row.parentId; // Ensure id exists and is not undefined
       });
+    }
+    
 
     console.log("Selected IDs:", selectedIds);
 
@@ -438,8 +455,8 @@ export const Parent = () => {
       role == 1
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent`
         : role == 2
-        ? `${process.env.REACT_APP_SCHOOL_API}/update-parent/${selectedRow._id}`
-        : `${process.env.REACT_APP_BRANCH_API}/update-parent/${selectedRow._id}`;
+        ? `${process.env.REACT_APP_SCHOOL_API}/update-parent`
+        : `${process.env.REACT_APP_BRANCH_API}/update-parent`;
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
@@ -452,14 +469,27 @@ export const Parent = () => {
 
     try {
       // Perform the PUT request
-      const response = await fetch(`${apiUrl}/${updatedData.parentId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
+      let response;
+      if(role == 3){
+        response = await fetch(`${apiUrl}/${updatedData._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      }else {
+        response = await fetch(`${apiUrl}/${updatedData.parentId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      }
+      
 
       // Check if the response is okay (status code 200-299)
       if (!response.ok) {

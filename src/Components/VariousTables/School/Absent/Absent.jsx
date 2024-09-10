@@ -49,7 +49,7 @@ const style = {
 };
 
 export const Absent = () => {
-  const { setTotalResponses , role } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponses, role } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -76,20 +76,19 @@ export const Absent = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children` : `${process.env.REACT_APP_SCHOOL_API}/absent-children`
-      const response = await axios.get(
-        apiUrl,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
+          : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/absent-children` : `${process.env.REACT_APP_BRANCH_API}/absent-children`
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       console.log("fetch data", response.data); // Log the entire response data
 
@@ -100,15 +99,13 @@ export const Absent = () => {
               ? branch.children
               : []
           )
-        )
+        );
 
         // Apply local date filtering if dates are provided
         const filteredData =
           startDate || endDate
             ? allData.filter((row) => {
-                const registrationDate = parseDate(
-                  row.formattedDate
-                );
+                const registrationDate = parseDate(row.formattedDate);
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);
 
@@ -118,15 +115,15 @@ export const Absent = () => {
                 );
               })
             : allData; // If no date range, use all data
-            const reversedData = filteredData.reverse();
-            // Log the date range and filtered data
-            console.log(`Data fetched between ${startDate} and ${endDate}:`);
-            console.log(filteredData);
-            setFilteredRows(
-              reversedData.map((row) => ({ ...row, isSelected: false }))
-            );
-            setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-            setTotalResponses(reversedData.length);
+        const reversedData = filteredData.reverse();
+        // Log the date range and filtered data
+        console.log(`Data fetched between ${startDate} and ${endDate}:`);
+        console.log(filteredData);
+        setFilteredRows(
+          reversedData.map((row) => ({ ...row, isSelected: false }))
+        );
+        setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+        setTotalResponses(reversedData.length);
         // Log the date range and filtered data
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(filteredData);
@@ -145,7 +142,7 @@ export const Absent = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
-  
+
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -469,8 +466,8 @@ export const Absent = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert('record created successfully');
-    
+      alert("record created successfully");
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -487,7 +484,7 @@ export const Absent = () => {
       console.log("error occured in post method");
     } catch (error) {
       console.error("Error during POST request:", error);
-      alert('unable to create record');
+      alert("unable to create record");
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
@@ -495,7 +492,7 @@ export const Absent = () => {
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Absent Student List
+        Absent Student List
       </h1>
       <div>
         <div
@@ -700,74 +697,81 @@ export const Absent = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {
-                  sortedData.length === 0 ? (
+                  {sortedData.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
+                        colSpan={
+                          COLUMNS().filter(
+                            (col) => columnVisibility[col.accessor]
+                          ).length
+                        }
                         style={{
-                          textAlign: 'center',
-                          padding: '16px',
-                          fontSize: '16px',
-                          color: '#757575',
+                          textAlign: "center",
+                          padding: "16px",
+                          fontSize: "16px",
+                          color: "#757575",
                           // fontStyle: 'italic',
                         }}
                       >
                         {/* <img src="emptyicon.png" alt="" /> */}
-                       <h4>No Data Available</h4>
+                        <h4>No Data Available</h4>
                       </TableCell>
                     </TableRow>
-                  ) :(sortedData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() =>
-                          handleRowSelect(page * rowsPerPage + index)
-                        }
-                        selected={row.isSelected}
-                        style={{
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          borderBottom: "none", // White for even rows, light grey for odd rows
-                        }}
-                      >
-                        <TableCell
-                          padding="checkbox"
-                          style={{ borderRight: "1px solid #e0e0e0" }}
+                  ) : (
+                    sortedData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row, index) => (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={row.id}
+                          onClick={() =>
+                            handleRowSelect(page * rowsPerPage + index)
+                          }
+                          selected={row.isSelected}
+                          style={{
+                            backgroundColor:
+                              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                            borderBottom: "none", // White for even rows, light grey for odd rows
+                          }}
                         >
-                          <Switch checked={row.isSelected} color="primary" />
-                        </TableCell>
-                        {COLUMNS()
-                          .filter((col) => columnVisibility[col.accessor])
-                          .map((column) => {
-                            const value = row[column.accessor];
-                            return (
-                              <TableCell
-                                key={column.accessor}
-                                align={column.align}
-                                style={{
-                                  borderRight: "1px solid #e0e0e0",
-                                  paddingTop: "4px",
-                                  paddingBottom: "4px",
-                                  borderBottom: "none",
-                                  backgroundColor:
-                                    index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                  fontSize: "smaller", // White for even rows, light grey for odd rows
-                                }}
-                              >
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                      </TableRow>)
-                    ))
-                  }
+                          <TableCell
+                            padding="checkbox"
+                            style={{ borderRight: "1px solid #e0e0e0" }}
+                          >
+                            <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          {COLUMNS()
+                            .filter((col) => columnVisibility[col.accessor])
+                            .map((column) => {
+                              const value = row[column.accessor];
+                              return (
+                                <TableCell
+                                  key={column.accessor}
+                                  align={column.align}
+                                  style={{
+                                    borderRight: "1px solid #e0e0e0",
+                                    paddingTop: "4px",
+                                    paddingBottom: "4px",
+                                    borderBottom: "none",
+                                    backgroundColor:
+                                      index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                                    fontSize: "smaller", // White for even rows, light grey for odd rows
+                                  }}
+                                >
+                                  {column.format && typeof value === "number"
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

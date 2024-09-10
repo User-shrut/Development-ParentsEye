@@ -100,7 +100,7 @@ export const StudentDetail = () => {
       } else if (role == 2) {
         const token = localStorage.getItem("token");
         response = await axios.get(
-          `${process.env.REACT_APP_SCHOOL_API}/read/all-children`,
+          `${process.env.REACT_APP_SCHOOL_API}/read-children`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ export const StudentDetail = () => {
       } else if (role == 3) {
         const token = localStorage.getItem("token");
         response = await axios.get(
-          `${process.env.REACT_APP_BRANCH_API}/read/all-children`,
+          `${process.env.REACT_APP_BRANCH_API}/read-children`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -125,13 +125,21 @@ export const StudentDetail = () => {
         const allData =
           role == 1
             ? response?.data.data.flatMap((school) =>
-              school.branches.flatMap((branch) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.children) && branch.children.length > 0
+                    ? branch.children
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
                 Array.isArray(branch.children) && branch.children.length > 0
                   ? branch.children
                   : []
               )
-            )
-            : response.data.children;
+            : response?.data.data;
+
+        console.log(allData);
 
         // if (role == 1) {
         //   allData = response.data
@@ -347,7 +355,7 @@ export const StudentDetail = () => {
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/delete/child`
           : `${process.env.REACT_APP_BRANCH_API}/delete/child`;
-          
+
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>

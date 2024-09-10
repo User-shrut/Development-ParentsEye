@@ -707,6 +707,7 @@ export const Driver = () => {
   const [schools, setSchools] = useState([]);
   const [branches, setBranches] = useState([]);
   const [buses, setBuses] = useState([]);
+  const [drivers, setDrivers] = useState([]);
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
@@ -724,7 +725,7 @@ export const Driver = () => {
         );
       } else if (role == 2) {
         response = await axios.get(
-          `${process.env.REACT_APP_SCHOOL_API}/read/alldrivers`,
+          `${process.env.REACT_APP_SCHOOL_API}/read-drivers`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -733,7 +734,7 @@ export const Driver = () => {
         );
       } else if (role == 3) {
         response = await axios.get(
-          `${process.env.REACT_APP_BRANCH_API}/read/alldrivers`,
+          `${process.env.REACT_APP_BRANCH_API}/read-drivers`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -756,11 +757,12 @@ export const Driver = () => {
                 )
               )
             : role == 2
-            ? response.data.drivers
-            : response.data.drivers;
+            ? response?.data.branches.flatMap((branch) => branch.drivers)
+            : response?.data.drivers;
 
+        setDrivers(allData);
         console.log("hey drivers");
-        console.log("drivers : ", response?.data.data);
+        console.log("drivers : ", allData);
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -927,17 +929,33 @@ export const Driver = () => {
     console.log("Filtered rows:", filteredRows);
 
     // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row.driverId; // Ensure id exists and is not undefined
-      });
+    let selectedIds;
+    if (role == 1) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          console.log("Processing row:", row);
+          return row.driverId;
+        });
+    } else if (role == 2) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          console.log("Processing row:", row);
+          return row.id;
+        });
+    }else{
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          console.log("Processing row:", row);
+          return row.id;
+        });
+    }
 
     console.log("Selected IDs:", selectedIds);
 
-    if (selectedIds.length === 0) {
+    if (selectedIds?.length === 0) {
       alert("No rows selected for deletion.");
       return;
     }
@@ -955,8 +973,8 @@ export const Driver = () => {
         role == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-driver`
           : role == 2
-          ? `${process.env.REACT_APP_SCHOOL_API}/delete/driver`
-          : `${process.env.REACT_APP_BRANCH_API}/delete/driver`;
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete-driver`
+          : `${process.env.REACT_APP_BRANCH_API}/delete-driver`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -1066,18 +1084,26 @@ export const Driver = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    if (name == "schoolName") {
+    const decoded = jwtDecode(localStorage.getItem("token"));
+    console.log(decoded.id);
+
+    if (role === 2 && name === "branchName") {
+      setFormData({
+        ...formData,
+        schoolName: decoded.schoolName, // Fetch schoolName from token
+        [name]: value, // Update branch name
+      });
+    } else if (name === "schoolName") {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
       const selectedSchoolData = schools.find(
         (school) => school.schoolName === value
       );
 
       console.log(selectedSchoolData);
       if (selectedSchoolData) {
-        // Combine branchName and branches
         const allBranches = [];
         if (selectedSchoolData.branchName) {
           allBranches.push({
@@ -1100,6 +1126,11 @@ export const Driver = () => {
 
         setBranches(allBranches);
       }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     }
   };
 
@@ -1119,21 +1150,24 @@ export const Driver = () => {
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl =
-      role == 1
-        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`
-        : role == 2
-        ? `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.driverId}`
-        : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.driverId}`;
-
-    const token = localStorage.getItem("token");
-    // Prepare the updated data
-    const updatedData = {
-      ...formData,
-      isSelected: false,
-    };
 
     try {
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.id}`
+          : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.driverId}`;
+
+      const token = localStorage.getItem("token");
+      // Prepare the updated data
+      const updatedData = {
+        ...formData,
+        isSelected: false,
+      };
+
+      console.log(updatedData);
+
       // Perform the PUT request
       const response = await fetch(apiUrl, {
         method: "PUT",
@@ -1174,11 +1208,21 @@ export const Driver = () => {
 
   const handleAddSubmit = async () => {
     try {
-      const newRow = {
-        ...formData,
-        // id: filteredRows.length + 1,
-        // isSelected: false,
-      };
+      let newRow;
+      if (role == 3) {
+        const schoolN = drivers[0]?.schoolName;
+        const branchN = drivers[0]?.branchName;
+        console.log(schoolN);
+        newRow = {
+          ...formData,
+          schoolName: schoolN,
+          branchName: branchN,
+        };
+      } else {
+        newRow = {
+          ...formData,
+        };
+      }
 
       console.log("form data for add : ", newRow);
 
@@ -1222,7 +1266,7 @@ export const Driver = () => {
         try {
           const token = localStorage.getItem("token");
           const response = await axios.get(
-            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+            `${process.env.REACT_APP_API}/parent/getschools`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -1230,7 +1274,7 @@ export const Driver = () => {
             }
           );
 
-          console.log("fetch data", response.data); // Log the entire response data
+          console.log("fetch data", response.data); 
 
           if (Array.isArray(response.data.schools)) {
             const allData = response.data.schools;
@@ -1247,11 +1291,21 @@ export const Driver = () => {
         } finally {
           setLoading(false);
         }
-      } else {
+      } else if (role == 2) {
+        const apiUrl = `${process.env.REACT_APP_SCHOOL_API}/branches`;
         const token = localStorage.getItem("token");
-        const decodedToken = jwtDecode(token);
 
-        console.log("decoded data: ", decodedToken);
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("fetch data branches :", response.data); // Log the entire response data
+
+        if (response.data) {
+          setBranches(response.data.branches);
+        }
       }
     };
 
@@ -1622,27 +1676,28 @@ export const Driver = () => {
                   fullWidth
                 />
               ))}
-
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"School Name"}</InputLabel>
-
-              <Select
-                value={formData["schoolName"] || ""}
-                onChange={handleInputChange}
-                name="schoolName"
-                label={"School Name"}
+            {role == 1 && (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
               >
-                {schools.map((option) => (
-                  <MenuItem key={option._id} value={option.schoolName}>
-                    {option.schoolName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel>{"School Name"}</InputLabel>
+
+                <Select
+                  value={formData["schoolName"] || ""}
+                  onChange={handleInputChange}
+                  name="schoolName"
+                  label={"School Name"}
+                >
+                  {schools.map((option) => (
+                    <MenuItem key={option._id} value={option.schoolName}>
+                      {option.schoolName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -1722,46 +1777,71 @@ export const Driver = () => {
                 />
               ))}
 
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"School Name"}</InputLabel>
+            {role == 1 ? (
+              <>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <InputLabel>{"School Name"}</InputLabel>
 
-              <Select
-                value={formData["schoolName"] || ""}
-                onChange={handleInputChange}
-                name="schoolName"
-                label={"School Name"}
-              >
-                {schools.map((option) => (
-                  <MenuItem key={option._id} value={option.schoolName}>
-                    {option.schoolName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"Branch Name"}</InputLabel>
+                  <Select
+                    value={formData["schoolName"] || ""}
+                    onChange={handleInputChange}
+                    name="schoolName"
+                    label={"School Name"}
+                  >
+                    {schools.map((option) => (
+                      <MenuItem key={option._id} value={option.schoolName}>
+                        {option.schoolName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <InputLabel>{"Branch Name"}</InputLabel>
 
-              <Select
-                value={formData["branchName"] || ""}
-                onChange={handleInputChange}
-                name="branchName"
-                label={"Branch Name"}
+                  <Select
+                    value={formData["branchName"] || ""}
+                    onChange={handleInputChange}
+                    name="branchName"
+                    label={"Branch Name"}
+                  >
+                    {branches?.map((option) => (
+                      <MenuItem key={option.branchId} value={option.branchName}>
+                        {option.branchName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            ) : role == 2 ? (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
               >
-                {branches?.map((option) => (
-                  <MenuItem key={option.branchId} value={option.branchName}>
-                    {option.branchName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel>{"Branch Name"}</InputLabel>
+
+                <Select
+                  value={formData["branchName"] || ""}
+                  onChange={handleInputChange}
+                  name="branchName"
+                  label={"Branch Name"}
+                >
+                  {branches?.map((option) => (
+                    <MenuItem key={option.branchId} value={option.branchName}>
+                      {option.branchName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
