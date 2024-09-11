@@ -28,10 +28,21 @@ export const COLUMNS = () => [
     Header: 'password',
     accessor: 'password',
   },
- 
   {
     Header: 'Email',
     accessor: 'email',
+  },
+  {
+    Header: 'School Name',
+    accessor: 'schoolName',
+  },
+  {
+    Header: 'Branch Name',
+    accessor: 'branchName',
+  },
+  {
+    Header: 'Bus Name',
+    accessor: 'busName',
   },
   {
     Header: 'Device Id',

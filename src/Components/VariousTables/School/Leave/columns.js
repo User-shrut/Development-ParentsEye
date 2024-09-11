@@ -29,11 +29,19 @@ export const COLUMNS = () => [
     accessor: 'vehicleId',
   },
   {
+    Header: 'Request Type',
+    accessor: 'requestType',
+  },
+  {
     Header: 'Leave from',
-    accessor: '',
+    accessor: 'startDate',
   },
   {
     Header: 'Leave To',
-    accessor: '',
-  }
+    accessor: 'endDate',
+  },
+  {
+    Header: 'Request Date',
+    accessor: 'formattedRequestDate',
+  },
 ]

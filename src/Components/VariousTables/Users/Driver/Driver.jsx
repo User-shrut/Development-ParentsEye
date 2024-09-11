@@ -73,7 +73,7 @@
 //         }
 //       );
 //       console.log('fetch data', response.data); // Log the entire response data
-     
+
 //       if (Array.isArray(response.data.drivers)) {
 //         setFilteredRows(response.data.drivers.map(row => ({ ...row, isSelected: false })));
 //         setTotalResponses(response.data.drivers.length);
@@ -85,7 +85,7 @@
 //     }
 //     console.log('get data');
 //   };
-  
+
 //   useEffect(() => {
 //     fetchData();
 //   }, []);
@@ -154,13 +154,10 @@
 //     }
 //   };
 
- 
-
-
 //   const handleDeleteSelected = async () => {
 //     // Log filteredRows to check its structure
 //     console.log("Filtered rows:", filteredRows);
-  
+
 //     // Get selected row IDs
 //     const selectedIds = filteredRows
 //       .filter(row => row.isSelected)
@@ -169,19 +166,19 @@
 //         console.log("Processing row:", row);
 //         return row._id; // Ensure id exists and is not undefined
 //       });
-  
+
 //     console.log("Selected IDs:", selectedIds);
-  
+
 //     if (selectedIds.length === 0) {
 //       alert("No rows selected for deletion.");
 //       return;
 //     }
-  
+
 //     try {
 //       // Define the API endpoint and token
 //       const apiUrl = 'https://schoolmanagement-uz4r.onrender.com/school/delete/driver';
 //       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0'; // Replace with actual token
-  
+
 //       // Send delete requests for each selected ID
 //       const deleteRequests = selectedIds.map(id =>
 //         fetch(`${apiUrl}/${id}`, {
@@ -197,17 +194,17 @@
 //           return response.json();
 //         })
 //       );
-  
+
 //       // Wait for all delete requests to complete
 //       await Promise.all(deleteRequests);
-  
+
 //       // Filter out deleted rows
 //       const newFilteredRows = filteredRows.filter(row => !row.isSelected);
-  
+
 //       // Update state
 //       setFilteredRows(newFilteredRows);
 //       setSelectAll(false);
-  
+
 //       alert('Selected records deleted successfully.');
 //     } catch (error) {
 //       console.error('Error during deletion:', error);
@@ -215,9 +212,6 @@
 //     }
 //     fetchData();
 //   };
-  
-  
-  
 
 //   const handleExport = () => {
 //     const dataToExport = filteredRows.map(row => {
@@ -259,8 +253,6 @@
 //     });
 //   }
 
-  
-  
 //   const handleAddButtonClick = () => {
 //     setFormData({});
 //     setAddModalOpen(true);
@@ -296,13 +288,13 @@
 //     // Define the API URL and authentication token
 //     const apiUrl = `https://schoolmanagement-uz4r.onrender.com/school/update/driver/${selectedRow._id}`; // Replace with your actual API URL
 //     const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0'; // Replace with your actual authentication token
-  
+
 //     // Prepare the updated data
 //     const updatedData = {
 //       ...formData,
 //       isSelected: false
 //     };
-  
+
 //     try {
 //       // Perform the PUT request
 //       const response = await fetch(apiUrl, {
@@ -313,32 +305,31 @@
 //         },
 //         body: JSON.stringify(updatedData)
 //       });
-  
+
 //       // Check if the response is okay (status code 200-299)
 //       if (!response.ok) {
 //         throw new Error(`HTTP error! Status: ${response.status}`);
 //       }
-  
+
 //       // Optionally: Process the response data if needed
 //       const result = await response.json();
 //       console.log('Update successful:', result);
-  
+
 //       // Update local state after successful API call
 //       const updatedRows = filteredRows.map(row =>
 //         row.id === selectedRow.id ? { ...row, ...formData, isSelected: false } : row
 //       );
 //       setFilteredRows(updatedRows);
-  
+
 //       // Close the modal
 //       handleModalClose();
-  
+
 //     } catch (error) {
 //       console.error('Error updating row:', error);
 //       // Optionally: Handle the error (e.g., show a notification or message to the user)
 //     }
 //     fetchData();
 //   };
-  
 
 //   // const handleAddSubmit = () => {
 //   //   const newRow = { ...formData, id: filteredRows.length + 1, isSelected: false };
@@ -349,7 +340,7 @@
 //   const handleAddSubmit = async () => {
 //     try {
 //       const newRow = { ...formData, id: filteredRows.length + 1, isSelected: false };
-  
+
 //       // POST request to the server
 //       const response = await fetch('https://schoolmanagement-10.onrender.com/parent/register', {
 //         method: 'POST',
@@ -358,17 +349,17 @@
 //         },
 //         body: JSON.stringify(newRow),
 //       });
-  
+
 //       if (!response.ok) {
 //         throw new Error('Network response was not ok');
 //       }
-  
+
 //       // Assuming the server returns the created object
 //       const result = await response.json();
-  
+
 //       // Update the state with the new row
 //       setFilteredRows([...filteredRows, result]);
-  
+
 //       // Close the modal
 //       handleModalClose();
 //       console.log('error occured in post method')
@@ -377,7 +368,6 @@
 //       // Handle the error appropriately (e.g., show a notification to the user)
 //     }
 //   };
-  
 
 //   return (
 //     <>
@@ -455,7 +445,7 @@
 //           </Button>
 //         </div>
 //         <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-         
+
 //           <Table stickyHeader aria-label="sticky table" style={{border:'1px solid black',borderRadius:'10px'}}>
 //   <TableHead >
 //     <TableRow style={{borderBottom:'1px solid black'}} >
@@ -629,7 +619,6 @@
 //   );
 // };
 
-
 import React, { useState, useEffect, useContext, Component } from "react";
 import axios from "axios";
 import Paper from "@mui/material/Paper";
@@ -660,7 +649,14 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "@mui/material";
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 
 //import { TextField } from '@mui/material';
 
@@ -707,32 +703,66 @@ export const Driver = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
+  const { role } = useContext(TotalResponsesContext);
+  const [schools, setSchools] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [buses, setBuses] = useState([]);
+  const [drivers, setDrivers] = useState([]);
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-      const response = await axios.get(
-        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/drivers-by-school ",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-        
-      );
+      const token = localStorage.getItem("token");
+      let response;
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
-      console.log("fetch data", response.data); // Log the entire response data
+      console.log("fetch data", response.data);
 
-      if (Array.isArray(response.data)) {
-        const allData = response.data
-          .filter(
-            (drivers) =>
-              Array.isArray(drivers.drivers) && drivers.drivers.length > 0
-          ) 
-          .flatMap((drivers) => drivers.drivers);
+      if (response?.data) {
+        console.log(response.data);
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.drivers) && branch.drivers.length > 0
+                    ? branch.drivers
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) => branch.drivers)
+            : response?.data.drivers;
+
+        setDrivers(allData);
+        console.log("hey drivers");
+        console.log("drivers : ", allData);
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -750,7 +780,7 @@ export const Driver = () => {
                 );
               })
             : allData; // If no date range, use all data
-            const reversedData = filteredData.reverse();
+        const reversedData = filteredData.reverse();
         // Log the date range and filtered data
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(filteredData);
@@ -773,7 +803,7 @@ export const Driver = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
-  
+
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -899,17 +929,33 @@ export const Driver = () => {
     console.log("Filtered rows:", filteredRows);
 
     // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
+    let selectedIds;
+    if (role == 1) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          console.log("Processing row:", row);
+          return row.driverId;
+        });
+    } else if (role == 2) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          console.log("Processing row:", row);
+          return row.id;
+        });
+    }else{
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          console.log("Processing row:", row);
+          return row.id;
+        });
+    }
 
     console.log("Selected IDs:", selectedIds);
 
-    if (selectedIds.length === 0) {
+    if (selectedIds?.length === 0) {
       alert("No rows selected for deletion.");
       return;
     }
@@ -924,10 +970,12 @@ export const Driver = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete/driver";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-driver`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete-driver`
+          : `${process.env.REACT_APP_BRANCH_API}/delete-driver`;
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
@@ -1018,9 +1066,6 @@ export const Driver = () => {
   //   }
   //   return data;
   // }, [filteredRows, sortConfig]);
-  
- 
-
 
   const handleAddButtonClick = () => {
     setFormData({});
@@ -1039,25 +1084,90 @@ export const Driver = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const decoded = jwtDecode(localStorage.getItem("token"));
+    console.log(decoded.id);
+
+    if (role === 2 && name === "branchName") {
+      setFormData({
+        ...formData,
+        schoolName: decoded.schoolName, // Fetch schoolName from token
+        [name]: value, // Update branch name
+      });
+    } else if (name === "schoolName") {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+      const selectedSchoolData = schools.find(
+        (school) => school.schoolName === value
+      );
+
+      console.log(selectedSchoolData);
+      if (selectedSchoolData) {
+        const allBranches = [];
+        if (selectedSchoolData.branchName) {
+          allBranches.push({
+            branchName: selectedSchoolData.branchName,
+            branchId: selectedSchoolData._id,
+          });
+        }
+
+        if (
+          selectedSchoolData.branches &&
+          selectedSchoolData.branches.length > 0
+        ) {
+          selectedSchoolData.branches.forEach((branch) => {
+            allBranches.push({
+              branchName: branch.branchName,
+              branchId: branch._id,
+            });
+          });
+        }
+
+        setBranches(allBranches);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleBusChange = (e) => {
+    const { value } = e.target;
+
+    // Find the selected bus object based on the selected deviceId
+    const selectedBus = buses.find((bus) => bus.id === value);
+
+    // Update formData with both deviceId and busName
     setFormData({
       ...formData,
-      [name]: value,
+      deviceId: selectedBus.id, // Store deviceId
+      busName: selectedBus.name, // Store busName
     });
   };
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-4-pzsf.onrender.com/school/update-driver/${selectedRow.id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
-
-    // Prepare the updated data
-    const updatedData = {
-      ...formData,
-      isSelected: false,
-    };
 
     try {
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.id}`
+          : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.driverId}`;
+
+      const token = localStorage.getItem("token");
+      // Prepare the updated data
+      const updatedData = {
+        ...formData,
+        isSelected: false,
+      };
+
+      console.log(updatedData);
+
       // Perform the PUT request
       const response = await fetch(apiUrl, {
         method: "PUT",
@@ -1098,15 +1208,27 @@ export const Driver = () => {
 
   const handleAddSubmit = async () => {
     try {
-      const newRow = {
-        ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
-      };
+      let newRow;
+      if (role == 3) {
+        const schoolN = drivers[0]?.schoolName;
+        const branchN = drivers[0]?.branchName;
+        console.log(schoolN);
+        newRow = {
+          ...formData,
+          schoolName: schoolN,
+          branchName: branchN,
+        };
+      } else {
+        newRow = {
+          ...formData,
+        };
+      }
+
+      console.log("form data for add : ", newRow);
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/parent/register",
+        `${process.env.REACT_APP_API}/driver/register`,
         {
           method: "POST",
           headers: {
@@ -1115,14 +1237,14 @@ export const Driver = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert('record created successfully');
-    
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       // Assuming the server returns the created object
       const result = await response.json();
+      alert("record created successfully");
 
       // Update the state with the new row
       setFilteredRows([...filteredRows, result]);
@@ -1130,13 +1252,87 @@ export const Driver = () => {
       // Close the modal
       handleModalClose();
       fetchData();
-      console.log("error occured in post method");
     } catch (error) {
       console.error("Error during POST request:", error);
-      alert('unable to create record');
+      alert("unable to create record");
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
+
+  useEffect(() => {
+    const fetchSchool = async (startDate = "", endDate = "") => {
+      setLoading(true);
+      if (role == 1) {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log("fetch data", response.data); 
+
+          if (Array.isArray(response.data.schools)) {
+            const allData = response.data.schools;
+            setSchools(allData);
+            console.log(allData);
+          } else {
+            console.error(
+              "Expected an array but got:",
+              response.data.supervisors
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else if (role == 2) {
+        const apiUrl = `${process.env.REACT_APP_SCHOOL_API}/branches`;
+        const token = localStorage.getItem("token");
+
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("fetch data branches :", response.data); // Log the entire response data
+
+        if (response.data) {
+          setBranches(response.data.branches);
+        }
+      }
+    };
+
+    const fetchBuses = async () => {
+      const url = "http://104.251.216.99:8082/api/devices";
+      const username = "school";
+      const password = "123456";
+
+      // Encode credentials to base64 using btoa
+      const token = btoa(`${username}:${password}`);
+
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+        });
+        setBuses(response.data);
+        console.log("Buses Data:", response.data);
+      } catch (error) {
+        console.error("Error fetching buses data:", error);
+      }
+    };
+
+    fetchBuses();
+    fetchSchool();
+  }, [addModalOpen, editModalOpen]);
 
   return (
     <>
@@ -1346,74 +1542,81 @@ export const Driver = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {
-                  sortedData.length === 0 ? (
+                  {sortedData.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
+                        colSpan={
+                          COLUMNS().filter(
+                            (col) => columnVisibility[col.accessor]
+                          ).length
+                        }
                         style={{
-                          textAlign: 'center',
-                          padding: '16px',
-                          fontSize: '16px',
-                          color: '#757575',
+                          textAlign: "center",
+                          padding: "16px",
+                          fontSize: "16px",
+                          color: "#757575",
                           // fontStyle: 'italic',
                         }}
                       >
                         {/* <img src="emptyicon.png" alt="" /> */}
-                       <h4>No Data Available</h4>
+                        <h4>No Data Available</h4>
                       </TableCell>
                     </TableRow>
-                  ) :(sortedData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() =>
-                          handleRowSelect(page * rowsPerPage + index)
-                        }
-                        selected={row.isSelected}
-                        style={{
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          borderBottom: "none", // White for even rows, light grey for odd rows
-                        }}
-                      >
-                        <TableCell
-                          padding="checkbox"
-                          style={{ borderRight: "1px solid #e0e0e0" }}
+                  ) : (
+                    sortedData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row, index) => (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={row.id}
+                          onClick={() =>
+                            handleRowSelect(page * rowsPerPage + index)
+                          }
+                          selected={row.isSelected}
+                          style={{
+                            backgroundColor:
+                              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                            borderBottom: "none", // White for even rows, light grey for odd rows
+                          }}
                         >
-                          <Switch checked={row.isSelected} color="primary" />
-                        </TableCell>
-                        {COLUMNS()
-                          .filter((col) => columnVisibility[col.accessor])
-                          .map((column) => {
-                            const value = row[column.accessor];
-                            return (
-                              <TableCell
-                                key={column.accessor}
-                                align={column.align}
-                                style={{
-                                  borderRight: "1px solid #e0e0e0",
-                                  paddingTop: "4px",
-                                  paddingBottom: "4px",
-                                  borderBottom: "none",
-                                  backgroundColor:
-                                    index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                  fontSize: "smaller", // White for even rows, light grey for odd rows
-                                }}
-                              >
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value}
-                              </TableCell>
-                            );
-                          })}
-                      </TableRow>)
-                    ))
-                  }
+                          <TableCell
+                            padding="checkbox"
+                            style={{ borderRight: "1px solid #e0e0e0" }}
+                          >
+                            <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          {COLUMNS()
+                            .filter((col) => columnVisibility[col.accessor])
+                            .map((column) => {
+                              const value = row[column.accessor];
+                              return (
+                                <TableCell
+                                  key={column.accessor}
+                                  align={column.align}
+                                  style={{
+                                    borderRight: "1px solid #e0e0e0",
+                                    paddingTop: "4px",
+                                    paddingBottom: "4px",
+                                    borderBottom: "none",
+                                    backgroundColor:
+                                      index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                                    fontSize: "smaller", // White for even rows, light grey for odd rows
+                                  }}
+                                >
+                                  {column.format && typeof value === "number"
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -1460,7 +1663,7 @@ export const Driver = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(0, -1)
+              .slice(1, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1473,6 +1676,68 @@ export const Driver = () => {
                   fullWidth
                 />
               ))}
+            {role == 1 && (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <InputLabel>{"School Name"}</InputLabel>
+
+                <Select
+                  value={formData["schoolName"] || ""}
+                  onChange={handleInputChange}
+                  name="schoolName"
+                  label={"School Name"}
+                >
+                  {schools.map((option) => (
+                    <MenuItem key={option._id} value={option.schoolName}>
+                      {option.schoolName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Branch Name"}</InputLabel>
+
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label={"Branch Name"}
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
               color="primary"
@@ -1492,13 +1757,13 @@ export const Driver = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Driver</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1, -1)
+              .slice(1, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1511,6 +1776,92 @@ export const Driver = () => {
                   fullWidth
                 />
               ))}
+
+            {role == 1 ? (
+              <>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <InputLabel>{"School Name"}</InputLabel>
+
+                  <Select
+                    value={formData["schoolName"] || ""}
+                    onChange={handleInputChange}
+                    name="schoolName"
+                    label={"School Name"}
+                  >
+                    {schools.map((option) => (
+                      <MenuItem key={option._id} value={option.schoolName}>
+                        {option.schoolName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <InputLabel>{"Branch Name"}</InputLabel>
+
+                  <Select
+                    value={formData["branchName"] || ""}
+                    onChange={handleInputChange}
+                    name="branchName"
+                    label={"Branch Name"}
+                  >
+                    {branches?.map((option) => (
+                      <MenuItem key={option.branchId} value={option.branchName}>
+                        {option.branchName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            ) : role == 2 ? (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <InputLabel>{"Branch Name"}</InputLabel>
+
+                <Select
+                  value={formData["branchName"] || ""}
+                  onChange={handleInputChange}
+                  name="branchName"
+                  label={"Branch Name"}
+                >
+                  {branches?.map((option) => (
+                    <MenuItem key={option.branchId} value={option.branchName}>
+                      {option.branchName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
               color="primary"

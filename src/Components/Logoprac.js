@@ -90,7 +90,7 @@ const Logoprac = () => {
       // Sequentially try to log in as superadmin, school, or branch
       if (
         await login(
-          "https://schoolmanagement-4-e1x2.onrender.com/superadmin/login",
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/login`,
           1,
           "Super Admin login successful"
         )
@@ -98,7 +98,7 @@ const Logoprac = () => {
         return;
       if (
         await login(
-          "https://schoolmanagement-4-e1x2.onrender.com/school/login",
+          `${process.env.REACT_APP_SCHOOL_API}/login`,
           2,
           "School login successful"
         )
@@ -106,7 +106,7 @@ const Logoprac = () => {
         return;
       if (
         await login(
-          "https://schoolmanagement-4-e1x2.onrender.com/branch/login",
+          `${process.env.REACT_APP_BRANCH_API}/login`,
           3,
           "Branch login successful"
         )
@@ -266,18 +266,19 @@ const Logoprac = () => {
                   data-mdb-button-init
                   data-mdb-ripple-init
                   className="btn btn-primary btn-block mb-4"
-                  // onClick={handleLoginClick}
+                  onClick={handleLoginClick}
                 >
                   Login
                 </button>
               </div>
             </div>
 
-            <div className="text-center">
+            {/* <div className="text-center">
               <p>
-                Not a member? <Link to="/signup">Register</Link>
+                Not a member?
+                 <Link to="/signup">Register</Link>
               </p>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>

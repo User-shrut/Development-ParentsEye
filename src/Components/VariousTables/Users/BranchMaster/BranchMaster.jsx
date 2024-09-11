@@ -28,11 +28,14 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "@mui/material";
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 
 //import { TextField } from '@mui/material';
 
@@ -79,25 +82,41 @@ const BranchMaster = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [schools, setSchools] = useState([]);
+  const { role } = useContext(TotalResponsesContext);
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-      const response = await axios.get(
-        "https://schoolmanagement-7-apby.onrender.com/school/read/allsupervisors",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const token = localStorage.getItem("token");
 
-      console.log("fetch data", response.data); // Log the entire response data
+      const apiUrl =
+        role === 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`
+          : role === 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/branches`
+          : null;
 
-      if (Array.isArray(response.data.supervisors)) {
-        const allData = response.data.supervisors;
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("fetch data branches :", response.data); // Log the entire response data
+
+      if (response.data) {
+        const allData =
+          role == 1
+            ? response.data.schools.flatMap((school) =>
+                school.branches.map((branch) => ({
+                  ...branch,
+                  schoolName: school.schoolName,
+                }))
+              )
+            : response.data.branches;
+
+        console.log("branches data : ", allData);
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -283,11 +302,8 @@ const BranchMaster = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete/supervisor";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
+      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/branch-delete`;
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
@@ -381,9 +397,31 @@ const BranchMaster = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const school = localStorage.getItem("token");
+    const decoded = jwtDecode(school);
+    console.log(decoded.id);
+    if (role == 2 && name == "branchName") {
+      setFormData({
+        ...formData,
+        ["schoolId"]: decoded.id,
+        [name]: value,
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleSchoolChange = (e) => {
+    const { name, value } = e.target;
+    const selectedSchool = schools.find(school => school._id === value);
+    console.log(selectedSchool)
     setFormData({
       ...formData,
-      [name]: value,
+      ["schoolId"]: value,
+      ["schoolName"]: selectedSchool?.schoolName || "",
     });
   };
 
@@ -442,40 +480,78 @@ const BranchMaster = () => {
     try {
       const newRow = {
         ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
+        // id: filteredRows.length + 1,
+        // isSelected: false,
       };
+      const token = localStorage.getItem("token");
+      const apiUrl =
+        role === 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/add-branch`
+          : role === 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/add-branch`
+          : null;
+
+      console.log("this is data for post :", newRow);
 
       // POST request to the server
-      const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/supervisor/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newRow),
-        }
-      );
-      alert("record created successfully");
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newRow),
+      });
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
 
       const result = await response.json();
+      alert("record created successfully");
       setFilteredRows([...filteredRows, result]);
 
       handleModalClose();
       fetchData();
-      console.log("error occured in post method");
+      // console.log("error occured in post method");
     } catch (error) {
       console.error("Error during POST request:", error);
       alert("unable to create record");
-    
     }
   };
 
+  useEffect(() => {
+    const fetchSchool = async (startDate = "", endDate = "") => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("fetch data", response.data); // Log the entire response data
+
+        if (Array.isArray(response.data.schools)) {
+          const allData = response.data.schools;
+          setSchools(allData);
+          console.log(allData);
+        } else {
+          console.error("Expected an array but got:", response.data.schools);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchool();
+  }, [addModalOpen]);
 
   // useEffect(() => {
   //   const fetchOtherData = async () => {
@@ -518,7 +594,7 @@ const BranchMaster = () => {
         const username = "school";
         const password = "123456";
         const token = btoa(`${username}:${password}`);
-  
+
         const response = await axios.get(
           "https://rocketsalestracker.com/api/devices",
           {
@@ -527,21 +603,60 @@ const BranchMaster = () => {
             },
           }
         );
-  
+
         const options = response.data.map((item) => ({
           value: item.id,
           label: item.name,
         }));
-  
+
         setOtherDropdownOptions(options);
       } catch (error) {
         console.error("Error fetching other data:", error);
       }
     };
-  
+
     fetchOtherData();
   }, []);
-  
+
+  useEffect(() => {
+    const fetchSchool = async (startDate = "", endDate = "") => {
+      setLoading(true);
+      if (role == 1) {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log("fetch data", response.data); // Log the entire response data
+
+          if (Array.isArray(response.data.schools)) {
+            const allData = response.data.schools;
+            setSchools(allData);
+            console.log(allData);
+          } else {
+            console.error("Expected an array but got:", response.data);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        const token = localStorage.getItem("token");
+        const decodedToken = jwtDecode(token);
+
+        console.log("decoded data: ", decodedToken);
+      }
+    };
+    fetchSchool();
+  }, [addModalOpen, editModalOpen]);
+
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>Branch Master</h1>
@@ -745,9 +860,7 @@ const BranchMaster = () => {
                           ) : null}
                         </TableCell>
                       ))}
-                       
                   </TableRow>
-
                 </TableHead>
                 <TableBody>
                   {sortedData.length === 0 ? (
@@ -766,7 +879,7 @@ const BranchMaster = () => {
                           // fontStyle: 'italic',
                         }}
                       >
-                         <img src="emptyicon.png" alt="" />
+                        <img src="emptyicon.png" alt="" />
                         <h4>No Data Available</h4>
                       </TableCell>
                     </TableRow>
@@ -789,7 +902,7 @@ const BranchMaster = () => {
                           style={{
                             backgroundColor:
                               index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                            borderBottom: "none", 
+                            borderBottom: "none",
                           }}
                         >
                           <TableCell
@@ -813,7 +926,7 @@ const BranchMaster = () => {
                                     borderBottom: "none",
                                     backgroundColor:
                                       index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                    fontSize: "smaller", 
+                                    fontSize: "smaller",
                                   }}
                                 >
                                   {column.format && typeof value === "number"
@@ -871,17 +984,17 @@ const BranchMaster = () => {
               </IconButton>
             </Box>
             {COLUMNS().map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
+              <TextField
+                key={col.accessor}
+                label={col.Header}
+                variant="outlined"
+                name={col.accessor}
+                value={formData[col.accessor] || ""}
+                onChange={handleInputChange}
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              />
+            ))}
             <Button
               variant="contained"
               color="primary"
@@ -901,12 +1014,36 @@ const BranchMaster = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add School Master</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Branch</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
-            {COLUMNS().map((col) => (
+
+
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"School Name"}</InputLabel>
+
+              <Select
+                value={formData["schoolId"] || ""}
+                onChange={handleInputChange}
+                name="schoolId"
+                label={"School Name"}
+              >
+                {schools.map((option) => (
+                  <MenuItem key={option._id} value={option._id}>
+                    {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {COLUMNS()
+              .slice(2)
+              .map((col) => (
                 <TextField
                   key={col.accessor}
                   label={col.Header}
@@ -921,60 +1058,98 @@ const BranchMaster = () => {
             <Button
               variant="contained"
               color="primary"
-              // onClick={handleAddSubmit}
+              onClick={handleAddSubmit}
             >
               Submit
             </Button>
           </Box>
         </Modal> */}
         <Modal open={addModalOpen} onClose={handleModalClose}>
-  <Box sx={style}>
-    <Box sx={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-      <h2 style={{ flexGrow: 1 }}>Add School Master</h2>
-      <IconButton onClick={handleModalClose}>
-        <CloseIcon />
-      </IconButton>
-    </Box>
-    {COLUMNS().map((col) => (
-      col.accessor === 'specificAccessor' && col.Header === 'Specific Header' ? (
-        <FormControl key={col.accessor} fullWidth sx={{ marginBottom: "10px" }}>
-          <InputLabel id={`${col.accessor}-label`}>{col.Header}</InputLabel>
-          <Select
-            labelId={`${col.accessor}-label`}
-            name={col.accessor}
-            value={formData[col.accessor] || ""}
-            onChange={handleInputChange}
-            label={col.Header}
-          >
-            {otherDropdownOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      ) : (
-        <TextField
-          key={col.accessor}
-          label={col.Header}
-          variant="outlined"
-          name={col.accessor}
-          value={formData[col.accessor] || ""}
-          onChange={handleInputChange}
-          sx={{ marginBottom: "10px" }}
-          fullWidth
-        />
-      )
-    ))}
-    <Button
-      variant="contained"
-      color="primary"
-      // onClick={handleAddSubmit}
-    >
-      Submit
-    </Button>
-  </Box>
-</Modal>
+          <Box sx={style}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <h2 style={{ flexGrow: 1 }}>Add Branch Master</h2>
+              <IconButton onClick={handleModalClose}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+
+            {role == 1 ? (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <InputLabel>{"School Name"}</InputLabel>
+
+                <Select
+                  value={formData["schoolId"] || ""}
+                  onChange={handleSchoolChange}
+                  name="schoolName"
+                  label={"School Name"}
+                >
+                  {schools.map((option) => (
+                    <MenuItem key={option._id} value={option._id}>
+                      {option.schoolName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
+            {COLUMNS()
+              .slice(2, -1)
+              .map((col) =>
+                col.accessor === "specificAccessor" &&
+                col.Header === "Specific Header" ? (
+                  <FormControl
+                    key={col.accessor}
+                    fullWidth
+                    sx={{ marginBottom: "10px" }}
+                  >
+                    <InputLabel id={`${col.accessor}-label`}>
+                      {col.Header}
+                    </InputLabel>
+                    <Select
+                      labelId={`${col.accessor}-label`}
+                      name={col.accessor}
+                      value={formData[col.accessor] || ""}
+                      onChange={handleInputChange}
+                      label={col.Header}
+                    >
+                      {otherDropdownOptions.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                ) : (
+                  <TextField
+                    key={col.accessor}
+                    label={col.Header}
+                    variant="outlined"
+                    name={col.accessor}
+                    value={formData[col.accessor] || ""}
+                    onChange={handleInputChange}
+                    sx={{ marginBottom: "10px" }}
+                    fullWidth
+                  />
+                )
+              )}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddSubmit}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Modal>
 
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
           <Box sx={style}>
@@ -1012,6 +1187,3 @@ const BranchMaster = () => {
 };
 
 export default BranchMaster;
-
-
-

@@ -49,7 +49,7 @@ const style = {
 };
 
 export const Present = () => {
-  const { setTotalResponsesPresent } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponsesPresent , role } = useContext(TotalResponsesContext); // Get the context value
   
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -80,10 +80,10 @@ export const Present = () => {
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
+      const token = localStorage.getItem("token");
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children` : `${process.env.REACT_APP_SCHOOL_API}/present-children`;
       const response = await axios.get(
-        "https://schoolmanagement-3-i2wi.onrender.com/school/present-children",
+        apiUrl,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -93,8 +93,14 @@ export const Present = () => {
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data.children)) {
-        const allData = response.data.children;
+      if (response?.data) {
+        const allData = response?.data.data.flatMap((school) =>
+          school.branches.flatMap((branch) =>
+            Array.isArray(branch.children) && branch.children.length > 0
+              ? branch.children
+              : []
+          )
+        )
 
         // Apply local date filtering if dates are provided
         const filteredData =

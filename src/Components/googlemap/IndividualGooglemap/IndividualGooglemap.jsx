@@ -26,21 +26,21 @@ import truckIcon from "../SVG/truck-s.png";
 import autoIcon from "../SVG/auto-s.png";
 
 // import truckIconTop from "../SVG/Vehicle Top View/Truck/Truck-Y.png";
-import truckIconTop from "../SVG/truck-s.png";
+import truckIconTop from "../SVG/Vehicle Top View/Truck/Truck-G.png";
 // import motorcycleIconTop from "../SVG/Vehicle Top View/Bike/Bike-R.png";
-import motorcycleIconTop from "../SVG/bike-s.png";
+import motorcycleIconTop from "../SVG/Vehicle Top View/Bike/Bike-G.png";
 
 // import carIconTop from "../SVG/Vehicle Top View/Car/Car-R.png";
-import carIconTop from "../SVG/car-s.png";
+import carIconTop from "../SVG/Vehicle Top View/Car/Car-G.png";
 
 // import JCBIconTop from "../SVG/Vehicle Top View/JCB/JCB-Y.png";
-import JCBIconTop from  "../SVG/jcb-s.png";
+import JCBIconTop from  "../SVG/Vehicle Top View/JCB/JCB-G.png";
 
 // import TractorIconTop from "../SVG/Vehicle Top View/Tractor/Tractor-G.png";
-import TractorIconTop from "../SVG/truck-s.png";
+import TractorIconTop from "../SVG/Vehicle Top View/Tractor/Tractor-G.png";
 
 // import AutoIconTop from "../SVG/Vehicle Top View/Auto/Auto-O.png";
-import AutoIconTop from "../SVG/auto-s.png";
+import AutoIconTop from "../SVG/Vehicle Top View/Auto/Auto-O.png";
 // import pointerIcon from "../SVG/pointer.svg";
 // import pointerIcon from "../SVG/locationimg.jpg";
 import pointerIcon from "../SVG/stopp.png";
@@ -600,10 +600,14 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
       console.log("This is stop poinst : ", stopPoints);
       setStoppedPositions(stopPoints);
-      mapRef.current.flyTo([playbackData[0].latitude, playbackData[0].longitude], 14, {
-        animate: true,
-        duration: 3,
-      });
+      if(stopPoints.length > 0) {
+        mapRef.current.flyTo([stopPoints[0]?.latitude, stopPoints[0]?.longitude], 14, {
+          animate: true,
+          duration: 3,
+        });
+
+
+      }
 
     }
   }, [playbackData]);

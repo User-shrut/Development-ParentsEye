@@ -657,7 +657,14 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "@mui/material";
+import {
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 
 //import { TextField } from '@mui/material';
 
@@ -704,31 +711,70 @@ export const Supervisor = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { role } = useContext(TotalResponsesContext);
+  const [schools, setSchools] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [buses, setBuses] = useState([]);
+  const [targetSchool, setTargetSchool] = useState();
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/supervisors-by-school",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-supervisors`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-supervisors`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-supervisors`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
       console.log("fetch data", response.data); // Log the entire response data
 
-      if (Array.isArray(response.data)) {
-        const allData = response.data
-          .filter(
-            (supervisor) =>
-              Array.isArray(supervisor.supervisors) && supervisor.supervisors.length > 0
-          ) 
-          .flatMap((supervisor) => supervisor.supervisors);
+      if (response?.data) {
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.supervisors) &&
+                  branch.supervisors.length > 0
+                    ? branch.supervisors
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.supervisors) &&
+                branch.supervisors.length > 0
+                  ? branch.supervisors
+                  : []
+              )
+            : response.data.supervisors;
 
-        console.log("supervisirs",allData);
+        console.log("supervisirs", allData);
         // Apply local date filtering if dates are provided
         const filteredData =
           startDate || endDate
@@ -889,13 +935,32 @@ export const Supervisor = () => {
     console.log("Filtered rows:", filteredRows);
 
     // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
+    let selectedIds;
+    if (role == 1) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.supervisorId; // Ensure id exists and is not undefined
+        });
+    } else if (role == 2) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.id; // Ensure id exists and is not undefined
+        });
+    } else {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.id; // Ensure id exists and is not undefined
+        });
+    }
 
     console.log("Selected IDs:", selectedIds);
 
@@ -914,10 +979,13 @@ export const Supervisor = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete/supervisor";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-supervisor`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete-supervisor`
+          : `${process.env.REACT_APP_BRANCH_API}/delete-supervisor`;
 
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
@@ -1015,30 +1083,92 @@ export const Supervisor = () => {
       ...formData,
       [name]: value,
     });
+    if (name == "schoolName") {
+      const selectedSchoolData = schools.find(
+        (school) => school.schoolName === value
+      );
+
+      console.log(selectedSchoolData);
+      if (selectedSchoolData) {
+        // Combine branchName and branches
+        const allBranches = [];
+        if (selectedSchoolData.branchName) {
+          allBranches.push({
+            branchName: selectedSchoolData.branchName,
+            branchId: selectedSchoolData._id,
+          });
+        }
+
+        if (
+          selectedSchoolData.branches &&
+          selectedSchoolData.branches.length > 0
+        ) {
+          selectedSchoolData.branches.forEach((branch) => {
+            allBranches.push({
+              branchName: branch.branchName,
+              branchId: branch._id,
+            });
+          });
+        }
+
+        setBranches(allBranches);
+      }
+    }
+  };
+
+  const handleBusChange = (e) => {
+    const { value } = e.target;
+
+    // Find the selected bus object based on the selected deviceId
+    const selectedBus = buses.find((bus) => bus.id === value);
+
+    // Update formData with both deviceId and busName
+    setFormData({
+      ...formData,
+      deviceId: selectedBus.id, // Store deviceId
+      busName: selectedBus.name, // Store busName
+    });
   };
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-4-pzsf.onrender.com/school/update-supervisor/${selectedRow.id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
-
+    const apiUrl =
+      role == 1
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor`
+        : role == 2
+        ? `${process.env.REACT_APP_SCHOOL_API}/update-supervisor`
+        : `${process.env.REACT_APP_BRANCH_API}/update-supervisor`;
+    const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
       ...formData,
       isSelected: false,
     };
 
+    console.log(updatedData);
+
     try {
       // Perform the PUT request
-      const response = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
+      let response;
+      if (role == 1) {
+        response = await fetch(`${apiUrl}/${updatedData.supervisorId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      } else if (role == 2) {
+        response = await fetch(`${apiUrl}/${updatedData.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      }
 
       // Check if the response is okay (status code 200-299)
       if (!response.ok) {
@@ -1051,7 +1181,7 @@ export const Supervisor = () => {
       alert("updated successfully");
       // Update local state after successful API call
       const updatedRows = filteredRows.map((row) =>
-        row.id === selectedRow.id
+        row.supervisorId === selectedRow.supervisorId
           ? { ...row, ...formData, isSelected: false }
           : row
       );
@@ -1070,15 +1200,26 @@ export const Supervisor = () => {
 
   const handleAddSubmit = async () => {
     try {
-      const newRow = {
-        ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
-      };
+      let newRow;
+      let decoded = jwtDecode(localStorage.getItem("token"));
+      if (role == 1) {
+        newRow = {
+          ...formData,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      } else if (role == 2) {
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+        };
+      }
+
+      console.log(newRow);
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/supervisor/register",
+        `${process.env.REACT_APP_API}/supervisor/register`,
         {
           method: "POST",
           headers: {
@@ -1087,7 +1228,6 @@ export const Supervisor = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert("record created successfully");
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -1096,6 +1236,7 @@ export const Supervisor = () => {
       // Assuming the server returns the created object
       const result = await response.json();
 
+      alert("record created successfully");
       // Update the state with the new row
       setFilteredRows([...filteredRows, result]);
 
@@ -1109,6 +1250,83 @@ export const Supervisor = () => {
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
+
+  useEffect(() => {
+    const fetchSchool = async (startDate = "", endDate = "") => {
+      setLoading(true);
+      if (role == 1) {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log("fetch data", response.data); // Log the entire response data
+
+          if (Array.isArray(response.data.schools)) {
+            const allData = response.data.schools;
+            setSchools(allData);
+
+            console.log(allData);
+          } else {
+            console.error(
+              "Expected an array but got:",
+              response.data.supervisors
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else if (role == 2) {
+        const apiUrl = `${process.env.REACT_APP_SCHOOL_API}/branches`;
+        const token = localStorage.getItem("token");
+
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("fetch data branches :", response.data); // Log the entire response data
+
+        if (response.data) {
+          setBranches(response.data.branches);
+        }
+      }
+    };
+
+    const fetchBuses = async () => {
+      const url = "http://104.251.216.99:8082/api/devices";
+      const username = "school";
+      const password = "123456";
+
+      // Encode credentials to base64 using btoa
+      const token = btoa(`${username}:${password}`);
+
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+        });
+        setBuses(response.data);
+        console.log("Buses Data:", response.data);
+      } catch (error) {
+        console.error("Error fetching buses data:", error);
+      }
+    };
+
+    fetchBuses();
+
+    fetchSchool();
+  }, [addModalOpen, editModalOpen]);
 
   return (
     <>
@@ -1433,13 +1651,13 @@ export const Supervisor = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Edit Supervisor</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(0, -1)
+              .slice(1, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1452,6 +1670,66 @@ export const Supervisor = () => {
                   fullWidth
                 />
               ))}
+            {/* <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"School Name"}</InputLabel>
+
+              <Select
+                value={formData["schoolName"] || ""}
+                onChange={handleInputChange}
+                name="schoolName"
+                label={"School Name"}
+              >
+                {schools.map((option) => (
+                  <MenuItem key={option._id} value={option.schoolName}>
+                    {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Branch Name"}</InputLabel>
+
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label={"Branch Name"}
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl> */}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
               color="primary"
@@ -1471,13 +1749,13 @@ export const Supervisor = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Supervisor</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(0, -1)
+              .slice(1, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1490,6 +1768,68 @@ export const Supervisor = () => {
                   fullWidth
                 />
               ))}
+            {role == 1 && (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <InputLabel>{"School Name"}</InputLabel>
+
+                <Select
+                  value={formData["schoolName"] || ""}
+                  onChange={handleInputChange}
+                  name="schoolName"
+                  label={"School Name"}
+                >
+                  {schools.map((option) => (
+                    <MenuItem key={option._id} value={option.schoolName}>
+                      {option.schoolName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Branch Name"}</InputLabel>
+
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label={"Branch Name"}
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Button
               variant="contained"
               color="primary"

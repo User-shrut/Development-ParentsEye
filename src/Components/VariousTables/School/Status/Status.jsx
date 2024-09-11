@@ -1412,13 +1412,12 @@ export const Status = () => {
   const [otherSelectedValue, setOtherSelectedValue] = useState("");
   const [tableData, setTableData] = useState([]);
 
-  const fetchData = async (startDate = "", endDate = "") => {
+  const fetchData = async (childId) => {
     setLoading(true);
     try {
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-6-6tcs.onrender.com/school/read/all-children",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/status/${childId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

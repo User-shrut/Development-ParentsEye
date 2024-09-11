@@ -29,6 +29,10 @@ export const COLUMNS = () => [
     Cell: ({ value }) => (value ? value.toString() : 'N/A'),
   },
   {
+    Header: 'School Name',
+    accessor: 'schoolName',
+  },
+  {
     Header: 'Registration Date',
     accessor: 'formattedRegistrationDate',
   },
