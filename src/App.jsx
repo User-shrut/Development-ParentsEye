@@ -55,7 +55,7 @@ import { UserProfile } from "./Components/VariousTables/Master/UserProfile/UserP
 import { UsersAssetsMapping } from "./Components/VariousTables/Master/UsersAssetsMapping/UsersAssetsMapping.jsx";
 import { EditAreas } from "./Components/VariousTables/Geofencing/EditAreas/EditArea.js";
 import { EditZones } from "./Components/VariousTables/Geofencing/EditZones/EditZones.jsx";
-import { Trips } from "./Components/VariousTables/Geofencing/Trips/Trips.jsx";
+// import { Trips } from "./Components/VariousTables/Geofencing/Trips/Trips.jsx";
 import {Driver} from "./Components/VariousTables/Users/Driver/Driver.jsx";
 import {Parent} from "./Components/VariousTables/Users/Parent/Parent.jsx";
 import { Supervisor } from "./Components/VariousTables/Users/Supervisor/Supervisor.jsx";
@@ -85,8 +85,10 @@ import { SavedCommands } from "./Components/VariousTables/MASTERUPDATED/Saved Co
 import { Userrr } from "./Components/VariousTables/MASTERUPDATED/Userrr/Userrr.jsx";
 import { Combined } from "./Components/VariousTables/ReportsUpdated/Combined/Combined.jsx";
 import { Route } from "./Components/VariousTables/ReportsUpdated/Route/Route.jsx";
-import { Events } from "./Components/VariousTables/ReportsUpdated/Events/Events.jsx"
-import {AddDevices} from "./Components/VariousTables/Users/AddDevices/AddDevices.jsx"
+import { Event } from "./Components/VariousTables/ReportsUpdated/Event/Event.jsx";
+import {AddDevices} from "./Components/VariousTables/Users/AddDevices/AddDevices.jsx";
+import { Trips } from "./Components/VariousTables/ReportsUpdated/Trips/Trips.jsx";
+import { Stops } from "./Components/VariousTables/ReportsUpdated/Stops/Stops.jsx";
 // import { Newdemo } from "./Components/VariousTables/Institutestudent/Newdemo/Newdemo.jsx";
 // import { New2 } from "./Components/VariousTables/Institutestudent/New2/New2.jsx";
 // import { ComputedAttributes } from "./Components/VariousTables/MASTERUPDATED/ComputedAttributes/ComputedAttributes.jsx";
@@ -285,9 +287,7 @@ function App() {
       setComponent("EditAreas");
     } else if (item === "Edit Zones") {
       setComponent("EditZones");
-    } else if (item === "Trips") {
-      setComponent("Trips");
-    }else if (item === "School") {
+    } else if (item === "School") {
       setComponent("School");
     }else if (item === "User") {
       setComponent("User");
@@ -339,10 +339,14 @@ function App() {
       setComponent("Combined");
     }else if (item === "Route") {
       setComponent("Route");
-    }else if (item === "Events") {
-      setComponent("Events");
     }else if (item === "AddDevices") {
       setComponent("AddDevices");
+    }else if (item === "Event") {
+      setComponent("Event");
+    }else if (item === "Trips") {
+      setComponent("Trips");
+    }else if (item === "Stops") {
+      setComponent("Stops");
     }
    
    
@@ -469,7 +473,7 @@ function App() {
 
           {component === "EditAreas" && <EditAreas data={mergedData} />}
           {component === "EditZones" && <EditZones data={mergedData} />}
-          {component === "Trips" && <Trips data={mergedData} />}
+          {/* {component === "Trips" && <Trips data={mergedData} />} */}
 
           {component === "Absent" && <Absent data={mergedData} />}
           {component === "User" && <User data={mergedData} />}
@@ -498,8 +502,10 @@ function App() {
           {component === "Userrr" && <Userrr data={mergedData} />}
           {component === "Combined" && <Combined data={mergedData} />}
           {component === "Route" && <Route data={mergedData} />}
-          {component === "Events" && <Events data={mergedData} />}
+          {component === "Event" && <Event data={mergedData} />}
           {component === "AddDevices" && <AddDevices data={mergedData} />}
+          {component === "Trips" && <Trips data={mergedData} />}
+          {component === "Stops" && <Stops data={mergedData} />}
           {/* {component === "Newdemo" && <Newdemo data={mergedData} />}
           {component === "New2" && <New2 data={mergedData} />} */}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
@@ -552,7 +558,7 @@ function App() {
             "CreateArea",
             "EditAreas",
             "EditZones",
-            "Trips",
+            // "Trips",
             "Absent",
             "StudentDetail",
             "User",
@@ -580,7 +586,10 @@ function App() {
            "Userrr",
            "Combined",
            "Route",
-           "AddDevices"
+           "AddDevices",
+           "Event",
+           "Trips",
+           "Stops"
           //  "Newdemo",
           //  "New2"
           ].includes(component) && <Tablee data={mergedData} />}

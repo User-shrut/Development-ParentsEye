@@ -29,7 +29,8 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
-
+import { saveAs } from 'file-saver'; // Save file to the user's machine
+// import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
 //import { TextField } from '@mui/material';
 
 const style = {
@@ -48,7 +49,7 @@ const style = {
   padding: "1rem",
 };
 
-export const Events = () => {
+export const Trips = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
@@ -277,7 +278,7 @@ export const Events = () => {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Events.xlsx");
+    XLSX.writeFile(workbook, "Trips.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -442,7 +443,7 @@ export const Events = () => {
 // };
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-  const username = "school";
+  const username = "test";
   const password = "123456";
   const token = btoa(`${username}:${password}`);
 
@@ -551,7 +552,7 @@ const handleEditSubmit = async () => {
       try {
         const response = await fetch('https://rocketsalestracker.com/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('test:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('school:123456'), // Replace with your username and password
           },
         });
 
@@ -580,7 +581,7 @@ const handleEditSubmit = async () => {
         const response = await fetch('https://rocketsalestracker.com/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('test:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
           }
         });
 
@@ -655,13 +656,14 @@ const handleEditSubmit = async () => {
     const formattedStartDate = formatToUTC(startDate);
     const formattedEndDate = formatToUTC(endDate);
 
-    if (!formattedStartDate || !formattedEndDate || !selectedDevice || !selectedGroup) {
+    if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
       alert('Please fill all fields');
       return;
     }
 
     // Construct the API URL
-    const url = `https://rocketsalestracker.com/api/reports/combined?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
+    const url = `
+https://rocketsalestracker.com/api/reports/trips?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}`;
     
     setApiUrl(url); // Update the state with the generated URL
     fetchData(url); // Call fetchData with the generated URL
@@ -875,51 +877,814 @@ const handleEditSubmit = async () => {
 //         setLoading(false);
 //     }
 // };
+// const fetchData = async (url) => {
+//   console.log('Fetching data...');
+//   setLoading(true);
+
+//   try {
+//       const username = "school";
+//       const password = "123456";
+//       const token = btoa(`${username}:${password}`);
+
+//       const response = await axios.get(url, {
+//           headers: {
+//               Authorization: `Basic ${token}`,
+//           },
+//       });
+
+//       console.log('Fetched data:', response.data);
+
+//       if (Array.isArray(response.data) && response.data.length > 0) {
+//           const data = response.data[0];
+
+//           const processedEvents = (data.events || []).map(event => ({
+//               deviceId: data.deviceId,
+//               eventTime: new Date(event.eventTime).toLocaleString(),
+//               type: event.type.replace(/([A-Z])/g, ' $1').trim() // Optional: Format type
+//           }));
+
+//           console.log('Processed Events:', processedEvents);
+
+//           setFilteredRows(processedEvents.map(event => ({
+//               ...event,
+//               isSelected: false
+//           })));
+
+//           setTotalResponses(processedEvents.length);
+//       } else {
+//           console.error('Expected an array but got:', response.data);
+//           alert('Unexpected data format.');
+//       }
+//   } catch (error) {
+//       console.error('Fetch data error:', error);
+//       alert('An error occurred while fetching data.');
+//   } finally {
+//       setLoading(false);
+//   }
+// };
+// const fetchData = async (url) => {
+//   console.log('Fetching data...');
+//   setLoading(true);
+
+//   try {
+//     const username = "test";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//     });
+
+//     console.log('Fetched data:', response.data);
+
+//     if (Array.isArray(response.data) && response.data.length > 0) {
+//       const data = response.data[0];
+
+//       const processedEvents = (data.events || []).map(event => ({
+//         deviceId: data.deviceId,
+//         eventTime: new Date(event.eventTime).toLocaleString(),
+//         latitude: `${data.latitude.toFixed(6)}°`,
+//         longitude: `${data.longitude.toFixed(6)}°`,
+//         speed: `${data.speed.toFixed(2)} mph`,
+//         address: data.address || 'Show Address',
+//         course: data.course > 0 ? '↑' : '↓',
+//         altitude: `${data.altitude.toFixed(2)} m`,
+//         accuracy: `${data.accuracy.toFixed(2)}`,
+//         valid: data.valid ? 'Yes' : 'No',
+//         protocol: data.protocol,
+//         deviceTime: new Date(data.deviceTime).toLocaleString(),
+//         serverTime: new Date(data.serverTime).toLocaleString(),
+//         geofences: data.geofenceIds.join(', '),
+//         satellites: data.attributes.sat || '',
+//         RSSI: '', // Assuming RSSI is not provided in the data
+//         eventType: event.type.replace(/([A-Z])/g, ' $1').trim(),
+//         status: '', // Assuming status is not provided in the data
+//         odometer: `${data.attributes.odometer} mi`,
+//         batteryLevel: '', // Assuming battery level is not provided in the data
+//         ignition: data.attributes.ignition ? 'Yes' : 'No',
+//         hours: `${Math.floor(data.attributes.hours / 3600)} h ${Math.floor((data.attributes.hours % 3600) / 60)} m`,
+//         charge: data.attributes.charge ? 'Yes' : 'No',
+//         archive: data.attributes.archive ? 'Yes' : 'No',
+//         distance: `${data.attributes.distance.toFixed(2)} mi`,
+//         totalDistance: `${data.attributes.totalDistance.toFixed(2)} mi`,
+//         motion: data.attributes.motion ? 'Yes' : 'No',
+//         blocked: '', // Assuming blocked is not provided in the data
+//         alarm1Status: '', // Assuming alarm1Status is not provided in the data
+//         otherStatus: '', // Assuming otherStatus is not provided in the data
+//         alarm2Status: '', // Assuming alarm2Status is not provided in the data
+//         engineStatus: '', // Assuming engineStatus is not provided in the data
+//         iccid: '', // Assuming iccid is not provided in the data
+//         alarm3Status: '', // Assuming alarm3Status is not provided in the data
+//         adc1: '' // Assuming adc1 is not provided in the data
+//       }));
+
+//       console.log('Processed Events:', processedEvents);
+
+//       setFilteredRows(processedEvents.map(event => ({
+//         ...event,
+//         isSelected: false
+//       })));
+
+//       setTotalResponses(processedEvents.length);
+//     } else {
+//       console.error('Expected an array but got:', response.data);
+//       alert('Unexpected data format.');
+//     }
+//   } catch (error) {
+//     console.error('Fetch data error:', error);
+//     alert('An error occurred while fetching data.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+
+
+// import axios from 'axios';
+// import { saveAs } from 'file-saver'; // Save file to the user's machine
+// import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
+
+// const fetchData = async (url) => {
+//   console.log('Fetching report...');
+//   setLoading(true);
+
+//   try {
+//     const username = "school";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//       responseType: 'blob', // Downloading as binary data
+//     });
+
+//     console.log('Report fetched successfully:', response);
+
+//     // Save the file locally (optional)
+//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
+
+//     // Now we process the file to extract the data
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//       const data = new Uint8Array(e.target.result);
+//       const reportWorkbook = XLSX.read(data, { type: 'array' });  // Renamed 'workbook' to 'reportWorkbook'
+
+//       const firstSheetName = reportWorkbook.SheetNames[0];
+//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];  // Renamed 'worksheet' to 'reportWorksheet'
+      
+//       // Convert worksheet data to JSON
+//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+//       console.log('Extracted JSON Data from Excel:', jsonData);
+
+//       // Now process this data (same as before)
+//       const processedEvents = jsonData.map(data => ({
+//         deviceId: data.deviceId,
+//         eventTime: new Date(data.fixTime).toLocaleString(),
+//         latitude: `${data.latitude.toFixed(6)}°`,
+//         longitude: `${data.longitude.toFixed(6)}°`,
+//         speed: `${data.speed.toFixed(2)} mph`,
+//         address: data.address || 'Show Address',
+//         course: data.course > 0 ? '↑' : '↓',
+//         altitude: `${data.altitude.toFixed(2)} m`,
+//         accuracy: `${data.accuracy.toFixed(2)}`,
+//         valid: data.valid ? 'Yes' : 'No',
+//         protocol: data.protocol,
+//         deviceTime: new Date(data.deviceTime).toLocaleString(),
+//         serverTime: new Date(data.serverTime).toLocaleString(),
+//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//         satellites: data.attributes.sat || '',
+//         RSSI: data.attributes.rssi || '',
+//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
+//         batteryLevel: data.attributes.batteryLevel || '',
+//         ignition: data.attributes.ignition ? 'Yes' : 'No',
+//         charge: data.attributes.charge ? 'Yes' : 'No',
+//         archive: data.attributes.archive ? 'Yes' : 'No',
+//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
+//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
+//         motion: data.attributes.motion ? 'Yes' : 'No',
+//         blocked: data.attributes.blocked ? 'Yes' : 'No',
+//         alarm1Status: data.attributes.alarm1Status || '',
+//         otherStatus: data.attributes.otherStatus || '',
+//         alarm2Status: data.attributes.alarm2Status || '',
+//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
+//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+//       }));
+
+//       console.log('Processed Events:', processedEvents);
+
+//       setFilteredRows(processedEvents.map(event => ({
+//         ...event,
+//         isSelected: false
+//       })));
+
+//       setTotalResponses(processedEvents.length);
+
+//       // Optionally export the processed data back to an Excel file
+//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);  // Renamed 'worksheet' to 'outputWorksheet'
+//       const outputWorkbook = XLSX.utils.book_new();  // Renamed 'workbook' to 'outputWorkbook'
+//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
+
+//       // Trigger file download
+//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
+//     };
+
+//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+//   } catch (error) {
+//     console.error('Error fetching the report:', error);
+//     alert('Failed to download or process report.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+// const fetchData = async (url) => {
+//   console.log('Fetching report...');
+//   setLoading(true);
+
+//   try {
+//     const username = "school";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//       responseType: 'blob', // Downloading as binary data
+//     });
+
+//     console.log('Report fetched successfully:', response);
+
+//     // Save the file locally
+//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
+
+//     // Process the file to extract data
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//       const data = new Uint8Array(e.target.result);
+//       const reportWorkbook = XLSX.read(data, { type: 'array' });
+
+//       const firstSheetName = reportWorkbook.SheetNames[0];
+//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
+      
+//       // Convert worksheet data to JSON
+//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+//       console.log('Extracted JSON Data from Excel:', jsonData);
+
+//       // Process the data
+//       const processedEvents = jsonData.map(data => ({
+//         deviceId: data.deviceId,
+//         eventTime: new Date(data.fixTime).toLocaleString(),
+//         latitude: `${data.latitude.toFixed(6)}°`,
+//         longitude: `${data.longitude.toFixed(6)}°`,
+//         speed: `${data.speed.toFixed(2)} mph`,
+//         address: data.address || 'Show Address',
+//         course: data.course > 0 ? '↑' : '↓',
+//         altitude: `${data.altitude.toFixed(2)} m`,
+//         accuracy: `${data.accuracy.toFixed(2)}`,
+//         valid: data.valid ? 'Yes' : 'No',
+//         protocol: data.protocol,
+//         deviceTime: new Date(data.deviceTime).toLocaleString(),
+//         serverTime: new Date(data.serverTime).toLocaleString(),
+//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//         satellites: data.attributes.sat || '',
+//         RSSI: data.attributes.rssi || '',
+//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
+//         batteryLevel: data.attributes.batteryLevel || '',
+//         ignition: data.attributes.ignition ? 'Yes' : 'No',
+//         charge: data.attributes.charge ? 'Yes' : 'No',
+//         archive: data.attributes.archive ? 'Yes' : 'No',
+//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
+//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
+//         motion: data.attributes.motion ? 'Yes' : 'No',
+//         blocked: data.attributes.blocked ? 'Yes' : 'No',
+//         alarm1Status: data.attributes.alarm1Status || '',
+//         otherStatus: data.attributes.otherStatus || '',
+//         alarm2Status: data.attributes.alarm2Status || '',
+//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
+//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+//       }));
+
+//       console.log('Processed Events:', processedEvents);
+
+//       setFilteredRows(processedEvents.map(event => ({
+//         ...event,
+//         isSelected: false
+//       })));
+
+//       setTotalResponses(processedEvents.length);
+
+//       // Optionally export the processed data back to an Excel file
+//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
+//       const outputWorkbook = XLSX.utils.book_new();
+//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
+
+//       // Trigger file download
+//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
+//     };
+
+//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+//   } catch (error) {
+//     console.error('Error fetching the report:', error);
+//     alert('Failed to download or process report.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+// const fetchData = async (url) => {
+//   console.log('Fetching report...');
+//   setLoading(true);
+
+//   try {
+//     const username = "school";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//       responseType: 'blob', // Downloading as binary data
+//     });
+
+//     // Log the content type of the response
+//     console.log('Content-Type:', response.headers['content-type']);
+
+//     // Check if the content type matches the expected MIME type for Excel files
+//     if (response.headers['content-type'] !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
+//     }
+
+//     // Save the file locally
+//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
+
+//     // Process the file to extract data
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//       const data = new Uint8Array(e.target.result);
+//       const reportWorkbook = XLSX.read(data, { type: 'array' });
+
+//       const firstSheetName = reportWorkbook.SheetNames[0];
+//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
+      
+//       // Convert worksheet data to JSON
+//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+//       console.log('Extracted JSON Data from Excel:', jsonData);
+
+//       // Process the data
+//       const processedEvents = jsonData.map(data => ({
+//         deviceId: data.deviceId,
+//         eventTime: new Date(data.fixTime).toLocaleString(),
+//         latitude: `${data.latitude.toFixed(6)}°`,
+//         longitude: `${data.longitude.toFixed(6)}°`,
+//         speed: `${data.speed.toFixed(2)} mph`,
+//         address: data.address || 'Show Address',
+//         course: data.course > 0 ? '↑' : '↓',
+//         altitude: `${data.altitude.toFixed(2)} m`,
+//         accuracy: `${data.accuracy.toFixed(2)}`,
+//         valid: data.valid ? 'Yes' : 'No',
+//         protocol: data.protocol,
+//         deviceTime: new Date(data.deviceTime).toLocaleString(),
+//         serverTime: new Date(data.serverTime).toLocaleString(),
+//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//         satellites: data.attributes.sat || '',
+//         RSSI: data.attributes.rssi || '',
+//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
+//         batteryLevel: data.attributes.batteryLevel || '',
+//         ignition: data.attributes.ignition ? 'Yes' : 'No',
+//         charge: data.attributes.charge ? 'Yes' : 'No',
+//         archive: data.attributes.archive ? 'Yes' : 'No',
+//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
+//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
+//         motion: data.attributes.motion ? 'Yes' : 'No',
+//         blocked: data.attributes.blocked ? 'Yes' : 'No',
+//         alarm1Status: data.attributes.alarm1Status || '',
+//         otherStatus: data.attributes.otherStatus || '',
+//         alarm2Status: data.attributes.alarm2Status || '',
+//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
+//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+//       }));
+
+//       console.log('Processed Events:', processedEvents);
+
+//       setFilteredRows(processedEvents.map(event => ({
+//         ...event,
+//         isSelected: false
+//       })));
+
+//       setTotalResponses(processedEvents.length);
+
+//       // Optionally export the processed data back to an Excel file
+//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
+//       const outputWorkbook = XLSX.utils.book_new();
+//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
+
+//       // Trigger file download
+//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
+//     };
+
+//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+//   } catch (error) {
+//     console.error('Error fetching the report:', error);
+//     alert('Failed to download or process report.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+// const fetchData = async (url) => {
+//   console.log('Fetching report...');
+//   setLoading(true);
+
+//   try {
+//     const username = "school";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//       responseType: 'blob', // Downloading as binary data
+//     });
+
+//     // Log the content type of the response
+//     console.log('Content-Type:', response.headers['content-type']);
+
+//     // Check if the content type matches the expected MIME type for Excel files
+//     if (response.headers['content-type'] === 'application/json') {
+//       // Handle JSON response
+//       const text = await response.data.text(); // Convert Blob to text
+//       console.log('JSON Response:', text); // Log JSON response
+//       const jsonResponse = JSON.parse(text); // Parse JSON
+//       throw new Error('Received JSON response instead of Excel file. Details: ' + JSON.stringify(jsonResponse));
+//     } else if (response.headers['content-type'] !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
+//     }
+
+//     // Save the file locally
+//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
+
+//     // Process the file to extract data
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//       const data = new Uint8Array(e.target.result);
+//       const reportWorkbook = XLSX.read(data, { type: 'array' });
+
+//       const firstSheetName = reportWorkbook.SheetNames[0];
+//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
+      
+//       // Convert worksheet data to JSON
+//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+//       console.log('Extracted JSON Data from Excel:', jsonData);
+
+//       // Process the data
+//       const processedEvents = jsonData.map(data => ({
+//         deviceId: data.deviceId,
+//         eventTime: new Date(data.fixTime).toLocaleString(),
+//         latitude: `${data.latitude.toFixed(6)}°`,
+//         longitude: `${data.longitude.toFixed(6)}°`,
+//         speed: `${data.speed.toFixed(2)} mph`,
+//         address: data.address || 'Show Address',
+//         course: data.course > 0 ? '↑' : '↓',
+//         altitude: `${data.altitude.toFixed(2)} m`,
+//         accuracy: `${data.accuracy.toFixed(2)}`,
+//         valid: data.valid ? 'Yes' : 'No',
+//         protocol: data.protocol,
+//         deviceTime: new Date(data.deviceTime).toLocaleString(),
+//         serverTime: new Date(data.serverTime).toLocaleString(),
+//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//         satellites: data.attributes.sat || '',
+//         RSSI: data.attributes.rssi || '',
+//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
+//         batteryLevel: data.attributes.batteryLevel || '',
+//         ignition: data.attributes.ignition ? 'Yes' : 'No',
+//         charge: data.attributes.charge ? 'Yes' : 'No',
+//         archive: data.attributes.archive ? 'Yes' : 'No',
+//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
+//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
+//         motion: data.attributes.motion ? 'Yes' : 'No',
+//         blocked: data.attributes.blocked ? 'Yes' : 'No',
+//         alarm1Status: data.attributes.alarm1Status || '',
+//         otherStatus: data.attributes.otherStatus || '',
+//         alarm2Status: data.attributes.alarm2Status || '',
+//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
+//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+//       }));
+
+//       console.log('Processed Events:', processedEvents);
+
+//       setFilteredRows(processedEvents.map(event => ({
+//         ...event,
+//         isSelected: false
+//       })));
+
+//       setTotalResponses(processedEvents.length);
+
+//       // Optionally export the processed data back to an Excel file
+//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
+//       const outputWorkbook = XLSX.utils.book_new();
+//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
+
+//       // Trigger file download
+//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
+//     };
+
+//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+//   } catch (error) {
+//     console.error('Error fetching the report:', error);
+//     alert('Failed to download or process report.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+// const fetchData = async (url) => {
+//   console.log('Fetching report...');
+//   setLoading(true);
+
+//   try {
+//     const username = "school";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//       responseType: 'blob', // Downloading as binary data
+//     });
+
+//     // Log the content type of the response
+//     console.log('Content-Type:', response.headers['content-type']);
+
+//     // Handle JSON response
+//     if (response.headers['content-type'] === 'application/json') {
+//       const text = await response.data.text(); // Convert Blob to text
+//       console.log('JSON Response:', text); // Log JSON response
+//       const jsonResponse = JSON.parse(text); // Parse JSON
+//       // Process the JSON response
+//       console.log('Processed JSON Data:', jsonResponse);
+
+//       // Example: Set filtered rows and total responses from JSON data
+//       setFilteredRows(jsonResponse.map(data => ({
+//         deviceId: data.deviceId || 'N/A',
+//         eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+//         latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
+//         longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
+//         speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
+//         address: data.address || 'Show Address',
+//         course: data.course > 0 ? '↑' : '↓',
+//         altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
+//         accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
+//         valid: data.valid ? 'Yes' : 'No',
+//         protocol: data.protocol || 'N/A',
+//         deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
+//         serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
+//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//         satellites: data.attributes?.sat || 'N/A',
+//         RSSI: data.attributes?.rssi || 'N/A',
+//         odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
+//         batteryLevel: data.attributes?.batteryLevel || 'N/A',
+//         ignition: data.attributes?.ignition ? 'Yes' : 'No',
+//         charge: data.attributes?.charge ? 'Yes' : 'No',
+//         archive: data.attributes?.archive ? 'Yes' : 'No',
+//         distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
+//         totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+//         motion: data.attributes?.motion ? 'Yes' : 'No',
+//         blocked: data.attributes?.blocked ? 'Yes' : 'No',
+//         alarm1Status: data.attributes?.alarm1Status || 'N/A',
+//         otherStatus: data.attributes?.otherStatus || 'N/A',
+//         alarm2Status: data.attributes?.alarm2Status || 'N/A',
+//         engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
+//         adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
+//       })));
+
+//       setTotalResponses(jsonResponse.length);
+
+//     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+//       // Handle Excel response
+//       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+//       saveAs(blob, 'report.xlsx'); // Save the file to the user's system
+
+//       // Process the file to extract data
+//       const reader = new FileReader();
+//       reader.onload = (e) => {
+//         const data = new Uint8Array(e.target.result);
+//         const reportWorkbook = XLSX.read(data, { type: 'array' });
+
+//         const firstSheetName = reportWorkbook.SheetNames[0];
+//         const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
+        
+//         // Convert worksheet data to JSON
+//         const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+//         console.log('Extracted JSON Data from Excel:', jsonData);
+
+//         // Process the data
+//         const processedEvents = jsonData.map(data => ({
+//           deviceId: data.deviceId,
+//           eventTime: new Date(data.fixTime).toLocaleString(),
+//           latitude: `${data.latitude.toFixed(6)}°`,
+//           longitude: `${data.longitude.toFixed(6)}°`,
+//           speed: `${data.speed.toFixed(2)} mph`,
+//           address: data.address || 'Show Address',
+//           course: data.course > 0 ? '↑' : '↓',
+//           altitude: `${data.altitude.toFixed(2)} m`,
+//           accuracy: `${data.accuracy.toFixed(2)}`,
+//           valid: data.valid ? 'Yes' : 'No',
+//           protocol: data.protocol,
+//           deviceTime: new Date(data.deviceTime).toLocaleString(),
+//           serverTime: new Date(data.serverTime).toLocaleString(),
+//           geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//           satellites: data.attributes.sat || '',
+//           RSSI: data.attributes.rssi || '',
+//           odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
+//           batteryLevel: data.attributes.batteryLevel || '',
+//           ignition: data.attributes.ignition ? 'Yes' : 'No',
+//           charge: data.attributes.charge ? 'Yes' : 'No',
+//           archive: data.attributes.archive ? 'Yes' : 'No',
+//           distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
+//           totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
+//           motion: data.attributes.motion ? 'Yes' : 'No',
+//           blocked: data.attributes.blocked ? 'Yes' : 'No',
+//           alarm1Status: data.attributes.alarm1Status || '',
+//           otherStatus: data.attributes.otherStatus || '',
+//           alarm2Status: data.attributes.alarm2Status || '',
+//           engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
+//           adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+//         }));
+
+//         console.log('Processed Events:', processedEvents);
+
+//         setFilteredRows(processedEvents.map(event => ({
+//           ...event,
+//           isSelected: false
+//         })));
+
+//         setTotalResponses(processedEvents.length);
+
+//         // Optionally export the processed data back to an Excel file
+//         const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
+//         const outputWorkbook = XLSX.utils.book_new();
+//         XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
+
+//         // Trigger file download
+//         XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
+//       };
+
+//       reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+//     } else {
+//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
+//     }
+//   } catch (error) {
+//     console.error('Error fetching the report:', error);
+//     alert('Failed to download or process report.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 const fetchData = async (url) => {
-  console.log('Fetching data...');
+  console.log('Fetching report...');
   setLoading(true);
 
   try {
-      const username = "school";
-      const password = "123456";
-      const token = btoa(`${username}:${password}`);
+    const username = "school";
+    const password = "123456";
+    const token = btoa(`${username}:${password}`);
 
-      const response = await axios.get(url, {
-          headers: {
-              Authorization: `Basic ${token}`,
-          },
-      });
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
+      responseType: 'blob', // For downloading binary data
+    });
 
-      console.log('Fetched data:', response.data);
+    console.log('Content-Type:', response.headers['content-type']);
 
-      if (Array.isArray(response.data) && response.data.length > 0) {
-          const data = response.data[0];
+    // Check if the response is JSON
+    if (response.headers['content-type'] === 'application/json') {
+      const text = await response.data.text(); // Convert Blob to text
+      console.log('JSON Response:', text);
+      const jsonResponse = JSON.parse(text); // Parse JSON
+      console.log('Processed JSON Data:', jsonResponse);
 
-          const processedEvents = (data.events || []).map(event => ({
-              deviceId: data.deviceId,
-              eventTime: new Date(event.eventTime).toLocaleString(),
-              type: event.type.replace(/([A-Z])/g, ' $1').trim() // Optional: Format type
-          }));
+      // Map the response to your desired format
+      // const processedData = jsonResponse.map(data => ({
+      //   deviceId: data.deviceId || 'N/A',
+      //   deviceName: data.deviceName || 'N/A',
+      //   distance: data.distance ? `${data.distance.toFixed(2)} mi` : 'N/A',
+      //   averageSpeed: data.averageSpeed ? `${data.averageSpeed.toFixed(2)} mph` : 'N/A',
+      //   maxSpeed: data.maxSpeed ? `${data.maxSpeed.toFixed(2)} mph` : 'N/A',
+      //   spentFuel: data.spentFuel ? `${data.spentFuel.toFixed(2)} L` : 'N/A',
+      //   startOdometer: data.startOdometer ? `${data.startOdometer.toFixed(2)} mi` : 'N/A',
+      //   endOdometer: data.endOdometer ? `${data.endOdometer.toFixed(2)} mi` : 'N/A',
+      //   startTime: data.startTime ? new Date(data.startTime).toLocaleString() : 'N/A',
+      //   endTime: data.endTime ? new Date(data.endTime).toLocaleString() : 'N/A',
+      //   startLat: data.startLat ? `${data.startLat.toFixed(6)}°` : 'N/A',
+      //   startLon: data.startLon ? `${data.startLon.toFixed(6)}°` : 'N/A',
+      //   endLat: data.endLat ? `${data.endLat.toFixed(6)}°` : 'N/A',
+      //   endLon: data.endLon ? `${data.endLon.toFixed(6)}°` : 'N/A',
+      //   startAddress: data.startAddress || 'N/A',
+      //   endAddress: data.endAddress || 'N/A',
+      //   duration: data.duration ? `${(data.duration / 1000 / 60).toFixed(2)} min` : 'N/A',
+      //   driverUniqueId: data.driverUniqueId || 'N/A',
+      //   driverName: data.driverName || 'N/A'
+      // }));
+      const processedData = jsonResponse.map(data => ({
+        deviceId: data.deviceId || 'N/A',
+        deviceName: data.deviceName || 'N/A',
+        distance: data.distance || 'N/A',
+        averageSpeed: data.averageSpeed ? `${data.averageSpeed.toFixed(2)} mph` : 'N/A',
+        maxSpeed: data.maxSpeed ? `${data.maxSpeed.toFixed(2)} mph` : 'N/A',
+        spentFuel: data.spentFuel ? `${data.spentFuel.toFixed(2)} L` : 'N/A',
+        startOdometer: data.startOdometer ? `${data.startOdometer.toFixed(2)} mi` : 'N/A',
+        endOdometer: data.endOdometer ? `${data.endOdometer.toFixed(2)} mi` : 'N/A',
+        startTime: data.startTime ? new Date(data.startTime).toLocaleString() : 'N/A',
+        endTime: data.endTime ? new Date(data.endTime).toLocaleString() : 'N/A',
+        startLat: data.startLat ? `${data.startLat.toFixed(6)}°` : 'N/A',
+        startLon: data.startLon ? `${data.startLon.toFixed(6)}°` : 'N/A',
+        endLat: data.endLat ? `${data.endLat.toFixed(6)}°` : 'N/A',
+        endLon: data.endLon ? `${data.endLon.toFixed(6)}°` : 'N/A',
+        startAddress: data.startAddress || 'N/A',
+        endAddress: data.endAddress || 'N/A',
+        duration: data.duration ? `${(data.duration / 1000 / 60).toFixed(2)} min` : 'N/A',
+        driverUniqueId: data.driverUniqueId || 'N/A',
+        driverName: data.driverName || 'N/A',
+        startPositionId: data.startPositionId || 'N/A',  // Added missing field
+        endPositionId: data.endPositionId || 'N/A'       // Added missing field
+    }));
+    
+      console.log('Processed Data:', processedData);
 
-          console.log('Processed Events:', processedEvents);
+      setFilteredRows(processedData);
+      setTotalResponses(processedData.length);
 
-          setFilteredRows(processedEvents.map(event => ({
-              ...event,
-              isSelected: false
-          })));
+    } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      // Handle Excel file
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, 'report.xlsx'); // Save Excel file
 
-          setTotalResponses(processedEvents.length);
-      } else {
-          console.error('Expected an array but got:', response.data);
-          alert('Unexpected data format.');
-      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        console.log('Extracted JSON from Excel:', jsonData);
+
+        // Process the data from Excel
+        const processedDataFromExcel = jsonData.map(data => ({
+          deviceId: data.deviceId || 'N/A',
+          deviceName: data.deviceName || 'N/A',
+          distance: data.distance ? `${data.distance.toFixed(2)} mi` : 'N/A',
+          averageSpeed: data.averageSpeed ? `${data.averageSpeed.toFixed(2)} mph` : 'N/A',
+          maxSpeed: data.maxSpeed ? `${data.maxSpeed.toFixed(2)} mph` : 'N/A',
+          spentFuel: data.spentFuel ? `${data.spentFuel.toFixed(2)} L` : 'N/A',
+          startOdometer: data.startOdometer ? `${data.startOdometer.toFixed(2)} mi` : 'N/A',
+          endOdometer: data.endOdometer ? `${data.endOdometer.toFixed(2)} mi` : 'N/A',
+          startTime: data.startTime ? new Date(data.startTime).toLocaleString() : 'N/A',
+          endTime: data.endTime ? new Date(data.endTime).toLocaleString() : 'N/A',
+          startLat: data.startLat ? `${data.startLat.toFixed(6)}°` : 'N/A',
+          startLon: data.startLon ? `${data.startLon.toFixed(6)}°` : 'N/A',
+          endLat: data.endLat ? `${data.endLat.toFixed(6)}°` : 'N/A',
+          endLon: data.endLon ? `${data.endLon.toFixed(6)}°` : 'N/A',
+          startAddress: data.startAddress || 'N/A',
+          endAddress: data.endAddress || 'N/A',
+          duration: data.duration ? `${(data.duration / 1000 / 60).toFixed(2)} min` : 'N/A',
+          driverUniqueId: data.driverUniqueId || 'N/A',
+          driverName: data.driverName || 'N/A'
+        }));
+
+        setFilteredRows(processedDataFromExcel);
+        setTotalResponses(processedDataFromExcel.length);
+      };
+
+      reader.readAsArrayBuffer(blob);
+    } else {
+      throw new Error('Unexpected content type: ' + response.headers['content-type']);
+    }
   } catch (error) {
-      console.error('Fetch data error:', error);
-      alert('An error occurred while fetching data.');
+    console.error('Error fetching the report:', error);
+    alert('Failed to download or process report.');
   } finally {
-      setLoading(false);
+    setLoading(false);
   }
 };
+
 // const sortedData = React.useMemo(() => {
 //   if (!sortConfig.key) return data;
 //   return [...data].sort((a, b) => {
@@ -931,7 +1696,7 @@ const fetchData = async (url) => {
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Events 
+       Route 
       </h1>
       <div>
         <div
@@ -1034,7 +1799,7 @@ const fetchData = async (url) => {
         ))}
       </select>
 
-      <select
+      {/* <select
         value={selectedGroup}
         onChange={(e) => setSelectedGroup(e.target.value)}
         style={{ marginRight: "10px", padding: "5px" }}
@@ -1043,7 +1808,7 @@ const fetchData = async (url) => {
         {groups.map(group => (
           <option key={group.id} value={group.id}>{group.name}</option>
         ))}
-      </select>
+      </select> */}
 
       <div style={{ marginRight: "10px", padding: "5px" }}>
         <label htmlFor="start-date">Start Date & Time:</label>
@@ -1074,7 +1839,7 @@ const fetchData = async (url) => {
         Show
       </button>
 
-      {/* {apiUrl && (
+      {apiUrl && (
         <div style={{ marginTop: '10px' }}>
           <label htmlFor="api-url">Generated API URL:</label>
           <textarea
@@ -1085,7 +1850,7 @@ const fetchData = async (url) => {
             style={{ width: '100%', padding: '5px' }}
           ></textarea>
         </div>
-      )} */}
+      )}
     </div>
 
        
@@ -1331,7 +2096,7 @@ const fetchData = async (url) => {
                 >
                   <Switch checked={row.isSelected} color="primary" />
                 </TableCell>
-                {COLUMNS()
+                {/* {COLUMNS()
                   .filter((col) => columnVisibility[col.accessor])
                   .map((column) => {
                     const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
@@ -1353,7 +2118,32 @@ const fetchData = async (url) => {
                         {column.Cell ? column.Cell({ value }) : value}
                       </TableCell>
                     );
-                  })}
+                  })} */}
+                  {COLUMNS()
+  .filter((col) => columnVisibility[col.accessor])
+  .map((column) => {
+    // Ensure column.accessor is a string before calling split
+    const accessor = typeof column.accessor === 'string' ? column.accessor : '';
+    const value = accessor.split('.').reduce((acc, part) => acc && acc[part], row);
+
+    return (
+      <TableCell
+        key={accessor}
+        align={column.align || 'left'}
+        style={{
+          borderRight: "1px solid #e0e0e0",
+          paddingTop: "4px",
+          paddingBottom: "4px",
+          borderBottom: "none",
+          backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+          fontSize: "smaller",
+        }}
+      >
+        {column.Cell ? column.Cell({ value }) : value}
+      </TableCell>
+    );
+  })}
+
               </TableRow>
             ))
         )}
@@ -1497,3 +2287,40 @@ const fetchData = async (url) => {
     </>
   );
 };
+
+
+// const handleShowClick = () => {
+//   const formattedStartDate = formatToUTC(startDate);
+//   const formattedEndDate = formatToUTC(endDate);
+
+//   if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
+//     alert('Please fill all fields');
+//     return;
+//   }
+
+//   // Construct the API URL
+//   const url = `https://rocketsalestracker.com/api/reports/events?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&type=${encodeURIComponent(selectedNotification)}`;
+  
+//   setApiUrl(url); // Update the state with the generated URL
+//   fetchData(url); // Call fetchData with the generated URL
+// };
+// const formatToUTC = (localDateTime) => {
+//   if (!localDateTime) return '';
+//   const localDate = new Date(localDateTime);
+//   const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+//   return utcDate.toISOString();
+// };
+
+
+{/* <select
+value={selectedNotification}
+onChange={(e) => setSelectedNotification(e.target.value)}
+style={{ marginRight: '10px', padding: '5px' }}
+>
+<option value="">Select Notification Type</option>
+{notificationTypes.map((notification) => (
+  <option key={notification.type} value={notification.type}>
+    {notification.type}
+  </option>
+))}
+</select> */}

@@ -2028,25 +2028,25 @@ export const Server = () => {
   // const [formData, setFormData] = useState({});
   const [formData, setFormData] = useState({
     attributes: {
-      speedUnit: "km/h",
-      timezone: "Asia/Kolkata",
-      logo: "credenceLogo.png",
-      colorPrimary: "yellow",
-      locationIqKey: "",
-      mapOnSelect: true,
-      colorSecondary: "Blue",
-      mapGeofences: true,
-      mapDirection: "",
-      soundEvents: "",
-      darkMode: true,
-      distanceUnit: "km",
-      time: "Africa/Bissau",
-      distance: "km",
-      volumeUnit: "usGal",
-      altitudeUnit: "ft",
-      per: "Permission Details",
-      attri: "Attribute Details",
-      newatrri: "newone",
+      // speedUnit: "km/h",
+      // timezone: "Asia/Kolkata",
+      // logo: "credenceLogo.png",
+      // colorPrimary: "yellow",
+      // locationIqKey: "",
+      // mapOnSelect: true,
+      // colorSecondary: "Blue",
+      // mapGeofences: true,
+      // mapDirection: "",
+      // soundEvents: "",
+      // darkMode: true,
+      // distanceUnit: "km",
+      // time: "Africa/Bissau",
+      // distance: "km",
+      // volumeUnit: "usGal",
+      // altitudeUnit: "ft",
+      // per: "Permission Details",
+      // attri: "Attribute Details",
+      // newatrri: "newone",
     },
   });
   const [loading, setLoading] = useState(true);
@@ -2319,13 +2319,7 @@ export const Server = () => {
     setSnackbarOpen(false);
   };
 
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData({
-  //     ...formData,
-  //     [name]: value,
-  //   });
-  // };
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
   
@@ -2655,16 +2649,7 @@ const [showAddForm, setShowAddForm] = useState(false);
 
 // const [inputValue, setInputValue] = useState(''); // for new attribute name
 const [attributeType, setAttributeType] = useState(''); // for new attribute type (String, Boolean, etc.)
-// const [savedValue, setSavedValue] = useState(''); // to track the saved value
-// const [isInputVisible, setIsInputVisible] = useState(false); // toggle for input visibility
 
-// Handle input change
-
-
-// Handle the Add button click
-
-
-// Handle saving new attribute
 const handleSaveButtonClick = () => {
   if (inputValue && attributeType) {
     // Add the new attribute to the attributes object in formData
@@ -2958,44 +2943,7 @@ const attributes = formData.attributes || {};
             ))}
           </Box>
         </Modal>
-        {/* <Modal open={editModalOpen} onClose={handleModalClose}>
-          <Box sx={style}>
-            {/* <h2>Edit Row</h2> 
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleEditSubmit}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Modal> */}
+      
 <Modal open={editModalOpen} onClose={handleModalClose}>
   <Box sx={style}>
     <Box
@@ -3289,86 +3237,7 @@ const attributes = formData.attributes || {};
 </FormControl>
         ) : col.accessor === 'attributes.attri' && col.Header === 'All Attri' ? (
 
-        //   <FormControl fullWidth sx={{ marginBottom: '10px' }} >
-        //   <InputLabel id="all-attri-select-label">
-        //     All Attributes<span style={{ color: 'red' }}> *</span>
-        //   </InputLabel>
-        //   <Select
-        //     labelId="all-attri-select-label"
-        //     label="All Attributes"
-        //     name="attributes.attri"
-        //     value={formData.attributes?.attri || ''}
-        //     onChange={handleInputChange}
-        //     required
-        //   >
-        //     {Object.keys(formData.attributes || {}).map((key) => (
-        //       <MenuItem key={key} value={key}>
-        //         {key}
-        //         <div>
-        //           <TextField
-        //             placeholder={`Enter value for ${key}`}
-        //             size="small"
-        //             variant="outlined"
-        //             style={{ marginLeft: '10px' }}
-        //             value={formData.attributes[key]}
-        //             onChange={(e) => {
-        //               setFormData((prevFormData) => ({
-        //                 ...prevFormData,
-        //                 attributes: {
-        //                   ...prevFormData.attributes,
-        //                   [key]: e.target.value,
-        //                 },
-        //               }));
-        //             }}
-        //           />
-        //         </div>
-        //       </MenuItem>
-        //     ))}
-      
-        //     {/* Add more attributes dynamically */}
-        //     <MenuItem value="">
-        //       <Button variant="contained" color="primary" onClick={handleAddButtonClick12}>
-        //         Add New Attribute
-        //       </Button>
-        //     </MenuItem>
-        //   </Select>
-      
-        //   {isInputVisible && (
-        //     <>
-        //       <TextField
-        //         id="new-attribute-name"
-        //         variant="outlined"
-        //         placeholder="Enter attribute name"
-        //         value={inputValue}
-        //         onChange={handleChange}
-        //         fullWidth
-        //         margin="normal"
-        //       />
-        //       <Select
-        //         id="new-attribute-type"
-        //         value={attributeType}
-        //         onChange={handleTypeChange}
-        //         displayEmpty
-        //         fullWidth
-        //       >
-        //         <MenuItem value="" disabled>Select Type</MenuItem>
-        //         <MenuItem value="String">String</MenuItem>
-        //         <MenuItem value="Boolean">Boolean</MenuItem>
-        //         <MenuItem value="Number">Number</MenuItem>
-        //       </Select>
-      
-        //       <Button variant="contained" color="secondary" onClick={handleSaveButtonClick}>
-        //         Save
-        //       </Button>
-        //     </>
-        //   )}
-      
-        //   {savedValue && (
-        //     <Box mt={2}>
-        //       <strong>Saved Attribute:</strong> {savedValue}
-        //     </Box>
-        //   )}
-        // </FormControl>
+       
         <FormControl fullWidth sx={{ marginBottom: '10px' }} >
         <InputLabel id="all-attri-select-label">
           All Attributes<span style={{ color: 'red' }}> *</span>
