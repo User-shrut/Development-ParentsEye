@@ -55,6 +55,7 @@ export const StudentDetail = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
+  const { role } = useContext(TotalResponsesContext);
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
@@ -85,25 +86,74 @@ export const StudentDetail = () => {
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/children-by-school ",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+      if (role == 1) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
       console.log("fetch data", response.data); // Log the entire response data
       // fetchgeofencepoint();
-      if (Array.isArray(response.data)) {
-        const allData = response.data
-          .filter(
-            (school) =>
-              Array.isArray(school.children) && school.children.length > 0
-          ) // Filter schools with non-empty children arrays
-          .flatMap((school) => school.children);
+      if (response?.data) {
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.children) && branch.children.length > 0
+                    ? branch.children
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.children) && branch.children.length > 0
+                  ? branch.children
+                  : []
+              )
+            : response?.data.data;
+
+        console.log(allData);
+
+        // if (role == 1) {
+        //   allData = response.data
+        //     .filter(
+        //       (school) =>
+        //         Array.isArray(school.children) && school.children.length > 0
+        //     ) // Filter schools with non-empty children arrays
+        //     .flatMap((school) => school.children);
+
+        //   console.log("admin response : ", allData);
+        // } else if (role == 2) {
+        //   allData = response.data.children;
+        //   console.log("school wise data: ", allData);
+        // }
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -279,7 +329,7 @@ export const StudentDetail = () => {
       .map((row) => {
         // Log each row to check its structure
         console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
+        return row.childId; // Ensure id exists and is not undefined
       });
 
     console.log("Selected IDs:", selectedIds);
@@ -298,11 +348,15 @@ export const StudentDetail = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl =
-        "https://schoolmanagement-1-hurx.onrender.com/school/delete";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
 
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/child`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete/child`
+          : `${process.env.REACT_APP_BRANCH_API}/delete/child`;
+
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
@@ -394,11 +448,62 @@ export const StudentDetail = () => {
     setSnackbarOpen(false);
   };
 
+  // const handleEditSubmit = async () => {
+  //   // Define the API URL and authentication token
+  //   const apiUrl = `https://schoolmanagement-5-zr7q.onrender.com/superadmin/update-child/${selectedRow._id}`; // Replace with your actual API URL
+  //   const token = localStorage.getItem('token');
+  //   // Prepare the updated data
+  //   const updatedData = {
+  //     ...formData,
+  //     isSelected: false,
+  //   };
+
+  //   try {
+  //     // Perform the PUT request
+  //     const response = await fetch(apiUrl, {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify(updatedData),
+  //     });
+
+  //     // Check if the response is okay (status code 200-299)
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+  //     // Optionally: Process the response data if needed
+  //     const result = await response.json();
+  //     console.log("Update successful:", result);
+  //     alert("updated successfully");
+  //     // Update local state after successful API call
+  //     const updatedRows = filteredRows.map((row) =>
+  //       row.id === selectedRow.id
+  //         ? { ...row, ...formData, isSelected: false }
+  //         : row
+  //     );
+  //     setFilteredRows(updatedRows);
+
+  //     // Close the modal
+  //     handleModalClose();
+  //     fetchData();
+  //   } catch (error) {
+  //     console.error("Error updating row:", error);
+  //     alert("error updating code");
+  //     // Optionally: Handle the error (e.g., show a notification or message to the user)
+  //   }
+  //   fetchData();
+  // };
+
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-1-hurx.onrender.com/school/update-child/${selectedRow._id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
+    const token = localStorage.getItem("token");
+    const apiUrl =
+      role == 1
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child`
+        : `${process.env.REACT_APP_SCHOOL_API}/update-child/${selectedRow.childId}`;
 
     // Prepare the updated data
     const updatedData = {
@@ -408,7 +513,7 @@ export const StudentDetail = () => {
 
     try {
       // Perform the PUT request
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${apiUrl}/${updatedData.childId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -425,10 +530,11 @@ export const StudentDetail = () => {
       // Optionally: Process the response data if needed
       const result = await response.json();
       console.log("Update successful:", result);
-      alert("updated successfully");
+      alert("Updated successfully");
+
       // Update local state after successful API call
       const updatedRows = filteredRows.map((row) =>
-        row.id === selectedRow.id
+        row._id === selectedRow._id // Make sure to use the correct ID property
           ? { ...row, ...formData, isSelected: false }
           : row
       );
@@ -436,13 +542,13 @@ export const StudentDetail = () => {
 
       // Close the modal
       handleModalClose();
+
+      // Fetch the latest data
       fetchData();
     } catch (error) {
       console.error("Error updating row:", error);
-      alert("error updating code");
-      // Optionally: Handle the error (e.g., show a notification or message to the user)
+      alert(`Error updating row: ${error.message}`);
     }
-    fetchData();
   };
 
   const handleAddSubmit = async () => {
@@ -455,7 +561,7 @@ export const StudentDetail = () => {
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-1-hurx.onrender.com/parent/register",
+        "https://schoolmanagement-5-zr7q.onrender.com/parent/register",
         {
           method: "POST",
           headers: {
@@ -508,7 +614,7 @@ export const StudentDetail = () => {
         );
 
         const data = response.data;
-        console.log(response.data);
+        console.log("pickup points: ", response.data);
         // Transform data to create dropdown options
         const options = data.map((item) => ({
           value: item.name,
@@ -1095,7 +1201,7 @@ export const StudentDetail = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Student</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>

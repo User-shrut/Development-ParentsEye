@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect, useContext, Component } from "react";
 import axios from "axios";
 import Paper from "@mui/material/Paper";
@@ -78,56 +75,101 @@ export const Parent = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { role } = useContext(TotalResponsesContext);
 
-
-
-  
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual token
-      const response = await axios.get(
-        "https://schoolmanagement-6-ts84.onrender.com/school/parents",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
+
+      const token = localStorage.getItem("token");
+      let response;
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-parents`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-parents`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-parents`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+
       console.log("fetch data", response.data); // Log the entire response data
-  
-      if (Array.isArray(response.data.parents)) {
-        const allData = response.data.parents;
-  
+
+      if (response.data) {
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.parents) && branch.parents.length > 0
+                  ? branch.parents
+                  : []
+              )
+            )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.parents) && branch.parents.length > 0
+                  ? branch.parents
+                  : []
+              )
+            
+            : response.data.parents;
+
+        console.log(allData);
+
         // Apply local date filtering if dates are provided
         const filteredData =
           startDate || endDate
             ? allData.filter((row) => {
-                const registrationDate = parseDate(row.formattedRegistrationDate);
+                const registrationDate = parseDate(
+                  row.formattedRegistrationDate
+                );
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);
-  
+
                 return (
                   (!startDate || registrationDate >= start) &&
                   (!endDate || registrationDate <= end)
                 );
               })
             : allData; // If no date range, use all data
-  
+
         const reversedData = filteredData.reverse();
-  
+
         // Add fields for all child names and number of children
-        const processedData = reversedData.map(parent => {
-          const childNames = parent.children.map(child => child.childName).join(", ");
+        const processedData = reversedData.map((parent) => {
+          const childNames = parent.children
+            .map((child) => child.childName)
+            .join(", ");
           const numChildren = parent.children.length;
           return { ...parent, childNames, numChildren };
         });
-  
+
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(processedData);
-  
-        setFilteredRows(processedData.map((row) => ({ ...row, isSelected: false })));
+
+        setFilteredRows(
+          processedData.map((row) => ({ ...row, isSelected: false }))
+        );
         setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
         setTotalResponses(reversedData.length);
       } else {
@@ -139,7 +181,7 @@ export const Parent = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
-  
+
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -265,13 +307,25 @@ export const Parent = () => {
     console.log("Filtered rows:", filteredRows);
 
     // Get selected row IDs
-    const selectedIds = filteredRows
+    let selectedIds;
+    if(role == 3){
+      selectedIds = filteredRows
       .filter((row) => row.isSelected)
       .map((row) => {
         // Log each row to check its structure
         console.log("Processing row:", row);
         return row._id; // Ensure id exists and is not undefined
       });
+    }else {
+      selectedIds = filteredRows
+      .filter((row) => row.isSelected)
+      .map((row) => {
+        // Log each row to check its structure
+        console.log("Processing row:", row);
+        return row.parentId; // Ensure id exists and is not undefined
+      });
+    }
+    
 
     console.log("Selected IDs:", selectedIds);
 
@@ -290,10 +344,12 @@ export const Parent = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-9.onrender.com/school/delete-parent";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-parent`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete-parent`
+          : `${process.env.REACT_APP_BRANCH_API}/delete-parent`;
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
@@ -393,29 +449,47 @@ export const Parent = () => {
     });
   };
 
-  
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-9.onrender.com/school/update-paren/${selectedRow.id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
-
+    const apiUrl =
+      role == 1
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent`
+        : role == 2
+        ? `${process.env.REACT_APP_SCHOOL_API}/update-parent`
+        : `${process.env.REACT_APP_BRANCH_API}/update-parent`;
+    const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
       ...formData,
       isSelected: false,
     };
 
+    console.log(updatedData);
+
+
     try {
       // Perform the PUT request
-      const response = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
+      let response;
+      if(role == 3){
+        response = await fetch(`${apiUrl}/${updatedData._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      }else {
+        response = await fetch(`${apiUrl}/${updatedData.parentId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      }
+      
 
       // Check if the response is okay (status code 200-299)
       if (!response.ok) {
@@ -464,8 +538,8 @@ export const Parent = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert('record created successfully');
-    
+      alert("record created successfully");
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -482,51 +556,58 @@ export const Parent = () => {
       console.log("error occured in post method");
     } catch (error) {
       console.error("Error during POST request:", error);
-      alert('unable to create record');
+      alert("unable to create record");
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
 
-
   const handleApprove = async (_id) => {
     try {
-      const response = await axios.post(`https://schoolmanagement-9.onrender.com/school/registerStatus/66c2ef6c8f609a5f925a90dd`, {
-        action: 'approve'
-      }, {
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0`, // Replace with your token
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`,
+        {
+          action: "approve",
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Replace with your token
+          },
+        }
+      );
       if (response.status === 200) {
         setSnackbarOpen(true);
-        fetchData(); // Refresh data
+        fetchData();
+        alert("your request is aprove"); // Refresh data
       }
     } catch (error) {
-      console.error('Error approving request:', error);
+      console.error("Error approving request:", error);
     }
   };
-  
-  
-
 
   const handleReject = async (_id) => {
     try {
-      const response = await axios.post(`https://schoolmanagement-9.onrender.com/school/registerStatus/${_id}`, {
-        action: 'reject'
-      }, {
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0`, // Replace with your token
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`,
+        {
+          action: "reject",
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Replace with your token
+          },
+        }
+      );
       if (response.status === 200) {
         setSnackbarOpen(true);
         fetchData(); // Refresh data
+        alert("request is rejected");
       }
     } catch (error) {
-      console.error('Error rejecting request:', error);
+      console.error("Error rejecting request:", error);
     }
   };
-
 
   return (
     <>
@@ -681,201 +762,228 @@ export const Parent = () => {
                 borderRadius: "7px",
               }}
             >
-       <Table stickyHeader aria-label="sticky table" style={{ border: "1px solid black" }}>
-  <TableHead>
-    <TableRow
-      style={{
-        borderBottom: "1px solid black",
-        borderTop: "1px solid black",
-      }}
-    >
-      <TableCell
-        padding="checkbox"
-        style={{
-          borderRight: "1px solid #e0e0e0",
-          borderBottom: "2px solid black",
-        }}
-      >
-        <Switch checked={selectAll} onChange={handleSelectAll} color="primary" />
-      </TableCell>
-      {COLUMNS()
-        .filter((col) => columnVisibility[col.accessor])
-        .map((column) => (
-          <TableCell
-            key={column.accessor}
-            align={column.align}
-            style={{
-              minWidth: column.minWidth,
-              cursor: "pointer",
-              borderRight: "1px solid #e0e0e0",
-              borderBottom: "2px solid black",
-              padding: "4px 4px",
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-            onClick={() => requestSort(column.accessor)}
-          >
-            {column.Header}
-            {sortConfig.key === column.accessor ? (
-              sortConfig.direction === "ascending" ? (
-                <ArrowUpwardIcon fontSize="small" />
-              ) : (
-                <ArrowDownwardIcon fontSize="small" />
-              )
-            ) : null}
-          </TableCell>
-        ))}
-      <TableCell
-        style={{
-          minWidth: 150, // Adjust the minWidth as needed
-          cursor: "default",
-          borderRight: "1px solid #e0e0e0",
-          borderBottom: "2px solid black",
-          padding: "4px 4px",
-          textAlign: "center",
-          fontWeight: "bold",
-        }}
-      >
-        All Children
-      </TableCell>
-      <TableCell
-        style={{
-          minWidth: 150, // Adjust the minWidth as needed
-          cursor: "default",
-          borderRight: "1px solid #e0e0e0",
-          borderBottom: "2px solid black",
-          padding: "4px 4px",
-          textAlign: "center",
-          fontWeight: "bold",
-        }}
-      >
-        No. of Children
-      </TableCell>
-      <TableCell style={{
-           
-           cursor: "pointer",
-           borderRight: "1px solid #e0e0e0",
-           borderBottom: "2px solid black",
-           padding: "4px 4px",
-           textAlign: "center",
-           fontWeight: "bold",
-         }}>Actions</TableCell>
-    </TableRow>
-  </TableHead>
-  <TableBody>
-    {sortedData.length === 0 ? (
-      <TableRow>
-        <TableCell
-          colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length + 2} // +2 for the new columns
-          style={{
-            textAlign: 'center',
-            padding: '16px',
-            fontSize: '16px',
-            color: '#757575',
-          }}
-        >
-          <h4>No Data Available</h4>
-        </TableCell>
-      </TableRow>
-    ) : (
-      sortedData
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .map((row, index) => (
-          <TableRow
-            hover
-            role="checkbox"
-            tabIndex={-1}
-            key={row._id}
-            onClick={() => handleRowSelect(page * rowsPerPage + index)}
-            selected={row.isSelected}
-            style={{
-              backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-              borderBottom: "none",
-            }}
-          >
-            <TableCell padding="checkbox" style={{ borderRight: "1px solid #e0e0e0" }}>
-              <Switch checked={row.isSelected} color="primary" />
-            </TableCell>
-            {COLUMNS()
-              .filter((col) => columnVisibility[col.accessor])
-              .map((column) => {
-                const value = row[column.accessor];
-                return (
-                  <TableCell
-                    key={column.accessor}
-                    align={column.align}
+              <Table
+                stickyHeader
+                aria-label="sticky table"
+                style={{ border: "1px solid black" }}
+              >
+                <TableHead>
+                  <TableRow
                     style={{
-                      borderRight: "1px solid #e0e0e0",
-                      paddingTop: "4px",
-                      paddingBottom: "4px",
-                      borderBottom: "none",
-                      backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                      fontSize: "smaller",
+                      borderBottom: "1px solid black",
+                      borderTop: "1px solid black",
                     }}
                   >
-                    {column.format && typeof value === "number"
-                      ? column.format(value)
-                      : value}
-                  </TableCell>
-                );
-              })}
-            <TableCell
-              style={{
-                borderRight: "1px solid #e0e0e0",
-                paddingTop: "4px",
-                paddingBottom: "4px",
-                borderBottom: "none",
-                backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                fontSize: "smaller",
-              }}
-            >
-              {row.childNames}
-            </TableCell>
-            <TableCell
-              style={{
-                borderRight: "1px solid #e0e0e0",
-                paddingTop: "4px",
-                paddingBottom: "4px",
-                borderBottom: "none",
-                backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                fontSize: "smaller",
-              }}
-            >
-              {row.numChildren}
-            </TableCell>
-            <TableCell style={{
-              borderRight: "1px solid #e0e0e0",
-              paddingTop: "4px",
-              paddingBottom: "4px",
-              borderBottom: "none",
-              display:'flex',
-              textAlign:'center',
-              justifyContent:'space-around',
-
-              backgroundColor:
-                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-              fontSize: "smaller", // White for even rows, light grey for odd rows
-            }}>
-                    <Button
-                      onClick={() => handleApprove(row._id)}
-                      color="primary"
+                    <TableCell
+                      padding="checkbox"
+                      style={{
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                      }}
                     >
-                      Approve
-                    </Button>
-                    <Button
-                      onClick={() => handleReject(row._id)}
-                      color="secondary"
+                      <Switch
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                        color="primary"
+                      />
+                    </TableCell>
+                    {COLUMNS()
+                      .filter((col) => columnVisibility[col.accessor])
+                      .map((column) => (
+                        <TableCell
+                          key={column.accessor}
+                          align={column.align}
+                          style={{
+                            minWidth: column.minWidth,
+                            cursor: "pointer",
+                            borderRight: "1px solid #e0e0e0",
+                            borderBottom: "2px solid black",
+                            padding: "4px 4px",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                          }}
+                          onClick={() => requestSort(column.accessor)}
+                        >
+                          {column.Header}
+                          {sortConfig.key === column.accessor ? (
+                            sortConfig.direction === "ascending" ? (
+                              <ArrowUpwardIcon fontSize="small" />
+                            ) : (
+                              <ArrowDownwardIcon fontSize="small" />
+                            )
+                          ) : null}
+                        </TableCell>
+                      ))}
+                    <TableCell
+                      style={{
+                        minWidth: 150, // Adjust the minWidth as needed
+                        cursor: "default",
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
                     >
-                      Reject
-                    </Button>
-                  </TableCell>
-          </TableRow>
-        ))
-   ) }
-  </TableBody>
-</Table>
+                      All Children
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        minWidth: 150, // Adjust the minWidth as needed
+                        cursor: "default",
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      No. of Children
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        cursor: "pointer",
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Actions
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sortedData.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={
+                          COLUMNS().filter(
+                            (col) => columnVisibility[col.accessor]
+                          ).length + 2
+                        } // +2 for the new columns
+                        style={{
+                          textAlign: "center",
+                          padding: "16px",
+                          fontSize: "16px",
+                          color: "#757575",
+                        }}
+                      >
+                        <h4>No Data Available</h4>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    sortedData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row, index) => (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={row._id}
+                          onClick={() =>
+                            handleRowSelect(page * rowsPerPage + index)
+                          }
+                          selected={row.isSelected}
+                          style={{
+                            backgroundColor:
+                              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                            borderBottom: "none",
+                          }}
+                        >
+                          <TableCell
+                            padding="checkbox"
+                            style={{ borderRight: "1px solid #e0e0e0" }}
+                          >
+                            <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          {COLUMNS()
+                            .filter((col) => columnVisibility[col.accessor])
+                            .map((column) => {
+                              const value = row[column.accessor];
+                              return (
+                                <TableCell
+                                  key={column.accessor}
+                                  align={column.align}
+                                  style={{
+                                    borderRight: "1px solid #e0e0e0",
+                                    paddingTop: "4px",
+                                    paddingBottom: "4px",
+                                    borderBottom: "none",
+                                    backgroundColor:
+                                      index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                                    fontSize: "smaller",
+                                  }}
+                                >
+                                  {column.format && typeof value === "number"
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              );
+                            })}
+                          <TableCell
+                            style={{
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              fontSize: "smaller",
+                            }}
+                          >
+                            {row.childNames}
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              fontSize: "smaller",
+                            }}
+                          >
+                            {row.numChildren}
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              display: "flex",
+                              textAlign: "center",
+                              justifyContent: "space-around",
 
-
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              fontSize: "smaller", // White for even rows, light grey for odd rows
+                            }}
+                          >
+                            <Button
+                              onClick={() => handleApprove(row._id)}
+                              color="primary"
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              onClick={() => handleReject(row._id)}
+                              color="secondary"
+                            >
+                              Reject
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                  )}
+                </TableBody>
+              </Table>
             </TableContainer>
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
@@ -920,7 +1028,7 @@ export const Parent = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(0, -1)
+              .slice(1, -2)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1014,8 +1122,3 @@ export const Parent = () => {
     </>
   );
 };
-
-
-
-
-

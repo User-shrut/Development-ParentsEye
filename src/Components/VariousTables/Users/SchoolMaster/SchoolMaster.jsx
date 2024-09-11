@@ -81,7 +81,7 @@ const SchoolMaster = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/getschools",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -385,9 +385,7 @@ const SchoolMaster = () => {
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
     const apiUrl = `https://schoolmanagement-4-pzsf.onrender.com/school/update-supervisor/${selectedRow.id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
-
+    const token = localStorage.getItem('token');
     // Prepare the updated data
     const updatedData = {
       ...formData,
@@ -445,7 +443,7 @@ const SchoolMaster = () => {
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-4-e1x2.onrender.com/superadmin/school-register",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/school-register`,
         {
           method: "POST",
           headers: {

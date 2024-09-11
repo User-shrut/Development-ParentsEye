@@ -10,83 +10,77 @@ export const COLUMNS = () => [
   //     />
   //   ),
   // },
-  
+
   {
-    Header: 'Student Name',
-    accessor: 'childName',
+    Header: "Student Name",
+    accessor: "childName",
   },
-  
- 
+
   {
-    Header: 'Class',
-    accessor: 'class',
+    Header: "Class",
+    accessor: "class",
   },
- 
+
   {
-    Header: 'Roll No.',
-    accessor: 'rollno',
-  },
-  {
-    Header: 'Section',
-    accessor: 'section',
+    Header: "Roll No.",
+    accessor: "rollno",
   },
   {
-    Header: 'School Name',
-    accessor: 'schoolName',
-  },
-  
-  {
-    Header: 'Child Age',
-    accessor: 'childAge',
-  },
-  
-  {
-    Header: 'Parent Name',
-    accessor: 'parentName', // accessing mapped field
+    Header: "Section",
+    accessor: "section",
   },
   {
-    Header: 'Parent Email',
-    accessor: 'email', // accessing mapped field
+    Header: "School Name",
+    accessor: "schoolName",
   },
   {
-  Header: 'Phone Number',
-  accessor: 'phone', // accessing nested field
-},
-{
-  Header: 'Password',
-  accessor: 'password', // accessing nested field
-  show:true,
-},
-  // {
-  //   Header: 'Password',
-  //   accessor: 'password',
-  // },
-  {
-    Header: 'Gender',
-    accessor: 'gender',
+    Header: "DOB",
+    accessor: "dateOfBirth",
   },
   {
-    Header: 'DOB',
-    accessor: 'dateOfBirth',
+    Header: "Child Age",
+    accessor: "childAge",
+  },
+
+  {
+    Header: "Parent Name",
+    accessor: "parentName", // accessing mapped field
   },
   {
-    Header: 'Device id',
-    accessor: 'deviceId',
+    Header: "Parent Email",
+    accessor: "email", // accessing mapped field
   },
   {
-    Header: 'Pick up point',
-    accessor: 'pickupPoint',
+    Header: "Phone Number",
+    accessor: "phone", // accessing nested field
   },
-  
   {
-    Header: 'Registration Date',
-    accessor: 'formattedRegistrationDate',
+    Header: "Password",
+    accessor: "password", // accessing nested field
+    show: true,
+  },
+
+  {
+    Header: "Gender",
+    accessor: "gender",
+  },
+
+  {
+    Header: "Device id",
+    accessor: "deviceId",
+  },
+  {
+    Header: "Pick up point",
+    accessor: "pickupPoint",
+  },
+
+  {
+    Header: "Registration Date",
+    accessor: "formattedRegistrationDate",
     Cell: ({ value }) => {
-      const [day, month, year] = value.split('-').map(Number);
+      const [day, month, year] = value.split("-").map(Number);
       const date = new Date(year, month - 1, day);
       return date.toLocaleDateString(); // Formats the date as MM/DD/YYYY or your locale's format
     },
   },
 ];
-
-

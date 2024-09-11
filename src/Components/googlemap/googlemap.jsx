@@ -268,7 +268,7 @@ useEffect(() => {
                       icon={<MdAccessTime style={{ color: "#74f27e" }} />}
                       text="12D 01H 04M"
                     />
-                    {/* <PopupElement icon={<FaRegSnowflake style={{color:"#aa9d6f"}} />} text="Ac off" /> */}
+                    <PopupElement icon={<FaRegSnowflake style={{color:"#aa9d6f"}} />} text="Ac off" />
                     <PopupElement
                       icon={<BsFillFuelPumpFill style={{ color: "#5fb1fe" }} />}
                       text="0.00 L"
