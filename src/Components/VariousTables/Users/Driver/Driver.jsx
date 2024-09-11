@@ -1266,7 +1266,7 @@ export const Driver = () => {
         try {
           const token = localStorage.getItem("token");
           const response = await axios.get(
-            `${process.env.REACT_APP_API}/parent/getschools`,
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
