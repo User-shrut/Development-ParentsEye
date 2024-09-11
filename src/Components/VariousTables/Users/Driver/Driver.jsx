@@ -1262,7 +1262,7 @@ export const Driver = () => {
   useEffect(() => {
     const fetchSchool = async (startDate = "", endDate = "") => {
       setLoading(true);
-      if (role == 1) {
+      if (role === 1) {
         try {
           const token = localStorage.getItem("token");
           const response = await axios.get(
@@ -1291,7 +1291,7 @@ export const Driver = () => {
         } finally {
           setLoading(false);
         }
-      } else if (role == 2) {
+      } else if (role === 2) {
         const apiUrl = `${process.env.REACT_APP_SCHOOL_API}/branches`;
         const token = localStorage.getItem("token");
 

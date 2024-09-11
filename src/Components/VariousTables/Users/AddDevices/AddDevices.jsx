@@ -584,7 +584,7 @@ useEffect(() => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-       "https://schoolmanagement-8.onrender.com/superadmin/getschools",
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
         {
           headers: {
             Authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI1NTE5MTc3fQ.bdjnmN2c20DjmMAvNL1L_TN59iGOa_MnblhcQQK5d4w",
