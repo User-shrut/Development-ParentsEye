@@ -31,6 +31,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
 import {Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { Category } from "@mui/icons-material";
+import "./Devices.css";
 //import { TextField } from '@mui/material';
 
 const style = {
@@ -90,7 +91,7 @@ const fetchData = async () => {
     const password = "123456@";
     const token = btoa(`${username}:${password}`);
 
-    const response = await axios.get("104.251.212.84/api/devices", {
+    const response = await axios.get("http://104.251.212.84/api/devices", {
       headers: {
         Authorization: `Basic ${token}`,
       },
@@ -234,9 +235,9 @@ const fetchData = async () => {
   
     try {
       // Define the API endpoint and credentials
-      const apiUrl = "https://rocketsalestracker.com/api/devices"; // Replace with actual API endpoint
-      const username = "school"; // Replace with your actual username
-      const password = "123456"; // Replace with your actual password
+      const apiUrl = "http://104.251.212.84/api/devices"; // Replace with actual API endpoint
+      const username = "hbtrack"; // Replace with your actual username
+      const password = "123456@"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
       // Send delete requests for each selected ID
@@ -335,9 +336,9 @@ const fetchData = async () => {
 
   
 const handleEditSubmit = async () => {
-  const apiUrl = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
-  const username = "school";
-  const password = "123456";
+  const apiUrl = `http://104.251.212.84/api/devices/${selectedRow.id}`;
+  const username = "hbtrack";
+  const password = "123456@";
   const token = btoa(`${username}:${password}`);
 
   // Ensure formData contains only necessary fields
@@ -391,9 +392,9 @@ const handleEditSubmit = async () => {
 const handleAddSubmit = async () => {
   try {
     // Define the API endpoint and credentials
-    const apiUrl = "https://rocketsalestracker.com/api/devices"; // Replace with actual API endpoint
-    const username = "school"; // Replace with your actual username
-    const password = "123456"; // Replace with your actual password
+    const apiUrl = "http://104.251.212.84/api/devices"; // Replace with actual API endpoint
+    const username = "hbtrack"; // Replace with your actual username
+    const password = "123456@"; // Replace with your actual password
     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
 
     // Prepare the new row object based on the expected schema
@@ -452,10 +453,10 @@ const [error, setError] = useState(null);
 useEffect(() => {
   const fetchGroups = async () => {
     try {
-      const response = await fetch('https://rocketsalestracker.com/api/groups', {
+      const response = await fetch('http://104.251.212.84/api/groups', {
         method: 'GET',
         headers: {
-          'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+          'Authorization': 'Basic ' + btoa('hbtrack:123456@') // Replace with actual credentials
         }
       });
 
@@ -498,10 +499,10 @@ const [calendarError, setCalendarError] = useState(null); // State to store erro
 useEffect(() => {
   const fetchCalendars = async () => {
     try {
-      const response = await fetch('https://rocketsalestracker.com/api/calendars', {
+      const response = await fetch('http://104.251.212.84/api/calendars', {
         method: 'GET',
         headers: {
-          'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+          'Authorization': 'Basic ' + btoa('hbtrack:123456@') // Replace with actual credentials
         }
       });
 
