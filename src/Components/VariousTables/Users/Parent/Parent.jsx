@@ -28,7 +28,24 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "@mui/material";
+import {
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Select,
+} from "@mui/material";
+
+import { jwtDecode } from "jwt-decode";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import dayjs from "dayjs";
 
 //import { TextField } from '@mui/material';
 
@@ -76,11 +93,14 @@ export const Parent = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const { role } = useContext(TotalResponsesContext);
+  const [schools, setSchools] = useState();
+  const [branches, setBranches] = useState();
+  const [buses, setBuses] = useState();
+
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-
       const token = localStorage.getItem("token");
       let response;
       if (role == 1) {
@@ -112,26 +132,24 @@ export const Parent = () => {
         );
       }
 
-
       console.log("fetch data", response.data); // Log the entire response data
 
       if (response.data) {
         const allData =
           role == 1
             ? response?.data.data.flatMap((school) =>
-              school.branches.flatMap((branch) =>
-                Array.isArray(branch.parents) && branch.parents.length > 0
-                  ? branch.parents
-                  : []
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.parents) && branch.parents.length > 0
+                    ? branch.parents
+                    : []
+                )
               )
-            )
             : role == 2
             ? response?.data.branches.flatMap((branch) =>
                 Array.isArray(branch.parents) && branch.parents.length > 0
                   ? branch.parents
                   : []
               )
-            
             : response.data.parents;
 
         console.log(allData);
@@ -308,24 +326,23 @@ export const Parent = () => {
 
     // Get selected row IDs
     let selectedIds;
-    if(role == 3){
+    if (role == 3) {
       selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
-    }else {
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row._id; // Ensure id exists and is not undefined
+        });
+    } else {
       selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row.parentId; // Ensure id exists and is not undefined
-      });
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.parentId; // Ensure id exists and is not undefined
+        });
     }
-    
 
     console.log("Selected IDs:", selectedIds);
 
@@ -443,9 +460,67 @@ export const Parent = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const decoded = jwtDecode(localStorage.getItem("token"));
+    console.log(decoded.id);
+
+    if (role === 2 && name === "branchName") {
+      setFormData({
+        ...formData,
+        schoolName: decoded.schoolName, // Fetch schoolName from token
+        [name]: value, // Update branch name
+      });
+    } else if (name === "schoolName") {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+      const selectedSchoolData = schools.find(
+        (school) => school.schoolName === value
+      );
+
+      console.log(selectedSchoolData);
+      if (selectedSchoolData) {
+        const allBranches = [];
+        if (selectedSchoolData.branchName) {
+          allBranches.push({
+            branchName: selectedSchoolData.branchName,
+            branchId: selectedSchoolData._id,
+          });
+        }
+
+        if (
+          selectedSchoolData.branches &&
+          selectedSchoolData.branches.length > 0
+        ) {
+          selectedSchoolData.branches.forEach((branch) => {
+            allBranches.push({
+              branchName: branch.branchName,
+              branchId: branch._id,
+            });
+          });
+        }
+
+        setBranches(allBranches);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleBusChange = (e) => {
+    const { value } = e.target;
+
+    // Find the selected bus object based on the selected deviceId
+    const selectedBus = buses.find((bus) => bus.id === value);
+
+    // Update formData with both deviceId and busName
     setFormData({
       ...formData,
-      [name]: value,
+      deviceId: selectedBus.id, // Store deviceId
+      busName: selectedBus.name, // Store busName
     });
   };
 
@@ -466,11 +541,10 @@ export const Parent = () => {
 
     console.log(updatedData);
 
-
     try {
       // Perform the PUT request
       let response;
-      if(role == 3){
+      if (role == 3) {
         response = await fetch(`${apiUrl}/${updatedData._id}`, {
           method: "PUT",
           headers: {
@@ -479,7 +553,7 @@ export const Parent = () => {
           },
           body: JSON.stringify(updatedData),
         });
-      }else {
+      } else {
         response = await fetch(`${apiUrl}/${updatedData.parentId}`, {
           method: "PUT",
           headers: {
@@ -489,7 +563,6 @@ export const Parent = () => {
           body: JSON.stringify(updatedData),
         });
       }
-      
 
       // Check if the response is okay (status code 200-299)
       if (!response.ok) {
@@ -523,13 +596,15 @@ export const Parent = () => {
     try {
       const newRow = {
         ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
+        // id: filteredRows.length + 1,
+        // isSelected: false,
       };
+
+      console.log(newRow);
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-9.onrender.com/Parent/register",
+        `${process.env.REACT_APP_API}/Parent/register`,
         {
           method: "POST",
           headers: {
@@ -538,11 +613,11 @@ export const Parent = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert("record created successfully");
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      alert("record created successfully");
 
       // Assuming the server returns the created object
       const result = await response.json();
@@ -608,6 +683,81 @@ export const Parent = () => {
       console.error("Error rejecting request:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchSchool = async (startDate = "", endDate = "") => {
+      setLoading(true);
+      if (role == 1) {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log("fetch data", response.data);
+
+          if (Array.isArray(response.data.schools)) {
+            const allData = response.data.schools;
+            setSchools(allData);
+            console.log(allData);
+          } else {
+            console.error(
+              "Expected an array but got:",
+              response.data.supervisors
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else if (role == 2) {
+        const apiUrl = `${process.env.REACT_APP_SCHOOL_API}/branches`;
+        const token = localStorage.getItem("token");
+
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("fetch data branches :", response.data); // Log the entire response data
+
+        if (response.data) {
+          setBranches(response.data.branches);
+        }
+      }
+    };
+
+    const fetchBuses = async () => {
+      const url = "http://104.251.216.99:8082/api/devices";
+      const username = "school";
+      const password = "123456";
+
+      // Encode credentials to base64 using btoa
+      const token = btoa(`${username}:${password}`);
+
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+        });
+        setBuses(response.data);
+        console.log("Buses Data:", response.data);
+      } catch (error) {
+        console.error("Error fetching buses data:", error);
+      }
+    };
+
+    fetchBuses();
+    fetchSchool();
+  }, [addModalOpen, editModalOpen]);
 
   return (
     <>
@@ -1022,7 +1172,7 @@ export const Parent = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Edit Parent Details</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
@@ -1060,25 +1210,261 @@ export const Parent = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Parent</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
+
+            <TextField
+              key={"childName"}
+              label={"Student Name"}
+              variant="outlined"
+              name="childName"
+              value={formData["childName"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+
+            <FormControl
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <FormLabel
+                id="demo-row-radio-buttons-group-label"
+                sx={{ marginRight: 4 }} // Add some space between label and radio group
+              >
+                Gender
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="gender"
+                onChange={handleInputChange}
+              >
+                <FormControlLabel
+                  value="female"
+                  control={<Radio />}
+                  label="Female"
+                />
+                <FormControlLabel
+                  value="male"
+                  control={<Radio />}
+                  label="Male"
+                />
+              </RadioGroup>
+            </FormControl>
+
+            <FormControl
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <FormLabel
+                id="demo-row-radio-buttons-group-label"
+                sx={{ marginRight: 4 }} // Add some space between label and radio group
+              >
+                Date of Birth
+              </FormLabel>
+
+              <TextField
+                key={"childAge"}
+                type="date"
+                placeholder="Date of Birth"
+                variant="outlined"
+                name="dateOfBirth"
+                value={formData["dateOfBirth"] || ""}
+                onChange={handleInputChange}
+                sx={{ marginBottom: "10px", width:"200px" }}
+                fullWidth
+              />
+            </FormControl>
+
+            <TextField
+              key={"childAge"}
+              label={"Student Age"}
+              variant="outlined"
+              name="childAge"
+              value={formData["childAge"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+
+            <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+              <InputLabel id="demo-simple-select-label">Class</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                name="class"
+                value={formData["class"] || ""}
+                label="Class"
+                onChange={handleInputChange}
+              >
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={4}>4</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={6}>6</MenuItem>
+                <MenuItem value={7}>7</MenuItem>
+                <MenuItem value={8}>8</MenuItem>
+                <MenuItem value={9}>9</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              key={"roleno"}
+              label={"Roll No"}
+              variant="outlined"
+              name="rollno"
+              value={formData["rollno"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"section"}
+              label={"Section"}
+              variant="outlined"
+              name="section"
+              value={formData["section"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            {role == 1 ? (
+              <>
+                <FormControl
                   variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
                   sx={{ marginBottom: "10px" }}
                   fullWidth
-                />
-              ))}
+                >
+                  <InputLabel>{"School Name"}</InputLabel>
+
+                  <Select
+                    value={formData["schoolName"] || ""}
+                    onChange={handleInputChange}
+                    name="schoolName"
+                    label={"School Name"}
+                  >
+                    {schools?.map((option) => (
+                      <MenuItem key={option._id} value={option.schoolName}>
+                        {option.schoolName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <InputLabel>{"Branch Name"}</InputLabel>
+
+                  <Select
+                    value={formData["branchName"] || ""}
+                    onChange={handleInputChange}
+                    name="branchName"
+                    label={"Branch Name"}
+                  >
+                    {branches?.map((option) => (
+                      <MenuItem key={option.branchId} value={option.branchName}>
+                        {option.branchName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            ) : role == 2 ? (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <InputLabel>{"Branch Name"}</InputLabel>
+
+                <Select
+                  value={formData["branchName"] || ""}
+                  onChange={handleInputChange}
+                  name="branchName"
+                  label={"Branch Name"}
+                >
+                  {branches?.map((option) => (
+                    <MenuItem key={option.branchId} value={option.branchName}>
+                      {option.branchName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses?.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              key={"parent"}
+              label={"Parent Name"}
+              variant="outlined"
+              name="parentName"
+              value={formData["parentName"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"phone"}
+              label={"Phone Number"}
+              variant="outlined"
+              name="phone"
+              value={formData["phone"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"email"}
+              label={"Parent's Email"}
+              variant="outlined"
+              name="email"
+              value={formData["email"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"password"}
+              label={"Password"}
+              variant="outlined"
+              name="password"
+              value={formData["password"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
             <Button
               variant="contained"
               color="primary"

@@ -80,12 +80,11 @@ const Logoprac = () => {
           return true;
         }
       } catch (error) {
-        // This catches errors specific to this login attempt
         console.error(`Login attempt to ${url} failed:`, error);
       }
       return false;
     };
-  
+
     try {
       // Sequentially try to log in as superadmin, school, or branch
       if (
@@ -112,7 +111,7 @@ const Logoprac = () => {
         )
       )
         return;
-  
+
       // If no role matched, show an error
       alert("Incorrect username or password!");
     } catch (error) {
