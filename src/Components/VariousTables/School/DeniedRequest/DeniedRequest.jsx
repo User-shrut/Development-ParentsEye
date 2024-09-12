@@ -839,7 +839,7 @@ export const DeniedRequest = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);

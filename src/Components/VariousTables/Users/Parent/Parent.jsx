@@ -92,7 +92,7 @@ export const Parent = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
   const [schools, setSchools] = useState();
   const [branches, setBranches] = useState();
   const [buses, setBuses] = useState();

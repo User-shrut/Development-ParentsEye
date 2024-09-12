@@ -62,7 +62,7 @@ export const StudentDetail = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",

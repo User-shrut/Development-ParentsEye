@@ -51,7 +51,7 @@ export const Navbar = (props) => {
   const [openModal, setOpenModal] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [filteredPages, setFilteredPages] = useState([]);
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem('role');
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const handleClick = (event) => {

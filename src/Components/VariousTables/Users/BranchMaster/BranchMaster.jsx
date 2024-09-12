@@ -83,7 +83,7 @@ const BranchMaster = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [schools, setSchools] = useState([]);
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);

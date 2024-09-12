@@ -1306,7 +1306,7 @@ export const Leave = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { role } =useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
 
   //const[totalresponse,setTotalResponses]=useState(0);
   // const fetchData = async () => {

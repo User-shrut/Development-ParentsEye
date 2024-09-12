@@ -49,8 +49,8 @@ const style = {
 };
 
 export const Absent = () => {
-  const { setTotalResponses, role } = useContext(TotalResponsesContext); // Get the context value
-
+  const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
+  const role = localStorage.getItem("role");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterText, setFilterText] = useState("");

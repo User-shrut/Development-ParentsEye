@@ -49,7 +49,8 @@ const style = {
 };
 
 export const Present = () => {
-  const { setTotalResponsesPresent , role } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponsesPresent} = useContext(TotalResponsesContext);
+  const role = localStorage.getItem('role');
   
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
