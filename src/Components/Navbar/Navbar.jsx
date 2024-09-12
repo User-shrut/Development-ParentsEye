@@ -37,11 +37,11 @@ const pages = [
   // { title: 'Master', icon: <DriveEtaIcon />, arr: ['Server','Device','Groups','Assets','School', 'Assets Type','Assets Command','Assets Category','Assets Class','Assets Group','Users','Assets URL','User Profile','Users Assets Mapping','User Menu Master','Import Location','Assets Division','Assets Owner','Driver Master','Over speed setting','Device Settings','Geo Data', 'Landmark Group','Commands','Top Main Menu Master','Import Trip','Top Menu Master','Broker','Address Book','Main Menu Master','Address Book Group','User Display Settings','RFID','Telecom Master','Landmark Images','Landmark Waypoints','Emails'] },
   { title: 'Masterupdated', icon: <DriveEtaIcon />, arr: ['Preferences','Notifications','Account','Devices','Geofences','Groups','Drivers','Calendars','Computed Attributes','Maintenance','Saved Commands','Server','Userrr'] },
   
-  { title: 'School', icon: <DriveEtaIcon />, arr:['Student Detail','Geofence','Pickup And Drop List', 'Absent','Present','Leave','Status','User','Approved Request','Denied Request'] },
+  { title: 'School', icon: <DriveEtaIcon />, arr:['Student Detail','Geofence','Pickup And Drop List', 'Absent','Present','Leave','Status','Approved Request','Denied Request'] },
   { title: 'Users', icon: <DriveEtaIcon />, arr:["SchoolMaster", "BranchMaster",'Driver', 'Parent','Supervisor','AddDevices'] },
   { title: 'Geofencing', icon: <DriveEtaIcon />, arr: ['Create Landmark', 'Edit Landmarks','Create Route','Edit Routes','Create Area','Edit Areas','Create Zone','Edit Zones','Trips'] },
   //  { title: 'Reports', icon: <BarChartIcon />, arr: ['Summary', 'Stop Report', 'Area In/Out Report', 'Area Report', 'Landmark Distance', 'Landmark Report', 'Location Wise Distance', 'Distance Report', 'Run Report', 'Distance Graph', 'Speed Graph', 'Trip Report', 'All Point Report','RFID','Distance Between Report','Vehicle Average','Alerts','Data Logs','AC Report', 'Petrolling Report','Bin Details Report','ETA details report','ETA details'] },
-   { title: 'ReportsUpdated', icon: <BarChartIcon />, arr: ['Combined','Route','Event','Trips','Stops'] },
+   { title: 'ReportsUpdated', icon: <BarChartIcon />, arr: ['Combined','Route','Event','Trips','Stops','Summary','Statistics'] },
   // {title: 'Institutestudent', icon: <BarChartIcon />, arr: ['Combined1','Route1','Events1','Trips1','Stops1','Summary1','Statistics1','Newdemo',"New2","Server2"]}
   // { title: 'Maintenance', icon: <SettingsIcon />, arr: ['Search','Add maintenance','Type of operation','Custom Profile'] },
 ];
@@ -124,15 +124,15 @@ export const Navbar = (props) => {
   }
 
   return (
-    <> <AppBar position="fixed" sx={{ zIndex: 1301, backgroundColor:'#f4d24a',height:'69px' }}>
+    <> <AppBar position="fixed" sx={{ zIndex: 1301, backgroundColor:'#f4d24a',height:'61px' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters >
           <Link to={'/'}>
-          <img src='parentslogo.png' style={{ height: 64, width: 150,paddingTop:'15px',paddingBottom:'5px' }} /></Link><br/>
+          <img src='parentslogo.png' style={{ height: '61px', width: '142px',paddingTop:'10px',paddingBottom:'5px' }} /></Link><br/>
           <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, marginLeft: '5px' }}>
             
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1,paddingTop:'11px'}}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1,paddingTop:'0px'}}>
             {filteredPages.map((page) => (
               <Button
                 key={page.title}
@@ -151,7 +151,7 @@ export const Navbar = (props) => {
               </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center',paddingTop:'11px' }}>
+          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center',paddingTop:'0px' }}>
             <Tooltip title='Red Zone Alert'>
               <IconButton sx={{ p: 0 }} onClick={handleRedAlert}>
                 <ReportProblemOutlinedIcon style={{ color: 'red', marginRight: 10 }} />

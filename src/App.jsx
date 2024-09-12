@@ -89,6 +89,8 @@ import { Event } from "./Components/VariousTables/ReportsUpdated/Event/Event.jsx
 import {AddDevices} from "./Components/VariousTables/Users/AddDevices/AddDevices.jsx";
 import { Trips } from "./Components/VariousTables/ReportsUpdated/Trips/Trips.jsx";
 import { Stops } from "./Components/VariousTables/ReportsUpdated/Stops/Stops.jsx";
+import { Summary } from "./Components/VariousTables/ReportsUpdated/Summary/Summary.jsx";
+import {Statistics} from "./Components/VariousTables/ReportsUpdated/Statistics/Statistics.jsx"
 // import { Newdemo } from "./Components/VariousTables/Institutestudent/Newdemo/Newdemo.jsx";
 // import { New2 } from "./Components/VariousTables/Institutestudent/New2/New2.jsx";
 // import { ComputedAttributes } from "./Components/VariousTables/MASTERUPDATED/ComputedAttributes/ComputedAttributes.jsx";
@@ -348,6 +350,10 @@ function App() {
       setComponent("Trips");
     }else if (item === "Stops") {
       setComponent("Stops");
+    }else if (item === "Summary") {
+      setComponent("Summary");
+    }else if (item === "Statistics") {
+      setComponent("Statistics");
     }
    
    
@@ -507,6 +513,8 @@ function App() {
           {component === "AddDevices" && <AddDevices data={mergedData} />}
           {component === "Trips" && <Trips data={mergedData} />}
           {component === "Stops" && <Stops data={mergedData} />}
+          {component === "Summary" && <Summary data={mergedData} />}
+          {component === "Statistics" && <Statistics data={mergedData} />}
           {/* {component === "Newdemo" && <Newdemo data={mergedData} />}
           {component === "New2" && <New2 data={mergedData} />} */}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
@@ -590,7 +598,9 @@ function App() {
            "AddDevices",
            "Event",
            "Trips",
-           "Stops"
+           "Stops",
+           "Summary",
+           "Statistics"
           //  "Newdemo",
           //  "New2"
           ].includes(component) && <Tablee data={mergedData} />}

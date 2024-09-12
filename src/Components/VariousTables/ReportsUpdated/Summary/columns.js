@@ -1,30 +1,46 @@
 export const COLUMNS = () => [
   {
-    Header: 'ID',
-    accessor: 'id',
-  },
-  {
     Header: 'Device ID',
     accessor: 'deviceId',
   },
   {
-    Header: 'Type',
-    accessor: 'type',
+    Header: 'Device Name',
+    accessor: 'deviceName',
   },
   {
-    Header: 'Event Time',
-    accessor: 'eventTime',
+    Header: 'Distance',
+    accessor: 'distance',
   },
   {
-    Header: 'Position ID',
-    accessor: 'positionId',
+    Header: 'Average Speed',
+    accessor: 'averageSpeed',
   },
   {
-    Header: 'Geofence ID',
-    accessor: 'geofenceId',
+    Header: 'Max Speed',
+    accessor: 'maxSpeed',
   },
   {
-    Header: 'Maintenance ID',
-    accessor: 'maintenanceId',
+    Header: 'Spent Fuel',
+    accessor: 'spentFuel',
+  },
+  {
+    Header: 'Start Odometer',
+    accessor: 'startOdometer',
+  },
+  {
+    Header: 'End Odometer',
+    accessor: 'endOdometer',
+  },
+  {
+    Header: 'Start Time',
+    accessor: 'startTime',
+  },
+  {
+    Header: 'End Time',
+    accessor: 'endTime',
+  },
+  {
+    Header: 'Engine Hours',
+    accessor: 'engineHours',
   }
 ];

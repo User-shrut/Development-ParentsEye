@@ -86,11 +86,11 @@ const fetchData = async () => {
   console.log('Fetching data...');
   setLoading(true); // Set loading to true when starting fetch
   try {
-    const username = "school";
-    const password = "123456";
+    const username = "hbtrack";
+    const password = "123456@";
     const token = btoa(`${username}:${password}`);
 
-    const response = await axios.get("https://rocketsalestracker.com/api/devices", {
+    const response = await axios.get("104.251.212.84/api/devices", {
       headers: {
         Authorization: `Basic ${token}`,
       },

@@ -550,9 +550,9 @@ const handleEditSubmit = async () => {
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/devices', {
+        const response = await fetch('http://104.251.212.84/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('hbgadget221@gmail.com:123456'), // Replace with your username and password
           },
         });
 
@@ -578,10 +578,10 @@ const handleEditSubmit = async () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/groups', {
+        const response = await fetch('http://104.251.212.84/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('hbgadget221@gmail.com:123456') // Replace with actual credentials
           }
         });
 
@@ -677,7 +677,8 @@ const handleEditSubmit = async () => {
   }
 
   // Construct the API URL
-  const url = `https://rocketsalestracker.com/api/reports/events?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&type=${encodeURIComponent(selectedNotification)}`;
+  const url = `
+http://104.251.212.84/api/reports/summary?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&daily=${encodeURIComponent(daily)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
   
   setApiUrl(url); // Update the state with the generated URL
   fetchData(url); // Call fetchData with the generated URL
@@ -848,7 +849,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-    const username = "school";
+    const username = "hbgadget221@gmail.com";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -870,8 +871,18 @@ const fetchData = async (url) => {
 
       // Process the JSON data for events
       const processedEvents = jsonResponse.map(event => ({
-        id: event.id,
+        id: event.id || 'N/A',
         deviceId: event.deviceId || 'N/A',
+        deviceName: event.deviceName || 'N/A',
+        distance: event.distance || 0,
+        averageSpeed: event.averageSpeed || 0,
+        maxSpeed: event.maxSpeed || 0,
+        spentFuel: event.spentFuel || 0,
+        startOdometer: event.startOdometer || 0,
+        endOdometer: event.endOdometer || 0,
+        startTime: event.startTime ? new Date(event.startTime).toLocaleString() : 'N/A', // Format the date
+        endTime: event.endTime ? new Date(event.endTime).toLocaleString() : 'N/A', // Format the date
+        engineHours: event.engineHours || 0,
         type: event.type || 'Unknown', // Process the 'type' field
         eventTime: event.eventTime ? new Date(event.eventTime).toLocaleString() : 'N/A', // Format the date
         geofenceId: event.geofenceId || 'None',
@@ -879,6 +890,7 @@ const fetchData = async (url) => {
         positionId: event.positionId || 'None',
         attributes: event.attributes || {},
       }));
+      
 
       console.log('Processed Event Data:', processedEvents);
 
@@ -988,7 +1000,7 @@ const fetchData = async (url) => {
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Route 
+       Summary 
       </h1>
       <div>
         <div
@@ -1105,8 +1117,8 @@ const fetchData = async (url) => {
       </select>
 
       {/* Display current selection for demonstration */}
-      <p>Selected Type: {selectedNotification}</p>
-      <p>Daily: {daily ? 'true' : 'false'}</p>
+      {/* <p>Selected Type: {selectedNotification}</p>
+      <p>Daily: {daily ? 'true' : 'false'}</p> */}
     </div>
 {/* <select
 value={selectedNotification}

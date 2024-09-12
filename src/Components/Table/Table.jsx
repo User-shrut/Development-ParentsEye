@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -180,7 +180,8 @@ export const Tablee = ({ data }) => {
         setAddressesValue("Error fetching address");
       }
     };
-
+  
+   
     const fetchAddresses = async () => {
       const addresses = await Promise.all(
         data.map(async (row) => {
@@ -318,7 +319,38 @@ export const Tablee = ({ data }) => {
           )
         : col.Cell,
   }));
+  const [error, setError] = useState("");
+  const [address, setAddress] = useState("");
+  // const fetchAddress = useCallback(async (latitude, longitude) => {
+  //   try {
+  //     const response = await fetch(
+  //       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     }
+  //     const data = await response.json();
 
+  //     if (data.address) {
+  //       setAddress(
+  //         `${data.address.neighbourhood || ""}, ${data.address.city || ""}, ${
+  //           data.address.state || ""
+  //         }, ${data.address.postcode || ""}`
+  //       );
+  //     } else {
+  //       setError("No address details available");
+  //     }
+  //     console.log(data);
+  //   } catch (error) {
+  //     setError("Error fetching address");
+  //     console.log(error);
+  //   }
+  // }, []);
+  // useEffect(() => {
+  //   if (individualDataObj.latitude && individualDataObj.longitude) {
+  //     fetchAddress(individualDataObj.latitude, individualDataObj.longitude);
+  //   }
+  // }, [individualDataObj.latitude, individualDataObj.longitude, fetchAddress]);
   return (
     <>
       <div style={{ marginTop: "80px" }}>
@@ -331,7 +363,7 @@ export const Tablee = ({ data }) => {
               style={{
                 display: "flex",
                 gap: "16px",
-                marginBottom: "20px",
+                marginBottom: "0px",
                 padding: "0 20px",
               }}
             >
@@ -573,7 +605,7 @@ export const Tablee = ({ data }) => {
               onChange={handleFilterChange}
               sx={{
                 marginRight: "10px",
-                marginLeft: "20px",
+                marginLeft: "1053px",
                 width: "200px",
                 "& .MuiInputBase-root": { height: 40 },
               }}
@@ -612,7 +644,7 @@ export const Tablee = ({ data }) => {
           <></>
         ) : (
           <Paper sx={{ width: "100%", overflow: "hidden", marginTop: "16px" , display:"flex", justifyContent:"center", flexDirection:"column", alignItems:"center"}}>
-            <TableContainer sx={{ maxHeight: "100%", width:"90%", borderRight:"2px solid black",borderTop:"2px solid black", borderRadius:"5px" }}>
+            <TableContainer sx={{ maxHeight: "100%", width:"100%", borderRight:"2px solid black",borderTop:"2px solid black", borderRadius:"5px" }}>
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -648,6 +680,8 @@ export const Tablee = ({ data }) => {
                               borderRight: "1px solid #ddd",
                               backgroundColor: "#f4d24a",
                               color: "black",
+                              padding:"0px 16px",
+                              justifyContent:"center"
                             }}
                           >
                             <div
@@ -685,7 +719,7 @@ export const Tablee = ({ data }) => {
                     )}
                   </TableRow>
                 </TableHead>
-                <TableBody>
+                {/* <TableBody>
                   {sortedData
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, index) => (
@@ -697,6 +731,7 @@ export const Tablee = ({ data }) => {
                         style={{
                           backgroundColor:
                             index % 2 === 0 ? "white" : "#f9f9f9",
+                           padding:"0px 16px"
                         }}
                         onClick={() => {
                           
@@ -719,6 +754,7 @@ export const Tablee = ({ data }) => {
                           align="left"
                           style={{
                             borderRight: "1px solid #ddd",
+                            padding:"0px 16px"
                           }}
                         >
                           <input
@@ -727,6 +763,7 @@ export const Tablee = ({ data }) => {
                             onChange={() => handleRowSelect(index)}
                           />
                         </TableCell>
+                       
                         {columns.map(
                           (column) =>
                             column.accessor !== "select" &&
@@ -775,7 +812,76 @@ export const Tablee = ({ data }) => {
                         )}
                       </TableRow>
                     ))}
-                </TableBody>
+                </TableBody> */}
+                <TableBody>
+  {sortedData
+    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    .map((row, index) => (
+      <TableRow
+        hover
+        role="checkbox"
+        tabIndex={-1}
+        key={row.id}
+        style={{
+          backgroundColor: index % 2 === 0 ? "white" : "#f9f9f9",
+          padding: "0px 16px",
+        }}
+        onClick={() => {
+          handleData(row.latitude, row.longitude, data);
+          handleLocationClick(row.latitude, row.longitude);
+        }}
+      >
+        <TableCell
+          className="tablecell"
+          key={`select-${index}`}
+          align="left"
+          style={{
+            borderRight: "1px solid #ddd",
+            padding: "0px 16px",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={row.isSelected}
+            onChange={() => handleRowSelect(index)}
+          />
+        </TableCell>
+
+        {columns.map(
+          (column) =>
+            column.accessor !== "select" &&
+            columnVisibility[column.accessor] && (
+              <TableCell
+                className="tablecell"
+                key={column.accessor}
+                align={
+                  column.accessor === "date_of_birth" ? "right" : "left"
+                }
+                style={{
+                  borderRight: "1px solid #ddd",
+                  cursor: column.accessor === "location" ? "pointer" : "default",
+                }}
+                onClick={() => {
+                  if (column.accessor === "location") {
+                    handleData(row.latitude, row.longitude, data);
+                    handleLocationClick(row.latitude, row.longitude, row);
+                  } else if (column.accessor === "name") {
+                    handleVehicleClick();
+                  }
+                }}
+              >
+                {column.accessor === "sn"
+                  ? page * rowsPerPage + index + 1 // Serial number logic
+                  : column.Cell
+                  ? column.Cell({ value: row[column.accessor], row })
+                  : row[column.accessor]}
+              </TableCell>
+            )
+        )}
+      </TableRow>
+    ))}
+</TableBody>
+
               </Table>
             </TableContainer>
             <TablePagination

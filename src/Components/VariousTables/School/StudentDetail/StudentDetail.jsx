@@ -561,7 +561,7 @@ export const StudentDetail = () => {
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-5-zr7q.onrender.com/parent/register",
+        `${process.env.REACT_APP_API}/parent/register`,
         {
           method: "POST",
           headers: {

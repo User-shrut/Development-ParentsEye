@@ -59,15 +59,8 @@ export const AddressFetcher = ({ lat, lng }) => {
 export const COLUMNS = [
   {
     Header: 'SN',
-    accessor: 'deviceId',
-    Cell: ({ value }) => {
-      switch (value) {
-        case 7: return '1';
-        case 9: return '2';
-        case 1685: return '3';
-        default: return null;
-      }
-    }
+    accessor: 'sn',
+   
   },
   
   {

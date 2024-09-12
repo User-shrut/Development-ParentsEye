@@ -28,7 +28,7 @@ export const Cards = ({vehicleRunningCount, vehicleStoppedCount, vehicleOverspee
             <AccessTimeIcon sx={{ color: green[500], marginRight: '5px' }} />
             <Typography sx={{ fontSize: 20 }}>Total No. Of Student</Typography>
           </Box>
-          <Typography variant="h6" sx={{ color: green[500], fontSize: 18 }}>{totalResponses}/Assets</Typography>
+          <Typography variant="h6" sx={{ color: green[500], fontSize: 18 }}>{totalResponses}/Students</Typography>
         </CardContent>
       </Card>
 
@@ -39,7 +39,7 @@ export const Cards = ({vehicleRunningCount, vehicleStoppedCount, vehicleOverspee
             <StopIcon sx={{ color: red[500], marginRight: '5px' }} />
             <Typography sx={{ fontSize: 20 }}>Present Student</Typography>
           </Box>
-          <Typography variant="h6" sx={{ color: red[500], fontSize: 18 }}>{vehicleStoppedCount}/Assets</Typography>
+          <Typography variant="h6" sx={{ color: red[500], fontSize: 18 }}>{vehicleStoppedCount}/student</Typography>
         </CardContent>
       </Card>
 
@@ -50,7 +50,7 @@ export const Cards = ({vehicleRunningCount, vehicleStoppedCount, vehicleOverspee
             <SpeedIcon sx={{ color: orange[500], marginRight: '5px' }} />
             <Typography sx={{ fontSize: 20 }}>Absent Student</Typography>
           </Box>
-          <Typography variant="h6" sx={{ color: orange[500], fontSize: 18 }}>{vehicleOverspeedCount}/Assets</Typography>
+          <Typography variant="h6" sx={{ color: orange[500], fontSize: 18 }}>{vehicleOverspeedCount}/student</Typography>
         </CardContent>
       </Card>
 
@@ -61,7 +61,7 @@ export const Cards = ({vehicleRunningCount, vehicleStoppedCount, vehicleOverspee
             <HourglassEmptyIcon sx={{ color: yellow[500], marginRight: '5px' }} />
             <Typography sx={{ fontSize: 20 }}>All Vehicles</Typography>
           </Box>
-          <Typography variant="h6" sx={{ color: yellow[500], fontSize: 18 }}>{vehicleIdleCount}/Assets</Typography>
+          <Typography variant="h6" sx={{ color: yellow[500], fontSize: 18 }}>{vehicleIdleCount}/student</Typography>
         </CardContent>
       </Card>
 
@@ -74,7 +74,7 @@ export const Cards = ({vehicleRunningCount, vehicleStoppedCount, vehicleOverspee
             <ErrorIcon sx={{ color: blue[500], marginRight: '5px' }} />
             <Typography sx={{ fontSize: 20 }}>Leaves</Typography>
           </Box>
-          <Typography variant="h6" sx={{ color: blue[500], fontSize: 18 }}>{totalLeaveRequest}/Assets</Typography>
+          <Typography variant="h6" sx={{ color: blue[500], fontSize: 18 }}>{totalLeaveRequest}/student</Typography>
         </CardContent>
       </Card>
 
@@ -84,15 +84,15 @@ export const Cards = ({vehicleRunningCount, vehicleStoppedCount, vehicleOverspee
       <Card sx={{ width: 197, margin: '5px' }}>
         <CardContent sx={{ padding: '10px' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', backgroundColor: grey[200], padding: '5px', borderRadius: 2, marginBottom: '5px',height:'60px' }}>
-            <NewReleasesIcon sx={{ color: grey[500], marginRight: '5px' }} />
-            <Typography sx={{ fontSize: 20 }}>New</Typography>
+            <NewReleasesIcon sx={{ color: grey[200], marginRight: '5px' }} />
+            <Typography sx={{ fontSize: 20 }}>Drivers</Typography>
           </Box>
-          <Typography variant="h6" sx={{ color: grey[500], fontSize: 18 }}>00/Assets</Typography>
+          <Typography variant="h6" sx={{ color: grey[500], fontSize: 18 }}>00/drivers</Typography>
         </CardContent>
       </Card>
 
       {/* leavecard */}
-      <Card sx={{ width: 197, margin: '5px' }}>
+      {/* <Card sx={{ width: 197, margin: '5px' }}>
         <CardContent sx={{ padding: '10px' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', backgroundColor: blue[200], padding: '5px', borderRadius: 2, marginBottom: '5px',height:'60px' }}>
             <ErrorIcon sx={{ color: blue[500], marginRight: '5px' }} />
@@ -100,7 +100,7 @@ export const Cards = ({vehicleRunningCount, vehicleStoppedCount, vehicleOverspee
           </Box>
           <Typography variant="h6" sx={{ color: blue[500], fontSize: 18 }}>{leavecard}/Assets</Typography>
         </CardContent>
-      </Card>
+      </Card> */}
     </Box>
   );
 };
