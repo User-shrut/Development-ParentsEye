@@ -87,17 +87,17 @@ export const Navbar = (props) => {
 
 
   const handleNavClick = (arr, title) => {
-    if (role === 1) {
+    if (role == 1) {
       
       props.propFunc(arr);
       props.propBool(true);
       setSelectedPage(title);
-    } else if (role === 2) {
+    } else if (role == 2) {
       const updatedArr = arr.filter((item) => item !== "SchoolMaster");
       props.propFunc(updatedArr);
       props.propBool(true);
       setSelectedPage(title);
-    } else if (role === 3) {
+    } else if (role == 3) {
       const updatedArr = arr.filter(
         (item) => item !== "SchoolMaster" && item !== "BranchMaster"
       );

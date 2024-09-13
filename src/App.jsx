@@ -113,8 +113,8 @@ function App() {
   //   }
   // };
 
-  const handleDrivername = () => {};
-  const handleMobileNo = () => {};
+  // const handleDrivername = () => {};
+  // const handleMobileNo = () => {};
   //API FETCHING
   const [deviceApiData, setDeviceApiData] = useState([]); // State variable to store device API data
   const [positionApiData, setPositionApiData] = useState([]); // State variable to store position API data
@@ -164,21 +164,24 @@ function App() {
 
     fetchDeviceData();
     fetchPositionData();
-  }); // Empty dependency array ensures this effect runs only once on component mount
+  },[]); // Empty dependency array ensures this effect runs only once on component mount
 
   // console.log(deviceApiData)
   // console.log(positionApiData)
 
   useEffect(() => {
-    if (deviceApiData.length > 0 && positionApiData.length > 0) {
+    if (deviceApiData?.length > 0 && positionApiData?.length > 0) {
       // Assuming both APIs have a common key to merge data, e.g., 'deviceId'
       const merged = deviceApiData.map((device) => {
         const position = positionApiData.find(
-          (pos) => pos.deviceId === device.id
+          (pos) => pos.deviceId == device.id
         );
         return { ...device, ...position };
       });
       setMergedData(merged);
+      console.log(merged)
+      console.log(deviceApiData)
+      console.log(positionApiData)
       // setFilteredRows(merged.map(row => ({ ...row, isSelected: false })));
     }
   }, [deviceApiData, positionApiData]);

@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import {
   MapContainer,
@@ -34,7 +30,7 @@ import motorcycleIconTop from "../SVG/Vehicle Top View/Bike/Bike-G.png";
 import carIconTop from "../SVG/Vehicle Top View/Car/Car-G.png";
 
 // import JCBIconTop from "../SVG/Vehicle Top View/JCB/JCB-Y.png";
-import JCBIconTop from  "../SVG/Vehicle Top View/JCB/JCB-G.png";
+import JCBIconTop from "../SVG/Vehicle Top View/JCB/JCB-G.png";
 
 // import TractorIconTop from "../SVG/Vehicle Top View/Tractor/Tractor-G.png";
 import TractorIconTop from "../SVG/Vehicle Top View/Tractor/Tractor-G.png";
@@ -168,8 +164,6 @@ const initialCenter = {
   lng: 79.2961,
 };
 
-
-
 const PopupElement = ({ icon, imgSrc, text }) => (
   <div className="popupElement">
     <div>
@@ -211,8 +205,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
 
-  
-
   const getIconByCategoryTop = (category) => {
     switch (category) {
       case "car":
@@ -233,43 +225,43 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
   };
 
   //new api data fetch
-//   async function fetchData() {
-//     const apiUrl = 'https://rocketsalestracker.com/api/reports/stops?deviceId=2431&from=2024-08-17T18%3A30%3A00.000Z&to=2024-08-24T18%3A29%3A59.999Z';
+  //   async function fetchData() {
+  //     const apiUrl = 'https://rocketsalestracker.com/api/reports/stops?deviceId=2431&from=2024-08-17T18%3A30%3A00.000Z&to=2024-08-24T18%3A29%3A59.999Z';
 
-//     try {
-//         // Make a request to the API
-//         const response = await fetch(apiUrl);
+  //     try {
+  //         // Make a request to the API
+  //         const response = await fetch(apiUrl);
 
-//         // Check if the response is OK
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! status: ${response.status}`);
-//         }
+  //         // Check if the response is OK
+  //         if (!response.ok) {
+  //             throw new Error(`HTTP error! status: ${response.status}`);
+  //         }
 
-//         // Parse the JSON data
-//         const data = await response.json();
+  //         // Parse the JSON data
+  //         const data = await response.json();
 
-//         // Process the data
-//         data.forEach(entry => {
-//             console.log(`Device ID: ${entry.deviceId}`);
-//             console.log(`Device Name: ${entry.deviceName}`);
-//             console.log(`Start Time: ${entry.startTime}`);
-//             console.log(`End Time: ${entry.endTime}`);
-//             console.log(`Duration: ${entry.duration / 1000} seconds`);
-//             console.log(`Latitude: ${entry.latitude}`);
-//             console.log(`Longitude: ${entry.longitude}`);
-//             console.log('---');
-//         });
+  //         // Process the data
+  //         data.forEach(entry => {
+  //             console.log(`Device ID: ${entry.deviceId}`);
+  //             console.log(`Device Name: ${entry.deviceName}`);
+  //             console.log(`Start Time: ${entry.startTime}`);
+  //             console.log(`End Time: ${entry.endTime}`);
+  //             console.log(`Duration: ${entry.duration / 1000} seconds`);
+  //             console.log(`Latitude: ${entry.latitude}`);
+  //             console.log(`Longitude: ${entry.longitude}`);
+  //             console.log('---');
+  //         });
 
-//         return data;
+  //         return data;
 
-//     } catch (error) {
-//         console.error('Error fetching data:', error);
-//         return [];
-//     }
-// }
+  //     } catch (error) {
+  //         console.error('Error fetching data:', error);
+  //         return [];
+  //     }
+  // }
 
-// // Call the function
-// fetchData();
+  // // Call the function
+  // fetchData();
 
   //polyline points for live tracking
   useEffect(() => {
@@ -289,8 +281,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
     return () => clearInterval(interval);
   }, []);
-
-  
 
   const fetchAddress = useCallback(async (latitude, longitude) => {
     try {
@@ -370,9 +360,8 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
     } catch (error) {
       console.error("Error fetching geofence data:", error);
     }
-    
   };
-  
+
   // console.log("geofencingngg", geofenceData);
 
   const pairedArray = playbackData
@@ -432,8 +421,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
     }
   };
 
-  
-
   const startAnimation = () => {
     if (isAnimating) {
       setIsAnimating(false);
@@ -485,8 +472,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
     return (heading * 180) / Math.PI;
   };
 
-  
-
   useEffect(() => {
     let interval;
     if (isAnimating && pairedArray.length > 1) {
@@ -515,8 +500,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
   }, [isAnimating]);
 
   //================================================================================================================================================================================
-
-  
 
   useEffect(() => {
     if (!isAnimating) return;
@@ -596,19 +579,18 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
         return acc;
       }, []);
 
-      
-
       console.log("This is stop poinst : ", stopPoints);
       setStoppedPositions(stopPoints);
-      if(stopPoints.length > 0) {
-        mapRef.current.flyTo([stopPoints[0]?.latitude, stopPoints[0]?.longitude], 14, {
-          animate: true,
-          duration: 3,
-        });
-
-
+      if (stopPoints.length > 0) {
+        mapRef.current.flyTo(
+          [stopPoints[0]?.latitude, stopPoints[0]?.longitude],
+          14,
+          {
+            animate: true,
+            duration: 3,
+          }
+        );
       }
-
     }
   }, [playbackData]);
 
@@ -648,7 +630,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
   const [livetrack, setLivetrack] = useState(false);
   const handleLive = () => {};
- 
+
   const createPointerIcon = (index, total) => {
     // Determine the icon URL based on index
     const iconUrl =
@@ -687,12 +669,8 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
     });
   };
 
-
-
-
   return (
     <>
-     
       <div
         style={{
           display: "flex",
@@ -707,36 +685,32 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
         >
           History
         </div>
-        {isCalender && (
-          <Calender
-            style={{ padding: "2px" }}
-            setStartDateTime={setStartDateTime}
-            setEndDateTime={setEndDateTime}
-          />
-        )}
 
-        {isCalender && (
-          <Button
-            variant="contained"
-            sx={{
-              color: "#000000",
-              // background: "linear-gradient(235deg, #f6e5c1, #8d8d8d)",
-              background: "#f4d24a",
-              "&:hover": {
-                backgroundColor: "#1a242f",
-              },
-            }}
-            style={{ height: "2.7rem", marginTop: "6px" }}
-            onClick={fetchPlaybackData}
-          >
-            Search
-          </Button>
-        )}
-        {isCalender && (
-          <button className="cutHistory newclass" onClick={handleCutHistory}>
-            Go Back
-          </button>
-        )}
+        <Calender
+          style={{ padding: "2px" }}
+          setStartDateTime={setStartDateTime}
+          setEndDateTime={setEndDateTime}
+        />
+
+        <Button
+          variant="contained"
+          sx={{
+            color: "#000000",
+            // background: "linear-gradient(235deg, #f6e5c1, #8d8d8d)",
+            background: "#f4d24a",
+            "&:hover": {
+              backgroundColor: "#1a242f",
+            },
+          }}
+          style={{ height: "2.7rem", marginTop: "6px" }}
+          onClick={fetchPlaybackData}
+        >
+          Search
+        </Button>
+
+        <button className="cutHistory newclass" onClick={handleCutHistory}>
+          Go Back
+        </button>
       </div>
 
       <div className="mapContainer">
@@ -758,67 +732,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
             attribution={osmProvider.attribution}
           />
 
-          <Marker
-            position={[individualDataObj.latitude, individualDataObj.longitude]}
-            icon={getIconByCategory(individualDataObj.category)}
-          >
-            <Popup style={{ fontSize: "1.1rem", color: "black" }}>
-              <div className="popup" style={{ height: "250px" }}>
-                <div className="tooltipHead" style={{ marginBottom: "8px" }}>
-                  <div className="tooltipNamePlate">
-                    {/* <div className="ind">
-                        <p>IND</p>
-                      </div> */}
-                    <div className="name">
-                      <p style={{ marginRight: "16px" }}>
-                        {individualDataObj.name}
-                      </p>
-                    </div>
-                    <GeoFencing className="geoFence" />
-                  </div>
-                </div>
-                <div className="popupInfo">
-                
-                  <PopupElement
-                    imgSrc={clockimg} // Use image source
-                    text="12/07/2024 12:51:46"
-                  />
-                  <PopupElement
-                    icon={<PiPlugsFill style={{ color: "black" }} />}
-                    text={
-                      individualDataObj.ignition
-                        ? "Ignition On"
-                        : "Ignition Off"
-                    }
-                  />
-                  <PopupElement
-                    icon={<FaTruck style={{ color: "black" }} />}
-                    text={`${individualDataObj.speed} kmph`}
-                  />
-                  {/* <PopupElement
-                      icon={<MdAccessTime style={{ color: "black" }} />}
-                      text="12D 01H 04M"
-                    /> */}
-                  {/* <PopupElement icon={<FaRegSnowflake style={{color:"#aa9d6f"}}/>} text="Ac off" /> */}
-                  <PopupElement
-                    icon={<BsFillFuelPumpFill style={{ color: "black" }} />}
-                    text="0.00 L"
-                  />
-                  <PopupElement
-                    icon={<MdLocationPin style={{ color: "black" }} />}
-                    text={address}
-                    // text={`${individualDataObj.address}`}
-                  />
-                 {/* <PopupElement
-                    icon={<MdLocationPin style={{ color: "black" }} />}
-                    text={startDateTime}
-                    // text={`${individualDataObj.address}`}
-                  /> */}
-                </div>
-                {/* <GeoFencing className="geoFence" /> */}
-              </div>
-            </Popup>
-          </Marker>
           {isAnimating && animatedMarkerPosition && (
             <Marker
               position={animatedMarkerPosition}
@@ -835,22 +748,19 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
           {isPlaybacking && <Polyline positions={pairedArray} color="blue" />}
           {!isPlaybacking && <Polyline positions={points} color="green" />}
 
-          {isPlaybacking &&
+          {isPlaybacking ? (
             stoppedPositions.map((stop, index) => (
               <Marker
                 key={index}
                 position={[stop.latitude, stop.longitude]}
                 icon={createPointerIcon(index, stoppedPositions.length)}
               >
-                
                 <Popup style={{ fontSize: "1.1rem", color: "black" }}>
                   <div className="popup" style={{ height: "250px" }}>
                     <div
                       className="tooltipHead"
                       style={{ marginBottom: "8px" }}
                     >
-                     
-
                       <div className="tooltipNamePlate indcardind">
                         {/* <div className="ind">
                         <p>IND</p>
@@ -878,18 +788,17 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
                         // imgSrc={clockimg} // Use image source
                         icon={<FaDownload style={{ color: "black" }} />}
                         // text="Arrival Time:12/07/2024 12:51:46"
-                         text={`Arrival Time: ${(() => {
+                        text={`Arrival Time: ${(() => {
                           const arrival = String(stop.arrivalTime);
                           return arrival.slice(0, -30);
                         })()}`}
-
                       />
                       <PopupElement
                         // imgSrc={clockimg} // Use image source
 
                         icon={<FaUpload style={{ color: "black" }} />}
                         //  text="Depsture Time:12/07/2024 12:51:46"
-                         text={`Depsture Time: ${(() => {
+                        text={`Depsture Time: ${(() => {
                           const departure = String(stop.departureTime);
                           return departure.slice(0, -30);
                         })()}`}
@@ -898,7 +807,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
                         // imgSrc={clockimg} // Use image source
                         icon={<GiDuration style={{ color: "black" }} />}
                         // text="Duration Time:12/07/2024 12:51:46"
-                         text={`Duration Time: ${stop.duration}`}
+                        text={`Duration Time: ${stop.duration}`}
                       />
                       <PopupElement
                         // imgSrc={clockimg} // Use image source
@@ -911,18 +820,81 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
                         text={address}
                         // text={`${individualDataObj.address}`}
                       />
-                       {/* <PopupElement
+                      {/* <PopupElement
                     icon={<MdLocationPin style={{ color: "black" }} />}
                     text={`latitude: ${stop.latitude} and longitude: ${stop.longitude} `}
                     text={`${individualDataObj.address}`}
                   /> */}
                     </div>
-
-                     
                   </div>
                 </Popup>
               </Marker>
-            ))}
+            ))
+          ) : (
+            <Marker
+              position={[
+                individualDataObj.latitude,
+                individualDataObj.longitude,
+              ]}
+              icon={getIconByCategory(individualDataObj.category)}
+            >
+              <Popup style={{ fontSize: "1.1rem", color: "black" }}>
+                <div className="popup" style={{ height: "250px" }}>
+                  <div className="tooltipHead" style={{ marginBottom: "8px" }}>
+                    <div className="tooltipNamePlate">
+                      {/* <div className="ind">
+                        <p>IND</p>
+                      </div> */}
+                      <div className="name">
+                        <p style={{ marginRight: "16px" }}>
+                          {individualDataObj.name}
+                        </p>
+                      </div>
+                      <GeoFencing className="geoFence" />
+                    </div>
+                  </div>
+                  <div className="popupInfo">
+                    <PopupElement
+                      imgSrc={clockimg} // Use image source
+                      text="12/07/2024 12:51:46"
+                    />
+                    <PopupElement
+                      icon={<PiPlugsFill style={{ color: "black" }} />}
+                      text={
+                        individualDataObj.ignition
+                          ? "Ignition On"
+                          : "Ignition Off"
+                      }
+                    />
+                    <PopupElement
+                      icon={<FaTruck style={{ color: "black" }} />}
+                      text={`${individualDataObj.speed} kmph`}
+                    />
+                    {/* <PopupElement
+                      icon={<MdAccessTime style={{ color: "black" }} />}
+                      text="12D 01H 04M"
+                    /> */}
+                    {/* <PopupElement icon={<FaRegSnowflake style={{color:"#aa9d6f"}}/>} text="Ac off" /> */}
+                    <PopupElement
+                      icon={<BsFillFuelPumpFill style={{ color: "black" }} />}
+                      text="0.00 L"
+                    />
+                    <PopupElement
+                      icon={<MdLocationPin style={{ color: "black" }} />}
+                      text={address}
+                      // text={`${individualDataObj.address}`}
+                    />
+                    {/* <PopupElement
+                    icon={<MdLocationPin style={{ color: "black" }} />}
+                    text={startDateTime}
+                    // text={`${individualDataObj.address}`}
+                  /> */}
+                  </div>
+                  {/* <GeoFencing className="geoFence" /> */}
+                </div>
+              </Popup>
+            </Marker>
+          )}
 
           {/* Render GeoFences */}
           {isPlaybacking &&
@@ -962,7 +934,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
       </div>
       <div>
         <div className="InfoContainer">
-          {showPlayBar ? null : (
+          {/* {showPlayBar ? null : (
             <IndividualNav
               showMyLocation={showMyLocation}
               setIndividualMap={setIndividualMap}
@@ -972,41 +944,39 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
               livetrack={livetrack}
               setLivetrack={setLivetrack}
             />
-          )}
-          {showPlayBar ? (
-            <PlayBar
-              playbackData={playbackData ? playbackData : null}
-              setShowPlayBar={setShowPlayBar}
-              setIsCalender={setIsCalender}
-              setIsPlaybacking={setIsPlaybacking}
-              startAnimation={startAnimation}
-              isAnimating={isAnimating}
-              setIsAnimating={setIsAnimating}
-              currentIndex={currentIndex}
-              setCurrentIndex={setCurrentIndex}
-              pairedArray={pairedArray}
-              progress={progress}
-              setProgress={setAnimationProgress}
-              individualDataObj={individualDataObj}
-              locate={locate}
-              mapRef={mapRef}
-            />
-          ) : !livetrack ? (
+          )} */}
+          {/* {showPlayBar ? ( */}
+          <PlayBar
+            playbackData={playbackData ? playbackData : null}
+            setShowPlayBar={setShowPlayBar}
+            setIsCalender={setIsCalender}
+            setIsPlaybacking={setIsPlaybacking}
+            startAnimation={startAnimation}
+            isAnimating={isAnimating}
+            setIsAnimating={setIsAnimating}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+            pairedArray={pairedArray}
+            progress={progress}
+            setProgress={setAnimationProgress}
+            individualDataObj={individualDataObj}
+            locate={locate}
+            mapRef={mapRef}
+          />
+          {/* ) : !livetrack ? (
             <IndividualInfo individualDataObj={individualDataObj} />
           ) : (
             <></>
-          )}
+          )} */}
         </div>
       </div>
     </>
   );
 }
 
- export default IndividualGooglemap;
+export default IndividualGooglemap;
 
 //  http://104.251.216.99:8082/api/reports/stops?deviceId=${individualDataObj.deviceId}&from=${startDateTime}&to=${endDateTime}
-
-
 
 // import React, { useRef, useState, useEffect, useCallback } from "react";
 // import {
@@ -1165,8 +1135,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //   lng: 79.2961,
 // };
 
-
-
 // const PopupElement = ({ icon, imgSrc, text }) => (
 //   <div className="popupElement">
 //     <div>
@@ -1207,8 +1175,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //   const [points, setPoints] = useState([]);
 //   const [progress, setProgress] = useState(0);
 //   const [error, setError] = useState("");
-
-  
 
 //   const getIconByCategoryTop = (category) => {
 //     switch (category) {
@@ -1286,8 +1252,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
 //     return () => clearInterval(interval);
 //   }, []);
-
-  
 
 //   const fetchAddress = useCallback(async (latitude, longitude) => {
 //     try {
@@ -1367,9 +1331,9 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //     } catch (error) {
 //       console.error("Error fetching geofence data:", error);
 //     }
-    
+
 //   };
-  
+
 //   // console.log("geofencingngg", geofenceData);
 
 //   const pairedArray = playbackData
@@ -1429,8 +1393,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //     }
 //   };
 
-  
-
 //   const startAnimation = () => {
 //     if (isAnimating) {
 //       setIsAnimating(false);
@@ -1482,8 +1444,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //     return (heading * 180) / Math.PI;
 //   };
 
-  
-
 //   useEffect(() => {
 //     let interval;
 //     if (isAnimating && pairedArray.length > 1) {
@@ -1512,8 +1472,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //   }, [isAnimating]);
 
 //   //================================================================================================================================================================================
-
-  
 
 //   useEffect(() => {
 //     if (!isAnimating) return;
@@ -1593,8 +1551,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //         return acc;
 //       }, []);
 
-      
-
 //       console.log("this is stop poinst : ", stopPoints);
 //       setStoppedPositions(stopPoints);
 //     }
@@ -1636,7 +1592,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
 //   const [livetrack, setLivetrack] = useState(false);
 //   const handleLive = () => {};
- 
+
 //   const createPointerIcon = (index, total) => {
 //     // Determine the icon URL based on index
 //     const iconUrl =
@@ -1675,12 +1631,9 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //     });
 //   };
 
-
-
-
 //   return (
 //     <>
-     
+
 //       <div
 //         style={{
 //           display: "flex",
@@ -1766,7 +1719,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //                   </div>
 //                 </div>
 //                 <div className="popupInfo">
-                
+
 //                   <PopupElement
 //                     imgSrc={clockimg} // Use image source
 //                     text="12/07/2024 12:51:46"
@@ -1830,14 +1783,13 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //                 position={[stop.latitude, stop.longitude]}
 //                 icon={createPointerIcon(index, stoppedPositions.length)}
 //               >
-                
+
 //                 <Popup style={{ fontSize: "1.1rem", color: "black" }}>
 //                   <div className="popup" style={{ height: "250px" }}>
 //                     <div
 //                       className="tooltipHead"
 //                       style={{ marginBottom: "8px" }}
 //                     >
-                     
 
 //                       <div className="tooltipNamePlate indcardind">
 //                         {/* <div className="ind">
@@ -1906,7 +1858,6 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 //                   />
 //                     </div>
 
-                     
 //                   </div>
 //                 </Popup>
 //               </Marker>
