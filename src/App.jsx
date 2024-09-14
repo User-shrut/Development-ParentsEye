@@ -123,7 +123,7 @@ function App() {
   useEffect(() => {
     const fetchDeviceData = async () => {
       try {
-        const username = "school"; // Replace with your actual username
+        const username = "harshal"; // Replace with your actual username
         const password = "123456"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
         const response1 = await axios.get(
@@ -143,7 +143,7 @@ function App() {
 
     const fetchPositionData = async () => {
       try {
-        const username = "school"; // Replace with your actual username
+        const username = "harshal"; // Replace with your actual username
         const password = "123456"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 

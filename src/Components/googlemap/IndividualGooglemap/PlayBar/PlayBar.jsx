@@ -19,28 +19,38 @@ const PlayBar = ({
   setIsAnimating,
   isAnimating,
   locate,
-  mapRef,individualDataObj
+  mapRef,
+  individualDataObj,
+  playbackData,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-
-
+  const lastIndex = playbackData && playbackData.length - 1;
+  const [savedIndex, setSavedIndex] = useState(null);
 
   const showMyLocation = (locate) => {
     mapRef.current.flyTo(locate, 22, {
       animate: true,
       duration: 2,
     });
-  } ;
+  };
 
-  const handlePlay = () => {
-    if(locate){
-      showMyLocation(locate);
-    }
-  }
   const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    if (isPlaying) {
+      // Pausing the animation
+      setSavedIndex(currentIndex); // Save the current index when pausing
+      setIsPlaying(false);
+    } else {
+      // Resuming the animation
+      if (savedIndex !== null) {
+        setCurrentIndex(savedIndex); // Resume from the saved index if it exists
+      }
+      setIsPlaying(true);
+    }
+
+    // Start or stop the animation based on the new playing state
     startAnimation();
   };
+  
 
   const handleProgressChange = (event) => {
     setProgress(event.target.value);
@@ -66,59 +76,145 @@ const PlayBar = ({
     const interval = setInterval(() => {
       isAnimating &&
         setProgress((currentIndex / (pairedArray.length - 1)) * 100);
-
     }, 1000);
     return () => clearInterval(interval);
   }, [currentIndex, pairedArray.length, isPlaying]);
 
-  
+  const calculateAverageSpeed = (data) => {
+    if (!data || data.length < 2) return "0 Km/h"; // Need at least two points to calculate speed
+
+    let totalDistance = 0;
+    let totalTime = 0;
+
+    for (let i = 1; i < data.length; i++) {
+      const distanceDiff =
+        data[i].attributes.totalDistance - data[i - 1].attributes.totalDistance;
+      const timeDiff =
+        new Date(data[i].deviceTime) - new Date(data[i - 1].deviceTime);
+
+      // Convert time difference from milliseconds to hours
+      const timeDiffInHours = timeDiff / (1000 * 60 * 60);
+
+      totalDistance += distanceDiff;
+      totalTime += timeDiffInHours;
+    }
+
+    // Avoid division by zero
+    const averageSpeed = totalTime > 0 ? totalDistance / totalTime : 0;
+
+    return `${Math.round(averageSpeed / 100)} Km/h`; // Assuming totalDistance is in meters
+  };
+
+  const calculateMaxSpeed = (data) => {
+    if (!data || data.length < 2) return "0 Km/h"; // Need at least two points to calculate speed
+
+    let maxSpeed = 0;
+
+    for (let i = 1; i < data.length; i++) {
+      const distanceDiff =
+        data[i].attributes.totalDistance - data[i - 1].attributes.totalDistance;
+      const timeDiff =
+        new Date(data[i].deviceTime) - new Date(data[i - 1].deviceTime);
+
+      // Convert time difference from milliseconds to hours
+      const timeDiffInHours = timeDiff / (1000 * 60 * 60);
+
+      // Calculate speed in Km/h
+      const speed =
+        timeDiffInHours > 0 ? distanceDiff / timeDiffInHours / 1000 : 0; // Assuming distanceDiff is in meters
+
+      if (speed > maxSpeed) {
+        maxSpeed = speed;
+      }
+    }
+
+    return `${Math.round(maxSpeed)} Km/h`;
+  };
+
   return (
     <>
-      <hr style={{height:"2px", color:"black"}} />
+      <hr style={{ height: "2px", color: "black" }} />
 
       <div className="containerPlay">
-      <div className="playBarInfo">
+        <div className="playBarInfo">
           <div className="dataInfo">
             <div className="head">Speed</div>
-            <div className="headData">{`0 kmph`}</div>
+            <div className="headData">
+              {playbackData
+                ? `${playbackData[currentIndex]?.speed.toFixed(1)} Km/h`
+                : "30 Km"}
+            </div>
           </div>
           <div className="dataInfo">
             <div className="head">Distance</div>
-            <div className="headData">21.40 km</div>
+            <div className="headData">
+              {playbackData &&
+              playbackData.length > 0 &&
+              currentIndex >= 0 &&
+              currentIndex < playbackData.length
+                ? `${Math.round(
+                    (playbackData[currentIndex].attributes.totalDistance -
+                      playbackData[0].attributes.totalDistance) /
+                      1000
+                  )} Km`
+                : "0 Km"}
+            </div>
           </div>
           <div className="dataInfo">
             <div className="head">Time</div>
-            <div className="headData">11/07/2024 07:45:11</div>
+            <div className="headData">
+              {playbackData
+                ? `${new Date(
+                    playbackData[currentIndex].deviceTime
+                  ).toLocaleDateString("en-GB")} ${new Date(
+                    playbackData[currentIndex].deviceTime
+                  ).toLocaleTimeString("en-GB", { hour12: false })}`
+                : "1/1/2024 23:56:00"}
+            </div>
           </div>
           <div className="dataInfo">
             <div className="head">Total Distance</div>
-            <div className="headData">33.50 km</div>
+            <div className="headData">
+              {playbackData
+                ? `${Math.round(
+                    (playbackData[lastIndex].attributes.totalDistance -
+                      playbackData[0].attributes.totalDistance) /
+                      1000
+                  )} Km`
+                : "0 Kms"}
+            </div>
           </div>
           <div className="dataInfo">
             <div className="head">Avg.Speed (km/h)</div>
-            <div className="headData">22.38 kmph</div>
+            <div className="headData">
+              {playbackData ? calculateAverageSpeed(playbackData) : "0 Km/h"}
+            </div>
           </div>
           <div className="dataInfo">
             <div className="head">Max.Speed (km/h)</div>
-            <div className="headData">46 kmph</div>
+            <div className="headData">
+              {playbackData ? calculateMaxSpeed(playbackData) : "0 Km/h"}
+            </div>
           </div>
         </div>
         <div className="playbar-container">
-        <button type="button" class="btn btn-outline-dark playBar-btn" >
-        <FaFilter className="BtnIcon" />
+          <button type="button" class="btn btn-outline-dark playBar-btn">
+            <FaFilter className="BtnIcon" />
           </button>
-
           <button type="button" class="btn btn-outline-dark playBar-btn">
             <FaFastBackward className="BtnIcon" />
           </button>
-
-          <button className="play-pause-btn btn btn-outline-dark playBar-btn" onClick={togglePlay}>
+          <button
+            className="play-pause-btn btn btn-outline-dark playBar-btn"
+            onClick={togglePlay} // Single onClick handler
+          >
             {isPlaying ? (
               <FaPause className="BtnIcon" />
             ) : (
-              <FaPlay onClick={handlePlay()} className="BtnIcon" />
+              <FaPlay className="BtnIcon" />
             )}
           </button>
+
           <input
             type="range"
             min={0}
@@ -138,17 +234,13 @@ const PlayBar = ({
             <MdSpeed className="BtnIcon" />
           </button>
         </div>
-
       </div>
-      <hr style={{height:"2px", color:"black"}} />
+      <hr style={{ height: "2px", color: "black" }} />
     </>
   );
 };
 
 export default PlayBar;
-
-
-
 
 // import { useState, useEffect, useCallback } from "react";
 // import { FaForward, FaPause } from "react-icons/fa6";
@@ -314,9 +406,6 @@ export default PlayBar;
 // };
 
 // export default PlayBar;
-
-
-
 
 // import { useState, useEffect } from "react";
 // import { FaForward, FaPause } from "react-icons/fa6";
@@ -487,12 +576,6 @@ export default PlayBar;
 // };
 
 // export default PlayBar;
-
-
-
-
-
-
 
 // import { useState, useEffect, useCallback } from "react";
 // import { FaForward, FaPause } from "react-icons/fa6";

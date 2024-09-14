@@ -156,7 +156,7 @@ const pointer = new L.Icon({
 const osmProvider = {
   url: "https://api.maptiler.com/maps/streets-v2/256/{z}/{x}/{y}.png?key=jXbNOuobzSRdq08XiuKY",
   attribution:
-    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    '&copy; HB Gadget Solutions',
 };
 
 const initialCenter = {
@@ -264,6 +264,9 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
   // fetchData();
 
   //polyline points for live tracking
+
+  
+
   useEffect(() => {
     setPoints((prevPoints) => [
       ...prevPoints,
@@ -284,13 +287,14 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
   const fetchAddress = useCallback(async (latitude, longitude) => {
     try {
-      const response = await fetch(
+      const response = await axios.get(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      
+      const data = response.data;
 
       if (data.address) {
         setAddress(
@@ -298,6 +302,8 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
             data.address.state || ""
           }, ${data.address.postcode || ""}`
         );
+
+        console.log(data.address)
       } else {
         setError("No address details available");
       }
@@ -317,12 +323,11 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
   const fetchPlaybackData = async () => {
     isPlaybacking === false
       ? setIsPlaybacking(true)
-      : setIsPlaybacking(false) &&
-        setPlaybackData(null) &&
+      : setPlaybackData(null) &&
         setGeofenceData(null);
 
     try {
-      const username = "school";
+      const username = "harshal";
       const password = "123456";
       const token = btoa(`${username}:${password}`);
       const response1 = await axios.get(
@@ -426,7 +431,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
       setIsAnimating(false);
     } else {
       setIsAnimating(true);
-      setCurrentIndex(0);
+      // setCurrentIndex(0);
     }
   };
 
@@ -594,6 +599,8 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
     }
   }, [playbackData]);
 
+
+
   //geofencing function
   const parseGeoFenceCoordinates = (area) => {
     const coordinates = [];
@@ -732,7 +739,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
             attribution={osmProvider.attribution}
           />
 
-          {isAnimating && animatedMarkerPosition && (
+          {animatedMarkerPosition && (
             <Marker
               position={animatedMarkerPosition}
               icon={createCustomIcon(
@@ -745,8 +752,8 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
             />
           )}
 
-          {isPlaybacking && <Polyline positions={pairedArray} color="blue" />}
-          {!isPlaybacking && <Polyline positions={points} color="green" />}
+          {isPlaybacking && <Polyline positions={pairedArray} color="blue" weight={10} />}
+          {!isPlaybacking && <Polyline positions={points} color="green" weight={10} />}
 
           {isPlaybacking ? (
             stoppedPositions.map((stop, index) => (
