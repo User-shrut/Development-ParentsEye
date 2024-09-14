@@ -878,6 +878,8 @@ export const DeniedRequest = () => {
                     : []
                 )
               )
+            : role == 2
+            ? response.data.branches.requests
             : response.data.requests;
 
         // Apply local date filtering if dates are provided

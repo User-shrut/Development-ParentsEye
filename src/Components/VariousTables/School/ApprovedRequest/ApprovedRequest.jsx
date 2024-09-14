@@ -1498,6 +1498,15 @@ export const ApprovedRequest = () => {
             },
           }
         );
+      } else {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/approved-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       console.log("fetch data", response.data); // Log the entire response data
@@ -1506,12 +1515,14 @@ export const ApprovedRequest = () => {
         const allData =
           role == 1
             ? response?.data.data.flatMap((school) =>
-              school.branches.flatMap((branch) =>
-                Array.isArray(branch.requests) && branch.requests.length > 0
-                  ? branch.requests
-                  : []
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.requests) && branch.requests.length > 0
+                    ? branch.requests
+                    : []
+                )
               )
-            )
+            : role == 2
+            ? response.data.branches.requests
             : response.data.requests;
 
         // Apply local date filtering if dates are provided

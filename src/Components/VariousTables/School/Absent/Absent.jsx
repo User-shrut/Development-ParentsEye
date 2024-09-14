@@ -83,7 +83,10 @@ export const Absent = () => {
       const apiUrl =
         role == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
-          : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/absent-children` : `${process.env.REACT_APP_BRANCH_API}/absent-children`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/absent-children`
+          : `${process.env.REACT_APP_BRANCH_API}/absent-children`;
+
       const response = await axios.get(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -1339,37 +1339,50 @@ export const Leave = () => {
       const token = localStorage.getItem("token");
       let response;
 
-      if(role == 1){
-      response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/pending-requests`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    }else if(role == 2){
-      response = await axios.get(
-        `${process.env.REACT_APP_SCHOOL_API}/pending-requests`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    }
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/pending-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/pending-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else{
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/pending-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
       console.log("fetch data", response.data); // Log the entire response data
 
       if (response.data) {
-        const allData = role == 1 ? response?.data.data.flatMap((school) =>
-          school.branches.flatMap((branch) =>
-            Array.isArray(branch.requests) && branch.requests.length > 0
-              ? branch.requests
-              : []
-          )
-        )
-          : response.data.requests;
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.requests) && branch.requests.length > 0
+                    ? branch.requests
+                    : []
+                )
+              )
+            : role == 2 ? response.data.branches.requests : response.data.requests;
+
+        console.log(allData);
 
         // Apply local date filtering if dates are provided
         const filteredData =
@@ -1757,9 +1770,11 @@ export const Leave = () => {
   // };
   const handleApprove = async (requestId) => {
     try {
-
-      const token = localStorage.getItem('token');
-      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}` : `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`;
+      const token = localStorage.getItem("token");
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}`
+          : `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`;
 
       const response = await axios.post(
         apiUrl,
@@ -1783,8 +1798,11 @@ export const Leave = () => {
 
   const handleReject = async (requestId) => {
     try {
-      const token = localStorage.getItem('token');
-      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}` : `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`;
+      const token = localStorage.getItem("token");
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}`
+          : `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`;
 
       const response = await axios.post(
         apiUrl,

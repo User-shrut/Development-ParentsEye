@@ -678,47 +678,7 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          alignItems: "center",
-          marginLeft: "0.5rem",
-          marginBottom: "5px",
-        }}
-      >
-        <div
-          style={{ fontSize: "20px", marginleft: "63px", fontweight: "bold" }}
-        >
-          History
-        </div>
-
-        <Calender
-          style={{ padding: "2px" }}
-          setStartDateTime={setStartDateTime}
-          setEndDateTime={setEndDateTime}
-        />
-
-        <Button
-          variant="contained"
-          sx={{
-            color: "#000000",
-            // background: "linear-gradient(235deg, #f6e5c1, #8d8d8d)",
-            background: "#f4d24a",
-            "&:hover": {
-              backgroundColor: "#1a242f",
-            },
-          }}
-          style={{ height: "2.7rem", marginTop: "6px" }}
-          onClick={fetchPlaybackData}
-        >
-          Search
-        </Button>
-
-        <button className="cutHistory newclass" onClick={handleCutHistory}>
-          Go Back
-        </button>
-      </div>
+     
 
       <div className="mapContainer">
         <MapContainer
@@ -938,6 +898,47 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
               }
             })}
         </MapContainer>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          alignItems: "center",
+          marginLeft: "0.5rem",
+          marginBottom: "5px",
+        }}
+      >
+        <div
+          style={{ fontSize: "20px", marginleft: "63px", fontweight: "bold" }}
+        >
+          History
+        </div>
+
+        <Calender
+          style={{ padding: "2px" }}
+          setStartDateTime={setStartDateTime}
+          setEndDateTime={setEndDateTime}
+        />
+
+        <Button
+          variant="contained"
+          sx={{
+            color: "#000000",
+            // background: "linear-gradient(235deg, #f6e5c1, #8d8d8d)",
+            background: "#f4d24a",
+            "&:hover": {
+              backgroundColor: "#1a242f",
+            },
+          }}
+          style={{ height: "2.7rem", marginTop: "6px" }}
+          onClick={fetchPlaybackData}
+        >
+          Search
+        </Button>
+
+        <button className="cutHistory newclass" onClick={handleCutHistory}>
+          Go Back
+        </button>
       </div>
       <div>
         <div className="InfoContainer">
