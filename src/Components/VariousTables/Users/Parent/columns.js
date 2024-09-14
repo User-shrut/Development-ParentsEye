@@ -34,7 +34,7 @@ export const COLUMNS = () => [
   },
   {
     Header: 'Registration Date',
-    accessor: 'formattedRegistrationDate',
+    accessor: 'registrationDate',
   },
   
 ];

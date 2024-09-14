@@ -91,9 +91,9 @@ const BranchMaster = () => {
       const token = localStorage.getItem("token");
 
       const apiUrl =
-        role === 1
+        role == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`
-          : role === 2
+          : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/branches`
           : null;
 
@@ -114,7 +114,10 @@ const BranchMaster = () => {
                   schoolName: school.schoolName,
                 }))
               )
-            : response.data.branches;
+            : response.data.branches.map((branch) => ({
+              ...branch,
+              schoolName: response.data.school.schoolName,
+            }));
 
         console.log("branches data : ", allData);
 
@@ -302,7 +305,7 @@ const BranchMaster = () => {
     }
     try {
       // Define the API endpoint and token
-      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/branch-delete`;
+      const apiUrl = role == 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-branch` : `${process.env.REACT_APP_SCHOOL_API}/delete-branch`;
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -485,9 +488,9 @@ const BranchMaster = () => {
       };
       const token = localStorage.getItem("token");
       const apiUrl =
-        role === 1
+        role == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/add-branch`
-          : role === 2
+          : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/add-branch`
           : null;
 

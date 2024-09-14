@@ -518,7 +518,7 @@ export const StudentDetail = () => {
     const apiUrl =
       role == 1
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child`
-        : `${process.env.REACT_APP_SCHOOL_API}/update-child/${selectedRow.childId}`;
+        : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/update-child` : `${process.env.REACT_APP_BRANCH_API}/update-child`
 
     // Prepare the updated data
     const updatedData = {
@@ -568,11 +568,31 @@ export const StudentDetail = () => {
 
   const handleAddSubmit = async () => {
     try {
-      const newRow = {
-        ...formData,
-        // id: filteredRows.length + 1,
-        // isSelected: false,
-      };
+      const decoded = jwtDecode(localStorage.getItem('token'));
+      let newRow;
+
+      if(role == 1){
+        newRow = {
+          ...formData,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      }
+      else if(role == 2){
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      }else{
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+          branchName: decoded.branchName,
+        };
+      }
+      
 
       console.log(newRow);
 
@@ -724,7 +744,7 @@ export const StudentDetail = () => {
     const decoded = jwtDecode(localStorage.getItem("token"));
     console.log(decoded.id);
 
-    if (role === 2 && name === "branchName") {
+    if (role == 2 && name === "branchName") {
       setFormData({
         ...formData,
         schoolName: decoded.schoolName, // Fetch schoolName from token
@@ -781,7 +801,7 @@ export const StudentDetail = () => {
     setFormData({
       ...formData,
       deviceId: selectedBus.id, // Store deviceId
-      busName: selectedBus.name, // Store busName
+      deviceName: selectedBus.name, // Store busName
     });
   };
 
@@ -1557,7 +1577,7 @@ export const StudentDetail = () => {
               <Select
                 value={formData["deviceId"] || ""}
                 onChange={handleBusChange}
-                name="busName"
+                name="deviceName"
                 label={"Bus Name"}
               >
                 {buses?.map((option) => (
@@ -1603,6 +1623,26 @@ export const StudentDetail = () => {
               variant="outlined"
               name="password"
               value={formData["password"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"Pick Up Points"}
+              label={"Pick Up Points"}
+              variant="outlined"
+              name="pickupPoint"
+              value={formData["pickupPoint"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"fcmToken"}
+              label={"fcm Token"}
+              variant="outlined"
+              name="fcmToken"
+              value={formData["fcmToken"] || ""}
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth

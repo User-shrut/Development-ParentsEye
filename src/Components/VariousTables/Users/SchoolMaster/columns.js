@@ -25,7 +25,7 @@ export const COLUMNS = () => [
   },
   {
     Header: 'Phone',
-    accessor: 'mobileNo',
+    accessor: 'schoolMobile',
     Cell: ({ value }) => (value ? value.toString() : 'N/A'),
   },
   {

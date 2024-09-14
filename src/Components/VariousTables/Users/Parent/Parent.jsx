@@ -138,12 +138,16 @@ export const Parent = () => {
         const allData =
           role == 1
             ? response?.data.data.flatMap((school) =>
-                school.branches.flatMap((branch) =>
-                  Array.isArray(branch.parents) && branch.parents.length > 0
-                    ? branch.parents
-                    : []
-                )
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.parents) && branch.parents.length > 0
+                  ? branch.parents.map((parent) => ({
+                      ...parent,
+                      schoolName: school.schoolName,
+                      branchName: branch.branchName,
+                    }))
+                  : []
               )
+            )
             : role == 2
             ? response?.data.branches.flatMap((branch) =>
                 Array.isArray(branch.parents) && branch.parents.length > 0
@@ -463,7 +467,7 @@ export const Parent = () => {
     const decoded = jwtDecode(localStorage.getItem("token"));
     console.log(decoded.id);
 
-    if (role === 2 && name === "branchName") {
+    if (role == 2 && name === "branchName") {
       setFormData({
         ...formData,
         schoolName: decoded.schoolName, // Fetch schoolName from token
@@ -520,7 +524,7 @@ export const Parent = () => {
     setFormData({
       ...formData,
       deviceId: selectedBus.id, // Store deviceId
-      busName: selectedBus.name, // Store busName
+      deviceName: selectedBus.name, // Store busName
     });
   };
 
@@ -594,11 +598,24 @@ export const Parent = () => {
 
   const handleAddSubmit = async () => {
     try {
-      const newRow = {
-        ...formData,
-        // id: filteredRows.length + 1,
-        // isSelected: false,
-      };
+      const decoded = jwtDecode(localStorage.getItem('token'));
+      let newRow;
+      if(role == 3){
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+          branchName: decoded.branchName,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      }else {
+        newRow = {
+          ...formData,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      }
+      
 
       console.log(newRow);
 
@@ -1415,7 +1432,7 @@ export const Parent = () => {
               <Select
                 value={formData["deviceId"] || ""}
                 onChange={handleBusChange}
-                name="busName"
+                name="deviceName"
                 label={"Bus Name"}
               >
                 {buses?.map((option) => (
