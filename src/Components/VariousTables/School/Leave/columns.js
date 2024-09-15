@@ -26,7 +26,7 @@ export const COLUMNS = () => [
   },
   {
     Header: 'vehicle Id',
-    accessor: 'vehicleId',
+    accessor: 'deviceId',
   },
   {
     Header: 'Request Type',
@@ -41,7 +41,15 @@ export const COLUMNS = () => [
     accessor: 'endDate',
   },
   {
-    Header: 'Request Date',
-    accessor: 'formattedRequestDate',
+    Header: ' school Name',
+    accessor: 'schoolName',
   },
+  {
+    Header: 'branch Name',
+    accessor: 'branchName',
+  },
+  {
+    Header: 'Request Date',
+    accessor: 'requestDate',
+  }
 ]

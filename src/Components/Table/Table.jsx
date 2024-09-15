@@ -351,6 +351,159 @@ export const Tablee = ({ data }) => {
   //     fetchAddress(individualDataObj.latitude, individualDataObj.longitude);
   //   }
   // }, [individualDataObj.latitude, individualDataObj.longitude, fetchAddress]);
+  const determineStatus = (vehicle) => {
+    const currentTime = new Date();
+    const lastUpdateTime = new Date(vehicle.lastUpdate); // Assuming vehicle has a lastUpdate property
+
+    if (vehicle.ignition && vehicle.speed > 5) return "Running";
+    if (vehicle.ignition && vehicle.speed <= 5) return "Ideal";
+    if (!vehicle.ignition && vehicle.speed === 0) return "Stopped";
+    if (!vehicle.ignition && currentTime - lastUpdateTime > 24 * 60 * 60 * 1000)
+      return "Unreachable";
+    return "New";
+  };
+  const [filteredAssets, setFilteredAssets] = useState(data);
+
+  
+  
+
+  const filteredVehicles = filteredAssets.filter((vehicle) => {
+    const status = determineStatus(vehicle);
+    return assetStatusValue === "All assets" || status === assetStatusValue;
+  });
+  useEffect(() => {
+    if (assetsValue === "All assets" || assetsValue === "") {
+      setFilteredAssets(data);
+    } else {
+      const filteredData = data.filter(asset => asset.name === assetsValue);
+      setFilteredAssets(filteredData);
+    }
+  }, [assetsValue, data]);
+  
+  // Update the filteredRows to use filteredAssets
+  useEffect(() => {
+    setFilteredRows(
+      filteredAssets.map((row) => ({ ...row, isSelected: false }))
+    );
+  }, [filteredAssets]);
+
+
+
+  useEffect(() => {
+    let filteredData = data;
+  
+    if (vehiclesValue && vehiclesValue !== "All vehicles") {
+      filteredData = filteredData.filter(asset => asset.category === vehiclesValue);
+    }
+  
+    setFilteredAssets(filteredData);
+  }, [vehiclesValue, data]);
+  
+  
+  const handleSelectVehicle = (event) => {
+    setVehiclesValue(event.target.value);
+  };
+  // const [usersValue, setUsersValue] = useState("");
+  // const [filteredRows, setFilteredRows] = useState([]);
+  const [totalResponses, setTotalResponses] = useState(0);
+  const fetchData = async () => {
+    console.log('Fetching data...');
+    // setLoading(true); // Set loading to true when starting fetch
+    try {
+      const username = "hbtrack";
+      const password = "123456@";
+      const token = btoa(`${username}:${password}`);
+
+      const response = await axios.get("http://104.251.212.84/api/users", {
+        headers: {
+          Authorization: `Basic ${token}`,
+        },
+      });
+
+      console.log('Fetched data:', response.data);
+
+      // Check if response.data is an array
+      if (Array.isArray(response.data)) {
+        // Set the fetched data with isSelected property for each user
+        setFilteredRows(response.data.map(row => ({ ...row, isSelected: false })));
+        setTotalResponses(response.data.length);
+      } else {
+        console.error('Expected an array but got:', response.data);
+      }
+    } catch (error) {
+      console.error('Fetch data error:', error);
+      alert('An error occurred while fetching data.');
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  // Call fetchData on component mount
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const [groups, setGroups] = useState([]); // Holds the fetched groups
+  // const [groupsValue, setGroupsValue] = useState(''); // Holds the selected group
+  // const [error, setError] = useState(null); // For error handling
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const response = await fetch('http://104.251.212.84/api/groups', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Basic ' + btoa('hbtrack:123456@'), // Replace with actual credentials
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        setGroups(data); // Assuming the API returns an array of groups
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchGroups();
+  }, []);
+  // const [areasValue, setAreasValue] = useState('');
+  const [dropdownOptions, setDropdownOptions] = useState([]);
+  const [areas, setAreas] = useState([]);
+  useEffect(() => {
+    const fetchAreasData = async () => {
+      try {
+        const username = 'hbtrack'; // Replace with your actual username
+        const password = '123456@'; // Replace with your actual password
+        const token = btoa(`${username}:${password}`); // Base64 encode the username and password
+
+        const response = await fetch('http://104.251.212.84/api/geofences', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Basic ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+        console.log('Geofence data: ', data);
+
+        // Transform data to create dropdown options
+        setAreas(data.map((item) => item.name));
+      } catch (error) {
+        console.error('Error fetching areas data:', error);
+        setError(error.message);
+      }
+    };
+
+    fetchAreasData();
+  }, []);
+
   return (
     <>
       <div style={{ marginTop: "80px" }}>
@@ -388,7 +541,7 @@ export const Tablee = ({ data }) => {
                   <MenuItem value="Device Fault">Device Fault</MenuItem>
                 </Select>
               </FormControl>
-              <FormControl
+              {/* <FormControl
                 variant="outlined"
                 fullWidth
                 sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
@@ -401,11 +554,34 @@ export const Tablee = ({ data }) => {
                   onChange={(e) => setAssetsValue(e.target.value)}
                   label="Select Assets"
                 >
-                  {/* Add your asset options here */}
+                  {/* Add your asset options here 
+                </Select>
+              </FormControl> */}
+              <FormControl
+                variant="outlined"
+                fullWidth
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+              >
+                <InputLabel id="asset-status-label-2">Assets</InputLabel>
+                <Select
+                  labelId="assets-label-2"
+                  id="assets-select-2"
+                  value={assetsValue}
+                  onChange={(e) => {
+                    setAssetsValue(e.target.value);
+                    handleSelectVehicle()
+                  }}
+                  label="Select Assets"
+                >
+                  <MenuItem value="All assets">All assets</MenuItem>
+                  {data.map((asset) => (
+                    <MenuItem key={asset.name} value={asset.name}>
+                      {asset.name}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
-
-              <FormControl
+              {/* <FormControl
                 variant="outlined"
                 fullWidth
                 sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
@@ -437,10 +613,33 @@ export const Tablee = ({ data }) => {
                     vtsdemo1 (chate global services)
                   </MenuItem>
                   <MenuItem value="wcldemo(wcl wcl)">wcldemo(wcl wcl)</MenuItem>
-                  {/* Add your user options here */}
+                  {/* Add your user options here 
                 </Select>
-              </FormControl>
-              <FormControl
+              </FormControl> */}
+                <FormControl
+      variant="outlined"
+      fullWidth
+      sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+    >
+      <InputLabel id="users-label-3">Users</InputLabel>
+      <Select
+        labelId="users-label-3"
+        id="users-select-3"
+        value={usersValue}
+        onChange={(e) => setUsersValue(e.target.value)}
+        label="Select Users"
+      >
+        <MenuItem value="All users">All users</MenuItem>
+
+        {/* Dynamically create MenuItems from filteredRows */}
+        {filteredRows.map((user) => (
+          <MenuItem key={user.id} value={user.name}>
+            {user.name} ({user.fullName || user.companyName || 'Unknown'})
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+              {/* <FormControl
                 variant="outlined"
                 fullWidth
                 sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
@@ -460,10 +659,42 @@ export const Tablee = ({ data }) => {
                 >
                   <MenuItem value="All Group">All Group</MenuItem>
                   <MenuItem value="Ankur asset">Ankur asset</MenuItem>
-                  {/* Add your group options here */}
+                  {/* Add your group options here 
                 </Select>
-              </FormControl>
+              </FormControl> */}
               <FormControl
+      variant="outlined"
+      fullWidth
+      sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+    >
+      <InputLabel
+        id="groups-label-4"
+        style={{ alignItems: "center" }}
+      >
+        Groups
+      </InputLabel>
+      <Select
+        labelId="groups-label-4"
+        id="groups-select-4"
+        value={groupsValue}
+        onChange={(e) => setGroupsValue(e.target.value)}
+        label="Select Groups"
+      >
+        <MenuItem value="All Group">All Group</MenuItem>
+
+        {/* Dynamically generate MenuItem components based on the fetched groups */}
+        {groups.map((group) => (
+          <MenuItem key={group.id} value={group.name}>
+            {group.name}
+          </MenuItem>
+        ))}
+
+      </Select>
+
+      {/* Error Handling */}
+      {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
+    </FormControl>
+              {/* <FormControl
                 variant="outlined"
                 fullWidth
                 sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
@@ -479,9 +710,36 @@ export const Tablee = ({ data }) => {
                   <MenuItem value="All Areas">All Areas</MenuItem>
                   <MenuItem value="amanora">amanora</MenuItem>
                   <MenuItem value="Ram Nager">Ram Nager</MenuItem>
-                  {/* Add your area options here */}
+                  {/* Add your area options here 
                 </Select>
-              </FormControl>
+              </FormControl> */}
+            <FormControl
+      variant="outlined"
+      fullWidth
+      sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+    >
+      <InputLabel id="areas-label-5">Areas</InputLabel>
+      <Select
+        labelId="areas-label-5"
+        id="areas-select-5"
+        value={areasValue}
+        onChange={(e) => setAreasValue(e.target.value)}
+        label="Select Areas"
+      >
+        <MenuItem value="All Areas">All Areas</MenuItem>
+
+        {/* Dynamically generate MenuItem components based on the fetched areas */}
+        {areas.map((area, index) => (
+          <MenuItem key={index} value={area}>
+            {area}
+          </MenuItem>
+        ))}
+
+      </Select>
+
+      {/* Error Handling */}
+      {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
+    </FormControl>
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -507,35 +765,51 @@ export const Tablee = ({ data }) => {
               </FormControl>
 
               <FormControl
-                variant="outlined"
-                fullWidth
-                sx={{
-                  width: 250,
-                  "& .MuiInputBase-root": { height: 40 },
-                  marginBottom: 2,
-                }}
-              >
-                <InputLabel id="vehicles-label-6">Select Vehicles</InputLabel>
-                <Select
-                  labelId="vehicles-label-6"
-                  id="vehicles-select-6"
-                  value={vehiclesValue}
-                  onChange={(e) => setVehiclesValue(e.target.value)}
-                  label="Select Asset Status"
-                >
-                  <MenuItem value="MH40BL3039-BESA">MH40BL3039-BESA</MenuItem>
-                  <MenuItem value="MH40AT0461-HANSA">MH40AT0461-HANSA</MenuItem>
-                  <MenuItem value="MH04CU9077">MH04CU9077</MenuItem>
-                  <MenuItem value="MH34BG5552">MH34BG5552</MenuItem>
-                  <MenuItem value="MH31FC2330">MH31FC2330</MenuItem>
-                  <MenuItem value="MH31FC1100">MH31FC1100</MenuItem>
-                  <MenuItem value="MH31-EQ0455">MH31-EQ0455</MenuItem>
-                  <MenuItem value="Mixer">Mixer</MenuItem>
-                  <MenuItem value="MH29M8497-HANSA">MH29M8497-HANSA</MenuItem>
+  variant="outlined"
+  fullWidth
+  sx={{
+    width: 250,
+    "& .MuiInputBase-root": { height: 40 },
+    marginBottom: 2,
+  }}
+>
+  <InputLabel id="vehicles-label-6">Select Vehicles</InputLabel>
+  <Select
+    labelId="vehicles-label-6"
+    id="vehicles-select-6"
+    value={vehiclesValue}
+    onChange={(e) => setVehiclesValue(e.target.value)} // Uncomment to handle changes
+    label="Select Asset Status"
+  >
+    {/* You can add 'All Vehicles' as the default option */}
+    <MenuItem value="All assets">All Vehicles</MenuItem>
 
-                  {/* Add your landmark options here */}
-                </Select>
-              </FormControl>
+
+    {/* New vehicle types you provided */}
+    <MenuItem value="Default">Default</MenuItem>
+    <MenuItem value="Animal">Animal</MenuItem>
+    <MenuItem value="Bicycle">Bicycle</MenuItem>
+    <MenuItem value="Boat">Boat</MenuItem>
+    <MenuItem value="Bus">Bus</MenuItem>
+    <MenuItem value="Camper">Camper</MenuItem>
+    <MenuItem value="Crane">Crane</MenuItem>
+    <MenuItem value="Helicopter">Helicopter</MenuItem>
+    <MenuItem value="Motorcycle">Motorcycle</MenuItem>
+    <MenuItem value="Offroad">Offroad</MenuItem>
+    <MenuItem value="Person">Person</MenuItem>
+    <MenuItem value="Pickup">Pickup</MenuItem>
+    <MenuItem value="Plane">Plane</MenuItem>
+    <MenuItem value="Ship">Ship</MenuItem>
+    <MenuItem value="Tractor">Tractor</MenuItem>
+    <MenuItem value="Train">Train</MenuItem>
+    <MenuItem value="Tram">Tram</MenuItem>
+    <MenuItem value="Trolleybus">Trolleybus</MenuItem>
+    <MenuItem value="Truck">Truck</MenuItem>
+    <MenuItem value="Van">Van</MenuItem>
+    <MenuItem value="Scooter">Scooter</MenuItem>
+  </Select>
+</FormControl>
+
             </div>
 
             {/* <br />

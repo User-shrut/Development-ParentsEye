@@ -127,11 +127,11 @@ function App() {
   useEffect(() => {
     const fetchDeviceData = async () => {
       try {
-        const username = "school"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
+        const username = "hbtrack"; // Replace with your actual username
+        const password = "123456@"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
         const response1 = await axios.get(
-            "https://rocketsalestracker.com/api/devices",
+            "http://104.251.212.84/api/devices",
           {
             headers: {
               Authorization: `Basic ${token}`, // Replace with your actual token
@@ -147,12 +147,12 @@ function App() {
 
     const fetchPositionData = async () => {
       try {
-        const username = "school"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
+        const username = "hbtrack"; // Replace with your actual username
+        const password = "123456@"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
         const response2 = await axios.get(
-             "https://rocketsalestracker.com/api/positions",
+             "http://104.251.212.84/api/positions",
           {
             headers: {
               Authorization: `Basic ${token}`,
