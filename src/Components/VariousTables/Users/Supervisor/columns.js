@@ -39,7 +39,7 @@ export const COLUMNS = () => [
   },
   {
     Header: 'Bus Name',
-    accessor: 'busName',
+    accessor: 'deviceName',
   },
   {
     Header: 'School Name',
