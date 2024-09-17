@@ -703,7 +703,7 @@ export const Driver = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
   const [schools, setSchools] = useState([]);
   const [branches, setBranches] = useState([]);
   const [buses, setBuses] = useState([]);
@@ -944,7 +944,7 @@ export const Driver = () => {
           console.log("Processing row:", row);
           return row.id;
         });
-    }else{
+    } else {
       selectedIds = filteredRows
         .filter((row) => row.isSelected)
         .map((row) => {
@@ -1087,7 +1087,7 @@ export const Driver = () => {
     const decoded = jwtDecode(localStorage.getItem("token"));
     console.log(decoded.id);
 
-    if (role === 2 && name === "branchName") {
+    if (role == 2 && name === "branchName") {
       setFormData({
         ...formData,
         schoolName: decoded.schoolName, // Fetch schoolName from token
@@ -1144,7 +1144,7 @@ export const Driver = () => {
     setFormData({
       ...formData,
       deviceId: selectedBus.id, // Store deviceId
-      busName: selectedBus.name, // Store busName
+      deviceName: selectedBus.name, // Store busName
     });
   };
 
@@ -1157,7 +1157,7 @@ export const Driver = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.id}`
-          : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.driverId}`;
+          : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.id}`;
 
       const token = localStorage.getItem("token");
       // Prepare the updated data
@@ -1207,16 +1207,19 @@ export const Driver = () => {
   };
 
   const handleAddSubmit = async () => {
+    const decoded = jwtDecode(localStorage.getItem("token"));
     try {
       let newRow;
-      if (role == 3) {
-        const schoolN = drivers[0]?.schoolName;
-        const branchN = drivers[0]?.branchName;
-        console.log(schoolN);
+      if (role == 2) {
         newRow = {
           ...formData,
-          schoolName: schoolN,
-          branchName: branchN,
+          schoolName: decoded.schoolName,
+        };
+      } else if (role == 3) {
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+          branchName: decoded.branchName,
         };
       } else {
         newRow = {
@@ -1274,7 +1277,7 @@ export const Driver = () => {
             }
           );
 
-          console.log("fetch data", response.data); 
+          console.log("fetch data", response.data);
 
           if (Array.isArray(response.data.schools)) {
             const allData = response.data.schools;
@@ -1657,7 +1660,7 @@ export const Driver = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Edit Driver</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
@@ -1698,26 +1701,28 @@ export const Driver = () => {
                 </Select>
               </FormControl>
             )}
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"Branch Name"}</InputLabel>
-
-              <Select
-                value={formData["branchName"] || ""}
-                onChange={handleInputChange}
-                name="branchName"
-                label={"Branch Name"}
+            {(role == 1 || role == 2) && (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
               >
-                {branches?.map((option) => (
-                  <MenuItem key={option.branchId} value={option.branchName}>
-                    {option.branchName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel>{"Branch Name"}</InputLabel>
+
+                <Select
+                  value={formData["branchName"] || ""}
+                  onChange={handleInputChange}
+                  name="branchName"
+                  label={"Branch Name"}
+                >
+                  {branches?.map((option) => (
+                    <MenuItem key={option.branchId} value={option.branchName}>
+                      {option.branchName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -1852,7 +1857,7 @@ export const Driver = () => {
               <Select
                 value={formData["deviceId"] || ""}
                 onChange={handleBusChange}
-                name="busName"
+                name="deviceName"
                 label={"Bus Name"}
               >
                 {buses.map((option) => (

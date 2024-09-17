@@ -45,7 +45,6 @@ import { TotalResponsesProvider } from "./TotalResponsesContext";
 import Logoprac from "./Components/Logoprac";
 import Signupp from "./Components/Signupp";
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
     <TotalResponsesProvider>
       <BrowserRouter>
         <Routes>
@@ -59,5 +58,4 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </Routes>
       </BrowserRouter>
     </TotalResponsesProvider>
-  </React.StrictMode>
 );

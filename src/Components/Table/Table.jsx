@@ -103,6 +103,10 @@ export const Tablee = ({ data }) => {
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
 
+  if (data) {
+    console.log(data);
+  }
+
   useEffect(() => {
     setFilteredRows(data.map((row) => ({ ...row, isSelected: false })));
   }, [data]);
@@ -899,7 +903,7 @@ export const Tablee = ({ data }) => {
               variant="contained"
               onClick={() => setModalOpen(true)}
               sx={{
-                color:"black",
+                color: "black",
                 backgroundColor: "#f4d24a",
                 "&:hover": {
                   backgroundColor: "#f8ebb5",
@@ -917,8 +921,28 @@ export const Tablee = ({ data }) => {
         {individualMap ? (
           <></>
         ) : (
-          <Paper sx={{ width: "100%", overflow: "hidden", marginTop: "16px" , display:"flex", justifyContent:"center", flexDirection:"column", alignItems:"center"}}>
-            <TableContainer sx={{ maxHeight: "100%", width:"100%", borderRight:"2px solid black",borderTop:"2px solid black", borderRadius:"5px" }}>
+
+          <Paper
+            sx={{
+              width: "100%",
+              overflow: "hidden",
+              marginTop: "16px",
+              display: "flex",
+              justifyContent: "center",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <TableContainer
+              sx={{
+                maxHeight: "100%",
+                width: "90%",
+                borderRight: "2px solid black",
+                borderTop: "2px solid black",
+                borderRadius: "5px",
+              }}
+            >
+
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -1008,22 +1032,13 @@ export const Tablee = ({ data }) => {
                            padding:"0px 16px"
                         }}
                         onClick={() => {
-                          
-                            handleData(
-                              row.latitude,
-                              row.longitude,
-                              data
-                            );
+                          handleData(row.latitude, row.longitude, data);
 
-                            handleLocationClick(
-                              row.latitude,
-                              row.longitude
-                            );
-                         
-                          
+                          handleLocationClick(row.latitude, row.longitude);
                         }}
                       >
-                        <TableCell className="tablecell"
+                        <TableCell
+                          className="tablecell"
                           key={`select-${index}`}
                           align="left"
                           style={{
@@ -1042,7 +1057,8 @@ export const Tablee = ({ data }) => {
                           (column) =>
                             column.accessor !== "select" &&
                             columnVisibility[column.accessor] && (
-                              <TableCell className="tablecell"
+                              <TableCell
+                                className="tablecell"
                                 key={column.accessor}
                                 align={
                                   column.accessor === "date_of_birth"
@@ -1054,7 +1070,7 @@ export const Tablee = ({ data }) => {
                                   cursor:
                                     column.accessor === "location"
                                       ? "pointer"
-                                      : "default", 
+                                      : "default",
                                 }}
                                 onClick={() => {
                                   if (column.accessor === "location") {
@@ -1068,7 +1084,6 @@ export const Tablee = ({ data }) => {
                                       row.latitude,
                                       row.longitude,
                                       row
-                                      
                                     );
                                   } else if (column.accessor === "name") {
                                     handleVehicleClick();
@@ -1184,7 +1199,7 @@ export const Tablee = ({ data }) => {
             onClick={handleExport}
             sx={{
               marginRight: "10px",
-              color:"black",
+              color: "black",
               backgroundColor: "#f4d24a",
               "&:hover": {
                 backgroundColor: "#1a242f",

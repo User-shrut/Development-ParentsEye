@@ -28,8 +28,15 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "@mui/material";
+import {
+  FormControlLabel,
+  FormLabel,
+  IconButton,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
 import { MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import { jwtDecode } from "jwt-decode";
 //import { TextField } from '@mui/material';
 
 const style = {
@@ -55,7 +62,7 @@ export const StudentDetail = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
@@ -80,6 +87,10 @@ export const StudentDetail = () => {
   const [selectedValue, setSelectedValue] = useState("");
   const [otherDropdownOptions, setOtherDropdownOptions] = useState([]);
   const [otherSelectedValue, setOtherSelectedValue] = useState("");
+
+  const [schools, setSchools] = useState();
+  const [branches, setBranches] = useState();
+  const [buses, setBuses] = useState();
 
   // const [dropdownOptions1, setDropdownOptions1] = useState([]);
   // const [selectedValue1, setSelectedValue1] = useState("");
@@ -124,10 +135,14 @@ export const StudentDetail = () => {
       if (response?.data) {
         const allData =
           role == 1
-            ? response?.data.data.flatMap((school) =>
+            ? response.data.data.flatMap((school) =>
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.children) && branch.children.length > 0
-                    ? branch.children
+                    ? branch.children.map((child) => ({
+                        ...child, // Spread child object to retain all existing properties
+                        schoolName: school.schoolName,
+                        branchName: branch.branchName,
+                      }))
                     : []
                 )
               )
@@ -503,7 +518,7 @@ export const StudentDetail = () => {
     const apiUrl =
       role == 1
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child`
-        : `${process.env.REACT_APP_SCHOOL_API}/update-child/${selectedRow.childId}`;
+        : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/update-child` : `${process.env.REACT_APP_BRANCH_API}/update-child`
 
     // Prepare the updated data
     const updatedData = {
@@ -553,15 +568,39 @@ export const StudentDetail = () => {
 
   const handleAddSubmit = async () => {
     try {
-      const newRow = {
-        ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
-      };
+      const decoded = jwtDecode(localStorage.getItem('token'));
+      let newRow;
+
+      if(role == 1){
+        newRow = {
+          ...formData,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      }
+      else if(role == 2){
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      }else{
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+          branchName: decoded.branchName,
+        };
+      }
+      
+
+      console.log(newRow);
 
       // POST request to the server
       const response = await fetch(
+
         `${process.env.REACT_APP_API}/parent/register`,
+
         {
           method: "POST",
           headers: {
@@ -570,11 +609,11 @@ export const StudentDetail = () => {
           body: JSON.stringify(newRow),
         }
       );
-      alert("record created successfully");
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      alert("record created successfully");
 
       // Assuming the server returns the created object
       const result = await response.json();
@@ -704,11 +743,70 @@ export const StudentDetail = () => {
   // };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    const decoded = jwtDecode(localStorage.getItem("token"));
+    console.log(decoded.id);
+
+    if (role == 2 && name === "branchName") {
+      setFormData({
+        ...formData,
+        schoolName: decoded.schoolName, // Fetch schoolName from token
+        [name]: value, // Update branch name
+      });
+    } else if (name === "schoolName") {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+      const selectedSchoolData = schools.find(
+        (school) => school.schoolName === value
+      );
+
+      console.log(selectedSchoolData);
+      if (selectedSchoolData) {
+        const allBranches = [];
+        if (selectedSchoolData.branchName) {
+          allBranches.push({
+            branchName: selectedSchoolData.branchName,
+            branchId: selectedSchoolData._id,
+          });
+        }
+
+        if (
+          selectedSchoolData.branches &&
+          selectedSchoolData.branches.length > 0
+        ) {
+          selectedSchoolData.branches.forEach((branch) => {
+            allBranches.push({
+              branchName: branch.branchName,
+              branchId: branch._id,
+            });
+          });
+        }
+
+        setBranches(allBranches);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleBusChange = (e) => {
+    const { value } = e.target;
+
+    // Find the selected bus object based on the selected deviceId
+    const selectedBus = buses.find((bus) => bus.id === value);
+
+    // Update formData with both deviceId and busName
     setFormData({
       ...formData,
-      [name]: value,
+      deviceId: selectedBus.id, // Store deviceId
+      deviceName: selectedBus.name, // Store busName
     });
   };
+
   const handleSelectChange = (event) => {
     setFormData({
       ...formData,
@@ -737,6 +835,81 @@ export const StudentDetail = () => {
   const lastThirdColumn = columns[columns.length - 3];
   // const columns1 = COLUMNS();
   // const lastthirdColumn = columns1[columns1.length - 3];
+
+  useEffect(() => {
+    const fetchSchool = async (startDate = "", endDate = "") => {
+      setLoading(true);
+      if (role == 1) {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get(
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          console.log("fetch data", response.data);
+
+          if (Array.isArray(response.data.schools)) {
+            const allData = response.data.schools;
+            setSchools(allData);
+            console.log(allData);
+          } else {
+            console.error(
+              "Expected an array but got:",
+              response.data.supervisors
+            );
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else if (role == 2) {
+        const apiUrl = `${process.env.REACT_APP_SCHOOL_API}/branches`;
+        const token = localStorage.getItem("token");
+
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log("fetch data branches :", response.data); // Log the entire response data
+
+        if (response.data) {
+          setBranches(response.data.branches);
+        }
+      }
+    };
+
+    const fetchBuses = async () => {
+      const url = "http://104.251.216.99:8082/api/devices";
+      const username = "school";
+      const password = "123456";
+
+      // Encode credentials to base64 using btoa
+      const token = btoa(`${username}:${password}`);
+
+      try {
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+        });
+        setBuses(response.data);
+        console.log("Buses Data:", response.data);
+      } catch (error) {
+        console.error("Error fetching buses data:", error);
+      }
+    };
+
+    fetchBuses();
+    fetchSchool();
+  }, [addModalOpen, editModalOpen]);
 
   return (
     <>
@@ -1090,7 +1263,7 @@ export const StudentDetail = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
+              <h2 style={{ flexGrow: 1 }}>Edit Student Details</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
@@ -1201,70 +1374,281 @@ export const StudentDetail = () => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Student</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Parent</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
             </Box>
-            {COLUMNS()
-              .slice(0, -3)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
+
+            <TextField
+              key={"childName"}
+              label={"Student Name"}
+              variant="outlined"
+              name="childName"
+              value={formData["childName"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+
+            <FormControl
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <FormLabel
+                id="demo-row-radio-buttons-group-label"
+                sx={{ marginRight: 4 }} // Add some space between label and radio group
+              >
+                Gender
+              </FormLabel>
+              <RadioGroup
+                row
+                aria-labelledby="demo-row-radio-buttons-group-label"
+                name="gender"
+                onChange={handleInputChange}
+              >
+                <FormControlLabel
+                  value="female"
+                  control={<Radio />}
+                  label="Female"
+                />
+                <FormControlLabel
+                  value="male"
+                  control={<Radio />}
+                  label="Male"
+                />
+              </RadioGroup>
+            </FormControl>
+
+            <FormControl
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <FormLabel
+                id="demo-row-radio-buttons-group-label"
+                sx={{ marginRight: 4 }} // Add some space between label and radio group
+              >
+                Date of Birth
+              </FormLabel>
+
+              <TextField
+                key={"childAge"}
+                type="date"
+                placeholder="Date of Birth"
+                variant="outlined"
+                name="dateOfBirth"
+                value={formData["dateOfBirth"] || ""}
+                onChange={handleInputChange}
+                sx={{ marginBottom: "10px", width: "200px" }}
+                fullWidth
+              />
+            </FormControl>
+
+            <TextField
+              key={"childAge"}
+              label={"Student Age"}
+              variant="outlined"
+              name="childAge"
+              value={formData["childAge"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+
+            <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+              <InputLabel id="demo-simple-select-label">Class</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                name="class"
+                value={formData["class"] || ""}
+                label="Class"
+                onChange={handleInputChange}
+              >
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={4}>4</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={6}>6</MenuItem>
+                <MenuItem value={7}>7</MenuItem>
+                <MenuItem value={8}>8</MenuItem>
+                <MenuItem value={9}>9</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              key={"roleno"}
+              label={"Roll No"}
+              variant="outlined"
+              name="rollno"
+              value={formData["rollno"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"section"}
+              label={"Section"}
+              variant="outlined"
+              name="section"
+              value={formData["section"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            {role == 1 ? (
+              <>
+                <FormControl
                   variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
                   sx={{ marginBottom: "10px" }}
                   fullWidth
-                />
-              ))}
+                >
+                  <InputLabel>{"School Name"}</InputLabel>
+
+                  <Select
+                    value={formData["schoolName"] || ""}
+                    onChange={handleInputChange}
+                    name="schoolName"
+                    label={"School Name"}
+                  >
+                    {schools?.map((option) => (
+                      <MenuItem key={option._id} value={option.schoolName}>
+                        {option.schoolName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <InputLabel>{"Branch Name"}</InputLabel>
+
+                  <Select
+                    value={formData["branchName"] || ""}
+                    onChange={handleInputChange}
+                    name="branchName"
+                    label={"Branch Name"}
+                  >
+                    {branches?.map((option) => (
+                      <MenuItem key={option.branchId} value={option.branchName}>
+                        {option.branchName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
+            ) : role == 2 ? (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <InputLabel>{"Branch Name"}</InputLabel>
+
+                <Select
+                  value={formData["branchName"] || ""}
+                  onChange={handleInputChange}
+                  name="branchName"
+                  label={"Branch Name"}
+                >
+                  {branches?.map((option) => (
+                    <MenuItem key={option.branchId} value={option.branchName}>
+                      {option.branchName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
               fullWidth
             >
-              <InputLabel>{lastThirdColumn.Header}</InputLabel>
+              <InputLabel>{"Bus Name"}</InputLabel>
 
               <Select
-                value={formData[lastThirdColumn.accessor] || ""}
-                onChange={handleOtherSelectChange}
-                name={lastThirdColumn.accessor}
-                label={lastThirdColumn.Header}
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="deviceName"
+                label={"Bus Name"}
               >
-                {otherDropdownOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
+                {buses?.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-
-            <FormControl
+            <TextField
+              key={"parent"}
+              label={"Parent Name"}
               variant="outlined"
+              name="parentName"
+              value={formData["parentName"] || ""}
+              onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
-            >
-              <InputLabel>{lastSecondColumn.Header}</InputLabel>
-              {/* <Select
-        value={selectedValue}
-        onChange={handleChange}
-        label="Select Geofence"
-      > */}
-              <Select
-                value={formData[lastSecondColumn.accessor] || ""}
-                onChange={handleSelectChange}
-                name={lastSecondColumn.accessor}
-                label={lastSecondColumn.Header}
-              >
-                {dropdownOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            />
+            <TextField
+              key={"phone"}
+              label={"Phone Number"}
+              variant="outlined"
+              name="phone"
+              value={formData["phone"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"email"}
+              label={"Parent's Email"}
+              variant="outlined"
+              name="email"
+              value={formData["email"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"password"}
+              label={"Password"}
+              variant="outlined"
+              name="password"
+              value={formData["password"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"Pick Up Points"}
+              label={"Pick Up Points"}
+              variant="outlined"
+              name="pickupPoint"
+              value={formData["pickupPoint"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
+            <TextField
+              key={"fcmToken"}
+              label={"fcm Token"}
+              variant="outlined"
+              name="fcmToken"
+              value={formData["fcmToken"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            />
             <Button
               variant="contained"
               color="primary"

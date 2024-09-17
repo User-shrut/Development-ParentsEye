@@ -117,8 +117,8 @@ function App() {
   //   }
   // };
 
-  const handleDrivername = () => {};
-  const handleMobileNo = () => {};
+  // const handleDrivername = () => {};
+  // const handleMobileNo = () => {};
   //API FETCHING
   const [deviceApiData, setDeviceApiData] = useState([]); // State variable to store device API data
   const [positionApiData, setPositionApiData] = useState([]); // State variable to store position API data
@@ -127,8 +127,10 @@ function App() {
   useEffect(() => {
     const fetchDeviceData = async () => {
       try {
-        const username = "hbtrack"; // Replace with your actual username
-        const password = "123456@"; // Replace with your actual password
+
+        const username = "harshal"; // Replace with your actual username
+        const password = "123456"; // Replace with your actual password
+
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
         const response1 = await axios.get(
             "http://104.251.212.84/api/devices",
@@ -147,8 +149,9 @@ function App() {
 
     const fetchPositionData = async () => {
       try {
-        const username = "hbtrack"; // Replace with your actual username
-        const password = "123456@"; // Replace with your actual password
+        const username = "harshal"; // Replace with your actual username
+        const password = "123456"; // Replace with your actual password
+
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
         const response2 = await axios.get(
@@ -168,21 +171,24 @@ function App() {
 
     fetchDeviceData();
     fetchPositionData();
-  }); // Empty dependency array ensures this effect runs only once on component mount
+  },[]); // Empty dependency array ensures this effect runs only once on component mount
 
   // console.log(deviceApiData)
   // console.log(positionApiData)
 
   useEffect(() => {
-    if (deviceApiData.length > 0 && positionApiData.length > 0) {
+    if (deviceApiData?.length > 0 && positionApiData?.length > 0) {
       // Assuming both APIs have a common key to merge data, e.g., 'deviceId'
       const merged = deviceApiData.map((device) => {
         const position = positionApiData.find(
-          (pos) => pos.deviceId === device.id
+          (pos) => pos.deviceId == device.id
         );
         return { ...device, ...position };
       });
       setMergedData(merged);
+      console.log(merged)
+      console.log(deviceApiData)
+      console.log(positionApiData)
       // setFilteredRows(merged.map(row => ({ ...row, isSelected: false })));
     }
   }, [deviceApiData, positionApiData]);

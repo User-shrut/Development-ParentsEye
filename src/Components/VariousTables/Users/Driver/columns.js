@@ -22,7 +22,7 @@ export const COLUMNS = () => [
   },
   {
     Header: 'Phone Number',
-    accessor: 'phone_no',
+    accessor: 'driverMobile',
   },
   {
     Header: 'password',
@@ -42,7 +42,7 @@ export const COLUMNS = () => [
   },
   {
     Header: 'Bus Name',
-    accessor: 'busName',
+    accessor: 'deviceName',
   },
   {
     Header: 'Device Id',

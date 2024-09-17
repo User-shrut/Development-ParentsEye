@@ -839,7 +839,7 @@ export const DeniedRequest = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
 
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
@@ -878,6 +878,8 @@ export const DeniedRequest = () => {
                     : []
                 )
               )
+            : role == 2
+            ? response.data.branches.requests
             : response.data.requests;
 
         // Apply local date filtering if dates are provided

@@ -9,7 +9,6 @@ import { TotalResponsesContext } from "../TotalResponsesContext.jsx";
 const Logoprac = () => {
   const [username, setusername] = useState("");
   const [password, setPassword] = useState("");
-  const { setRole } = useContext(TotalResponsesContext);
   const navigate = useNavigate(); // Initialize the navigate function
   const handleusernameChange = (e) => {
     setusername(e.target.value);
@@ -74,18 +73,17 @@ const Logoprac = () => {
         const response = await axios.post(url, { username, password });
         if (response.data && response.data.token) {
           localStorage.setItem("token", response.data.token);
-          setRole(roleValue);
+          localStorage.setItem("role", roleValue);
           navigate("/");
           alert(successMessage);
           return true;
         }
       } catch (error) {
-        // This catches errors specific to this login attempt
         console.error(`Login attempt to ${url} failed:`, error);
       }
       return false;
     };
-  
+
     try {
       // Sequentially try to log in as superadmin, school, or branch
       if (
@@ -112,7 +110,7 @@ const Logoprac = () => {
         )
       )
         return;
-  
+
       // If no role matched, show an error
       alert("Incorrect username or password!");
     } catch (error) {
