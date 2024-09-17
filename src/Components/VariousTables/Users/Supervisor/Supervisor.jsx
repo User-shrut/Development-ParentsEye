@@ -1314,8 +1314,8 @@ export const Supervisor = () => {
 
     const fetchBuses = async () => {
       const url = "http://104.251.216.99:8082/api/devices";
-      const username = "school";
-      const password = "123456";
+      const username = "hbtrack";
+      const password = "123456@";
 
       // Encode credentials to base64 using btoa
       const token = btoa(`${username}:${password}`);

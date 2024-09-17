@@ -328,8 +328,8 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
 
     try {
 
-      const username = "harshal";
-      const password = "123456";
+      const username = "hbtrack";
+      const password = "123456@";
 
       const token = btoa(`${username}:${password}`);
       const response1 = await axios.get(
