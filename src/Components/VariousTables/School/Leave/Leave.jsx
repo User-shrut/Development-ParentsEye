@@ -1372,7 +1372,7 @@ export const Leave = () => {
 
       if (response.data) {
         const allData =
-          role == 1
+          role === 1
             ? response?.data.data.flatMap((school) =>
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.requests) && branch.requests.length > 0
@@ -1380,7 +1380,7 @@ export const Leave = () => {
                     : []
                 )
               )
-            : role == 2 ? response.data.branches.requests : response.data.requests;
+            : role === 2 ? response.data.branches.requests : response.data.requests;
 
         console.log(allData);
 

@@ -1178,7 +1178,7 @@ export const Tablee = ({ data }) => {
                 backgroundColor: "#fff",
                 borderBottom: "1px solid black",
               }}
-              rowsPerPageOptions={[10, 25, 10, 0]}
+              rowsPerPageOptions={[10, 25, 100, 0]}
               component="div"
               count={filteredRows.length}
               rowsPerPage={rowsPerPage}

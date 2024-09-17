@@ -128,8 +128,8 @@ function App() {
     const fetchDeviceData = async () => {
       try {
 
-        const username = "harshal"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
+        const username = "hbtrack"; // Replace with your actual username
+        const password = "123456@"; // Replace with your actual password
 
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
         const response1 = await axios.get(
@@ -149,8 +149,8 @@ function App() {
 
     const fetchPositionData = async () => {
       try {
-        const username = "harshal"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
+        const username = "hbtrack"; // Replace with your actual username
+        const password = "123456@"; // Replace with your actual password
 
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
