@@ -210,7 +210,7 @@ useEffect(() => {
               width: "99vw",
               border: "2px solid rgb(140 133 118)",
               // borderRadius: "6px",
-              marginBottom: "35px",
+              marginBottom: "0px",
               marginLeft:"0.75px",
         }}
       >

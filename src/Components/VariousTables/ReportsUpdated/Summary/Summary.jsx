@@ -49,7 +49,7 @@ const style = {
   padding: "1rem",
 };
 
-export const Route = () => {
+export const Summary = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
@@ -278,7 +278,7 @@ export const Route = () => {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Route.xlsx");
+    XLSX.writeFile(workbook, "Summary.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -550,9 +550,9 @@ const handleEditSubmit = async () => {
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/devices', {
+        const response = await fetch('http://104.251.212.84/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('hbgadget221@gmail.com:123456'), // Replace with your username and password
           },
         });
 
@@ -578,10 +578,10 @@ const handleEditSubmit = async () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/groups', {
+        const response = await fetch('http://104.251.212.84/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('hbgadget221@gmail.com:123456') // Replace with actual credentials
           }
         });
 
@@ -652,552 +652,44 @@ const handleEditSubmit = async () => {
   //   //   console.error('There was a problem with the fetch operation:', error);
   //   // }
   // };
+  // const handleShowClick = () => {
+  //   const formattedStartDate = formatToUTC(startDate);
+  //   const formattedEndDate = formatToUTC(endDate);
+
+  //   if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
+  //     alert('Please fill all fields');
+  //     return;
+  //   }
+
+  //   // Construct the API URL
+  //   const url = `https://rocketsalestracker.com/api/reports/route?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}`;
+    
+  //   setApiUrl(url); // Update the state with the generated URL
+  //   fetchData(url); // Call fetchData with the generated URL
+  // };
   const handleShowClick = () => {
-    const formattedStartDate = formatToUTC(startDate);
-    const formattedEndDate = formatToUTC(endDate);
+  const formattedStartDate = formatToUTC(startDate);
+  const formattedEndDate = formatToUTC(endDate);
 
-    if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
-      alert('Please fill all fields');
-      return;
-    }
+  if (!formattedStartDate || !formattedEndDate || !selectedDevice || !selectedNotification) {
+    alert('Please fill all fields');
+    return;
+  }
 
-    // Construct the API URL
-    const url = `https://rocketsalestracker.com/api/reports/route?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}`;
-    
-    setApiUrl(url); // Update the state with the generated URL
-    fetchData(url); // Call fetchData with the generated URL
-  };
-  const formatToUTC = (localDateTime) => {
-    if (!localDateTime) return '';
-    const localDate = new Date(localDateTime);
-    const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
-    return utcDate.toISOString();
-  };
+  // Construct the API URL
+  const url = `
+http://104.251.212.84/api/reports/summary?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&daily=${encodeURIComponent(daily)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
   
-  // const fetchData = async (url) => {
-  //   console.log('Fetching data...');
-  //   setLoading(true); // Set loading to true when starting fetch
-  //   try {
-  //     const username = "school";
-  //     const password = "123456";
-  //     const token = btoa(`${username}:${password}`);
-
-  //     const response = await axios.get(url, {
-  //       headers: {
-  //         Authorization: `Basic ${token}`,
-  //       },
-  //     });
-
-  //     console.log('fetch data', response.data);
-
-  //     if (response.data && typeof response.data === 'object') {
-  //       const wrappedData = [response.data];
-  //       setFilteredRows(wrappedData.map(row => ({ ...row, isSelected: false })));
-  //       setTotalResponses(wrappedData.length);
-  //     } else {
-  //       console.error('Expected an object but got:', response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch data error:', error);
-  //     alert('An error occurred while fetching data.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // const fetchData = async (url) => {
-  //   console.log('Fetching data...');
-  //   setLoading(true); // Set loading to true when starting fetch
-    
-  //   try {
-  //     const username = "school";
-  //     const password = "123456";
-  //     const token = btoa(`${username}:${password}`);
+  setApiUrl(url); // Update the state with the generated URL
+  fetchData(url); // Call fetchData with the generated URL
+};
+const formatToUTC = (localDateTime) => {
+  if (!localDateTime) return '';
+  const localDate = new Date(localDateTime);
+  const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+  return utcDate.toISOString();
+};
   
-  //     const response = await axios.get(url, {
-  //       headers: {
-  //         Authorization: `Basic ${token}`,
-  //       },
-  //     });
-  
-  //     console.log('Fetched data:', response.data);
-  
-  //     // Check if response.data is an array
-  //     if (Array.isArray(response.data)) {
-  //       // Assuming you want to use the first object in the array
-  //       const data = response.data[0];
-  
-  //       // Wrap data if necessary
-  //       const wrappedData = [data];
-  
-  //       // Set the filtered rows
-  //       setFilteredRows(wrappedData.map(row => ({
-  //         ...row,
-  //         isSelected: false
-  //       })));
-  
-  //       // Set the total number of responses
-  //       setTotalResponses(wrappedData.length);
-  //     } else {
-  //       console.error('Expected an array but got:', response.data);
-  //       alert('Unexpected data format.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch data error:', error);
-  //     alert('An error occurred while fetching data.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // const fetchData = async (url) => {
-  //   console.log('Fetching data...');
-  //   setLoading(true); // Set loading to true when starting fetch
-    
-  //   try {
-  //     const username = "school";
-  //     const password = "123456";
-  //     const token = btoa(`${username}:${password}`);
-  
-  //     const response = await axios.get(url, {
-  //       headers: {
-  //         Authorization: `Basic ${token}`,
-  //       },
-  //     });
-  
-  //     console.log('Fetched data:', response.data);
-  
-  //     // Check if response.data is an array
-  //     if (Array.isArray(response.data) && response.data.length > 0) {
-  //       const data = response.data[0]; // Assuming you only need the first object
-  
-  //       // Safely process route
-  //       const processedRoute = (data.route || []).map(([lat, lon]) => ({
-  //         lat: lat !== undefined ? parseFloat(lat).toFixed(6) : 'N/A',
-  //         lon: lon !== undefined ? parseFloat(lon).toFixed(6) : 'N/A'
-  //       }));
-  
-  //       // Safely process positions
-  //       const processedPositions = (data.positions || []).map(position => ({
-  //         ...position,
-  //         latitude: position.latitude !== undefined ? parseFloat(position.latitude).toFixed(6) : 'N/A',
-  //         longitude: position.longitude !== undefined ? parseFloat(position.longitude).toFixed(6) : 'N/A'
-  //       }));
-  
-  //       // Assuming no additional processing needed for events
-  //       const processedEvents = data.events || [];
-  
-  //       // Set state with processed data
-  //       const wrappedData = [{
-  //         ...data,
-  //         route: processedRoute,
-  //         positions: processedPositions,
-  //         events: processedEvents
-  //       }];
-  
-  //       setFilteredRows(wrappedData.map(row => ({
-  //         ...row,
-  //         isSelected: false
-  //       })));
-  
-  //       setTotalResponses(wrappedData.length);
-  //     } else {
-  //       console.error('Expected an array but got:', response.data);
-  //       alert('Unexpected data format.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch data error:', error);
-  //     alert('An error occurred while fetching data.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-//   const fetchData = async (url) => {
-//     console.log('Fetching data...');
-//     setLoading(true); // Set loading to true when starting fetch
-
-//     try {
-//         const username = "school";
-//         const password = "123456";
-//         const token = btoa(`${username}:${password}`);
-
-//         const response = await axios.get(url, {
-//             headers: {
-//                 Authorization: `Basic ${token}`,
-//             },
-//         });
-
-//         console.log('Fetched data:', response.data);
-
-//         // Check if response.data is an array
-//         if (Array.isArray(response.data) && response.data.length > 0) {
-//             const data = response.data[0]; // Assuming you only need the first object
-
-//             // Safely process route
-//             const processedRoute = (data.route || []).map(([lat, lon]) => ({
-//                 lat: lat !== undefined ? parseFloat(lat).toFixed(6) : 'N/A',
-//                 lon: lon !== undefined ? parseFloat(lon).toFixed(6) : 'N/A'
-//             }));
-
-//             // Safely process positions
-//             const processedPositions = (data.positions || []).map(position => ({
-//                 ...position,
-//                 latitude: position.latitude !== undefined ? parseFloat(position.latitude).toFixed(6) : 'N/A',
-//                 longitude: position.longitude !== undefined ? parseFloat(position.longitude).toFixed(6) : 'N/A'
-//             }));
-
-//             // Process events
-//             const processedEvents = data.events || [];
-
-//             console.log('Processed Events:', processedEvents);
-
-//             // Set state with processed data
-//             const wrappedData = [{
-//                 ...data,
-//                 route: processedRoute,
-//                 positions: processedPositions,
-//                 events: processedEvents
-//             }];
-
-//             console.log('Wrapped Data:', wrappedData);
-
-//             setFilteredRows(wrappedData.map(row => ({
-//                 ...row,
-//                 isSelected: false
-//             })));
-
-//             setTotalResponses(wrappedData.length);
-//         } else {
-//             console.error('Expected an array but got:', response.data);
-//             alert('Unexpected data format.');
-//         }
-//     } catch (error) {
-//         console.error('Fetch data error:', error);
-//         alert('An error occurred while fetching data.');
-//     } finally {
-//         setLoading(false);
-//     }
-// };
-// const fetchData = async (url) => {
-//   console.log('Fetching data...');
-//   setLoading(true);
-
-//   try {
-//       const username = "school";
-//       const password = "123456";
-//       const token = btoa(`${username}:${password}`);
-
-//       const response = await axios.get(url, {
-//           headers: {
-//               Authorization: `Basic ${token}`,
-//           },
-//       });
-
-//       console.log('Fetched data:', response.data);
-
-//       if (Array.isArray(response.data) && response.data.length > 0) {
-//           const data = response.data[0];
-
-//           const processedEvents = (data.events || []).map(event => ({
-//               deviceId: data.deviceId,
-//               eventTime: new Date(event.eventTime).toLocaleString(),
-//               type: event.type.replace(/([A-Z])/g, ' $1').trim() // Optional: Format type
-//           }));
-
-//           console.log('Processed Events:', processedEvents);
-
-//           setFilteredRows(processedEvents.map(event => ({
-//               ...event,
-//               isSelected: false
-//           })));
-
-//           setTotalResponses(processedEvents.length);
-//       } else {
-//           console.error('Expected an array but got:', response.data);
-//           alert('Unexpected data format.');
-//       }
-//   } catch (error) {
-//       console.error('Fetch data error:', error);
-//       alert('An error occurred while fetching data.');
-//   } finally {
-//       setLoading(false);
-//   }
-// };
-// const fetchData = async (url) => {
-//   console.log('Fetching data...');
-//   setLoading(true);
-
-//   try {
-//     const username = "test";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//     });
-
-//     console.log('Fetched data:', response.data);
-
-//     if (Array.isArray(response.data) && response.data.length > 0) {
-//       const data = response.data[0];
-
-//       const processedEvents = (data.events || []).map(event => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(event.eventTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds.join(', '),
-//         satellites: data.attributes.sat || '',
-//         RSSI: '', // Assuming RSSI is not provided in the data
-//         eventType: event.type.replace(/([A-Z])/g, ' $1').trim(),
-//         status: '', // Assuming status is not provided in the data
-//         odometer: `${data.attributes.odometer} mi`,
-//         batteryLevel: '', // Assuming battery level is not provided in the data
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         hours: `${Math.floor(data.attributes.hours / 3600)} h ${Math.floor((data.attributes.hours % 3600) / 60)} m`,
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${data.attributes.distance.toFixed(2)} mi`,
-//         totalDistance: `${data.attributes.totalDistance.toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: '', // Assuming blocked is not provided in the data
-//         alarm1Status: '', // Assuming alarm1Status is not provided in the data
-//         otherStatus: '', // Assuming otherStatus is not provided in the data
-//         alarm2Status: '', // Assuming alarm2Status is not provided in the data
-//         engineStatus: '', // Assuming engineStatus is not provided in the data
-//         iccid: '', // Assuming iccid is not provided in the data
-//         alarm3Status: '', // Assuming alarm3Status is not provided in the data
-//         adc1: '' // Assuming adc1 is not provided in the data
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-//     } else {
-//       console.error('Expected an array but got:', response.data);
-//       alert('Unexpected data format.');
-//     }
-//   } catch (error) {
-//     console.error('Fetch data error:', error);
-//     alert('An error occurred while fetching data.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-
-
-// import axios from 'axios';
-// import { saveAs } from 'file-saver'; // Save file to the user's machine
-// import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
-
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
-
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     console.log('Report fetched successfully:', response);
-
-//     // Save the file locally (optional)
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//     // Now we process the file to extract the data
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target.result);
-//       const reportWorkbook = XLSX.read(data, { type: 'array' });  // Renamed 'workbook' to 'reportWorkbook'
-
-//       const firstSheetName = reportWorkbook.SheetNames[0];
-//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];  // Renamed 'worksheet' to 'reportWorksheet'
-      
-//       // Convert worksheet data to JSON
-//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//       console.log('Extracted JSON Data from Excel:', jsonData);
-
-//       // Now process this data (same as before)
-//       const processedEvents = jsonData.map(data => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(data.fixTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes.sat || '',
-//         RSSI: data.attributes.rssi || '',
-//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//         batteryLevel: data.attributes.batteryLevel || '',
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: data.attributes.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes.alarm1Status || '',
-//         otherStatus: data.attributes.otherStatus || '',
-//         alarm2Status: data.attributes.alarm2Status || '',
-//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-
-//       // Optionally export the processed data back to an Excel file
-//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);  // Renamed 'worksheet' to 'outputWorksheet'
-//       const outputWorkbook = XLSX.utils.book_new();  // Renamed 'workbook' to 'outputWorkbook'
-//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//       // Trigger file download
-//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//     };
-
-//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert('Failed to download or process report.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
-
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     console.log('Report fetched successfully:', response);
-
-//     // Save the file locally
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//     // Process the file to extract data
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target.result);
-//       const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-//       const firstSheetName = reportWorkbook.SheetNames[0];
-//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-      
-//       // Convert worksheet data to JSON
-//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//       console.log('Extracted JSON Data from Excel:', jsonData);
-
-//       // Process the data
-//       const processedEvents = jsonData.map(data => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(data.fixTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes.sat || '',
-//         RSSI: data.attributes.rssi || '',
-//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//         batteryLevel: data.attributes.batteryLevel || '',
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: data.attributes.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes.alarm1Status || '',
-//         otherStatus: data.attributes.otherStatus || '',
-//         alarm2Status: data.attributes.alarm2Status || '',
-//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-
-//       // Optionally export the processed data back to an Excel file
-//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-//       const outputWorkbook = XLSX.utils.book_new();
-//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//       // Trigger file download
-//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//     };
-
-//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert('Failed to download or process report.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 // const fetchData = async (url) => {
 //   console.log('Fetching report...');
 //   setLoading(true);
@@ -1217,190 +709,125 @@ const handleEditSubmit = async () => {
 //     // Log the content type of the response
 //     console.log('Content-Type:', response.headers['content-type']);
 
-//     // Check if the content type matches the expected MIME type for Excel files
-//     if (response.headers['content-type'] !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
-//     }
-
-//     // Save the file locally
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//     // Process the file to extract data
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target.result);
-//       const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-//       const firstSheetName = reportWorkbook.SheetNames[0];
-//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-      
-//       // Convert worksheet data to JSON
-//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//       console.log('Extracted JSON Data from Excel:', jsonData);
-
-//       // Process the data
-//       const processedEvents = jsonData.map(data => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(data.fixTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes.sat || '',
-//         RSSI: data.attributes.rssi || '',
-//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//         batteryLevel: data.attributes.batteryLevel || '',
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: data.attributes.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes.alarm1Status || '',
-//         otherStatus: data.attributes.otherStatus || '',
-//         alarm2Status: data.attributes.alarm2Status || '',
-//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-
-//       // Optionally export the processed data back to an Excel file
-//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-//       const outputWorkbook = XLSX.utils.book_new();
-//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//       // Trigger file download
-//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//     };
-
-//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert('Failed to download or process report.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
-
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     // Log the content type of the response
-//     console.log('Content-Type:', response.headers['content-type']);
-
-//     // Check if the content type matches the expected MIME type for Excel files
+//     // Handle JSON response
 //     if (response.headers['content-type'] === 'application/json') {
-//       // Handle JSON response
 //       const text = await response.data.text(); // Convert Blob to text
 //       console.log('JSON Response:', text); // Log JSON response
 //       const jsonResponse = JSON.parse(text); // Parse JSON
-//       throw new Error('Received JSON response instead of Excel file. Details: ' + JSON.stringify(jsonResponse));
-//     } else if (response.headers['content-type'] !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
-//     }
+//       // Process the JSON response
+//       console.log('Processed JSON Data:', jsonResponse);
 
-//     // Save the file locally
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//     // Process the file to extract data
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target.result);
-//       const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-//       const firstSheetName = reportWorkbook.SheetNames[0];
-//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-      
-//       // Convert worksheet data to JSON
-//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//       console.log('Extracted JSON Data from Excel:', jsonData);
-
-//       // Process the data
-//       const processedEvents = jsonData.map(data => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(data.fixTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
+//       // Example: Set filtered rows and total responses from JSON data
+//       setFilteredRows(jsonResponse.map(data => ({
+//         deviceId: data.deviceId || 'N/A',
+//         eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+//         latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
+//         longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
+//         speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
 //         address: data.address || 'Show Address',
 //         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
+//         altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
+//         accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
 //         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
+//         protocol: data.protocol || 'N/A',
+//         deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
+//         serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
 //         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes.sat || '',
-//         RSSI: data.attributes.rssi || '',
-//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//         batteryLevel: data.attributes.batteryLevel || '',
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: data.attributes.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes.alarm1Status || '',
-//         otherStatus: data.attributes.otherStatus || '',
-//         alarm2Status: data.attributes.alarm2Status || '',
-//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
+//         satellites: data.attributes?.sat || 'N/A',
+//         RSSI: data.attributes?.rssi || 'N/A',
+//         odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
+//         batteryLevel: data.attributes?.batteryLevel || 'N/A',
+//         ignition: data.attributes?.ignition ? 'Yes' : 'No',
+//         charge: data.attributes?.charge ? 'Yes' : 'No',
+//         archive: data.attributes?.archive ? 'Yes' : 'No',
+//         distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
+//         totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+//         motion: data.attributes?.motion ? 'Yes' : 'No',
+//         blocked: data.attributes?.blocked ? 'Yes' : 'No',
+//         alarm1Status: data.attributes?.alarm1Status || 'N/A',
+//         otherStatus: data.attributes?.otherStatus || 'N/A',
+//         alarm2Status: data.attributes?.alarm2Status || 'N/A',
+//         engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
+//         adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
 //       })));
 
-//       setTotalResponses(processedEvents.length);
+//       setTotalResponses(jsonResponse.length);
 
-//       // Optionally export the processed data back to an Excel file
-//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-//       const outputWorkbook = XLSX.utils.book_new();
-//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
+//     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+//       // Handle Excel response
+//       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+//       saveAs(blob, 'report.xlsx'); // Save the file to the user's system
 
-//       // Trigger file download
-//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//     };
+//       // Process the file to extract data
+//       const reader = new FileReader();
+//       reader.onload = (e) => {
+//         const data = new Uint8Array(e.target.result);
+//         const reportWorkbook = XLSX.read(data, { type: 'array' });
 
-//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+//         const firstSheetName = reportWorkbook.SheetNames[0];
+//         const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
+        
+//         // Convert worksheet data to JSON
+//         const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+//         console.log('Extracted JSON Data from Excel:', jsonData);
+
+//         // Process the data
+//         const processedEvents = jsonData.map(data => ({
+//           deviceId: data.deviceId,
+//           eventTime: new Date(data.fixTime).toLocaleString(),
+//           latitude: `${data.latitude.toFixed(6)}°`,
+//           longitude: `${data.longitude.toFixed(6)}°`,
+//           speed: `${data.speed.toFixed(2)} mph`,
+//           address: data.address || 'Show Address',
+//           course: data.course > 0 ? '↑' : '↓',
+//           altitude: `${data.altitude.toFixed(2)} m`,
+//           accuracy: `${data.accuracy.toFixed(2)}`,
+//           valid: data.valid ? 'Yes' : 'No',
+//           protocol: data.protocol,
+//           deviceTime: new Date(data.deviceTime).toLocaleString(),
+//           serverTime: new Date(data.serverTime).toLocaleString(),
+//           geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//           satellites: data.attributes.sat || '',
+//           RSSI: data.attributes.rssi || '',
+//           odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
+//           batteryLevel: data.attributes.batteryLevel || '',
+//           ignition: data.attributes.ignition ? 'Yes' : 'No',
+//           charge: data.attributes.charge ? 'Yes' : 'No',
+//           archive: data.attributes.archive ? 'Yes' : 'No',
+//           distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
+//           totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
+//           motion: data.attributes.motion ? 'Yes' : 'No',
+//           blocked: data.attributes.blocked ? 'Yes' : 'No',
+//           alarm1Status: data.attributes.alarm1Status || '',
+//           otherStatus: data.attributes.otherStatus || '',
+//           alarm2Status: data.attributes.alarm2Status || '',
+//           engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
+//           adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+//         }));
+
+//         console.log('Processed Events:', processedEvents);
+
+//         setFilteredRows(processedEvents.map(event => ({
+//           ...event,
+//           isSelected: false
+//         })));
+
+//         setTotalResponses(processedEvents.length);
+
+//         // Optionally export the processed data back to an Excel file
+//         const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
+//         const outputWorkbook = XLSX.utils.book_new();
+//         XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
+
+//         // Trigger file download
+//         XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
+//       };
+
+//       reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+//     } else {
+//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
+//     }
 //   } catch (error) {
 //     console.error('Error fetching the report:', error);
 //     alert('Failed to download or process report.');
@@ -1408,12 +835,21 @@ const handleEditSubmit = async () => {
 //     setLoading(false);
 //   }
 // };
+
+// const sortedData = React.useMemo(() => {
+//   if (!sortConfig.key) return data;
+//   return [...data].sort((a, b) => {
+//     if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
+//     if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
+//     return 0;
+//   });
+// }, [data, sortConfig]);
 const fetchData = async (url) => {
   console.log('Fetching report...');
   setLoading(true);
 
   try {
-    const username = "school";
+    const username = "hbgadget221@gmail.com";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -1432,44 +868,35 @@ const fetchData = async (url) => {
       const text = await response.data.text(); // Convert Blob to text
       console.log('JSON Response:', text); // Log JSON response
       const jsonResponse = JSON.parse(text); // Parse JSON
-      // Process the JSON response
-      console.log('Processed JSON Data:', jsonResponse);
 
-      // Example: Set filtered rows and total responses from JSON data
-      setFilteredRows(jsonResponse.map(data => ({
-        deviceId: data.deviceId || 'N/A',
-        eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
-        latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
-        longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
-        speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
-        address: data.address || 'Show Address',
-        course: data.course > 0 ? '↑' : '↓',
-        altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
-        accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
-        valid: data.valid ? 'Yes' : 'No',
-        protocol: data.protocol || 'N/A',
-        deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
-        serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
-        geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-        satellites: data.attributes?.sat || 'N/A',
-        RSSI: data.attributes?.rssi || 'N/A',
-        odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
-        batteryLevel: data.attributes?.batteryLevel || 'N/A',
-        ignition: data.attributes?.ignition ? 'Yes' : 'No',
-        charge: data.attributes?.charge ? 'Yes' : 'No',
-        archive: data.attributes?.archive ? 'Yes' : 'No',
-        distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
-        totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
-        motion: data.attributes?.motion ? 'Yes' : 'No',
-        blocked: data.attributes?.blocked ? 'Yes' : 'No',
-        alarm1Status: data.attributes?.alarm1Status || 'N/A',
-        otherStatus: data.attributes?.otherStatus || 'N/A',
-        alarm2Status: data.attributes?.alarm2Status || 'N/A',
-        engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
-        adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
-      })));
+      // Process the JSON data for events
+      const processedEvents = jsonResponse.map(event => ({
+        id: event.id || 'N/A',
+        deviceId: event.deviceId || 'N/A',
+        deviceName: event.deviceName || 'N/A',
+        distance: event.distance || 0,
+        averageSpeed: event.averageSpeed || 0,
+        maxSpeed: event.maxSpeed || 0,
+        spentFuel: event.spentFuel || 0,
+        startOdometer: event.startOdometer || 0,
+        endOdometer: event.endOdometer || 0,
+        startTime: event.startTime ? new Date(event.startTime).toLocaleString() : 'N/A', // Format the date
+        endTime: event.endTime ? new Date(event.endTime).toLocaleString() : 'N/A', // Format the date
+        engineHours: event.engineHours || 0,
+        type: event.type || 'Unknown', // Process the 'type' field
+        eventTime: event.eventTime ? new Date(event.eventTime).toLocaleString() : 'N/A', // Format the date
+        geofenceId: event.geofenceId || 'None',
+        maintenanceId: event.maintenanceId || 'None',
+        positionId: event.positionId || 'None',
+        attributes: event.attributes || {},
+      }));
+      
 
-      setTotalResponses(jsonResponse.length);
+      console.log('Processed Event Data:', processedEvents);
+
+      // Set the filtered rows and the total responses
+      setFilteredRows(processedEvents);
+      setTotalResponses(processedEvents.length);
 
     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
       // Handle Excel response
@@ -1484,53 +911,27 @@ const fetchData = async (url) => {
 
         const firstSheetName = reportWorkbook.SheetNames[0];
         const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-        
+
         // Convert worksheet data to JSON
         const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
 
         console.log('Extracted JSON Data from Excel:', jsonData);
 
         // Process the data
-        const processedEvents = jsonData.map(data => ({
-          deviceId: data.deviceId,
-          eventTime: new Date(data.fixTime).toLocaleString(),
-          latitude: `${data.latitude.toFixed(6)}°`,
-          longitude: `${data.longitude.toFixed(6)}°`,
-          speed: `${data.speed.toFixed(2)} mph`,
-          address: data.address || 'Show Address',
-          course: data.course > 0 ? '↑' : '↓',
-          altitude: `${data.altitude.toFixed(2)} m`,
-          accuracy: `${data.accuracy.toFixed(2)}`,
-          valid: data.valid ? 'Yes' : 'No',
-          protocol: data.protocol,
-          deviceTime: new Date(data.deviceTime).toLocaleString(),
-          serverTime: new Date(data.serverTime).toLocaleString(),
-          geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-          satellites: data.attributes.sat || '',
-          RSSI: data.attributes.rssi || '',
-          odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-          batteryLevel: data.attributes.batteryLevel || '',
-          ignition: data.attributes.ignition ? 'Yes' : 'No',
-          charge: data.attributes.charge ? 'Yes' : 'No',
-          archive: data.attributes.archive ? 'Yes' : 'No',
-          distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-          totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-          motion: data.attributes.motion ? 'Yes' : 'No',
-          blocked: data.attributes.blocked ? 'Yes' : 'No',
-          alarm1Status: data.attributes.alarm1Status || '',
-          otherStatus: data.attributes.otherStatus || '',
-          alarm2Status: data.attributes.alarm2Status || '',
-          engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-          adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+        const processedEvents = jsonData.map(event => ({
+          id: event.id,
+          deviceId: event.deviceId || 'N/A',
+          eventType: event.type || 'Unknown',
+          eventTime: event.eventTime ? new Date(event.eventTime).toLocaleString() : 'N/A',
+          geofenceId: event.geofenceId || 'None',
+          maintenanceId: event.maintenanceId || 'None',
+          positionId: event.positionId || 'None',
+          attributes: event.attributes || {},
         }));
 
         console.log('Processed Events:', processedEvents);
 
-        setFilteredRows(processedEvents.map(event => ({
-          ...event,
-          isSelected: false
-        })));
-
+        setFilteredRows(processedEvents);
         setTotalResponses(processedEvents.length);
 
         // Optionally export the processed data back to an Excel file
@@ -1553,19 +954,53 @@ const fetchData = async (url) => {
     setLoading(false);
   }
 };
+// const [selectedNotification, setSelectedNotification] = useState("allEvents");
+//   const [notificationTypes, setNotificationTypes] = useState([]);
+  // const [selectedNotification, setSelectedNotification] = useState('');
+  // const [error, setError] = useState(null);
 
-// const sortedData = React.useMemo(() => {
-//   if (!sortConfig.key) return data;
-//   return [...data].sort((a, b) => {
-//     if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
-//     if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
-//     return 0;
-//   });
-// }, [data, sortConfig]);
+  // useEffect(() => {
+  //   const fetchNotificationTypes = async () => {
+  //     try {
+  //       const response = await fetch('https://rocketsalestracker.com/api/notifications/types', {
+  //         method: 'GET',
+  //         headers: {
+  //           'Authorization': 'Basic ' + btoa('school:123456'), // Replace with actual credentials
+  //         },
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error('Network response was not ok');
+  //       }
+
+  //       const data = await response.json();
+  //       setNotificationTypes(data);
+  //     } catch (error) {
+  //       setError(error.message);
+  //     }
+  //   };
+
+  //   fetchNotificationTypes();
+  // }, []);
+ const [selectedNotification, setSelectedNotification] = useState('');
+  const [daily, setDaily] = useState(false);
+
+  const notificationTypes = [
+    { type: 'Summary' },
+    { type: 'Daily Summary' }
+  ];
+
+  const handleNotificationChange = (e) => {
+    const selectedType = e.target.value;
+    setSelectedNotification(selectedType);
+
+    // Set daily to true if 'Daily Summary', else set to false
+    setDaily(selectedType === 'Daily Summary');
+  };
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Route 
+       Summary 
       </h1>
       <div>
         <div
@@ -1667,8 +1102,52 @@ const fetchData = async (url) => {
           </option>
         ))}
       </select>
+      <div>
+      <select
+        value={selectedNotification}
+        onChange={handleNotificationChange}
+        style={{ marginRight: '10px', padding: '5px' }}
+      >
+        <option value="">Select Notification Type</option>
+        {notificationTypes.map((notification) => (
+          <option key={notification.type} value={notification.type}>
+            {notification.type}
+          </option>
+        ))}
+      </select>
 
-      {/* <select
+      {/* Display current selection for demonstration */}
+      {/* <p>Selected Type: {selectedNotification}</p>
+      <p>Daily: {daily ? 'true' : 'false'}</p> */}
+    </div>
+{/* <select
+value={selectedNotification}
+onChange={(e) => setSelectedNotification(e.target.value)}
+style={{ marginRight: '10px', padding: '5px' }}
+>
+<option value="">Select Notification Type</option>
+{notificationTypes.map((notification) => (
+  <option key={notification.type} value={notification.type}>
+    {notification.type}
+  </option>
+))}
+</select> */}
+
+
+{/* <select
+  value={selectedNotification}
+  onChange={(e) => setSelectedNotification(e.target.value)}
+  style={{ marginRight: '10px', padding: '5px' }}
+>
+  <option value="allEvents">All Events</option>
+  {notificationTypes.map((notification) => (
+    <option key={notification.type} value={notification.type}>
+      {notification.type}
+    </option>
+  ))}
+</select> */}
+
+      <select
         value={selectedGroup}
         onChange={(e) => setSelectedGroup(e.target.value)}
         style={{ marginRight: "10px", padding: "5px" }}
@@ -1677,7 +1156,7 @@ const fetchData = async (url) => {
         {groups.map(group => (
           <option key={group.id} value={group.id}>{group.name}</option>
         ))}
-      </select> */}
+      </select>
 
       <div style={{ marginRight: "10px", padding: "5px" }}>
         <label htmlFor="start-date">Start Date & Time:</label>
@@ -2156,40 +1635,3 @@ const fetchData = async (url) => {
     </>
   );
 };
-
-
-// const handleShowClick = () => {
-//   const formattedStartDate = formatToUTC(startDate);
-//   const formattedEndDate = formatToUTC(endDate);
-
-//   if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
-//     alert('Please fill all fields');
-//     return;
-//   }
-
-//   // Construct the API URL
-//   const url = `https://rocketsalestracker.com/api/reports/events?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&type=${encodeURIComponent(selectedNotification)}`;
-  
-//   setApiUrl(url); // Update the state with the generated URL
-//   fetchData(url); // Call fetchData with the generated URL
-// };
-// const formatToUTC = (localDateTime) => {
-//   if (!localDateTime) return '';
-//   const localDate = new Date(localDateTime);
-//   const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
-//   return utcDate.toISOString();
-// };
-
-
-{/* <select
-value={selectedNotification}
-onChange={(e) => setSelectedNotification(e.target.value)}
-style={{ marginRight: '10px', padding: '5px' }}
->
-<option value="">Select Notification Type</option>
-{notificationTypes.map((notification) => (
-  <option key={notification.type} value={notification.type}>
-    {notification.type}
-  </option>
-))}
-</select> */}

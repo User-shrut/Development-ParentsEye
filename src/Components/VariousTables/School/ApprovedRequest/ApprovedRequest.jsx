@@ -1529,7 +1529,7 @@ export const ApprovedRequest = () => {
         const filteredData =
           startDate || endDate
             ? allData.filter((row) => {
-                const registrationDate = parseDate(row.formattedRequestDate);
+                const registrationDate = parseDate(row.requestDate);
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);
 
@@ -2091,6 +2091,18 @@ export const ApprovedRequest = () => {
                         color="primary"
                       />
                     </TableCell>
+                    <TableCell
+                      style={{
+                        minWidth: 70, // Adjust width if needed
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      S.No.
+                    </TableCell>
                     {COLUMNS()
                       .filter((col) => columnVisibility[col.accessor])
                       .map((column) => (
@@ -2168,6 +2180,23 @@ export const ApprovedRequest = () => {
                             style={{ borderRight: "1px solid #e0e0e0" }}
                           >
                             <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              minWidth: 70, // Adjust width if needed
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              textAlign: "center",
+                              fontSize: "smaller",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              // borderBottom: "none",
+                            }}
+                          >
+                            {page * rowsPerPage + index + 1}{" "}
+                            {/* Serial number starts from 1 */}
                           </TableCell>
                           {COLUMNS()
                             .filter((col) => columnVisibility[col.accessor])

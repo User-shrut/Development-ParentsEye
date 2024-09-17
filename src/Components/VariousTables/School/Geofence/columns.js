@@ -1,6 +1,6 @@
 export const COLUMNS = () => [
   // {
-  //   Header: '',
+  //   Header: 'Select',
   //   accessor: 'select',
   //   Cell: ({ row }) => (
   //     <input
@@ -10,81 +10,36 @@ export const COLUMNS = () => [
   //     />
   //   ),
   // },
-  
   {
-    Header: 'Student Name',
-    accessor: 'childName',
-  },
-  
- 
-  {
-    Header: 'Class',
-    accessor: 'class',
-  },
- 
-  {
-    Header: 'Roll No.',
-    accessor: 'rollno',
+    Header: 'Device ID',
+    accessor: 'deviceId', // Each geofence is associated with a deviceId
   },
   {
-    Header: 'Section',
-    accessor: 'section',
+    Header: 'Geofence Name',
+    accessor: 'name', // The name of the geofence (e.g., "Krida Square")
   },
   {
-    Header: 'School Name',
-    accessor: 'schoolName',
-  },
-  
-  {
-    Header: 'Child Age',
-    accessor: 'childAge',
-  },
-  
-  {
-    Header: 'Parent Name',
-    accessor: 'parentName', // accessing mapped field
-  },
-  {
-    Header: 'Parent Email',
-    accessor: 'email', // accessing mapped field
-  },
-  {
-  Header: 'Phone Number',
-  accessor: 'phone', // accessing nested field
-},
-{
-  Header: 'Password',
-  accessor: 'password', // accessing nested field
-  show:true,
-},
-  // {
-  //   Header: 'Password',
-  //   accessor: 'password',
-  // },
-  {
-    Header: 'Gender',
-    accessor: 'gender',
-  },
-  {
-    Header: 'DOB',
-    accessor: 'dateOfBirth',
-  },
-  {
-    Header: 'Device id',
-    accessor: 'deviceId',
-  },
-  {
-    Header: 'Pick up point',
-    accessor: 'pickupPoint',
-  },
-  
-  {
-    Header: 'Registration Date',
-    accessor: 'formattedRegistrationDate',
+    Header: 'Geofence Area',
+    accessor: 'area', // Area in Circle or Polygon format
     Cell: ({ value }) => {
-      const [day, month, year] = value.split('-').map(Number);
-      const date = new Date(year, month - 1, day);
-      return date.toLocaleDateString(); // Formats the date as MM/DD/YYYY or your locale's format
+      // Display area differently based on if it's a circle or polygon
+      if (value.startsWith('Circle')) {
+        return `Circle - ${value}`;
+      } else if (value.startsWith('Polygon')) {
+        return `Polygon - ${value}`;
+      } else {
+        return value;
+      }
     },
   },
+  {
+    Header: 'Crossed',
+    accessor: 'isCrossed', // Whether the geofence has been crossed
+    Cell: ({ value }) => (value ? 'Yes' : 'No'),
+  },
+  {
+    Header: 'Geofence ID',
+    accessor: '_id', // Unique ID of the geofence
+  },
+ 
 ];

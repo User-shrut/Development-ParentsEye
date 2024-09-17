@@ -1389,7 +1389,7 @@ export const Leave = () => {
           startDate || endDate
             ? allData.filter((row) => {
                 const registrationDate = parseDate(
-                  row.formattedRegistrationDate
+                  row.requestDate
                 );
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);

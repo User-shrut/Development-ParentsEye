@@ -56,11 +56,11 @@ export const COLUMNS = () => [
   },
   {
     Header: 'School Master',
-    accessor: 'SchoolMaster',
+    accessor: 'schoolName',
   },
   {
     Header: 'Branch Master',
-    accessor: 'BranchMaster',
+    accessor: 'branchName',
   },
   {
     Header: 'Name',

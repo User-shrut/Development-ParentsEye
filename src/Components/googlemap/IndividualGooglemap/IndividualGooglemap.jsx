@@ -327,11 +327,13 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
         setGeofenceData(null);
 
     try {
+
       const username = "harshal";
       const password = "123456";
+
       const token = btoa(`${username}:${password}`);
       const response1 = await axios.get(
-        `https://rocketsalestracker.com/api/positions?deviceId=${individualDataObj.deviceId}&from=${startDateTime}&to=${endDateTime}`,
+        `http://104.251.212.84/api/positions?deviceId=${individualDataObj.deviceId}&from=${startDateTime}&to=${endDateTime}`,
         {
           headers: {
             Authorization: `Basic ${token}`,
@@ -350,11 +352,11 @@ function IndividualGooglemap({ data, setIndividualMap, individualDataObj }) {
     }
 
     try {
-      const username = "school";
-      const password = "123456";
+      const username = "hbtrack";
+      const password = "123456@";
       const token = btoa(`${username}:${password}`);
       const response2 = await axios.get(
-        `https://rocketsalestracker.com/api/geofences`,
+        `http://104.251.212.84/api/geofences`,
         {
           headers: {
             Authorization: `Basic ${token}`,

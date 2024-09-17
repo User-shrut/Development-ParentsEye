@@ -1120,3 +1120,126 @@ const handleEditSubmit = async () => {
     </>
   );
 };
+
+
+
+// col.accessor === 'attributes.loc' && col.Header === 'Location' ? (
+//   <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+//   <InputLabel id="location-select-label">Location</InputLabel>
+//   <Select
+//     labelId="location-select-label"
+//     label="Location"
+//     name={col.accessor}
+//     value={formData[col.accessor] || ''}
+//     onChange={handleInputChange}
+//   >
+//     <MenuItem value={"latitude"}>Latitude</MenuItem>
+//     <MenuItem value={"longitude"}>Longitude</MenuItem>
+//     <MenuItem value={"zoom"}>Zoom</MenuItem>
+//   </Select>
+
+//   {/* Conditionally render TextField based on selected value */}
+//   {formData[col.accessor] === 'latitude' && (
+//     <TextField
+//       label="Latitude"
+//       placeholder="Enter Latitude"
+//       size="small"
+//       variant="outlined"
+//       fullWidth
+//       style={{ marginTop: '10px' }}
+//       value={formData.latitude || ''}
+//       onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+//     />
+//   )}
+
+//   {formData[col.accessor] === 'longitude' && (
+//     <TextField
+//       label="Longitude"
+//       placeholder="Enter Longitude"
+//       size="small"
+//       variant="outlined"
+//       fullWidth
+//       style={{ marginTop: '10px' }}
+//       value={formData.longitude || ''}
+//       onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+//     />
+//   )}
+
+//   {formData[col.accessor] === 'zoom' && (
+//     <TextField
+//       label="Zoom"
+//       placeholder="Enter Zoom"
+//       size="small"
+//       variant="outlined"
+//       fullWidth
+//       style={{ marginTop: '10px' }}
+//       value={formData.zoom || ''}
+//       onChange={(e) => setFormData({ ...formData, zoom: e.target.value })}
+//     />
+//   )}
+
+//   <Button
+//     variant="contained"
+//     color="primary"
+//     onClick={handleAddSubmit}
+//     sx={{ marginTop: '10px' }}
+//   >
+//     Current Location
+//   </Button>
+// </FormControl>
+// )
+// col.accessor === 'attributes.loc' && col.Header === 'Location' ? (
+//   <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+//     <InputLabel id="location-select-label">Location</InputLabel>
+//     <Select
+//       labelId="location-select-label"
+//       label="Location"
+//       name={col.accessor}
+//       value={formData[col.accessor] || ''}
+//       onChange={handleInputChange}
+//     >
+//       <MenuItem value={"Location1"}>
+//         Latitude
+//         <div>
+//           <TextField
+//             placeholder="Enter details"
+//             size="small"
+//             variant="outlined"
+//             style={{ marginLeft: '10px' }}
+//           />
+//         </div>
+//       </MenuItem>
+//       <MenuItem value={"Location2"}>
+//         Longitude
+//         <div>
+//           <TextField
+//             placeholder="Enter details"
+//             size="small"
+//             variant="outlined"
+//             style={{ marginLeft: '10px' }}
+//           />
+//         </div>
+//       </MenuItem>
+//       <MenuItem value={"Location3"}>
+//         Zoom
+//         <div>
+//           <TextField
+//             placeholder="Enter details"
+//             size="small"
+//             variant="outlined"
+//             style={{ marginLeft: '10px' }}
+//           />
+//         </div>
+//       </MenuItem>
+//       {/* Add more locations as needed */}
+//       <Button
+//         variant="contained"
+//         color="primary"
+//         onClick={handleAddSubmit}
+//         sx={{ marginTop: '10px' }}
+//       >
+//         Current Location
+//       </Button>
+//     </Select>
+//   </FormControl>
+// )

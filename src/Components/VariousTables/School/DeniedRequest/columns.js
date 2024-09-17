@@ -43,6 +43,14 @@ export const COLUMNS = () => [
   accessor: 'phone', // accessing nested field
 },
 {
+  Header: 'school Name',
+  accessor: 'schoolName', // accessing nested field
+},
+{
+  Header: 'branch Name',
+  accessor: 'branchName', // accessing nested field
+},
+{
   Header: 'Request Date',
   accessor: 'formattedRequestDate',
   Cell: ({ value }) => {

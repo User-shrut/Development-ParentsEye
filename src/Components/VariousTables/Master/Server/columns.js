@@ -191,10 +191,6 @@
 //new code 
 export const COLUMNS = () => [
   {
-    Header: 'Speed Unit',
-    accessor: 'attributes.speedUnit',
-  },
-  {
     Header: 'Custom Map',
     accessor: 'attributes.custommap',
   },
@@ -207,9 +203,30 @@ export const COLUMNS = () => [
     accessor: 'map',
   },
   {
-    Header: 'Coordinate',
-    accessor: 'attributes.coordinates',
+    Header: 'Coordinate Format',
+    accessor: 'coordinateFormat',
   },
+  {
+    Header: 'Speed Unit',
+    accessor: 'attributes.speedUnit',
+  },
+  {
+    Header: 'Altitude',
+    accessor: 'attributes.altitudeUnit',
+  },
+  {
+    Header: 'Volume',
+    accessor: 'attributes.volumeUnit',
+  },
+  {
+    Header: 'Time',
+    accessor: 'attributes.time',
+  },
+  {
+    Header: 'Default Map',
+    accessor: 'map',
+  },
+ 
   {
     Header: 'Speed',
     accessor: 'attributes.speed',
@@ -218,18 +235,27 @@ export const COLUMNS = () => [
     Header: 'Distance',
     accessor: 'attributes.distance',
   },
-  {
-    Header: 'Altituted',
-    accessor: 'attributes.altitude',
-  },
-  {
-    Header: 'Volume',
-    accessor: 'attributes.volume',
-  },
+ 
+ 
   {
     Header: 'Time',
     accessor: 'attributes.time',
   },
+  {
+    Header: 'Location',
+    accessor: 'attributes.loc',
+  },
+  {
+    Header: 'Permission',
+    accessor: 'attributes.per',
+  },
+  { Header: 'File', 
+    accessor: 'attributes.file' },
+  {
+    Header: 'All Attri',
+    accessor: 'attributes.attri'
+  },
+ 
   // {
   //   Header: 'Timezone',
   //   accessor: 'attributes.timezone',
@@ -242,20 +268,8 @@ export const COLUMNS = () => [
     Header: 'Announcement',
     accessor: 'attributes.announce',
   },
-  {
-    Header: 'Location',
-    accessor: 'attributes.loc',
-  },
-  {
-    Header: 'Permission',
-    accessor: 'attributes.per',
-  },
-  {
-    Header: 'All Attri',
-    accessor: 'attributes.attri'
-  },
-  { Header: 'File', 
-    accessor: 'attributes.file' },
+ 
+ 
   {
     Header: 'Logo',
     accessor: 'attributes.logo',
@@ -321,10 +335,7 @@ export const COLUMNS = () => [
     accessor: 'forceSettings',
     Cell: ({ value }) => (value ? 'Yes' : 'No'),
   },
-  {
-    Header: 'Coordinate Format',
-    accessor: 'coordinateFormat',
-  },
+  
   {
     Header: 'Limit Commands',
     accessor: 'limitCommands',

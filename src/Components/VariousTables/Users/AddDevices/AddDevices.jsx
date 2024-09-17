@@ -82,29 +82,103 @@ export const AddDevices = () => {
 
 
 
+// const fetchData = async () => {
+//   console.log('Fetching data...');
+//   setLoading(true); // Set loading to true when starting fetch
+//   try {
+//     const username = "hbtrack";
+//     const password = "123456@";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get("http://104.251.212.84/api/devices", {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//     });
+
+//     console.log('fetch data', response.data);
+
+//     if (Array.isArray(response.data)) {
+//       const wrappedData = response.data; // Directly use the array
+//       setFilteredRows(wrappedData.map(row => ({ ...row, isSelected: false })));
+//       setTotalResponses(wrappedData.length);
+//     } else {
+//       console.error('Expected an array but got:', response.data);
+//       alert('Unexpected data format received.');
+//     }
+//   } catch (error) {
+//     console.error('Fetch data error:', error);
+//     alert('An error occurred while fetching data.');
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
 const fetchData = async () => {
   console.log('Fetching data...');
   setLoading(true); // Set loading to true when starting fetch
+
   try {
-    const username = "school";
-    const password = "123456";
+    const username = "hbtrack";
+    const password = "123456@";
     const token = btoa(`${username}:${password}`);
 
-    const response = await axios.get("https://rocketsalestracker.com/api/devices", {
+    // First API call to fetch devices
+    const firstApiResponse = await axios.get("http://104.251.212.84/api/devices", {
       headers: {
         Authorization: `Basic ${token}`,
       },
     });
 
-    console.log('fetch data', response.data);
+    console.log('First API Data:', firstApiResponse.data);
 
-    if (Array.isArray(response.data)) {
-      const wrappedData = response.data; // Directly use the array
-      setFilteredRows(wrappedData.map(row => ({ ...row, isSelected: false })));
+    // Second API call to fetch school, branch, and device info
+    const secondApiResponse = await axios.get("http://63.142.251.13:4000/superadmin/read-devices", {
+      headers: {
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`, // Replace with actual token if necessary
+      },
+    });
+
+    console.log('Second API Data:', secondApiResponse.data.data);
+
+    // Check if the first API returns an array
+    if (Array.isArray(firstApiResponse.data)) {
+      // Map through the first API response
+      const wrappedData = firstApiResponse.data.map((device) => {
+        // Find matching school/branch device in the second API response
+        let schoolName = '';
+        let branchName = '';
+        let foundDevice = null;
+
+        // Loop through each school and its branches in the second API response
+        secondApiResponse.data.data.forEach(school => {
+          school.branches.forEach(branch => {
+            // Search for the device by deviceId
+            const matchingDevice = branch.devices.find(d => d.deviceId === device.id.toString());
+            if (matchingDevice) {
+              schoolName = school.schoolName;
+              branchName = branch.branchName;
+              foundDevice = matchingDevice;
+            }
+          });
+        });
+
+        // Return the combined data, including schoolName and branchName
+        return {
+          ...device,
+          isSelected: false,
+          schoolName: schoolName || 'Unknown School',
+          branchName: branchName || 'Unknown Branch',
+          deviceName: foundDevice ? foundDevice.deviceName : device.name
+        };
+      });
+
+      // Set the state with the combined data
+      setFilteredRows(wrappedData);
       setTotalResponses(wrappedData.length);
     } else {
-      console.error('Expected an array but got:', response.data);
-      alert('Unexpected data format received.');
+      console.error('Expected an array from the first API, but got:', firstApiResponse.data);
+      alert('Unexpected data format received from the first API.');
     }
   } catch (error) {
     console.error('Fetch data error:', error);
@@ -114,7 +188,6 @@ const fetchData = async () => {
   }
 };
 
-  
 
   useEffect(() => {
     fetchData();
@@ -234,9 +307,9 @@ const fetchData = async () => {
   
     try {
       // Define the API endpoint and credentials
-      const apiUrl = "https://rocketsalestracker.com/api/devices"; // Replace with actual API endpoint
-      const username = "school"; // Replace with your actual username
-      const password = "123456"; // Replace with your actual password
+      const apiUrl = "http://104.251.212.84/api/devices"; // Replace with actual API endpoint
+      const username = "hbtrack"; // Replace with your actual username
+      const password = "123456@"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
       // Send delete requests for each selected ID
@@ -334,117 +407,397 @@ const fetchData = async () => {
   };
 
   
+// const handleEditSubmit = async () => {
+//   const apiUrl = `http://104.251.212.84/api/devices/${selectedRow.id}`;
+//   const username = "hbtrack";
+//   const password = "123456@";
+//   const token = btoa(`${username}:${password}`);
+
+//   // Ensure formData contains only necessary fields
+//   const { isSelected, ...updatedData } = formData; // Exclude isSelected
+
+//   try {
+//     console.log("Sending request to:", apiUrl);
+//     console.log("Request payload:", JSON.stringify(updatedData, null, 2));
+
+//     const response = await fetch(apiUrl, {
+//       method: "PUT", // PUT method to update the resource
+//       headers: {
+//         "Authorization": `Basic ${token}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(updatedData), // Convert updatedData to JSON
+//     });
+
+//     console.log("Response status:", response.status);
+//     console.log("Response headers:", response.headers);
+
+//     if (!response.ok) {
+//       const errorResult = await response.json();
+//       console.error("Error response:", errorResult);
+//       throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
+//     }
+
+//     const result = await response.json();
+//     console.log("Update successful:", result);
+//     alert("Updated successfully");
+
+//     // Update filteredRows in state
+//     const updatedRows = filteredRows.map((row) =>
+//       row.id === selectedRow.id
+//         ? { ...row, ...updatedData } // Ensure the updated data includes nested fields
+//         : row
+//     );
+//     setFilteredRows(updatedRows);
+
+//     handleModalClose();
+//     fetchData(); // Refetch data to ensure the UI is up-to-date
+//   } catch (error) {
+//     console.error("Error updating row:", error.message, error.stack);
+//     alert("Error updating data");
+//   }
+// };
+
+// const handleEditSubmit = async () => {
+//   try {
+//     const apiUrl1 = `http://104.251.212.84/api/devices/${selectedRow.id}`;
+//     const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
+
+//     const username = "hbtrack";
+//     const password = "123456@";
+//     const token1 = btoa(`${username}:${password}`);
+//     const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo";
+
+//     const { isSelected, ...updatedData } = formData;
+
+//     const updatedRow = {
+//       name: updatedData.name,
+//       uniqueId: updatedData.uniqueId,
+//       groupId: updatedData.groupId,
+//       attributes: updatedData.attributes || {},
+//       calendarId: updatedData.calendarId,
+//       status: updatedData.status,
+//       phone: updatedData.phone,
+//       model: updatedData.model,
+//       expirationTime: updatedData.expirationTime,
+//       contact: updatedData.contact,
+//       category: updatedData.category,
+//     };
+
+//     // Send PUT request to the first API
+//     const response1 = await fetch(apiUrl1, {
+//       method: "PUT",
+//       headers: {
+//         "Authorization": `Basic ${token1}`,
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(updatedRow),
+//     });
+
+//     const result1 = await response1.json();
+
+//     // Log the response from the first API
+//     console.log("First API Response (result1):", result1);
+
+//     if (response1.ok) {
+//       console.log("Record updated successfully in the first API:", result1);
+
+//       // Ensure all required fields are present
+//       // if (!result1.id || !result1.name || !updatedData.schoolName || !updatedData.branchName) {
+//       //   console.error("Missing required fields for the second API:", {
+//       //     deviceId: result1.id,
+//       //     deviceName: result1.name,
+//       //     schoolName: updatedData.schoolName,
+//       //     branchName: updatedData.branchName,
+//       //   });
+//       //   alert("All fields (deviceId, deviceName, schoolName, branchName) are required.");
+//       //   return;
+//       // }
+
+//       // Prepare data for the second API (POST)
+//       const schoolData = {
+//         deviceId: result1.id,
+//         deviceName: result1.name,
+//         schoolName: updatedData.schoolName,
+//         branchName: updatedData.branchName,
+//       };
+
+//       // Log the data to be sent to the second API
+//       console.log("Data being sent to the second API (POST):", schoolData);
+
+//       // Send POST request to the second API
+//       const response2 = await fetch(apiUrl2, {
+//         method: "POST",
+//         headers: {
+//           "Authorization": `Bearer ${token2}`,
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(schoolData),
+//       });
+
+//       const result2 = await response2.json();
+
+//       if (response2.ok) {
+//         const updatedRows = filteredRows.map((row) =>
+//           row.id === selectedRow.id ? { ...row, ...updatedRow } : row
+//         );
+//         setFilteredRows(updatedRows);
+//         handleModalClose();
+//         fetchData(); // Refetch data to update the UI
+//         console.log("Record updated successfully in the second API (POST):", result2);
+//         alert("Record updated successfully");
+//       } else {
+//         console.error("Server responded with an error for the second API:", result2);
+//         alert(`Unable to update record in the second API (POST): ${result2.message || response2.statusText}`);
+//       }
+//     } else {
+//       console.error("Server responded with an error for the first API:", result1);
+//       alert(`Unable to update record in the first API: ${result1.message || response1.statusText}`);
+//     }
+//   } catch (error) {
+//     console.error("Error during requests:", error);
+//     alert("Unable to update record");
+//   }
+// };
 const handleEditSubmit = async () => {
-  const apiUrl = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
-  const username = "school";
-  const password = "123456";
-  const token = btoa(`${username}:${password}`);
-
-  // Ensure formData contains only necessary fields
-  const { isSelected, ...updatedData } = formData; // Exclude isSelected
-
   try {
-    console.log("Sending request to:", apiUrl);
-    console.log("Request payload:", JSON.stringify(updatedData, null, 2));
+    const apiUrl1 = `http://104.251.212.84/api/devices/${selectedRow.id}`;
+    const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
 
-    const response = await fetch(apiUrl, {
-      method: "PUT", // PUT method to update the resource
+    const username = "hbtrack";
+    const password = "123456@";
+    const token1 = btoa(`${username}:${password}`);
+    const token2 = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`;
+
+    const { isSelected, ...updatedData } = formData;
+
+    const updatedRow = {
+      name: updatedData.name,
+      uniqueId: updatedData.uniqueId,
+      groupId: updatedData.groupId,
+      attributes: updatedData.attributes || {},
+      calendarId: updatedData.calendarId,
+      status: updatedData.status,
+      phone: updatedData.phone,
+      model: updatedData.model,
+      expirationTime: updatedData.expirationTime,
+      contact: updatedData.contact,
+      category: updatedData.category,
+    };
+
+    // Send PUT request to the first API
+    const response1 = await fetch(apiUrl1, {
+      method: "PUT",
       headers: {
-        "Authorization": `Basic ${token}`,
+        "Authorization": `Basic ${token1}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(updatedData), // Convert updatedData to JSON
+      body: JSON.stringify(updatedRow),
     });
 
-    console.log("Response status:", response.status);
-    console.log("Response headers:", response.headers);
+    const result1 = await response1.json();
+    console.log("First API Response (result1):", result1);
 
-    if (!response.ok) {
-      const errorResult = await response.json();
-      console.error("Error response:", errorResult);
-      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
+    if (response1.ok) {
+      console.log("Record updated successfully in the first API:", result1);
+
+      // Prepare data for the second API (POST)
+      const schoolData = {
+        deviceId: selectedRow.id,    // Ensure the correct deviceId
+        deviceName: result1.name,
+        schoolName: updatedData.schoolName,
+        branchName: updatedData.branchName,
+      };
+
+      // Log the data to be sent to the second API
+      console.log("Data being sent to the second API (POST):", schoolData);
+
+      // Send POST request to the second API
+      const response2 = await fetch(apiUrl2, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token2}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(schoolData),
+      });
+
+      // Try to parse the response as JSON only if the content type is JSON
+      const contentType = response2.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const result2 = await response2.json();
+        console.log("Second API Response (result2):", result2);
+
+        if (response2.ok) {
+          console.log("Record updated successfully in the second API (POST):", result2);
+          alert("Record updated successfully");
+        } else {
+          console.error("Server responded with an error for the second API:", result2);
+          alert(`Unable to update record in the second API (POST): ${result2.message || response2.statusText}`);
+        }
+      } else {
+        // Handle cases where the response is not JSON
+        const textResponse = await response2.text();
+        console.error("Second API Response (non-JSON):", textResponse);
+        alert(`Error: ${textResponse}`);
+      }
+    } else {
+      console.error("Server responded with an error for the first API:", result1);
+      alert(`Unable to update record in the first API: ${result1.message || response1.statusText}`);
     }
-
-    const result = await response.json();
-    console.log("Update successful:", result);
-    alert("Updated successfully");
-
-    // Update filteredRows in state
-    const updatedRows = filteredRows.map((row) =>
-      row.id === selectedRow.id
-        ? { ...row, ...updatedData } // Ensure the updated data includes nested fields
-        : row
-    );
-    setFilteredRows(updatedRows);
-
-    handleModalClose();
-    fetchData(); // Refetch data to ensure the UI is up-to-date
   } catch (error) {
-    console.error("Error updating row:", error.message, error.stack);
-    alert("Error updating data");
+    console.error("Error during requests:", error);
+    alert("Unable to update record");
   }
 };
+
+
+
 
 
  
 
-const handleAddSubmit = async () => {
-  try {
-    // Define the API endpoint and credentials
-    const apiUrl = "https://rocketsalestracker.com/api/devices"; // Replace with actual API endpoint
-    const username = "school"; // Replace with your actual username
-    const password = "123456"; // Replace with your actual password
-    const token = btoa(`${username}:${password}`); // Encode credentials in Base64
+// const handleAddSubmit = async () => {
+//   try {
+//     // Define the API endpoint and credentials
+//     const apiUrl = "http://104.251.212.84/api/devices"; // Replace with actual API endpoint
+//     const username = "hbtrack"; // Replace with your actual username
+//     const password = "123456@"; // Replace with your actual password
+//     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
 
-    // Prepare the new row object based on the expected schema
-    const newRow = {
-      name: formData.name, // Ensure formData has 'name'
-      uniqueId: formData.uniqueId, // Ensure formData has 'uniqueId'
-      groupId: formData.groupId, // Ensure formData has 'groupId'
-      attributes: formData.attributes || {}, // Ensure formData has 'attributes' (empty object if not provided)
-      calendarId: formData.calendarId, // Ensure formData has 'calendarId'
-      status: formData.status, // Ensure formData has 'status'
-      phone: formData.phone, // Ensure formData has 'phone'
-      model: formData.model, // Ensure formData has 'model'
-      expirationTime: formData.expirationTime, // Ensure formData has 'expirationTime'
-      contact: formData.contact, // Ensure formData has 'contact'
-      category: formData.category, // Ensure formData has 'category'
-    };
+//     // Prepare the new row object based on the expected schema
+//     const newRow = {
+//       name: formData.name, // Ensure formData has 'name'
+//       uniqueId: formData.uniqueId, // Ensure formData has 'uniqueId'
+//       groupId: formData.groupId, // Ensure formData has 'groupId'
+//       attributes: formData.attributes || {}, // Ensure formData has 'attributes' (empty object if not provided)
+//       calendarId: formData.calendarId, // Ensure formData has 'calendarId'
+//       status: formData.status, // Ensure formData has 'status'
+//       phone: formData.phone, // Ensure formData has 'phone'
+//       model: formData.model, // Ensure formData has 'model'
+//       expirationTime: formData.expirationTime, // Ensure formData has 'expirationTime'
+//       contact: formData.contact, // Ensure formData has 'contact'
+//       category: formData.category, // Ensure formData has 'category'
+//     };
 
-    // POST request to the server with Basic Auth
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Authorization": `Basic ${token}`, // Add Basic Auth header
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newRow),
-    });
+//     // POST request to the server with Basic Auth
+//     const response = await fetch(apiUrl, {
+//       method: "POST",
+//       headers: {
+//         "Authorization": `Basic ${token}`, // Add Basic Auth header
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(newRow),
+//     });
 
-    // Parse the JSON response
-    const result = await response.json();
+//     // Parse the JSON response
+//     const result = await response.json();
 
-    if (response.ok) {
-      // Update the state with the new row
-      setFilteredRows([...filteredRows, result]);
+//     if (response.ok) {
+//       // Update the state with the new row
+//       setFilteredRows([...filteredRows, result]);
 
-      // Close the modal and refresh data
-      handleModalClose();
-      fetchData();
+//       // Close the modal and refresh data
+//       handleModalClose();
+//       fetchData();
 
-      console.log("Record created successfully:", result);
-      alert("Record created successfully");
-    } else {
-      // Log and alert the specific server response in case of an error
-      console.error("Server responded with:", result);
-      alert(`Unable to create record: ${result.message || response.statusText}`);
-    }
-  } catch (error) {
-    console.error("Error during POST request:", error);
-    alert("Unable to create record");
-    // Handle the error appropriately (e.g., show a notification to the user)
-  }
-};
+//       console.log("Record created successfully:", result);
+//       alert("Record created successfully");
+//     } else {
+//       // Log and alert the specific server response in case of an error
+//       console.error("Server responded with:", result);
+//       alert(`Unable to create record: ${result.message || response.statusText}`);
+//     }
+//   } catch (error) {
+//     console.error("Error during POST request:", error);
+//     alert("Unable to create record");
+//     // Handle the error appropriately (e.g., show a notification to the user)
+//   }
+// };
+// const handleEditSubmit = async () => {
+//   try {
+//     // Define the API endpoints and credentials
+//     const apiUrl1 = `http://104.251.212.84/api/devices/${selectedRow.id}`; // First API endpoint for updating
+//     const apiUrl2 = `http://63.142.251.13:4000/superadmin/edit-device/${selectedRow.id}`; // Second API endpoint for updating
+//     const username = "hbtrack"; // Replace with your actual username
+//     const password = "123456@"; // Replace with your actual password
+//     const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for the first URL
+//     const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Token for the second URL
+
+//     // Prepare the updated data for the first API
+//     const { isSelected, ...updatedData } = formData; // Exclude unnecessary fields
+//     const updatedRow = {
+//       name: updatedData.name,
+//       uniqueId: updatedData.uniqueId,
+//       groupId: updatedData.groupId,
+//       attributes: updatedData.attributes || {},
+//       calendarId: updatedData.calendarId,
+//       status: updatedData.status,
+//       phone: updatedData.phone,
+//       model: updatedData.model,
+//       expirationTime: updatedData.expirationTime,
+//       contact: updatedData.contact,
+//       category: updatedData.category,
+//     };
+
+//     // Send PUT request to the first API
+//     const response1 = await fetch(apiUrl1, {
+//       method: "PUT",
+//       headers: {
+//         "Authorization": `Basic ${token1}`, // Add Basic Auth header
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(updatedRow),
+//     });
+
+//     const result1 = await response1.json();
+
+//     if (response1.ok) {
+//       console.log("Record updated successfully in the first API:", result1);
+
+//       // Prepare data for the second API
+//       const schoolData = {
+//         deviceId: result1.id, // Use ID returned by the first API
+//         deviceName: result1.name, // Use name returned by the first API
+//         schoolName: updatedData.schoolName, // From form data
+//         branchName: updatedData.branchName, // From form data
+//       };
+
+//       // Send PUT request to the second API
+//       const response2 = await fetch(apiUrl2, {
+//         method: "PUT",
+//         headers: {
+//           "Authorization": `Bearer ${token2}`, // Add Bearer Auth header
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(schoolData),
+//       });
+
+//       const result2 = await response2.json();
+
+//       if (response2.ok) {
+//         // Update state if both requests succeed
+//         const updatedRows = filteredRows.map((row) =>
+//           row.id === selectedRow.id ? { ...row, ...updatedRow } : row
+//         );
+//         setFilteredRows(updatedRows);
+//         handleModalClose();
+//         fetchData(); // Refetch data
+//         console.log("Record updated successfully in the second API:", result2);
+//         alert("Record updated successfully");
+//       } else {
+//         console.error("Server responded with an error for the second API:", result2);
+//         alert(`Unable to update record in the second API: ${result2.message || response2.statusText}`);
+//       }
+//     } else {
+//       console.error("Server responded with an error for the first API:", result1);
+//       alert(`Unable to update record in the first API: ${result1.message || response1.statusText}`);
+//     }
+//   } catch (error) {
+//     console.error("Error during PUT requests:", error);
+//     alert("Unable to update record");
+//   }
+// };
 
 const [groups, setGroups] = useState([]);
 // const [error, setError] = useState(null);
@@ -473,22 +826,22 @@ useEffect(() => {
   fetchGroups();
 }, []);
 
-const handleInputChange = (e) => {
-  const { name, value, type, checked } = e.target;
+// const handleInputChange = (e) => {
+//   const { name, value, type, checked } = e.target;
 
-  // For checkbox inputs, use the checked property
-  if (type === 'checkbox') {
-    setFormData({
-      ...formData,
-      [name]: checked,
-    });
-  } else {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  }
-};
+//   // For checkbox inputs, use the checked property
+//   if (type === 'checkbox') {
+//     setFormData({
+//       ...formData,
+//       [name]: checked,
+//     });
+//   } else {
+//     setFormData({
+//       ...formData,
+//       [name]: value,
+//     });
+//   }
+// };
 
 
 
@@ -518,6 +871,270 @@ useEffect(() => {
 
   fetchCalendars();
 }, []);
+// const [schools, setSchools] = useState([]);
+// useEffect(() => {
+//   if (addModalOpen) {
+//     // Fetch the schools data when the modal opens
+//     const fetchSchools = async () => {
+//       try {
+//         const response = await axios.get('https://schoolmanagement-8.onrender.com/superadmin/getschools', {
+//           headers: {
+//             Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI1NTE5MTc3fQ.bdjnmN2c20DjmMAvNL1L_TN59iGOa_MnblhcQQK5d4w`
+//           }
+//         });
+//         setSchools(response.data.schools);
+//       } catch (error) {
+//         console.error('Error fetching schools:', error);
+//       }
+//     };
+
+//     fetchSchools();
+//   }
+// }, [addModalOpen]);
+const [schools, setSchools] = useState([]); // State for schools
+const [branches, setBranches] = useState([]); // State for branches
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setFormData({
+    ...formData,
+    [name]: value,
+  });
+  if (name === "schoolName") {
+    const selectedSchoolData = schools.find(
+      (school) => school.schoolName === value
+    );
+
+    console.log(selectedSchoolData);
+    if (selectedSchoolData) {
+      // Combine branchName and branches
+      const allBranches = [];
+      if (selectedSchoolData.branchName) {
+        allBranches.push({
+          branchName: selectedSchoolData.branchName,
+          branchId: selectedSchoolData._id,
+        });
+      }
+
+      if (
+        selectedSchoolData.branches &&
+        selectedSchoolData.branches.length > 0
+      ) {
+        selectedSchoolData.branches.forEach((branch) => {
+          allBranches.push({
+            branchName: branch.branchName,
+            branchId: branch._id,
+          });
+        });
+      }
+
+      setBranches(allBranches);
+    }
+  }
+};
+useEffect(() => {
+  const fetchSchool = async (startDate = "", endDate = "") => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+        {
+          headers: {
+            Authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI1NTE5MTc3fQ.bdjnmN2c20DjmMAvNL1L_TN59iGOa_MnblhcQQK5d4w",
+          },
+        }
+      );
+
+      console.log("fetch data", response.data); // Log the entire response data
+
+      if (Array.isArray(response.data.schools)) {
+        const allData = response.data.schools;
+        setSchools(allData);
+
+        // console.log(school);
+
+        console.log(allData);
+      } else {
+        console.error(
+          "Expected an array but got:",
+          response.data.supervisors
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+ 
+
+  fetchSchool();
+}, [addModalOpen]);
+
+
+// const handleAddSubmit = async () => {
+//   try {
+//     // Define the API endpoints and credentials
+//     const apiUrl1 = "http://104.251.212.84/api/devices"; // First API endpoint
+//     const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
+//     const username = "hbtrack"; // Replace with your actual username
+//     const password = "123456@"; // Replace with your actual password
+//     const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
+//     const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Token for the second URL
+
+//     // Prepare the data for the first API
+//     const newRow = {
+//       name: formData.name,
+//       uniqueId: formData.uniqueId,
+//       groupId: formData.groupId,
+//       attributes: formData.attributes || {},
+//       calendarId: formData.calendarId,
+//       status: formData.status,
+//       phone: formData.phone,
+//       model: formData.model,
+//       expirationTime: formData.expirationTime,
+//       contact: formData.contact,
+//       category: formData.category,
+//     };
+
+//     // Prepare the data for the second API
+//     const schoolData = {
+//       deviceName: formData.name,
+//       schoolName: formData.schoolName,
+//       branchName: formData.branchName,
+//       deviceId:formData.id,
+//     };
+
+//     // Post data to the first URL
+//     const response1 = await fetch(apiUrl1, {
+//       method: "POST",
+//       headers: {
+//         "Authorization": `Basic ${token1}`, // Add Basic Auth header for the first URL
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(newRow),
+//     });
+
+//     const result1 = await response1.json();
+
+//     if (response1.ok) {
+//       console.log("Record created successfully in the first API:", result1);
+
+//       // Post data to the second URL
+//       const response2 = await fetch(apiUrl2, {
+//         method: "POST",
+//         headers: {
+//           "Authorization": `Bearer ${token2}`, // Add Bearer Auth header for the second URL
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(schoolData),
+//       });
+
+//       const result2 = await response2.json();
+
+//       if (response2.ok) {
+//         // Update the state and close the modal if both requests succeed
+//         setFilteredRows([...filteredRows, result1]);
+//         handleModalClose();
+//         fetchData();
+//         console.log("Record created successfully in the second API:", result2);
+//         alert("Record created successfully");
+//       } else {
+//         console.error("Server responded with an error for the second API:", result2);
+//         alert(`Unable to create record in the second API: ${result2.message || response2.statusText}`);
+//       }
+//     } else {
+//       console.error("Server responded with an error for the first API:", result1);
+//       alert(`Unable to create record in the first API: ${result1.message || response1.statusText}`);
+//     }
+//   } catch (error) {
+//     console.error("Error during POST requests:", error);
+//     alert("Unable to create record");
+//     // Handle the error appropriately (e.g., show a notification to the user)
+//   }
+// };
+const handleAddSubmit = async () => {
+  try {
+    // Define the API endpoints and credentials
+    const apiUrl1 = "http://104.251.212.84/api/devices"; // First API endpoint
+    const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
+    const username = "hbtrack"; // Replace with your actual username
+    const password = "123456@"; // Replace with your actual password
+    const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
+    const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Token for the second URL
+
+    // Prepare the data for the first API
+    const newRow = {
+      name: formData.name,
+      uniqueId: formData.uniqueId,
+      groupId: formData.groupId,
+      attributes: formData.attributes || {},
+      calendarId: formData.calendarId,
+      status: formData.status,
+      phone: formData.phone,
+      model: formData.model,
+      expirationTime: formData.expirationTime,
+      contact: formData.contact,
+      category: formData.category,
+    };
+
+    // Post data to the first URL
+    const response1 = await fetch(apiUrl1, {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${token1}`, // Add Basic Auth header for the first URL
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newRow),
+    });
+
+    const result1 = await response1.json();
+
+    if (response1.ok) {
+      console.log("Record created successfully in the first API:", result1);
+
+      // Prepare the data for the second API using the response from the first API
+      const schoolData = {
+        deviceId: result1.id, // Use the ID returned by the first API
+        deviceName: result1.name, // Use the name returned by the first API
+        schoolName: formData.schoolName, // From form data
+        branchName: formData.branchName, // From form data
+      };
+
+      // Post data to the second URL
+      const response2 = await fetch(apiUrl2, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token2}`, // Add Bearer Auth header for the second URL
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(schoolData),
+      });
+
+      const result2 = await response2.json();
+
+      if (response2.ok) {
+        // Update the state and close the modal if both requests succeed
+        setFilteredRows([...filteredRows, result1]);
+        handleModalClose();
+        fetchData();
+        console.log("Record created successfully in the second API:", result2);
+        alert("Record created successfully");
+      } else {
+        console.error("Server responded with an error for the second API:", result2);
+        alert(`Unable to create record in the second API: ${result2.message || response2.statusText}`);
+      }
+    } else {
+      console.error("Server responded with an error for the first API:", result1);
+      alert(`Unable to create record in the first API: ${result1.message || response1.statusText}`);
+    }
+  } catch (error) {
+    console.error("Error during POST requests:", error);
+    alert("Unable to create record");
+  }
+};
+
 
 
   return (
@@ -879,6 +1496,39 @@ useEffect(() => {
           />
         )
       ))}
+        {/* School Name dropdown */}
+    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>School Name</InputLabel>
+      <Select
+        value={formData['schoolName'] || ''}
+        onChange={handleInputChange}
+        name="schoolName"
+        label="School Name"
+      >
+        {schools.map((option) => (
+          <MenuItem key={option._id} value={option.schoolName}>
+            {option.schoolName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    {/* Branch Name dropdown */}
+    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>Branch Name</InputLabel>
+      <Select
+        value={formData['branchName'] || ''}
+        onChange={handleInputChange}
+        name="branchName"
+        label="Branch Name"
+      >
+        {branches?.map((option) => (
+          <MenuItem key={option.branchId} value={option.branchName}>
+            {option.branchName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
     <Button
       variant="contained"
       color="primary"
@@ -891,7 +1541,7 @@ useEffect(() => {
 
   
    
-    <Modal open={addModalOpen} onClose={handleModalClose}>
+    {/* <Modal open={addModalOpen} onClose={handleModalClose}>
   <Box sx={style}>
     <Box
       sx={{
@@ -969,7 +1619,7 @@ useEffect(() => {
             >
               {calendars.map((calendar) => (
                 <MenuItem key={calendar.id} value={calendar.id}>
-                  {calendar.name} {/* Replace with actual property names */}
+                  {calendar.name} {/* Replace with actual property names 
                 </MenuItem>
               ))}
             </Select>
@@ -992,6 +1642,367 @@ useEffect(() => {
       color="primary"
       onClick={handleAddSubmit}
     >
+      Submit
+    </Button>
+  </Box>
+</Modal> */}
+{/* <Modal open={addModalOpen} onClose={handleModalClose}>
+      <Box sx={style}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '20px',
+          }}
+        >
+          <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+          <IconButton onClick={handleModalClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+
+        {COLUMNS().map((col) =>
+          col.accessor === 'groupId' && col.Header === 'Group ID' ? (
+            <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+              <InputLabel id="group-select-label">Group ID</InputLabel>
+              <Select
+                labelId="group-select-label"
+                label="Group ID"
+                name={col.accessor}
+                value={formData[col.accessor] || ''}
+                onChange={handleInputChange}
+              >
+                {groups.map((group) => (
+                  <MenuItem key={group.id} value={group.id}>
+                    {group.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          // ) : col.accessor === 'SchoolMaster' && col.Header === 'School Master' ? (
+          //   <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          //     <InputLabel id="school-select-label">School Master</InputLabel>
+          //     <Select
+          //       labelId="school-select-label"
+          //       label="School Master"
+          //       name={col.accessor}
+          //       value={formData[col.accessor] || ''}
+          //       onChange={handleInputChange}
+          //     >
+          //       {schools.map((school) => (
+          //         <MenuItem key={school._id} value={school._id}>
+          //           {school.schoolName}
+          //         </MenuItem>
+          //       ))}
+          //     </Select>
+          //   </FormControl>
+          // ) 
+           ): (
+            <TextField
+              key={col.accessor}
+              label={col.Header}
+              variant="outlined"
+              name={col.accessor}
+              value={formData[col.accessor] || ''}
+              onChange={handleInputChange}
+              sx={{ marginBottom: '10px' }}
+              fullWidth
+            />
+          )
+        )}
+          <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"School Name"}</InputLabel>
+
+              <Select
+                value={formData["schoolName"] || ""}
+                onChange={handleInputChange}
+                name="schoolName"
+                label={"School Name"}
+              >
+                {schools.map((option) => (
+                  <MenuItem key={option._id} value={option.schoolName}>
+                    {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Branch Name"}</InputLabel>
+
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label={"Branch Name"}
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>{"Bus Name"}</InputLabel>
+
+              <Select
+                value={formData["deviceId"] || ""}
+                onChange={handleBusChange}
+                name="busName"
+                label={"Bus Name"}
+              >
+                {buses.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddSubmit}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Modal> */}
+
+{/* <Modal open={addModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+
+    {COLUMNS().map((col) =>
+      col.accessor === 'groupId' && col.Header === 'Group ID' ? (
+        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          <InputLabel id="group-select-label">Group ID</InputLabel>
+          <Select
+            labelId="group-select-label"
+            label="Group ID"
+            name={col.accessor}
+            value={formData[col.accessor] || ''}
+            onChange={handleInputChange}
+          >
+            {groups.map((group) => (
+              <MenuItem key={group.id} value={group.id}>
+                {group.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ''}
+          onChange={handleInputChange}
+          sx={{ marginBottom: '10px' }}
+          fullWidth
+        />
+      )
+    )}
+
+    {/* School Name dropdown */}
+    {/* <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>School Name</InputLabel>
+      <Select
+        value={formData['schoolName'] || ''}
+        onChange={handleInputChange}
+        name="schoolName"
+        label="School Name"
+      >
+        {schools.map((option) => (
+          <MenuItem key={option._id} value={option.schoolName}>
+            {option.schoolName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    {/* Branch Name dropdown 
+    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>Branch Name</InputLabel>
+      <Select
+        value={formData['branchName'] || ''}
+        onChange={handleInputChange}
+        name="branchName"
+        label="Branch Name"
+      >
+        {branches?.map((option) => (
+          <MenuItem key={option.branchId} value={option.branchName}>
+            {option.branchName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+   
+
+     Submit button 
+    <Button variant="contained" color="primary" onClick={handleAddSubmit}>
+      Submit
+    </Button>
+  </Box>
+</Modal> */} 
+<Modal open={addModalOpen} onClose={handleModalClose}>
+  <Box sx={style}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+
+    {COLUMNS().map((col) =>
+      col.accessor === 'groupId' && col.Header === 'Group ID' ? (
+        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          <InputLabel id="group-select-label">Group ID</InputLabel>
+          <Select
+            labelId="group-select-label"
+            label="Group ID"
+            name={col.accessor}
+            value={formData[col.accessor] || ''}
+            onChange={handleInputChange}
+          >
+            {groups.map((group) => (
+              <MenuItem key={group.id} value={group.id}>
+                {group.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : col.accessor === 'category' && col.Header === 'Category' ? (
+        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          <InputLabel id="category-select-label">Category</InputLabel>
+          <Select
+            labelId="category-select-label"
+            label="Category"
+            name={col.accessor}
+            value={formData[col.accessor] || ''}
+            onChange={handleInputChange}
+          >
+            <MenuItem value={"Default"}>Default</MenuItem>
+            <MenuItem value={"Animal"}>Animal</MenuItem>
+            <MenuItem value={"Bicycle"}>Bicycle</MenuItem>
+            <MenuItem value={"Boat"}>Boat</MenuItem>
+            <MenuItem value={"Bus"}>Bus</MenuItem>
+            <MenuItem value={"Car"}>Car</MenuItem>
+            <MenuItem value={"Camper"}>Camper</MenuItem>
+            <MenuItem value={"Crane"}>Crane</MenuItem>
+            <MenuItem value={"Helicopter"}>Helicopter</MenuItem>
+            <MenuItem value={"Motorcycle"}>Motorcycle</MenuItem>
+            <MenuItem value={"Offroad"}>Offroad</MenuItem>
+            <MenuItem value={"Person"}>Person</MenuItem>
+            <MenuItem value={"Pickup"}>Pickup</MenuItem>
+            <MenuItem value={"Plane"}>Plane</MenuItem>
+            <MenuItem value={"Ship"}>Ship</MenuItem>
+            <MenuItem value={"Tractor"}>Tractor</MenuItem>
+            <MenuItem value={"Train"}>Train</MenuItem>
+            <MenuItem value={"Tram"}>Tram</MenuItem>
+            <MenuItem value={"Trolleybus"}>Trolleybus</MenuItem>
+            <MenuItem value={"Truck"}>Truck</MenuItem>
+            <MenuItem value={"Van"}>Van</MenuItem>
+            <MenuItem value={"Scooter"}>Scooter</MenuItem>
+          </Select>
+        </FormControl>
+      ) : col.accessor === 'calendarId' && col.Header === 'Calendar ID' ? (
+        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
+          <InputLabel id="calendar-select-label">Calendar ID</InputLabel>
+          <Select
+            labelId="calendar-select-label"
+            label="Calendar ID"
+            name={col.accessor}
+            value={formData[col.accessor] || ''}
+            onChange={handleInputChange}
+          >
+            {calendars.map((calendar) => (
+              <MenuItem key={calendar.id} value={calendar.id}>
+                {calendar.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ''}
+          onChange={handleInputChange}
+          sx={{ marginBottom: '10px' }}
+          fullWidth
+        />
+      )
+    )}
+
+    {/* School Name dropdown */}
+    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>School Name</InputLabel>
+      <Select
+        value={formData['schoolName'] || ''}
+        onChange={handleInputChange}
+        name="schoolName"
+        label="School Name"
+      >
+        {schools.map((option) => (
+          <MenuItem key={option._id} value={option.schoolName}>
+            {option.schoolName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    {/* Branch Name dropdown */}
+    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
+      <InputLabel>Branch Name</InputLabel>
+      <Select
+        value={formData['branchName'] || ''}
+        onChange={handleInputChange}
+        name="branchName"
+        label="Branch Name"
+      >
+        {branches?.map((option) => (
+          <MenuItem key={option.branchId} value={option.branchName}>
+            {option.branchName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    {/* Submit button */}
+    <Button variant="contained" color="primary" onClick={handleAddSubmit}>
       Submit
     </Button>
   </Box>

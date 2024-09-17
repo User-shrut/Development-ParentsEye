@@ -598,7 +598,9 @@ export const StudentDetail = () => {
 
       // POST request to the server
       const response = await fetch(
-        `${process.env.REACT_APP_API}/Parent/register`,
+
+        `${process.env.REACT_APP_API}/parent/register`,
+
         {
           method: "POST",
           headers: {

@@ -442,8 +442,8 @@ export const Combined = () => {
 // };
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-  const username = "harshal";
-  const password = "123456@";
+  const username = "school";
+  const password = "123456";
   const token = btoa(`${username}:${password}`);
 
   // Ensure formData contains the full structure with nested attributes
@@ -551,7 +551,7 @@ const handleEditSubmit = async () => {
       try {
         const response = await fetch('https://rocketsalestracker.com/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('test:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('school:123456'), // Replace with your username and password
           },
         });
 
@@ -580,7 +580,7 @@ const handleEditSubmit = async () => {
         const response = await fetch('https://rocketsalestracker.com/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('test:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
           }
         });
 
@@ -924,6 +924,68 @@ const handleEditSubmit = async () => {
 //       setLoading(false);
 //   }
 // };
+const fetchData = async (url) => {
+  setLoading(true);
+
+  try {
+    const username = "school";
+    const password = "123456";
+    const token = btoa(`${username}:${password}`);
+
+    // Make the GET request to fetch the data
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
+    });
+
+    const responseData = response.data;
+
+    console.log("Fetched data:", responseData);
+
+    // Check if the data is an array and process it
+    if (Array.isArray(responseData) && responseData.length > 0) {
+      const processedData = responseData.map((item) => {
+        // Process each device's events
+        const processedEvents = (item.events || []).map((event) => ({
+          deviceId: item.deviceId,
+          eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
+          type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
+        }));
+
+        return {
+          deviceId: item.deviceId,
+          processedEvents,
+        };
+      });
+
+      console.log("Processed Data:", processedData);
+
+      // Update state with processed events
+      setFilteredRows(
+        processedData.flatMap(({ processedEvents }) =>
+          processedEvents.map((event) => ({
+            ...event,
+            isSelected: false,
+          }))
+        )
+      );
+
+      // Update the total number of events
+      setTotalResponses(
+        processedData.reduce((total, item) => total + item.processedEvents.length, 0)
+      );
+    } else {
+      console.error("Expected an array but got:", responseData);
+      alert("Unexpected data format.");
+    }
+  } catch (error) {
+    console.error("Fetch data error:", error);
+    alert("An error occurred while fetching data.");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 // const fetchData = async (url) => {
@@ -973,55 +1035,87 @@ const handleEditSubmit = async () => {
 //       setLoading(false);
 //   }
 // };
-const fetchData = async (url) => {
-  setLoading(true);
+// const fetchData = async (url) => {
+//   setLoading(true);
 
-  try {
-      const username = "harshal";
-      const password = "123456@";
-      const token = btoa(`${username}:${password}`);
+//   try {
+//       const username = "school";
+//       const password = "123456";
+//       const token = btoa(`${username}:${password}`);
 
-      const response = await axios.get(url, {
-          headers: {
-              Authorization: `Basic ${token}`,
-          },
-      });
+//       const response = await axios.get(url, {
+//           headers: {
+//               Authorization: `Basic ${token}`,
+//           },
+//       });
 
-      const responseData = response.data;
+//       const responseData = response.data;
 
-      if (Array.isArray(responseData) && responseData.length > 0) {
-          const data = responseData[0];
+//       if (Array.isArray(responseData) && responseData.length > 0) {
+//           const data = responseData[0];
 
-          if (!data.deviceId || !data.events) {
-              console.error('Missing expected fields in the response data:', data);
-              alert('Unexpected data format.');
-              return;
-          }
+//           if (!data.deviceId || !data.events) {
+//               console.error('Missing expected fields in the response data:', data);
+//               alert('Unexpected data format.');
+//               return;
+//           }
 
-          const processedEvents = data.events.map(event => ({
-              deviceId: data.deviceId,
-              eventTime: new Date(event.eventTime).toLocaleString(),
-              type: event.type.replace(/([A-Z])/g, ' $1').trim() // Optional: Format type
-          }));
+//           const processedEvents = data.events.map(event => ({
+//               deviceId: data.deviceId,
+//               eventTime: new Date(event.eventTime).toLocaleString(),
+//               type: event.type.replace(/([A-Z])/g, ' $1').trim() // Optional: Format type
+//           }));
 
-          setFilteredRows(processedEvents.map(event => ({
-              ...event,
-              isSelected: false
-          })));
+//           setFilteredRows(processedEvents.map(event => ({
+//               ...event,
+//               isSelected: false
+//           })));
 
-          setTotalResponses(processedEvents.length);
-      } else {
-          console.error('Expected an array but got:', responseData);
-          alert('Unexpected data format.');
-      }
-  } catch (error) {
-      console.error('Fetch data error:', error.message);
-      alert('An error occurred while fetching data. Please try again.');
-  } finally {
-      setLoading(false);
-  }
-};
+//           setTotalResponses(processedEvents.length);
+//       } else {
+//           console.error('Expected an array but got:', responseData);
+//           alert('Unexpected data format.');
+//       }
+//   } catch (error) {
+//       console.error('Fetch data error:', error.message);
+//       alert('An error occurred while fetching data. Please try again.');
+//   } finally {
+//       setLoading(false);
+//   }
+// };
 
+
+// const fetchData = async (url) => {
+//   // const url = 'YOUR_API_URL_HERE'; // Replace with your actual API URL
+
+//   try {
+//     const response = await axios.get(url, {
+//       headers: {
+//         // Add any required headers like Authorization token if needed
+//         'Authorization': 'Bearer YOUR_TOKEN_HERE', // Replace with actual token if necessary
+//         'Content-Type': 'application/json',
+//       },
+//     });
+
+//     // Log the fetched data
+//     console.log('Fetched data:', response.data);
+
+//     // Extract useful parts of the response (e.g., route, events, positions)
+//     const { route, events, positions } = response.data[0];
+
+//     // Now you can use this data in your application
+//     console.log('Route data:', route);
+//     console.log('Event data:', events);
+//     console.log('Position data:', positions);
+
+//     // You can further manipulate or store this data
+//   } catch (error) {
+//     console.error('Error fetching data:', error);
+//   }
+// };
+
+// // Call the fetchData function to fetch data when needed
+// fetchData();
 // const sortedData = React.useMemo(() => {
 //   if (!sortConfig.key) return data;
 //   return [...data].sort((a, b) => {
@@ -1599,3 +1693,6 @@ const fetchData = async (url) => {
     </>
   );
 };
+
+
+//comented for deployment
