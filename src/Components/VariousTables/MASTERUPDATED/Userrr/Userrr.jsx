@@ -82,11 +82,11 @@
 //   console.log('Fetching data...');
 //   setLoading(true); // Set loading to true when starting fetch
 //   try {
-//     const username = "school";
-//     const password = "123456";
+//     const username = "hbtrack";
+//     const password = "123456@";
 //     const token = btoa(`${username}:${password}`);
 
-//     const response = await axios.get("https://rocketsalestracker.com/api/users", {
+//     const response = await axios.get("http://104.251.212.84/api/users", {
 //       headers: {
 //         Authorization: `Basic ${token}`,
 //       },
@@ -336,9 +336,9 @@
 
 
 // const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-//   const username = "school";
-//   const password = "123456";
+//   const apiUrl = `http://104.251.212.84/api/server`; // Ensure this is correct
+//   const username = "hbtrack";
+//   const password = "123456@";
 //   const token = btoa(`${username}:${password}`);
 
 //   // Ensure formData contains the full structure with nested attributes
@@ -944,11 +944,11 @@ export const Userrr = () => {
   //   console.log('Fetching data...');
   //   setLoading(true); // Set loading to true when starting fetch
   //   try {
-  //     const username = "school";
-  //     const password = "123456";
+  //     const username = "hbtrack";
+  //     const password = "123456@";
   //     const token = btoa(`${username}:${password}`);
 
-  //     const response = await axios.get("https://rocketsalestracker.com/api/users", {
+  //     const response = await axios.get("http://104.251.212.84/api/users", {
   //       headers: {
   //         Authorization: `Basic ${token}`,
   //       },
@@ -975,11 +975,11 @@ export const Userrr = () => {
     console.log('Fetching data...');
     setLoading(true); // Set loading to true when starting fetch
     try {
-      const username = "school";
-      const password = "123456";
+      const username = "hbtrack";
+      const password = "123456@";
       const token = btoa(`${username}:${password}`);
   
-      const response = await axios.get("https://rocketsalestracker.com/api/users", {
+      const response = await axios.get("http://104.251.212.84/api/users", {
         headers: {
           Authorization: `Basic ${token}`,
         },
@@ -1122,9 +1122,9 @@ export const Userrr = () => {
   //   }
   //   try {
   //     // Define the API endpoint and token
-  //     const apiUrl = `https://rocketsalestracker.com/api/users`;
-  //     const username = "school";
-  //     const password = "123456";
+  //     const apiUrl = `http://104.251.212.84/api/users`;
+  //     const username = "hbtrack";
+  //     const password = "123456@";
   //     const token = btoa(`${username}:${password}`);
   //     // Send delete requests for each selected ID
   //     const deleteRequests = selectedIds.map((id) =>
@@ -1194,9 +1194,9 @@ export const Userrr = () => {
   
   //   try {
   //     // Define the API endpoint and token
-  //     const apiUrl = `https://rocketsalestracker.com/api/users`;
-  //     const username = "school";
-  //     const password = "123456";
+  //     const apiUrl = `http://104.251.212.84/api/users`;
+  //     const username = "hbtrack";
+  //     const password = "123456@";
   //     const token = btoa(`${username}:${password}`);
   
   //     // Send delete requests for each selected ID
@@ -1269,9 +1269,9 @@ export const Userrr = () => {
   
     try {
       // Define the API endpoint and credentials
-      const apiUrl = "https://rocketsalestracker.com/api/users"; // Replace with actual API endpoint
-      const username = "school"; // Replace with your actual username
-      const password = "123456"; // Replace with your actual password
+      const apiUrl = "http://104.251.212.84/api/users"; // Replace with actual API endpoint
+      const username = "hbtrack"; // Replace with your actual username
+      const password = "123456@"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
       // Send delete requests for each selected ID
@@ -1418,9 +1418,9 @@ export const Userrr = () => {
   
 
   // const handleEditSubmit = async () => {
-  //   const apiUrl = `https://rocketsalestracker.com/api/users`;
-  //   const username = "school";
-  //   const password = "123456";
+  //   const apiUrl = `http://104.251.212.84/api/users`;
+  //   const username = "hbtrack";
+  //   const password = "123456@";
   //   const token = btoa(`${username}:${password}`);
   
   //   // Update only selected attributes or specific fields you want to modify.
@@ -1485,9 +1485,9 @@ export const Userrr = () => {
   // };
   
   const handleEditSubmit = async () => {
-    const apiUrl = `https://rocketsalestracker.com/api/users`;
-    const username = "school";
-    const password = "123456";
+    const apiUrl = `http://104.251.212.84/api/users`;
+    const username = "hbtrack";
+    const password = "123456@";
     const token = btoa(`${username}:${password}`);
   
     // Extract the ID of the user from the formData or selectedRow
@@ -1571,9 +1571,9 @@ export const Userrr = () => {
   // const handleAddSubmit = async () => {
   //   try {
   //     // Define the API endpoint and credentials
-  //     const apiUrl = "https://rocketsalestracker.com/api/users"; // Replace with actual API endpoint
-  //     const username = "school"; // Replace with your actual username
-  //     const password = "123456"; // Replace with your actual password
+  //     const apiUrl = "http://104.251.212.84/api/users"; // Replace with actual API endpoint
+  //     const username = "hbtrack"; // Replace with your actual username
+  //     const password = "123456@"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
   //     // Prepare the new row object based on the expected schema
@@ -1673,9 +1673,9 @@ export const Userrr = () => {
   // const handleAddSubmit = async () => {
   //   try {
   //     // Define the API endpoint and credentials
-  //     const apiUrl = "https://rocketsalestracker.com/api/users"; // Replace with actual API endpoint
-  //     const username = "school"; // Replace with your actual username
-  //     const password = "123456"; // Replace with your actual password
+  //     const apiUrl = "http://104.251.212.84/api/users"; // Replace with actual API endpoint
+  //     const username = "hbtrack"; // Replace with your actual username
+  //     const password = "123456@"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
   //     // Prepare the new row object based on the expected schema
@@ -1773,9 +1773,9 @@ export const Userrr = () => {
   // const handleAddSubmit = async () => {
   //   try {
   //     // Define the API endpoint and credentials
-  //     const apiUrl = "https://rocketsalestracker.com/api/users"; // Replace with actual API endpoint
-  //     const username = "school"; // Replace with your actual username
-  //     const password = "123456"; // Replace with your actual password
+  //     const apiUrl = "http://104.251.212.84/api/users"; // Replace with actual API endpoint
+  //     const username = "hbtrack"; // Replace with your actual username
+  //     const password = "123456@"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
   //     // Prepare the new row object based on the expected schema
@@ -1882,9 +1882,9 @@ export const Userrr = () => {
   const handleAddSubmit = async () => {
     try {
       // Define the API endpoint and credentials
-      const apiUrl = "https://rocketsalestracker.com/api/users"; // Replace with actual API endpoint
-      const username = "school"; // Replace with your actual username
-      const password = "123456"; // Replace with your actual password
+      const apiUrl = "http://104.251.212.84/api/users"; // Replace with actual API endpoint
+      const username = "hbtrack"; // Replace with your actual username
+      const password = "123456@"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
       // Prepare the new row object based on the expected schema
@@ -2040,7 +2040,7 @@ export const Userrr = () => {
     // Fetch timezones from the API with basic authentication
     const fetchTimezones = async () => {
       try {
-        const response = await axios.get('https://rocketsalestracker.com/api/server/timezones', {
+        const response = await axios.get('http://104.251.212.84/api/server/timezones', {
           auth: {
             username: 'school',
             password: '123456'
