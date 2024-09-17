@@ -967,13 +967,13 @@ export const Parent = () => {
                             }}
                           >
                             <Button
-                              onClick={() => handleApprove(row._id)}
+                              onClick={() => handleApprove(row.parentId)}
                               color="primary"
                             >
                               Approve
                             </Button>
                             <Button
-                              onClick={() => handleReject(row._id)}
+                              onClick={() => handleReject(row.parentId)}
                               color="secondary"
                             >
                               Reject
