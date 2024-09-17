@@ -36,6 +36,12 @@ export const COLUMNS = () => [
     Header: 'Password',
     accessor: 'password',
   },
-  
-  
+  {
+    Header: 'deviceId',
+    accessor: 'deviceId',
+  },
+  {
+    Header: 'deviceName',
+    accessor: 'deviceName',
+  },
 ];

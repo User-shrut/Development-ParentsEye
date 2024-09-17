@@ -19,7 +19,7 @@ export const COLUMNS = () => [
  
   {
     Header: 'Class',
-    accessor: 'class',
+    accessor: 'childClass',
   },
  
   {
@@ -33,6 +33,10 @@ export const COLUMNS = () => [
   {
     Header: 'School Name',
     accessor: 'schoolName',
+  },
+  {
+    Header:'branch Name',
+    accessor:'branchName'
   },
   
   {
@@ -50,7 +54,7 @@ export const COLUMNS = () => [
   },
   {
   Header: 'Phone Number',
-  accessor: 'phone', // accessing nested field
+  accessor: 'parentNumber', // accessing nested field
 },
 {
   Header: 'Password',
@@ -65,10 +69,10 @@ export const COLUMNS = () => [
     Header: 'Gender',
     accessor: 'gender',
   },
-  {
-    Header: 'DOB',
-    accessor: 'dateOfBirth',
-  },
+  // {
+  //   Header: 'DOB',
+  //   accessor: 'dateOfBirth',
+  // },
   {
     Header: 'Device id',
     accessor: 'deviceId',
@@ -78,13 +82,13 @@ export const COLUMNS = () => [
     accessor: 'pickupPoint',
   },
   
-  {
-    Header: 'Registration Date',
-    accessor: 'formattedRegistrationDate',
-    Cell: ({ value }) => {
-      const [day, month, year] = value.split('-').map(Number);
-      const date = new Date(year, month - 1, day);
-      return date.toLocaleDateString(); // Formats the date as MM/DD/YYYY or your locale's format
-    },
-  },
+  // {
+  //   Header: 'Registration Date',
+  //   accessor: 'formattedRegistrationDate',
+  //   Cell: ({ value }) => {
+  //     const [day, month, year] = value.split('-').map(Number);
+  //     const date = new Date(year, month - 1, day);
+  //     return date.toLocaleDateString(); // Formats the date as MM/DD/YYYY or your locale's format
+  //   },
+  // },
 ];

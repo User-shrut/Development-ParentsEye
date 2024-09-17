@@ -76,7 +76,84 @@ const SchoolMaster = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const fetchData = async (startDate = "", endDate = "") => {
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     console.log("fetch data", response.data); // Log the entire response data
+
+  //     if (Array.isArray(response.data.schools)) {
+  //       const allData = response.data.schools;
+
+  //       // Apply local date filtering if dates are provided
+  //       const filteredData =
+  //         startDate || endDate
+  //           ? allData.filter((row) => {
+  //               const registrationDate = parseDate(
+  //                 row.formattedRegistrationDate
+  //               );
+  //               const start = parseDate(startDate);
+  //               const end = parseDate(endDate);
+
+  //               return (
+  //                 (!startDate || registrationDate >= start) &&
+  //                 (!endDate || registrationDate <= end)
+  //               );
+  //             })
+  //           : allData; // If no date range, use all data
+  //       const reversedData = filteredData.reverse();
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponses(reversedData.length);
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.supervisors);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching completes
+  //   }
+  // };
+  const transformData = (schools) => {
+    if (!Array.isArray(schools)) {
+      console.error("Expected schools to be an array, but got:", schools);
+      return [];
+    }
+  
+    return schools.flatMap((school) =>
+      Array.isArray(school.branches)
+        ? school.branches.flatMap((branch) =>
+            Array.isArray(branch.devices)
+              ? branch.devices.map((device) => ({
+                  schoolName: school.schoolName,
+                  branchName: branch.branchName,
+                  username: school.username,
+                  mobileNo: school.mobileNo,
+                  email: school.email,
+                  password: school.password,
+                  deviceId: device.deviceId,
+                  deviceName: device.deviceName,
+                }))
+              : []
+          )
+        : []
+    );
+  };
+  const fetchData = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
@@ -88,39 +165,17 @@ const SchoolMaster = () => {
           },
         }
       );
-
-      console.log("fetch data", response.data); // Log the entire response data
-
-      if (Array.isArray(response.data.schools)) {
-        const allData = response.data.schools;
-
-        // Apply local date filtering if dates are provided
-        const filteredData =
-          startDate || endDate
-            ? allData.filter((row) => {
-                const registrationDate = parseDate(
-                  row.formattedRegistrationDate
-                );
-                const start = parseDate(startDate);
-                const end = parseDate(endDate);
-
-                return (
-                  (!startDate || registrationDate >= start) &&
-                  (!endDate || registrationDate <= end)
-                );
-              })
-            : allData; // If no date range, use all data
-        const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        console.log(filteredData);
-        setFilteredRows(
-          reversedData.map((row) => ({ ...row, isSelected: false }))
-        );
-        setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        setTotalResponses(reversedData.length);
+  
+      const { schools } = response.data;
+  
+      if (Array.isArray(schools)) {
+        const transformedData = transformData(schools);
+  
+        setFilteredRows(transformedData.map((row) => ({ ...row, isSelected: false })));
+        setOriginalRows(transformedData.map((row) => ({ ...row, isSelected: false })));
+        setTotalResponses(transformedData.length);
       } else {
-        console.error("Expected an array but got:", response.data.supervisors);
+        console.error("Expected an array but got:", schools);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -128,7 +183,7 @@ const SchoolMaster = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
-
+    
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed

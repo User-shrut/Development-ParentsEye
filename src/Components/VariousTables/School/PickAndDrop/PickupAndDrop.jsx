@@ -48,7 +48,7 @@ const style = {
 };
 
 export const PickupAndDrop = () => {
-  const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponses,role } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -149,56 +149,140 @@ export const PickupAndDrop = () => {
   //   }
   // };
   
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     // const token = localStorage.getItem("token"); // Replace with actual token
+  //     const token =
+  //       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Replace with actual token
+    
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  
+  //     console.log("fetch data", response.data); // Log the entire response data
+  
+  //     if (Array.isArray(response.data)) {
+  //       const allData = response.data
+  //         .filter(
+  //           (school) =>
+  //             Array.isArray(school.children) && school.children.length > 0
+  //         ) // Filter schools with non-empty children arrays
+  //         .flatMap((school) => school.children);
+  
+  //       // Apply local date filtering if dates are provided
+  //       const filteredData = (startDate || endDate) ? allData.filter((row) => {
+  //         const registrationDate = parseDate(row.formattedDate);
+  //         const start = parseDate(startDate);
+  //         const end = parseDate(endDate);
+  
+  //         return (!startDate || registrationDate >= start) &&
+  //                (!endDate || registrationDate <= end);
+  //       }) : allData; // If no date range, use all data
+  //       const reversedData = filteredData.reverse();
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponses(reversedData.length);
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  
+  //       // setFilteredRows(filteredData.map((row) => ({ ...row, isSelected: false })));
+  //       // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       // setTotalResponses(filteredData.length);
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.children);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching completes
+  //   }
+  // };
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token"); // Replace with actual token
-      const response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status`,
-        {
+      const token = localStorage.getItem("token");
+      // const apiUrl = role === 1 ? `${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status` : `${process.env.REACT_APP_SCHOOL_API}/pickup-drop-status`;
+      // const response = await axios.get(
+      //   apiUrl,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      let response;
+      
+      // Fetch data based on role
+      if (role == 1) {
+        response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
-      );
+        });
+      } else if (role == 2) {
+        response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/pickup-drop-status`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else if (role == 3) {
+        response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/pickup-drop-status`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+      console.log("Fetched data:", response.data);
   
-      console.log("fetch data", response.data); // Log the entire response data
+      // Adjust this line to access the data inside the response object
+      if (Array.isArray(response.data.data)) {
+        // Extract children from all branches of all schools
+        const allData = response.data.data.flatMap((school) =>
+          school.branches.flatMap((branch) => branch.children)
+        );
   
-      if (Array.isArray(response.data)) {
-        const allData = response.data
-          .filter(
-            (school) =>
-              Array.isArray(school.children) && school.children.length > 0
-          ) // Filter schools with non-empty children arrays
-          .flatMap((school) => school.children);
+        // Apply local date filtering if startDate or endDate is provided
+        const filteredData =
+          startDate || endDate
+            ? allData.filter((row) => {
+                const registrationDate = new Date(row.registrationDate);
+                const start = startDate ? new Date(startDate) : null;
+                const end = endDate ? new Date(endDate) : null;
   
-        // Apply local date filtering if dates are provided
-        const filteredData = (startDate || endDate) ? allData.filter((row) => {
-          const registrationDate = parseDate(row.formattedDate);
-          const start = parseDate(startDate);
-          const end = parseDate(endDate);
+                return (
+                  (!start || registrationDate >= start) &&
+                  (!end || registrationDate <= end)
+                );
+              })
+            : allData;
   
-          return (!startDate || registrationDate >= start) &&
-                 (!endDate || registrationDate <= end);
-        }) : allData; // If no date range, use all data
+        // Reverse filtered data for display and update state
         const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        console.log(filteredData);
+  
+        // Update state with filtered and original rows
         setFilteredRows(
           reversedData.map((row) => ({ ...row, isSelected: false }))
         );
         setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
         setTotalResponses(reversedData.length);
+  
         // Log the date range and filtered data
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(filteredData);
-  
-        // setFilteredRows(filteredData.map((row) => ({ ...row, isSelected: false })));
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(filteredData.length);
       } else {
-        console.error("Expected an array but got:", response.data.children);
+        console.error("Expected an array but got:", response.data.data);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -206,6 +290,12 @@ export const PickupAndDrop = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
+  
+  
+  
+  // Helper function to parse dates (adjust as necessary for your date format)
+  // const parseDate = (dateString) => new Date(dateString);
+  
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split('-').map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
