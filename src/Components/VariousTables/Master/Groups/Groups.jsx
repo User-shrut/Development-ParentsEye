@@ -87,11 +87,11 @@ const fetchData = async () => {
   console.log('Fetching data...');
   setLoading(true); // Set loading to true when starting fetch
   try {
-    const username = "school";
-    const password = "123456";
+    const username = "hbtrack";
+    const password = "123456@";
     const token = btoa(`${username}:${password}`);
 
-    const response = await axios.get("https://rocketsalestracker.com/api/groups", {
+    const response = await axios.get("http://104.251.212.84/api/groups", {
       headers: {
         Authorization: `Basic ${token}`,
       },
@@ -239,9 +239,9 @@ const fetchData = async () => {
   
     try {
       // Define the API endpoint and credentials
-      const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
-      const username = "school"; // Replace with your actual username
-      const password = "123456"; // Replace with your actual password
+      const apiUrl = "http://104.251.212.84/api/groups"; // Replace with actual API endpoint
+      const username = "hbtrack"; // Replace with your actual username
+      const password = "123456@"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
       // Send delete requests for each selected ID
@@ -344,9 +344,9 @@ const fetchData = async () => {
 
 
 // const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
-//   const username = "school";
-//   const password = "123456";
+//   const apiUrl = `http://104.251.212.84/api/groups/${selectedRow.id}`;
+//   const username = "hbtrack";
+//   const password = "123456@";
 //   const token = btoa(`${username}:${password}`);
 
 //   // Ensure formData contains only necessary fields
@@ -396,9 +396,9 @@ const fetchData = async () => {
  
  
 // const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
-//   const username = "school"; // Replace with your actual username
-//   const password = "123456"; // Replace with your actual password
+//   const apiUrl = `http://104.251.212.84/api/groups/${selectedRow.id}`;
+//   const username = "hbtrack"; // Replace with your actual username
+//   const password = "123456@"; // Replace with your actual password
 //   const token = btoa(`${username}:${password}`); // Encode credentials in Base64
 
 //   // Extract and transform attributes for submission
@@ -470,9 +470,9 @@ const fetchData = async () => {
 
   
 // const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
-//   const username = "school"; // Replace with your actual username
-//   const password = "123456"; // Replace with your actual password
+//   const apiUrl = `http://104.251.212.84/api/groups/${selectedRow.id}`;
+//   const username = "hbtrack"; // Replace with your actual username
+//   const password = "123456@"; // Replace with your actual password
 //   const token = btoa(`${username}:${password}`); // Encode credentials in Base64
 
 //   // Initialize transformedAttributes as an empty object
@@ -547,9 +547,9 @@ const fetchData = async () => {
 //   }
 // };
 // const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
-//   const username = "school";
-//   const password = "123456";
+//   const apiUrl = `http://104.251.212.84/api/groups/${selectedRow.id}`;
+//   const username = "hbtrack";
+//   const password = "123456@";
 //   const token = btoa(`${username}:${password}`);
 
 //   let transformedAttributes = {};
@@ -625,9 +625,9 @@ const fetchData = async () => {
 // };
 
 const handleEditSubmit = async () => {
-  const apiUrl = `https://rocketsalestracker.com/api/groups/${selectedRow.id}`;
-  const username = "school";
-  const password = "123456";
+  const apiUrl = `http://104.251.212.84/api/groups/${selectedRow.id}`;
+  const username = "hbtrack";
+  const password = "123456@";
   const token = btoa(`${username}:${password}`);
 
   let transformedAttributes = {};
@@ -708,9 +708,9 @@ const handleEditSubmit = async () => {
   // const handleAddSubmit = async () => {
   //   try {
   //     // Define the API endpoint and credentials
-  //     const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
-  //     const username = "school"; // Replace with your actual username
-  //     const password = "123456"; // Replace with your actual password
+  //     const apiUrl = "http://104.251.212.84/api/groups"; // Replace with actual API endpoint
+  //     const username = "hbtrack"; // Replace with your actual username
+  //     const password = "123456@"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
   //     // Extract only attributes for submission
@@ -764,9 +764,9 @@ const handleEditSubmit = async () => {
   // const handleAddSubmit = async () => {
   //   try {
   //     // Define the API endpoint and credentials
-  //     const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
-  //     const username = "school"; // Replace with your actual username
-  //     const password = "123456"; // Replace with your actual password
+  //     const apiUrl = "http://104.251.212.84/api/groups"; // Replace with actual API endpoint
+  //     const username = "hbtrack"; // Replace with your actual username
+  //     const password = "123456@"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
   //     // Extract and transform attributes for submission
@@ -838,9 +838,9 @@ const handleEditSubmit = async () => {
   // const handleAddSubmit = async () => {
   //   try {
   //     // Define the API endpoint and credentials
-  //     const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
-  //     const username = "school"; // Replace with your actual username
-  //     const password = "123456"; // Replace with your actual password
+  //     const apiUrl = "http://104.251.212.84/api/groups"; // Replace with actual API endpoint
+  //     const username = "hbtrack"; // Replace with your actual username
+  //     const password = "123456@"; // Replace with your actual password
   //     const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
   //     // Ensure formData.attributes is defined and is an object
@@ -917,9 +917,9 @@ const handleEditSubmit = async () => {
   const handleAddSubmit = async () => {
     try {
       // Define the API endpoint and credentials
-      const apiUrl = "https://rocketsalestracker.com/api/groups"; // Replace with actual API endpoint
-      const username = "school"; // Replace with your actual username
-      const password = "123456"; // Replace with your actual password
+      const apiUrl = "http://104.251.212.84/api/groups"; // Replace with actual API endpoint
+      const username = "hbtrack"; // Replace with your actual username
+      const password = "123456@"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
       // Initialize transformedAttributes as an empty object
@@ -1006,7 +1006,7 @@ const [attributes, setAttributes] = useState([]);
 useEffect(() => {
   const fetchGroups = async () => {
     try {
-      const response = await fetch('https://rocketsalestracker.com/api/groups', {
+      const response = await fetch('http://104.251.212.84/api/groups', {
         method: 'GET',
         headers: {
           'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
