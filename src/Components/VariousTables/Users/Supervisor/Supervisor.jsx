@@ -711,7 +711,7 @@ export const Supervisor = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem("role");
   const [schools, setSchools] = useState([]);
   const [branches, setBranches] = useState([]);
   const [buses, setBuses] = useState([]);
@@ -1126,18 +1126,13 @@ export const Supervisor = () => {
     setFormData({
       ...formData,
       deviceId: selectedBus.id, // Store deviceId
-      busName: selectedBus.name, // Store busName
+      deviceName: selectedBus.name, // Store busName
     });
   };
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl =
-      role == 1
-        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor`
-        : role == 2
-        ? `${process.env.REACT_APP_SCHOOL_API}/update-supervisor`
-        : `${process.env.REACT_APP_BRANCH_API}/update-supervisor`;
+    
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
@@ -1151,7 +1146,7 @@ export const Supervisor = () => {
       // Perform the PUT request
       let response;
       if (role == 1) {
-        response = await fetch(`${apiUrl}/${updatedData.supervisorId}`, {
+        response = await fetch(`${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor/${updatedData.supervisorId}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -1160,7 +1155,16 @@ export const Supervisor = () => {
           body: JSON.stringify(updatedData),
         });
       } else if (role == 2) {
-        response = await fetch(`${apiUrl}/${updatedData.id}`, {
+        response = await fetch(`${process.env.REACT_APP_SCHOOL_API}/update-supervisor/${updatedData.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+      }else{
+        response = await fetch(`${process.env.REACT_APP_BRANCH_API}/update-supervisor/${updatedData.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -1212,6 +1216,12 @@ export const Supervisor = () => {
         newRow = {
           ...formData,
           schoolName: decoded.schoolName,
+        };
+      } else {
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+          branchName: decoded.branchName,
         };
       }
 
@@ -1790,26 +1800,29 @@ export const Supervisor = () => {
                 </Select>
               </FormControl>
             )}
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"Branch Name"}</InputLabel>
 
-              <Select
-                value={formData["branchName"] || ""}
-                onChange={handleInputChange}
-                name="branchName"
-                label={"Branch Name"}
+            {(role == 1 || role == 2) && (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
               >
-                {branches?.map((option) => (
-                  <MenuItem key={option.branchId} value={option.branchName}>
-                    {option.branchName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel>{"Branch Name"}</InputLabel>
+
+                <Select
+                  value={formData["branchName"] || ""}
+                  onChange={handleInputChange}
+                  name="branchName"
+                  label={"Branch Name"}
+                >
+                  {branches?.map((option) => (
+                    <MenuItem key={option.branchId} value={option.branchName}>
+                      {option.branchName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -1820,7 +1833,7 @@ export const Supervisor = () => {
               <Select
                 value={formData["deviceId"] || ""}
                 onChange={handleBusChange}
-                name="busName"
+                name="deviceName"
                 label={"Bus Name"}
               >
                 {buses.map((option) => (

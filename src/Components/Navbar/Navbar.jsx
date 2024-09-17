@@ -51,7 +51,7 @@ export const Navbar = (props) => {
   const [openModal, setOpenModal] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [filteredPages, setFilteredPages] = useState([]);
-  const { role } = useContext(TotalResponsesContext);
+  const role = localStorage.getItem('role');
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -87,17 +87,17 @@ export const Navbar = (props) => {
 
 
   const handleNavClick = (arr, title) => {
-    if (role === 1) {
+    if (role == 1) {
       
       props.propFunc(arr);
       props.propBool(true);
       setSelectedPage(title);
-    } else if (role === 2) {
+    } else if (role == 2) {
       const updatedArr = arr.filter((item) => item !== "SchoolMaster");
       props.propFunc(updatedArr);
       props.propBool(true);
       setSelectedPage(title);
-    } else if (role === 3) {
+    } else if (role == 3) {
       const updatedArr = arr.filter(
         (item) => item !== "SchoolMaster" && item !== "BranchMaster"
       );
