@@ -1373,7 +1373,7 @@ const handleAddSubmit = async () => {
 
             </TableContainer>
             <TablePagination
-              rowsPerPageOptions={[10, 25, 100,1000]}
+              rowsPerPageOptions={[10, 25, 100,1000,3000]}
               component="div"
               count={sortedData.length}
               rowsPerPage={rowsPerPage}
