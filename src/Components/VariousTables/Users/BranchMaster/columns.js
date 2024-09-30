@@ -36,9 +36,6 @@ export const COLUMNS = () => [
     Header: 'Password',
     accessor: 'password',
   },
-  {
-    Header: 'Specific Header',
-    accessor: 'specificAccessor',
-  },
+
   
 ];

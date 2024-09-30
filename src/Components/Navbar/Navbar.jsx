@@ -30,6 +30,7 @@ import LockResetTwoToneIcon from '@mui/icons-material/LockResetTwoTone';
 import { Login } from '@mui/icons-material';
 import {Link, Navigate, useNavigate} from 'react-router-dom';
 import { TotalResponsesContext } from '../../TotalResponsesContext.jsx';
+import { jwtDecode } from 'jwt-decode';
 
 
 const pages = [
@@ -38,7 +39,7 @@ const pages = [
   { title: 'Masterupdated', icon: <DriveEtaIcon />, arr: ['Preferences','Notifications','Account','Devices','Geofences','Groups','Drivers','Calendars','Computed Attributes','Maintenance','Saved Commands','Server','Userrr'] },
   
   { title: 'School', icon: <DriveEtaIcon />, arr:['Student Detail','Geofence','Pickup And Drop List', 'Absent','Present','Leave','Status','Approved Request','Denied Request'] },
-  { title: 'Users', icon: <DriveEtaIcon />, arr:["SchoolMaster", "BranchMaster",'Driver', 'Parent','Supervisor','AddDevices'] },
+  { title: 'Users', icon: <DriveEtaIcon />, arr:["SchoolMaster", "BranchMaster",'Driver', 'Parent','Supervisor','AddDevices','MyBranchDevices'] },
   { title: 'Geofencing', icon: <DriveEtaIcon />, arr: ['Create Landmark', 'Edit Landmarks','Create Route','Edit Routes','Create Area','Edit Areas','Create Zone','Edit Zones','Trips'] },
   //  { title: 'Reports', icon: <BarChartIcon />, arr: ['Summary', 'Stop Report', 'Area In/Out Report', 'Area Report', 'Landmark Distance', 'Landmark Report', 'Location Wise Distance', 'Distance Report', 'Run Report', 'Distance Graph', 'Speed Graph', 'Trip Report', 'All Point Report','RFID','Distance Between Report','Vehicle Average','Alerts','Data Logs','AC Report', 'Petrolling Report','Bin Details Report','ETA details report','ETA details'] },
    { title: 'ReportsUpdated', icon: <BarChartIcon />, arr: ['Combined','Route','Event','Trips','Stops','Summary','Statistics'] },
@@ -52,6 +53,7 @@ export const Navbar = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [filteredPages, setFilteredPages] = useState([]);
   const role = localStorage.getItem('role');
+  const decode = jwtDecode(localStorage.getItem('token'))
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -64,7 +66,7 @@ export const Navbar = (props) => {
 
 
   useEffect(() => {
-
+    
     if(!role){
       navigate('/login');
     }
@@ -88,18 +90,18 @@ export const Navbar = (props) => {
 
   const handleNavClick = (arr, title) => {
     if (role == 1) {
-      
-      props.propFunc(arr);
+      const updatedArr = arr.filter((item) =>  item !== "MyBranchDevices");
+      props.propFunc(updatedArr);
       props.propBool(true);
       setSelectedPage(title);
     } else if (role == 2) {
-      const updatedArr = arr.filter((item) => item !== "SchoolMaster");
+      const updatedArr = arr.filter((item) => item !== "SchoolMaster" && item !== "AddDevices" && item !== "MyBranchDevices");
       props.propFunc(updatedArr);
       props.propBool(true);
       setSelectedPage(title);
     } else if (role == 3) {
       const updatedArr = arr.filter(
-        (item) => item !== "SchoolMaster" && item !== "BranchMaster"
+        (item) => item !== "SchoolMaster" && item !== "BranchMaster" && item !== "AddDevices"
       );
       props.propFunc(updatedArr);
       props.propBool(true);
@@ -189,7 +191,7 @@ export const Navbar = (props) => {
                 alignItems={{ horizontal: 'right' }}
               ><div style={{background: 'linear-gradient(to right, rgb(253, 215, 52), #828b94)'}}>
                 <MenuItem onClick={handleClose}>
-                  <Avatar /> Profile
+                  <Avatar /> Profile : {decode.username}
                 </MenuItem>
                 <MenuItem onClick={handleClose}>
                   <Avatar /> My account
