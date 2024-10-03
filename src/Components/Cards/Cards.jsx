@@ -12,6 +12,8 @@ import ErrorIcon from "@mui/icons-material/Error";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";
 import { useContext } from "react";
 import { TotalResponsesContext } from "../../TotalResponsesContext";
+import animetedcarimg  from "../googlemap/SVG/animetedcarimg.png" ;
+import cartoonimgbus from "../googlemap/SVG/cartoonimgbus.avif"
 //import {StudentDetail} from "./Components/VariousTables/School/StudentDetail/StudentDetail.jsx"
 //import {StudentDetail} from ".VariousTables/StudentDetail"
 // import Leave from './Components/School/Leave/Leave.jsx';
@@ -22,7 +24,7 @@ export const Cards = ({
   vehicleIdleCount,
   vehicleUnreachableCount,
 }) => {
-  const { totalResponses, totalLeaveRequest } = useContext(
+  const { totalResponses, totalLeaveRequest,TotalResponsesPresent,TotalResponsesAbsent,TotalResponsesDrivers,TotalResponsesSupervisor} = useContext(
     TotalResponsesContext
   ); // Consume the context
   // const { totalLeaveRequest } = useContext(TotalResponsesContext);
@@ -36,7 +38,7 @@ export const Cards = ({
         gap:'11px 48px'
       }}
     >
-      <Card
+    {/* <Card
         sx={{
           width: 197,
           margin: "5px",
@@ -47,7 +49,7 @@ export const Cards = ({
         }}
       >
         <CardContent sx={{ padding: "10px" }}>
-          {/* Box with similar style as the first one */}
+          {/* Box with similar style as the first one 
           <Box
             sx={{
               display: "flex",
@@ -61,10 +63,10 @@ export const Cards = ({
           >
             <AccessTimeIcon sx={{ color: green[500], marginRight: "5px" }} />
             <Typography sx={{ fontSize: 20 }}>Running</Typography>{" "}
-            {/* Font size consistent with first card */}
+            {/* Font size consistent with first card 
           </Box>
 
-          {/* Typography similar to first card */}
+          {/* Typography similar to first card 
           <Typography variant="h6" sx={{ color: green[500], fontSize: 18 }}>
             {vehicleRunningCount}/Assets
           </Typography>
@@ -94,7 +96,7 @@ export const Cards = ({
           >
             <StopIcon sx={{ color: red[500], marginRight: "5px" }} />
             <Typography sx={{ fontSize: 20 }}>Stopped</Typography>
-            {/* Font size consistent with the first card */}
+            {/* Font size consistent with the first card 
           </Box>
           <Typography variant="h6" sx={{ color: red[500], fontSize: 18 }}>
             {vehicleStoppedCount}/Assets
@@ -126,7 +128,7 @@ export const Cards = ({
           >
             <SpeedIcon sx={{ color: orange[500], marginRight: "5px" }} />
             <Typography sx={{ fontSize: 20 }}>Overspeed</Typography>
-            {/* Consistent font size */}
+           
           </Box>
           <Typography variant="h6" sx={{ color: orange[500], fontSize: 18 }}>
             {vehicleOverspeedCount}/Assets
@@ -160,7 +162,7 @@ export const Cards = ({
               sx={{ color: yellow[500], marginRight: "5px" }}
             />
             <Typography sx={{ fontSize: 20 }}>Idle</Typography>
-            {/* Consistent font size */}
+       
           </Box>
           <Typography variant="h6" sx={{ color: yellow[500], fontSize: 18 }}>
             {vehicleIdleCount}/Assets
@@ -193,7 +195,7 @@ export const Cards = ({
           >
             <ErrorIcon sx={{ color: blue[500], marginRight: "5px" }} />
             <Typography sx={{ fontSize: 20 }}>Unreachable</Typography>
-            {/* Consistent font size */}
+          
           </Box>
           <Typography variant="h6" sx={{ color: blue[500], fontSize: 18 }}>
             {vehicleUnreachableCount}/Assets
@@ -231,7 +233,7 @@ export const Cards = ({
       {/* New */}
 
       {/* Running */}
-      <Card sx={{ width: 197, margin: "5px" }}>
+      {/* <Card sx={{ width: 197, margin: "5px" }}>
         <CardContent sx={{ padding: "10px" }}>
           <Box
             sx={{
@@ -251,10 +253,149 @@ export const Cards = ({
             {totalResponses}/Students
           </Typography>
         </CardContent>
-      </Card>
+      </Card> */}
+  {/* <Box
+      sx={{
+        width: "250px",
+        height: "150px", // Adjust height based on your image
+        margin: "5px",
+        backgroundImage: `url(${cartoonimgbus})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        position: "relative",
+        borderRadius: 2,
+      }}
+    >
+     
+      <Box
+    sx={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      textAlign: "center",
+      color: "white",
+      borderRadius: 2,
+      padding: "5px 10px",
+      backgroundColor: "transparent", // Fully transparent background
+    }}
+  >
+        <Typography variant="h6" sx={{ fontSize: 16 }}>
+          Student: {totalResponses}
+        </Typography>
+      </Box>
+    </Box> */}
 
+<Box
+  sx={{
+    width: "186px",
+    height: "101px", // Adjust height based on your image
+    marginTop: "23px",
+    // backgroundImage: `url(${cartoonimgbus})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    borderRadius: 2,
+    borderLeft: "4px solid", // Mimics `border-start-4`
+    borderColor: "success.main", // Mimics `border-start-success`
+    padding: "10px", // Add padding similar to `py-1 px-3`
+  }}
+>
+  {/* Running text */}
+  <Box
+    sx={{
+      color: "text.secondary",
+      fontSize: "0.875rem", // Equivalent to `small`
+      whiteSpace: "nowrap", // Mimics `text-truncate`
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      marginBottom: "8px", // Space between text and number
+    }}
+  >
+    Total students 
+  </Box>
+
+  {/* Student count */}
+  <Typography
+    sx={{
+      fontSize: "1.25rem", // Equivalent to `fs-5`
+      fontWeight: "bold", // Equivalent to `fw-semibold`
+      color: "success.main", // Mimics `runningData` color
+    }}
+  >
+    {totalResponses}
+  </Typography>
+
+  {/* Image at the bottom (car icon) */}
+  <Box
+    sx={{
+      position: "absolute",
+      bottom: "10px",
+      right: "10px",
+      cursor: "pointer", // Mimics `onClick` behavior
+    }}
+   
+  >
+    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+  </Box>
+</Box>
+
+
+<Box
+  sx={{
+    width: "186px",
+    height: "101px", // Adjust height based on your image
+    marginTop: "23px",
+    // backgroundImage: `url(${cartoonimgbus})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    borderRadius: 2,
+    borderLeft: "4px solid", // Mimics `border-start-4`
+    borderColor: "success.main", // Mimics `border-start-success`
+    padding: "10px", // Add padding similar to `py-1 px-3`
+  }}
+>
+  {/* Running text */}
+  <Box
+    sx={{
+      color: "text.secondary",
+      fontSize: "0.875rem", // Equivalent to `small`
+      whiteSpace: "nowrap", // Mimics `text-truncate`
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      marginBottom: "8px", // Space between text and number
+    }}
+  >
+    Present students 
+  </Box>
+
+  {/* Student count */}
+  <Typography
+    sx={{
+      fontSize: "1.25rem", // Equivalent to `fs-5`
+      fontWeight: "bold", // Equivalent to `fw-semibold`
+      color: "success.main", // Mimics `runningData` color
+    }}
+  >
+    {TotalResponsesPresent}
+  </Typography>
+
+  {/* Image at the bottom (car icon) */}
+  <Box
+    sx={{
+      position: "absolute",
+      bottom: "10px",
+      right: "10px",
+      cursor: "pointer", // Mimics `onClick` behavior
+    }}
+   
+  >
+    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+  </Box>
+</Box>
       {/* Stopped */}
-      <Card sx={{ width: 197, margin: "5px" }}>
+      {/* <Card sx={{ width: 197, margin: "5px" }}>
         <CardContent sx={{ padding: "10px" }}>
           <Box
             sx={{
@@ -271,13 +412,13 @@ export const Cards = ({
             <Typography sx={{ fontSize: 20 }}>Present Student</Typography>
           </Box>
           <Typography variant="h6" sx={{ color: red[500], fontSize: 18 }}>
-            {vehicleStoppedCount}/student
+            {TotalResponsesPresent}/student
           </Typography>
         </CardContent>
-      </Card>
+      </Card> */}
 
-      {/* Overspeed */}
-      <Card sx={{ width: 197, margin: "5px" }}>
+    
+      {/* <Card sx={{ width: 197, margin: "5px" }}>
         <CardContent sx={{ padding: "10px" }}>
           <Box
             sx={{
@@ -294,15 +435,227 @@ export const Cards = ({
             <Typography sx={{ fontSize: 20 }}>Absent Student</Typography>
           </Box>
           <Typography variant="h6" sx={{ color: orange[500], fontSize: 18 }}>
-            {vehicleOverspeedCount}/student
+            {TotalResponsesAbsent}/student
           </Typography>
         </CardContent>
-      </Card>
+      </Card> */}
+<Box
+  sx={{
+    width: "186px",
+    height: "101px", // Adjust height based on your image
+    marginTop: "23px",
+    // backgroundImage: `url(${cartoonimgbus})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    borderRadius: 2,
+    borderLeft: "4px solid", // Mimics `border-start-4`
+    borderColor: "success.main", // Mimics `border-start-success`
+    padding: "10px", // Add padding similar to `py-1 px-3`
+  }}
+>
+  {/* Running text */}
+  <Box
+    sx={{
+      color: "text.secondary",
+      fontSize: "0.875rem", // Equivalent to `small`
+      whiteSpace: "nowrap", // Mimics `text-truncate`
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      marginBottom: "8px", // Space between text and number
+    }}
+  >
+    Absent 
+  </Box>
 
-      {/* Idle */}
+  {/* Student count */}
+  <Typography
+    sx={{
+      fontSize: "1.25rem", // Equivalent to `fs-5`
+      fontWeight: "bold", // Equivalent to `fw-semibold`
+      color: "success.main", // Mimics `runningData` color
+    }}
+  >
+    {TotalResponsesAbsent}
+  </Typography>
 
-      {/* Leaves Card */}
-      <Card sx={{ width: 197, margin: "5px" }}>
+  {/* Image at the bottom (car icon) */}
+  <Box
+    sx={{
+      position: "absolute",
+      bottom: "10px",
+      right: "10px",
+      cursor: "pointer", // Mimics `onClick` behavior
+    }}
+   
+  >
+    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+  </Box>
+</Box>
+   
+
+<Box
+  sx={{
+    width: "186px",
+    height: "101px", // Adjust height based on your image
+    marginTop: "23px",
+    // backgroundImage: `url(${cartoonimgbus})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    borderRadius: 2,
+    borderLeft: "4px solid", // Mimics `border-start-4`
+    borderColor: "success.main", // Mimics `border-start-success`
+    padding: "10px", // Add padding similar to `py-1 px-3`
+  }}
+>
+  {/* Running text */}
+  <Box
+    sx={{
+      color: "text.secondary",
+      fontSize: "0.875rem", // Equivalent to `small`
+      whiteSpace: "nowrap", // Mimics `text-truncate`
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      marginBottom: "8px", // Space between text and number
+    }}
+  >
+    Requests
+  </Box>
+
+  {/* Student count */}
+  <Typography
+    sx={{
+      fontSize: "1.25rem", // Equivalent to `fs-5`
+      fontWeight: "bold", // Equivalent to `fw-semibold`
+      color: "success.main", // Mimics `runningData` color
+    }}
+  >
+    {totalLeaveRequest}
+  </Typography>
+
+  {/* Image at the bottom (car icon) */}
+  <Box
+    sx={{
+      position: "absolute",
+      bottom: "10px",
+      right: "10px",
+      cursor: "pointer", // Mimics `onClick` behavior
+    }}
+   
+  >
+    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+  </Box>
+</Box>
+
+<Box
+  sx={{
+    width: "186px",
+    height: "101px", // Adjust height based on your image
+    marginTop: "23px",
+    // backgroundImage: `url(${cartoonimgbus})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    borderRadius: 2,
+    borderLeft: "4px solid", // Mimics `border-start-4`
+    borderColor: "success.main", // Mimics `border-start-success`
+    padding: "10px", // Add padding similar to `py-1 px-3`
+  }}
+>
+  {/* Running text */}
+  <Box
+    sx={{
+      color: "text.secondary",
+      fontSize: "0.875rem", // Equivalent to `small`
+      whiteSpace: "nowrap", // Mimics `text-truncate`
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      marginBottom: "8px", // Space between text and number
+    }}
+  >
+    Drivers  
+  </Box>
+
+  {/* Student count */}
+  <Typography
+    sx={{
+      fontSize: "1.25rem", // Equivalent to `fs-5`
+      fontWeight: "bold", // Equivalent to `fw-semibold`
+      color: "success.main", // Mimics `runningData` color
+    }}
+  >
+    {TotalResponsesDrivers}
+  </Typography>
+
+  {/* Image at the bottom (car icon) */}
+  <Box
+    sx={{
+      position: "absolute",
+      bottom: "10px",
+      right: "10px",
+      cursor: "pointer", // Mimics `onClick` behavior
+    }}
+   
+  >
+    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+  </Box>
+</Box>
+
+<Box
+  sx={{
+    width: "186px",
+    height: "101px", // Adjust height based on your image
+    marginTop: "23px",
+    // backgroundImage: `url(${cartoonimgbus})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    borderRadius: 2,
+    borderLeft: "4px solid", // Mimics `border-start-4`
+    borderColor: "success.main", // Mimics `border-start-success`
+    padding: "10px", // Add padding similar to `py-1 px-3`
+  }}
+>
+  {/* Running text */}
+  <Box
+    sx={{
+      color: "text.secondary",
+      fontSize: "0.875rem", // Equivalent to `small`
+      whiteSpace: "nowrap", // Mimics `text-truncate`
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      marginBottom: "8px", // Space between text and number
+    }}
+  >
+    Supervisors 
+  </Box>
+
+  {/* Student count */}
+  <Typography
+    sx={{
+      fontSize: "1.25rem", // Equivalent to `fs-5`
+      fontWeight: "bold", // Equivalent to `fw-semibold`
+      color: "success.main", // Mimics `runningData` color
+    }}
+  >
+    {TotalResponsesSupervisor}
+  </Typography>
+
+  {/* Image at the bottom (car icon) */}
+  <Box
+    sx={{
+      position: "absolute",
+      bottom: "10px",
+      right: "10px",
+      cursor: "pointer", // Mimics `onClick` behavior
+    }}
+   
+  >
+    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+  </Box>
+</Box>
+      {/* <Card sx={{ width: 197, margin: "5px" }}>
         <CardContent sx={{ padding: "10px" }}>
           <Box
             sx={{
@@ -322,10 +675,10 @@ export const Cards = ({
             {totalLeaveRequest}/student
           </Typography>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* New */}
-      <Card sx={{ width: 197, margin: "5px" }}>
+      {/* <Card sx={{ width: 197, margin: "5px" }}>
         <CardContent sx={{ padding: "10px" }}>
           <Box
             sx={{
@@ -345,8 +698,8 @@ export const Cards = ({
             00/drivers
           </Typography>
         </CardContent>
-      </Card>
-      <Card
+      </Card> */}
+      {/* <Card
         sx={{
           width: 197,
           margin: "5px",
@@ -370,13 +723,13 @@ export const Cards = ({
           >
             <StopIcon sx={{ color: red[500], marginRight: "5px" }} />
             <Typography sx={{ fontSize: 20 }}>Supervisor</Typography>
-            {/* Font size consistent with the first card */}
+          
           </Box>
           <Typography variant="h6" sx={{ color: red[500], fontSize: 18 }}>
-            {vehicleStoppedCount}/Assets
+            {}
           </Typography>
         </CardContent>
-      </Card>
+      </Card> */}
      
     </Box>
   );

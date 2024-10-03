@@ -43,12 +43,12 @@ const LiveTracking = ({ individualDataObj, setTrack }) => {
 
   const fetchAndUpdateData = async () => {
     try {
-      const username = "hbgadget221@gmail.com";
-      const password = "123456";
+      const username = "hbtrack";
+      const password = "123456@";
       const token = btoa(`${username}:${password}`);
 
       const response = await axios.get(
-        `https://rocketsalestracker.com/api/positions?vehicleId=${individualDataObj.id}`,
+        `http://104.251.212.84/api/positions?vehicleId=${individualDataObj.id}`,
         {
           headers: {
             Authorization: `Basic ${token}`,
