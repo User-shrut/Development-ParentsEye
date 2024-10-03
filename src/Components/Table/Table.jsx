@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -102,7 +102,7 @@ export const Tablee = ({ data }) => {
   const [individualMap, setIndividualMap] = useState(false);
   const [lat, setLat] = useState(0);
   const [lng, setLng] = useState(0);
-
+  const role = localStorage.getItem("role");
   if (data) {
     console.log(data);
   }
@@ -184,8 +184,7 @@ export const Tablee = ({ data }) => {
         setAddressesValue("Error fetching address");
       }
     };
-  
-   
+
     const fetchAddresses = async () => {
       const addresses = await Promise.all(
         data.map(async (row) => {
@@ -368,9 +367,6 @@ export const Tablee = ({ data }) => {
   };
   const [filteredAssets, setFilteredAssets] = useState(data);
 
-  
-  
-
   const filteredVehicles = filteredAssets.filter((vehicle) => {
     const status = determineStatus(vehicle);
     return assetStatusValue === "All assets" || status === assetStatusValue;
@@ -379,11 +375,11 @@ export const Tablee = ({ data }) => {
     if (assetsValue === "All assets" || assetsValue === "") {
       setFilteredAssets(data);
     } else {
-      const filteredData = data.filter(asset => asset.name === assetsValue);
+      const filteredData = data.filter((asset) => asset.name === assetsValue);
       setFilteredAssets(filteredData);
     }
   }, [assetsValue, data]);
-  
+
   // Update the filteredRows to use filteredAssets
   useEffect(() => {
     setFilteredRows(
@@ -391,19 +387,18 @@ export const Tablee = ({ data }) => {
     );
   }, [filteredAssets]);
 
-
-
   useEffect(() => {
     let filteredData = data;
-  
+
     if (vehiclesValue && vehiclesValue !== "All vehicles") {
-      filteredData = filteredData.filter(asset => asset.category === vehiclesValue);
+      filteredData = filteredData.filter(
+        (asset) => asset.category === vehiclesValue
+      );
     }
-  
+
     setFilteredAssets(filteredData);
   }, [vehiclesValue, data]);
-  
-  
+
   const handleSelectVehicle = (event) => {
     setVehiclesValue(event.target.value);
   };
@@ -411,7 +406,7 @@ export const Tablee = ({ data }) => {
   // const [filteredRows, setFilteredRows] = useState([]);
   const [totalResponses, setTotalResponses] = useState(0);
   const fetchData = async () => {
-    console.log('Fetching data...');
+    console.log("Fetching data...");
     // setLoading(true); // Set loading to true when starting fetch
     try {
       const username = "hbtrack";
@@ -424,19 +419,21 @@ export const Tablee = ({ data }) => {
         },
       });
 
-      console.log('Fetched data:', response.data);
+      console.log("Fetched data:", response.data);
 
       // Check if response.data is an array
       if (Array.isArray(response.data)) {
         // Set the fetched data with isSelected property for each user
-        setFilteredRows(response.data.map(row => ({ ...row, isSelected: false })));
+        setFilteredRows(
+          response.data.map((row) => ({ ...row, isSelected: false }))
+        );
         setTotalResponses(response.data.length);
       } else {
-        console.error('Expected an array but got:', response.data);
+        console.error("Expected an array but got:", response.data);
       }
     } catch (error) {
-      console.error('Fetch data error:', error);
-      alert('An error occurred while fetching data.');
+      console.error("Fetch data error:", error);
+      alert("An error occurred while fetching data.");
     } finally {
       // setLoading(false);
     }
@@ -453,15 +450,15 @@ export const Tablee = ({ data }) => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await fetch('http://104.251.212.84/api/groups', {
-          method: 'GET',
+        const response = await fetch("http://104.251.212.84/api/groups", {
+          method: "GET",
           headers: {
-            'Authorization': 'Basic ' + btoa('hbtrack:123456@'), // Replace with actual credentials
-          }
+            Authorization: "Basic " + btoa("hbtrack:123456@"), // Replace with actual credentials
+          },
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
 
         const data = await response.json();
@@ -476,31 +473,32 @@ export const Tablee = ({ data }) => {
   // const [areasValue, setAreasValue] = useState('');
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [areas, setAreas] = useState([]);
+  const [drivers, setDrivers] = useState([]);
   useEffect(() => {
     const fetchAreasData = async () => {
       try {
-        const username = 'hbtrack'; // Replace with your actual username
-        const password = '123456@'; // Replace with your actual password
+        const username = "hbtrack"; // Replace with your actual username
+        const password = "123456@"; // Replace with your actual password
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
-        const response = await fetch('http://104.251.212.84/api/geofences', {
-          method: 'GET',
+        const response = await fetch("http://104.251.212.84/api/geofences", {
+          method: "GET",
           headers: {
-            'Authorization': `Basic ${token}`,
+            Authorization: `Basic ${token}`,
           },
         });
 
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
 
         const data = await response.json();
-        console.log('Geofence data: ', data);
+        console.log("Geofence data: ", data);
 
         // Transform data to create dropdown options
         setAreas(data.map((item) => item.name));
       } catch (error) {
-        console.error('Error fetching areas data:', error);
+        console.error("Error fetching areas data:", error);
         setError(error.message);
       }
     };
@@ -508,6 +506,172 @@ export const Tablee = ({ data }) => {
     fetchAreasData();
   }, []);
 
+
+
+
+  const fetchDataDriver = async (startDate = "", endDate = "") => {
+    // setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      let response;
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      console.log("fetch data", response.data);
+
+      if (response?.data) {
+        console.log(response.data);
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.drivers) && branch.drivers.length > 0
+                    ? branch.drivers
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) => branch.drivers)
+            : response?.data.drivers;
+
+        // setDrivers(allData);
+        // console.log("hey drivers");
+        console.log("drivers : ", allData);
+
+        // Apply local date filtering if dates are provided
+        // const filteredData =
+        //   startDate || endDate
+        //     ? allData.filter((row) => {
+        //         const registrationDate = parseDate(
+        //           row.formattedRegistrationDate
+        //         );
+        //         const start = parseDate(startDate);
+        //         const end = parseDate(endDate);
+
+        //         return (
+        //           (!startDate || registrationDate >= start) &&
+        //           (!endDate || registrationDate <= end)
+        //         );
+        //       })
+        //     : allData; 
+        console.log(allData)
+            
+            setDrivers(allData)// If no date range, use all data
+        // const reversedData = filteredData.reverse();
+        // Log the date range and filtered data
+        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
+        // console.log(filteredData);
+        // setFilteredRows(
+        //   reversedData.map((row) => ({ ...row, isSelected: false }))
+        // );
+        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+        // setTotalResponses(reversedData.length);
+        // setFilteredRows(
+        //   filteredData.map((row) => ({ ...row, isSelected: false }))
+        // );
+        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+        // setTotalResponses(filteredData.length);
+      } else {
+        console.error("Expected an array but got:", response.data.drivers);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } 
+  };
+  useEffect(() => {
+    fetchDataDriver();
+  }, [])
+  // const fetchDataDriver = async (startDate = "", endDate = "") => {
+  //   // setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+  //     if (role == 1) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/read-drivers`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 2) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SCHOOL_API}/read-drivers`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 3) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_BRANCH_API}/read-drivers`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }
+
+  //     console.log("fetch data", response.data);
+
+  //     if (response?.data) {
+  //       console.log(response.data);
+  //       const allData =
+  //         role == 1
+  //           ? response?.data.data.flatMap((school) =>
+  //               school.branches.flatMap((branch) =>
+  //                 Array.isArray(branch.drivers) && branch.drivers.length > 0
+  //                   ? branch.drivers
+  //                   : []
+  //               )
+  //             )
+  //           : role == 2
+  //           ? response?.data.branches.flatMap((branch) => branch.drivers)
+  //           : response?.data.drivers;
+
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.drivers);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   fetchData();
+  //   fetchleaves();
+  //   fetchpresent();
+  //   fetchDataAbsent();
+
+  // }, []);
   return (
     <>
       <div style={{ marginTop: "80px" }}>
@@ -573,7 +737,7 @@ export const Tablee = ({ data }) => {
                   value={assetsValue}
                   onChange={(e) => {
                     setAssetsValue(e.target.value);
-                    handleSelectVehicle()
+                    handleSelectVehicle();
                   }}
                   label="Select Assets"
                 >
@@ -620,29 +784,30 @@ export const Tablee = ({ data }) => {
                   {/* Add your user options here 
                 </Select>
               </FormControl> */}
-                <FormControl
-      variant="outlined"
-      fullWidth
-      sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
-    >
-      <InputLabel id="users-label-3">Users</InputLabel>
-      <Select
-        labelId="users-label-3"
-        id="users-select-3"
-        value={usersValue}
-        onChange={(e) => setUsersValue(e.target.value)}
-        label="Select Users"
-      >
-        <MenuItem value="All users">All users</MenuItem>
+              <FormControl
+                variant="outlined"
+                fullWidth
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+              >
+                <InputLabel id="users-label-3">Users</InputLabel>
+                <Select
+                  labelId="users-label-3"
+                  id="users-select-3"
+                  value={usersValue}
+                  onChange={(e) => setUsersValue(e.target.value)}
+                  label="Select Users"
+                >
+                  <MenuItem value="All users">All users</MenuItem>
 
-        {/* Dynamically create MenuItems from filteredRows */}
-        {filteredRows.map((user) => (
-          <MenuItem key={user.id} value={user.name}>
-            {user.name} ({user.fullName || user.companyName || 'Unknown'})
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+                  {/* Dynamically create MenuItems from filteredRows */}
+                  {filteredRows.map((user) => (
+                    <MenuItem key={user.id} value={user.name}>
+                      {user.name} (
+                      {user.fullName || user.companyName || "Unknown"})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               {/* <FormControl
                 variant="outlined"
                 fullWidth
@@ -667,37 +832,36 @@ export const Tablee = ({ data }) => {
                 </Select>
               </FormControl> */}
               <FormControl
-      variant="outlined"
-      fullWidth
-      sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
-    >
-      <InputLabel
-        id="groups-label-4"
-        style={{ alignItems: "center" }}
-      >
-        Groups
-      </InputLabel>
-      <Select
-        labelId="groups-label-4"
-        id="groups-select-4"
-        value={groupsValue}
-        onChange={(e) => setGroupsValue(e.target.value)}
-        label="Select Groups"
-      >
-        <MenuItem value="All Group">All Group</MenuItem>
+                variant="outlined"
+                fullWidth
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+              >
+                <InputLabel
+                  id="groups-label-4"
+                  style={{ alignItems: "center" }}
+                >
+                  Groups
+                </InputLabel>
+                <Select
+                  labelId="groups-label-4"
+                  id="groups-select-4"
+                  value={groupsValue}
+                  onChange={(e) => setGroupsValue(e.target.value)}
+                  label="Select Groups"
+                >
+                  <MenuItem value="All Group">All Group</MenuItem>
 
-        {/* Dynamically generate MenuItem components based on the fetched groups */}
-        {groups.map((group) => (
-          <MenuItem key={group.id} value={group.name}>
-            {group.name}
-          </MenuItem>
-        ))}
+                  {/* Dynamically generate MenuItem components based on the fetched groups */}
+                  {groups.map((group) => (
+                    <MenuItem key={group.id} value={group.name}>
+                      {group.name}
+                    </MenuItem>
+                  ))}
+                </Select>
 
-      </Select>
-
-      {/* Error Handling */}
-      {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
-    </FormControl>
+                {/* Error Handling */}
+                {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
+              </FormControl>
               {/* <FormControl
                 variant="outlined"
                 fullWidth
@@ -717,33 +881,32 @@ export const Tablee = ({ data }) => {
                   {/* Add your area options here 
                 </Select>
               </FormControl> */}
-            <FormControl
-      variant="outlined"
-      fullWidth
-      sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
-    >
-      <InputLabel id="areas-label-5">Areas</InputLabel>
-      <Select
-        labelId="areas-label-5"
-        id="areas-select-5"
-        value={areasValue}
-        onChange={(e) => setAreasValue(e.target.value)}
-        label="Select Areas"
-      >
-        <MenuItem value="All Areas">All Areas</MenuItem>
+              <FormControl
+                variant="outlined"
+                fullWidth
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+              >
+                <InputLabel id="areas-label-5">Areas</InputLabel>
+                <Select
+                  labelId="areas-label-5"
+                  id="areas-select-5"
+                  value={areasValue}
+                  onChange={(e) => setAreasValue(e.target.value)}
+                  label="Select Areas"
+                >
+                  <MenuItem value="All Areas">All Areas</MenuItem>
 
-        {/* Dynamically generate MenuItem components based on the fetched areas */}
-        {areas.map((area, index) => (
-          <MenuItem key={index} value={area}>
-            {area}
-          </MenuItem>
-        ))}
+                  {/* Dynamically generate MenuItem components based on the fetched areas */}
+                  {areas.map((area, index) => (
+                    <MenuItem key={index} value={area}>
+                      {area}
+                    </MenuItem>
+                  ))}
+                </Select>
 
-      </Select>
-
-      {/* Error Handling */}
-      {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
-    </FormControl>
+                {/* Error Handling */}
+                {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
+              </FormControl>
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -769,51 +932,49 @@ export const Tablee = ({ data }) => {
               </FormControl>
 
               <FormControl
-  variant="outlined"
-  fullWidth
-  sx={{
-    width: 250,
-    "& .MuiInputBase-root": { height: 40 },
-    marginBottom: 2,
-  }}
->
-  <InputLabel id="vehicles-label-6">Select Vehicles</InputLabel>
-  <Select
-    labelId="vehicles-label-6"
-    id="vehicles-select-6"
-    value={vehiclesValue}
-    onChange={(e) => setVehiclesValue(e.target.value)} // Uncomment to handle changes
-    label="Select Asset Status"
-  >
-    {/* You can add 'All Vehicles' as the default option */}
-    <MenuItem value="All assets">All Vehicles</MenuItem>
+                variant="outlined"
+                fullWidth
+                sx={{
+                  width: 250,
+                  "& .MuiInputBase-root": { height: 40 },
+                  marginBottom: 2,
+                }}
+              >
+                <InputLabel id="vehicles-label-6">Select Vehicles</InputLabel>
+                <Select
+                  labelId="vehicles-label-6"
+                  id="vehicles-select-6"
+                  value={vehiclesValue}
+                  onChange={(e) => setVehiclesValue(e.target.value)} // Uncomment to handle changes
+                  label="Select Asset Status"
+                >
+                  {/* You can add 'All Vehicles' as the default option */}
+                  <MenuItem value="All assets">All Vehicles</MenuItem>
 
-
-    {/* New vehicle types you provided */}
-    <MenuItem value="Default">Default</MenuItem>
-    <MenuItem value="Animal">Animal</MenuItem>
-    <MenuItem value="Bicycle">Bicycle</MenuItem>
-    <MenuItem value="Boat">Boat</MenuItem>
-    <MenuItem value="Bus">Bus</MenuItem>
-    <MenuItem value="Camper">Camper</MenuItem>
-    <MenuItem value="Crane">Crane</MenuItem>
-    <MenuItem value="Helicopter">Helicopter</MenuItem>
-    <MenuItem value="Motorcycle">Motorcycle</MenuItem>
-    <MenuItem value="Offroad">Offroad</MenuItem>
-    <MenuItem value="Person">Person</MenuItem>
-    <MenuItem value="Pickup">Pickup</MenuItem>
-    <MenuItem value="Plane">Plane</MenuItem>
-    <MenuItem value="Ship">Ship</MenuItem>
-    <MenuItem value="Tractor">Tractor</MenuItem>
-    <MenuItem value="Train">Train</MenuItem>
-    <MenuItem value="Tram">Tram</MenuItem>
-    <MenuItem value="Trolleybus">Trolleybus</MenuItem>
-    <MenuItem value="Truck">Truck</MenuItem>
-    <MenuItem value="Van">Van</MenuItem>
-    <MenuItem value="Scooter">Scooter</MenuItem>
-  </Select>
-</FormControl>
-
+                  {/* New vehicle types you provided */}
+                  <MenuItem value="Default">Default</MenuItem>
+                  <MenuItem value="Animal">Animal</MenuItem>
+                  <MenuItem value="Bicycle">Bicycle</MenuItem>
+                  <MenuItem value="Boat">Boat</MenuItem>
+                  <MenuItem value="Bus">Bus</MenuItem>
+                  <MenuItem value="Camper">Camper</MenuItem>
+                  <MenuItem value="Crane">Crane</MenuItem>
+                  <MenuItem value="Helicopter">Helicopter</MenuItem>
+                  <MenuItem value="Motorcycle">Motorcycle</MenuItem>
+                  <MenuItem value="Offroad">Offroad</MenuItem>
+                  <MenuItem value="Person">Person</MenuItem>
+                  <MenuItem value="Pickup">Pickup</MenuItem>
+                  <MenuItem value="Plane">Plane</MenuItem>
+                  <MenuItem value="Ship">Ship</MenuItem>
+                  <MenuItem value="Tractor">Tractor</MenuItem>
+                  <MenuItem value="Train">Train</MenuItem>
+                  <MenuItem value="Tram">Tram</MenuItem>
+                  <MenuItem value="Trolleybus">Trolleybus</MenuItem>
+                  <MenuItem value="Truck">Truck</MenuItem>
+                  <MenuItem value="Van">Van</MenuItem>
+                  <MenuItem value="Scooter">Scooter</MenuItem>
+                </Select>
+              </FormControl>
             </div>
 
             {/* <br />
@@ -846,19 +1007,37 @@ export const Tablee = ({ data }) => {
           </div>
         )}
 
-        <br />
+        {/* <br /> */}
       </div>
 
       {individualMap ? (
         <></>
       ) : (
-        <Cards
-          vehicleRunningCount={vehicleRunningCount}
-          vehicleStoppedCount={vehicleStoppedCount}
-          vehicleOverspeedCount={vehicleOverspeedCount}
-          vehicleIdleCount={vehicleIdleCount}
-          vehicleUnreachableCount={vehicleUnreachableCount}
-        />
+        <>
+          <Cards
+            vehicleRunningCount={vehicleRunningCount}
+            vehicleStoppedCount={vehicleStoppedCount}
+            vehicleOverspeedCount={vehicleOverspeedCount}
+            vehicleIdleCount={vehicleIdleCount}
+            vehicleUnreachableCount={vehicleUnreachableCount}
+          />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <hr
+              style={{
+                margin: "0px",
+                width: "88%",
+                borderBottom: "1px solid black",
+              }}
+            />
+          </div>
+          {/* Horizontal line added here */}
+        </>
       )}
 
       <br />
@@ -921,7 +1100,6 @@ export const Tablee = ({ data }) => {
         {individualMap ? (
           <></>
         ) : (
-
           <Paper
             sx={{
               width: "100%",
@@ -942,7 +1120,6 @@ export const Tablee = ({ data }) => {
                 borderRadius: "5px",
               }}
             >
-
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
                   <TableRow>
@@ -978,8 +1155,8 @@ export const Tablee = ({ data }) => {
                               borderRight: "1px solid #ddd",
                               backgroundColor: "#f4d24a",
                               color: "black",
-                              padding:"0px 16px",
-                              justifyContent:"center"
+                              padding: "0px 16px",
+                              justifyContent: "center",
                             }}
                           >
                             <div
@@ -1017,76 +1194,98 @@ export const Tablee = ({ data }) => {
                     )}
                   </TableRow>
                 </TableHead>
-                
+
                 <TableBody>
-  {sortedData
-    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    .map((row, index) => (
-      <TableRow
-        hover
-        role="checkbox"
-        tabIndex={-1}
-        key={row.id}
-        style={{
-          backgroundColor: index % 2 === 0 ? "white" : "#f9f9f9",
-          padding: "0px 16px",
-        }}
-        onClick={() => {
-          handleData(row.latitude, row.longitude, data);
-          handleLocationClick(row.latitude, row.longitude);
-        }}
-      >
-        <TableCell
-          className="tablecell"
-          key={`select-${index}`}
-          align="left"
-          style={{
-            borderRight: "1px solid #ddd",
-            padding: "0px 16px",
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={row.isSelected}
-            onChange={() => handleRowSelect(index)}
-          />
-        </TableCell>
+                  {sortedData
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => (
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={row.id}
+                        style={{
+                          backgroundColor:
+                            index % 2 === 0 ? "white" : "#f9f9f9",
+                          padding: "0px 16px",
+                        }}
+                        onClick={() => {
+                          handleData(row.latitude, row.longitude, data);
+                          handleLocationClick(row.latitude, row.longitude);
+                        }}
+                      >
+                        <TableCell
+                          className="tablecell"
+                          key={`select-${index}`}
+                          align="left"
+                          style={{
+                            borderRight: "1px solid #ddd",
+                            padding: "0px 16px",
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={row.isSelected}
+                            onChange={() => handleRowSelect(index)}
+                          />
+                        </TableCell>
 
-        {columns.map(
-          (column) =>
-            column.accessor !== "select" &&
-            columnVisibility[column.accessor] && (
-              <TableCell
-                className="tablecell"
-                key={column.accessor}
-                align={
-                  column.accessor === "date_of_birth" ? "right" : "left"
-                }
-                style={{
-                  borderRight: "1px solid #ddd",
-                  cursor: column.accessor === "location" ? "pointer" : "default",
-                }}
-                onClick={() => {
-                  if (column.accessor === "location") {
-                    handleData(row.latitude, row.longitude, data);
-                    handleLocationClick(row.latitude, row.longitude, row);
-                  } else if (column.accessor === "name") {
-                    handleVehicleClick();
-                  }
-                }}
-              >
-                {column.accessor === "sn"
-                  ? page * rowsPerPage + index + 1 // Serial number logic
-                  : column.Cell
-                  ? column.Cell({ value: row[column.accessor], row })
-                  : row[column.accessor]}
-              </TableCell>
-            )
-        )}
-      </TableRow>
-    ))}
-</TableBody>
+                        {columns.map(
+                          (column) =>
+                            column.accessor !== "select" &&
+                            columnVisibility[column.accessor] && (
+                              <TableCell
+                                className="tablecell"
+                                key={column.accessor}
+                                align={
+                                  column.accessor === "date_of_birth"
+                                    ? "right"
+                                    : "left"
+                                }
+                                style={{
+                                  borderRight: "1px solid #ddd",
+                                  cursor:
+                                    column.accessor === "location"
+                                      ? "pointer"
+                                      : "default",
+                                }}
+                                onClick={() => {
+                                  if (column.accessor === "location") {
+                                    handleData(
+                                      row.latitude,
+                                      row.longitude,
+                                      data
+                                    );
+                                    handleLocationClick(
+                                      row.latitude,
+                                      row.longitude,
+                                      row
+                                    );
+                                  } else if (column.accessor === "name") {
+                                    handleVehicleClick();
+                                  }
+                                }}
+                              >
+                                {column.accessor === "sn"
+                                  ? page * rowsPerPage + index + 1 // Serial number logic
+                                  : column.Cell
+                                  ? column.Cell({
+                                      value: row[column.accessor],
+                                      row,
+                                    })
+                                  : row[column.accessor]}
 
+                                  {
+                                    column.accessor === "driver_name" ? 
+                                    drivers.find(driver => driver.deviceId === row.deviceId)?.driverName : null
+                                  
+                                  }
+                              </TableCell>
+                            )
+                        )}
+                      </TableRow>
+                    ))}
+                </TableBody>
               </Table>
             </TableContainer>
             <TablePagination

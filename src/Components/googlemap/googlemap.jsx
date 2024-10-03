@@ -58,7 +58,7 @@ const initialCenter = {
   lng: 79.2961,
 };
 
-function GoogleMapComponent({ latitude, longitude, filteredVehicles }) {
+function GoogleMapComponent({ latitude, longitude, data }) {
   const [error, setError] = useState("");
   const [address, setAddress] = useState("");
 
@@ -219,7 +219,7 @@ useEffect(() => {
           attribution={osmProvider.attribution}
         />
 
-        {vehicleData.map((vehicle, index) =>
+        {data.map((vehicle, index) =>
           vehicle.latitude && vehicle.longitude ? (
             <Marker
               key={index}
