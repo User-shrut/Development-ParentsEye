@@ -77,75 +77,152 @@ export const Present = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-  const fetchData = async (startDate = "", endDate = "") => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const apiUrl =
-        role == 1
-          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children`
-          : role == 2
-          ? `${process.env.REACT_APP_SCHOOL_API}/present-children`
-          : `${process.env.REACT_APP_BRANCH_API}/present-children`;
-      const response = await axios.get(apiUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const apiUrl =
+  //       role == 1
+  //         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children`
+  //         : role == 2
+  //         ? `${process.env.REACT_APP_SCHOOL_API}/present-children`
+  //         : `${process.env.REACT_APP_BRANCH_API}/present-children`;
+  //     const response = await axios.get(apiUrl, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      console.log("fetch data", response.data);
+  //     console.log("fetch data", response.data);
 
-      if (response?.data) {
-        const allData = response?.data.data.flatMap((school) =>
-          school.branches.flatMap((branch) =>
-            Array.isArray(branch.children) && branch.children.length > 0
-              ? branch.children
-              : []
-          )
-        );
+  //     if (response?.data) {
+  //       const allData = response?.data.data.flatMap((school) =>
+  //         school.branches.flatMap((branch) =>
+  //           Array.isArray(branch.children) && branch.children.length > 0
+  //             ? branch.children
+  //             : []
+  //         )
+  //       );
 
-        // Apply local date filtering if dates are provided
-        const filteredData =
-          startDate || endDate
-            ? allData.filter((row) => {
-                const registrationDate = parseDate(row.formattedDate);
-                const start = parseDate(startDate);
-                const end = parseDate(endDate);
+  //       // Apply local date filtering if dates are provided
+  //       const filteredData =
+  //         startDate || endDate
+  //           ? allData.filter((row) => {
+  //               const registrationDate = parseDate(row.date);
+  //               const start = parseDate(startDate);
+  //               const end = parseDate(endDate);
 
-                return (
-                  (!startDate || registrationDate >= start) &&
-                  (!endDate || registrationDate <= end)
-                );
-              })
-            : allData; // If no date range, use all data
-        const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        console.log(filteredData);
-        setFilteredRows(
-          reversedData.map((row) => ({ ...row, isSelected: false }))
-        );
-        setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        setTotalResponsesPresent(reversedData.length);
-        // Log the date range and filtered data
-        console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        console.log(filteredData);
+  //               return (
+  //                 (!startDate || registrationDate >= start) &&
+  //                 (!endDate || registrationDate <= end)
+  //               );
+  //             })
+  //           : allData; // If no date range, use all data
+  //       const reversedData = filteredData.reverse();
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponsesPresent(reversedData.length);
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
 
-        // setFilteredRows(
-        //   filteredData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(filteredData.length);
-      } else {
-        console.error("Expected an array but got:", response.data.children);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false); // Set loading to false after fetching completes
+      
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.children);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching completes
+  //   }
+  // };
+
+
+ const fetchData = async (startDate = "", endDate = "") => {
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("token");
+    const apiUrl =
+      role == 1
+        ? `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children`
+        : role == 2
+        ? `${process.env.REACT_APP_SCHOOL_API}/present-children`
+        : `${process.env.REACT_APP_BRANCH_API}/present-children`;
+        
+    const response = await axios.get(apiUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("fetch data", response.data);
+
+    let allData = [];
+
+    if (role == 1 ) {
+      // Handle for role 1 and role 2
+      allData = response?.data.data.flatMap((school) =>
+        school.branches.flatMap((branch) =>
+          Array.isArray(branch.children) && branch.children.length > 0
+            ? branch.children
+            : []
+        )
+      );
+    }else if (role == 2) {
+      // Handle for role 2 (this is your specified data structure)
+      allData = response?.data.branches.flatMap((branch) =>
+        Array.isArray(branch.children) && branch.children.length > 0
+          ? branch.children.map(child => ({
+              ...child,
+              branchName: branch.branchName,  // Assign branchName to child data
+              schoolName: response.data.schoolName,  // Assign schoolName to child data
+            }))
+          : []
+      );
+    }  else if (role == 3) {
+      // Handle for role 3
+      allData = Array.isArray(response.data.children) ? response.data.children : [];
     }
-  };
 
+    // Apply local date filtering if dates are provided
+    const filteredData =
+      startDate || endDate
+        ? allData.filter((row) => {
+            const registrationDate = parseDate(row.date);
+            const start = parseDate(startDate);
+            const end = parseDate(endDate);
+
+            return (
+              (!startDate || registrationDate >= start) &&
+              (!endDate || registrationDate <= end)
+            );
+          })
+        : allData; // If no date range, use all data
+
+    const reversedData = filteredData.reverse();
+
+    // Log the date range and filtered data
+    console.log(`Data fetched between ${startDate} and ${endDate}:`);
+    console.log(filteredData);
+
+    setFilteredRows(
+      reversedData.map((row) => ({ ...row, isSelected: false }))
+    );
+    setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+    setTotalResponsesPresent(reversedData.length);
+  } catch (error) {
+    console.error("Error:", error);
+  } finally {
+    setLoading(false); // Set loading to false after fetching completes
+  }
+};
+
+  
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -255,86 +332,9 @@ export const Present = () => {
     setSelectAll(newSelectAll);
   };
 
-  const handleEditButtonClick = () => {
-    const selected = filteredRows.find((row) => row.isSelected);
-    if (selected) {
-      setSelectedRow(selected);
-      setFormData(selected);
-      setEditModalOpen(true);
-    } else {
-      setSnackbarOpen(true);
-    }
-  };
+ 
 
-  const handleDeleteSelected = async () => {
-    // Log filteredRows to check its structure
-    console.log("Filtered rows:", filteredRows);
-
-    // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
-
-    console.log("Selected IDs:", selectedIds);
-
-    if (selectedIds.length === 0) {
-      alert("No rows selected for deletion.");
-      return;
-    }
-    const userConfirmed = window.confirm(
-      `Are you sure you want to delete ${selectedIds.length} record(s)?`
-    );
-
-    if (!userConfirmed) {
-      // If the user clicks "Cancel", exit the function
-      return;
-    }
-    try {
-      // Define the API endpoint and token
-      const apiUrl =
-        "https://schoolmanagement-1-hurx.onrender.com/school/delete";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
-      // Send delete requests for each selected ID
-      const deleteRequests = selectedIds.map((id) =>
-        fetch(`${apiUrl}/${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }).then((response) => {
-          if (!response.ok) {
-            throw new Error(
-              `Error deleting record with ID ${id}: ${response.statusText}`
-            );
-          }
-          return response.json();
-        })
-      );
-
-      // Wait for all delete requests to complete
-      await Promise.all(deleteRequests);
-
-      // Filter out deleted rows
-      const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
-
-      // Update state
-      setFilteredRows(newFilteredRows);
-      setSelectAll(false);
-
-      alert("Selected records deleted successfully.");
-    } catch (error) {
-      console.error("Error during deletion:", error);
-      alert("Failed to delete selected records.");
-    }
-    fetchData();
-  };
+  
 
   const handleExport = () => {
     const dataToExport = filteredRows.map((row) => {
@@ -376,10 +376,7 @@ export const Present = () => {
     });
   }
 
-  const handleAddButtonClick = () => {
-    setFormData({});
-    setAddModalOpen(true);
-  };
+  
 
   const handleModalClose = () => {
     setEditModalOpen(false);
@@ -399,98 +396,9 @@ export const Present = () => {
     });
   };
 
-  const handleEditSubmit = async () => {
-    // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-1-hurx.onrender.com/school/update-child/${selectedRow._id}`; // Replace with your actual API URL
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
+ 
 
-    // Prepare the updated data
-    const updatedData = {
-      ...formData,
-      isSelected: false,
-    };
-
-    try {
-      // Perform the PUT request
-      const response = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
-
-      // Check if the response is okay (status code 200-299)
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      // Optionally: Process the response data if needed
-      const result = await response.json();
-      console.log("Update successful:", result);
-      alert("updated successfully");
-      // Update local state after successful API call
-      const updatedRows = filteredRows.map((row) =>
-        row.id === selectedRow.id
-          ? { ...row, ...formData, isSelected: false }
-          : row
-      );
-      setFilteredRows(updatedRows);
-
-      // Close the modal
-      handleModalClose();
-      fetchData();
-    } catch (error) {
-      console.error("Error updating row:", error);
-      alert("error updating code");
-      // Optionally: Handle the error (e.g., show a notification or message to the user)
-    }
-    fetchData();
-  };
-
-  const handleAddSubmit = async () => {
-    try {
-      const newRow = {
-        ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
-      };
-
-      // POST request to the server
-      const response = await fetch(
-        "https://schoolmanagement-1-hurx.onrender.com/parent/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newRow),
-        }
-      );
-      alert("record created successfully");
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      // Assuming the server returns the created object
-      const result = await response.json();
-
-      // Update the state with the new row
-      setFilteredRows([...filteredRows, result]);
-
-      // Close the modal
-      handleModalClose();
-      fetchData();
-      console.log("error occured in post method");
-    } catch (error) {
-      console.error("Error during POST request:", error);
-      alert("unable to create record");
-      // Handle the error appropriately (e.g., show a notification to the user)
-    }
-  };
+ 
 
   return (
     <>
@@ -498,7 +406,7 @@ export const Present = () => {
         Present Student List
       </h1>
       <div>
-        <div
+        {/* <div
           style={{
             display: "flex",
             alignItems: "center",
@@ -538,52 +446,13 @@ export const Present = () => {
             <ImportExportIcon />
             Column Visibility
           </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeleteSelected}
-            sx={{ marginRight: "10px" }}
-            startIcon={<DeleteIcon />}
-          >
-            Delete
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleEditButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<EditIcon />}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleAddButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<AddCircleIcon />}
-          >
-            Add
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setImportModalOpen(true)}
-            sx={{ backgroundColor: "rgb(255, 165, 0)", marginRight: "10px" }}
-            startIcon={<CloudUploadIcon />}
-          >
-            Import
-          </Button>
+          
+          
+          
+          
           <Button variant="contained" color="primary" onClick={handleExport}>
             Export
           </Button>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
           <input
             type="date"
             id="startDate"
@@ -623,7 +492,132 @@ export const Present = () => {
           >
             Apply Date Range
           </button>
-        </div>
+        </div> */}
+        <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "10px",
+    flexWrap: "wrap", // Allow items to wrap on smaller screens
+  }}
+>
+  <TextField
+    label="Search"
+    variant="outlined"
+    value={filterText}
+    onChange={handleFilterChange}
+    sx={{
+      marginRight: "10px",
+      width: "200px", // Adjusted width for consistency
+      '& .MuiOutlinedInput-root': {
+        height: '36px', // Reduced height
+        padding: '0px', // Remove padding to compact it
+      },
+      '& .MuiInputLabel-root': {
+        top: '-6px', // Adjust label position for smaller size
+        fontSize: '14px', // Slightly smaller font
+      },
+    }}
+    InputProps={{
+      startAdornment: (
+        <SearchIcon
+          style={{
+            cursor: "pointer",
+            marginLeft: "10px",
+            marginRight: "5px",
+          }}
+        />
+      ),
+    }}
+  />
+
+  <Button
+    onClick={() => setModalOpen(true)}
+    sx={{
+      backgroundColor: "rgb(85, 85, 85)",
+      color: "white",
+      fontWeight: "bold",
+      marginRight: "10px",
+      display: "flex",
+      alignItems: "center",
+      gap: "5px", // Consistent gap
+      padding: "6px 12px", // Added padding for better click area
+      '&:hover': {
+        backgroundColor: "rgb(100, 100, 100)", // Lighter shade on hover
+      },
+    }}
+  >
+    <ImportExportIcon />
+    Column Visibility
+  </Button>
+
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={handleExport}
+    sx={{
+      padding: "6px 12px",
+      marginRight: "10px",
+    }}
+  >
+    Export
+  </Button>
+
+  <input
+    type="date"
+    id="startDate"
+    placeholder="DD-MM-YYYY"
+    style={{
+      width: "130px",
+      marginRight: "10px",
+      padding: "6px 10px", // Increased padding for better click area
+      marginLeft: "3px",
+      border: "0.1px solid black",
+      borderRadius: "3px",
+    }}
+  />
+
+  <input
+    type="date"
+    id="endDate"
+    placeholder="DD-MM-YYYY"
+    style={{
+      width: "130px",
+      marginRight: "10px",
+      padding: "6px 10px",
+      marginLeft: "3px",
+      border: "0.1px solid black",
+      borderRadius: "3px",
+    }}
+  />
+
+  <button
+    onClick={handleApplyDateRange}
+    style={{
+      backgroundColor: "#1976d2",
+      color: "white",
+      border: "none",
+      padding: "6px 12px", // Increased padding for better click area
+      borderRadius: "5px",
+      cursor: "pointer",
+      '&:hover': {
+        backgroundColor: "#115293", // Darker blue on hover
+      },
+    }}
+  >
+    Apply Date Range
+  </button>
+</div>
+
+        {/* <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "10px",
+          }}
+        >
+         
+        </div> */}
 
         {loading ? (
           <div
@@ -805,82 +799,8 @@ export const Present = () => {
             ))}
           </Box>
         </Modal>
-        <Modal open={editModalOpen} onClose={handleModalClose}>
-          <Box sx={style}>
-            {/* <h2>Edit Row</h2> */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleEditSubmit}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Modal>
-        <Modal open={addModalOpen} onClose={handleModalClose}>
-          <Box sx={style}>
-            {/* <h2>Add Row</h2> */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddSubmit}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Modal>
+    
+     
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
           <Box sx={style}>
             <h2>Import Data</h2>
