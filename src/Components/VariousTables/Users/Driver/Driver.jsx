@@ -1307,7 +1307,7 @@ export const Driver = () => {
         console.log("fetch data branches :", response.data); // Log the entire response data
 
         if (response.data) {
-          setBranches(response.data.branches);
+          setBranches(response.data.school.branches);
         }
       }
     };
@@ -1336,7 +1336,115 @@ export const Driver = () => {
     fetchBuses();
     fetchSchool();
   }, [addModalOpen, editModalOpen]);
+  const [rowStatuses, setRowStatuses] = useState({});
 
+  const handleApprove = async (_id) => {
+    try {
+      const token = localStorage.getItem("token");
+      let response;
+  
+      if (role == 1) {
+        response = await axios.post(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus-driver/${_id}`,
+          { action: "approve" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.post(
+          `${process.env.REACT_APP_SCHOOL_API}/registerStatus-driver/${_id}`,
+          { action: "approve" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.post(
+          `${process.env.REACT_APP_BRANCH_API}/registerStatus-driver/${_id}`,
+          { action: "approve" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+  
+      if (response && response.status === 200) {
+        setSnackbarOpen(true);
+        fetchData(); // Refresh data
+  
+        // Update the status for this row
+        setRowStatuses((prevStatuses) => ({
+          ...prevStatuses,
+          [_id]: "approved",
+        }));
+  
+        alert("Your request is approved");
+      }
+    } catch (error) {
+      console.error("Error approving request:", error);
+    }
+  };
+  
+  const handleReject = async (_id) => {
+    try {
+      const token = localStorage.getItem("token");
+      let response;
+  
+      if (role == 1) {
+        response = await axios.post(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus-driver/${_id}`,
+          { action: "reject" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.post(
+          `${process.env.REACT_APP_SCHOOL_API}/registerStatus-driver/${_id}`,
+          { action: "reject" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.post(
+          `${process.env.REACT_APP_BRANCH_API}/registerStatus-driver/${_id}`,
+          { action: "reject" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+  
+      if (response && response.status === 200) {
+        setSnackbarOpen(true);
+        fetchData(); // Refresh data
+  
+        // Update the status for this row
+        setRowStatuses((prevStatuses) => ({
+          ...prevStatuses,
+          [_id]: "rejected",
+        }));
+  
+        alert("Request is rejected");
+      }
+    } catch (error) {
+      console.error("Error rejecting request:", error);
+    }
+  };
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
@@ -1542,6 +1650,18 @@ export const Driver = () => {
                           ) : null}
                         </TableCell>
                       ))}
+                      <TableCell
+                      style={{
+                        cursor: "pointer",
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Actions
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -1617,6 +1737,40 @@ export const Driver = () => {
                                 </TableCell>
                               );
                             })}
+                            <TableCell
+  style={{
+    borderRight: "1px solid #e0e0e0",
+    paddingTop: "4px",
+    paddingBottom: "4px",
+    borderBottom: "none",
+    display: "flex",
+    textAlign: "center",
+    justifyContent: "space-around",
+    backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+    fontSize: "smaller",
+  }}
+>
+  {row.statusOfRegister === "pending" ? (
+    <>
+      <Button
+        onClick={() => handleApprove(role == 1 ? row.driverId : row.id)}
+        color="primary"
+      >
+        Approve
+      </Button>
+      <Button
+        onClick={() => handleReject(role == 1 ? row.driverId : row.id)}
+        color="secondary"
+      >
+        Reject
+      </Button>
+    </>
+  ) : row.statusOfRegister === "approved" ? (
+    <span style={{ color: "green" }}>Approved</span>
+  ) : row.statusOfRegister === "rejected" ? (
+    <span style={{ color: "red" }}>Rejected</span>
+  ) : null}
+</TableCell>
                         </TableRow>
                       ))
                   )}

@@ -653,53 +653,250 @@ export const Parent = () => {
     }
   };
 
-  const handleApprove = async (_id) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`,
-        {
-          action: "approve",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Replace with your token
-          },
-        }
-      );
-      if (response.status === 200) {
-        setSnackbarOpen(true);
-        fetchData();
-        alert("your request is aprove"); // Refresh data
-      }
-    } catch (error) {
-      console.error("Error approving request:", error);
-    }
-  };
+  // const handleApprove = async (_id) => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const response = await axios.post(
+  //       `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`,
+  //       {
+  //         action: "approve",
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`, // Replace with your token
+  //         },
+  //       }
+  //     );
+  //     if (response.status === 200) {
+  //       setSnackbarOpen(true);
+  //       fetchData();
+  //       alert("your request is aprove"); // Refresh data
+  //     }
+  //   } catch (error) {
+  //     console.error("Error approving request:", error);
+  //   }
+  // };
 
-  const handleReject = async (_id) => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
+
+  // const handleApprove = async (_id) => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+  
+  //     // Check the role and set the appropriate API endpoint or data structure
+  //     if (role == 1) {
+  //       response = await axios.post(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`,
+  //         {
+  //           action: "approve",
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 2) {
+  //       response = await axios.post(
+  //         `${process.env.REACT_APP_SCHOOL_API}/registerStatus/${_id}`,
+  //         {
+  //           action: "approve",
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 3) {
+  //       response = await axios.post(
+  //         `${process.env.REACT_APP_BRANCH_API}/registerStatus/${_id}`,
+  //         {
+  //           action: "approve",
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }
+  
+  //     if (response && response.status === 200) {
+  //       setSnackbarOpen(true);
+  //       fetchData(); // Refresh data
+  //       alert("Your request is approved");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error approving request:", error);
+  //   }
+  // };
+  
+  
+  // const handleReject = async (_id) => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+  
+  //     // Check the role and set the appropriate API endpoint
+  //     if (role == 1) {
+  //       response = await axios.post(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`,
+  //         {
+  //           action: "reject",
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 2) {
+  //       response = await axios.post(
+  //         `${process.env.REACT_APP_SCHOOL_API}/registerStatus/${_id}`,
+  //         {
+  //           action: "reject",
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 3) {
+  //       response = await axios.post(
+  //         `${process.env.REACT_APP_BRANCH_API}/registerStatus/${_id}`,
+  //         {
+  //           action: "reject",
+  //         },
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }
+  
+  //     if (response && response.status === 200) {
+  //       setSnackbarOpen(true);
+  //       fetchData(); // Refresh data
+  //       alert("Request is rejected");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error rejecting request:", error);
+  //   }
+  // };
+  
+
+  const [rowStatuses, setRowStatuses] = useState({});
+
+const handleApprove = async (_id) => {
+  try {
+    const token = localStorage.getItem("token");
+    let response;
+
+    if (role == 1) {
+      response = await axios.post(
         `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`,
-        {
-          action: "reject",
-        },
+        { action: "approve" },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Replace with your token
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-      if (response.status === 200) {
-        setSnackbarOpen(true);
-        fetchData(); // Refresh data
-        alert("request is rejected");
-      }
-    } catch (error) {
-      console.error("Error rejecting request:", error);
+    } else if (role == 2) {
+      response = await axios.post(
+        `${process.env.REACT_APP_SCHOOL_API}/registerStatus/${_id}`,
+        { action: "approve" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } else if (role == 3) {
+      response = await axios.post(
+        `${process.env.REACT_APP_BRANCH_API}/registerStatus/${_id}`,
+        { action: "approve" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
     }
-  };
+
+    if (response && response.status === 200) {
+      setSnackbarOpen(true);
+      fetchData(); // Refresh data
+
+      // Update the status for this row
+      setRowStatuses((prevStatuses) => ({
+        ...prevStatuses,
+        [_id]: "approved",
+      }));
+
+      alert("Your request is approved");
+    }
+  } catch (error) {
+    console.error("Error approving request:", error);
+  }
+};
+
+const handleReject = async (_id) => {
+  try {
+    const token = localStorage.getItem("token");
+    let response;
+
+    if (role == 1) {
+      response = await axios.post(
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus/${_id}`,
+        { action: "reject" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } else if (role == 2) {
+      response = await axios.post(
+        `${process.env.REACT_APP_SCHOOL_API}/registerStatus/${_id}`,
+        { action: "reject" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } else if (role == 3) {
+      response = await axios.post(
+        `${process.env.REACT_APP_BRANCH_API}/registerStatus/${_id}`,
+        { action: "reject" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
+
+    if (response && response.status === 200) {
+      setSnackbarOpen(true);
+      fetchData(); // Refresh data
+
+      // Update the status for this row
+      setRowStatuses((prevStatuses) => ({
+        ...prevStatuses,
+        [_id]: "rejected",
+      }));
+
+      alert("Request is rejected");
+    }
+  } catch (error) {
+    console.error("Error rejecting request:", error);
+  }
+};
 
   useEffect(() => {
     const fetchSchool = async (startDate = "", endDate = "") => {
@@ -746,7 +943,7 @@ export const Parent = () => {
         console.log("fetch data branches :", response.data); // Log the entire response data
 
         if (response.data) {
-          setBranches(response.data.branches);
+          setBranches(response.data.school.branches);
         }
       }
     };
@@ -1118,7 +1315,7 @@ export const Parent = () => {
                           >
                             {row.numChildren}
                           </TableCell>
-                          <TableCell
+                          {/* <TableCell
                             style={{
                               borderRight: "1px solid #e0e0e0",
                               paddingTop: "4px",
@@ -1134,18 +1331,75 @@ export const Parent = () => {
                             }}
                           >
                             <Button
-                              onClick={() => handleApprove(row.parentId)}
+                              onClick={() => handleApprove(row._id)}
                               color="primary"
                             >
                               Approve
                             </Button>
                             <Button
-                              onClick={() => handleReject(row.parentId)}
+                              onClick={() => handleReject(row._id)}
                               color="secondary"
                             >
                               Reject
                             </Button>
-                          </TableCell>
+                          </TableCell> */}
+                          {/* <TableCell
+  style={{
+    borderRight: "1px solid #e0e0e0",
+    paddingTop: "4px",
+    paddingBottom: "4px",
+    borderBottom: "none",
+    display: "flex",
+    textAlign: "center",
+    justifyContent: "space-around",
+    backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+    fontSize: "smaller",
+  }}
+>
+  {rowStatuses[row.parentId] === "approved" ? (
+    <span style={{ color: "green" }}>Approved</span>
+  ) : rowStatuses[row.parentId] === "rejected" ? (
+    <span style={{ color: "red" }}>Rejected</span>
+  ) : (
+    <>
+      <Button onClick={() => handleApprove(row.parentId)} color="primary">
+        Approve
+      </Button>
+      <Button onClick={() => handleReject(row.parentId)} color="secondary">
+        Reject
+      </Button>
+    </>
+  )}
+</TableCell> */}
+<TableCell
+  style={{
+    borderRight: "1px solid #e0e0e0",
+    paddingTop: "4px",
+    paddingBottom: "4px",
+    borderBottom: "none",
+    display: "flex",
+    textAlign: "center",
+    justifyContent: "space-around",
+    backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+    fontSize: "smaller",
+  }}
+>
+  {row.statusOfRegister === "pending" ? (
+    <>
+      <Button onClick={() => handleApprove(role==3?row._id:row.parentId)} color="primary">
+        Approve
+      </Button>
+      <Button onClick={() => handleReject(role==3?row._id:row.parentId)} color="secondary">
+        Reject
+      </Button>
+    </>
+  ) : row.statusOfRegister === "approved" ? (
+    <span style={{ color: "green" }}>Approved</span>
+  ) : row.statusOfRegister === "rejected" ? (
+    <span style={{ color: "red" }}>Rejected</span>
+  ) : null}
+</TableCell>
+
                         </TableRow>
                       ))
                   )}

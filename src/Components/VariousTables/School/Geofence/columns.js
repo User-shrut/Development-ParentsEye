@@ -32,11 +32,11 @@ export const COLUMNS = () => [
       }
     },
   },
-  {
-    Header: 'Crossed',
-    accessor: 'isCrossed', // Whether the geofence has been crossed
-    Cell: ({ value }) => (value ? 'Yes' : 'No'),
-  },
+  // {
+  //   Header: 'Crossed',
+  //   accessor: 'isCrossed', // Whether the geofence has been crossed
+  //   Cell: ({ value }) => (value ? 'Yes' : 'No'),
+  // },
   {
     Header: 'Geofence ID',
     accessor: '_id', // Unique ID of the geofence

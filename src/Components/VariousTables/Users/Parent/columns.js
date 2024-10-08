@@ -33,6 +33,11 @@ export const COLUMNS = () => [
     accessor: 'schoolName',
   },
   {
+    Header: 'Branch Name',
+    accessor: 'branchName',
+  },
+  
+  {
     Header: 'Registration Date',
     accessor: 'registrationDate',
   },
