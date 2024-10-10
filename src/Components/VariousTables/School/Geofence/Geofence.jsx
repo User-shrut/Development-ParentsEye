@@ -1084,89 +1084,7 @@ export const Geofence = () => {
       
         // Logic for role 3: Branches and devices
         } 
-        // else if (role == 3) {
-        //   allData = response?.data.branches.flatMap((branch) =>
-        //     branch.devices.flatMap((device) =>
-        //       device.geofences.length > 0
-        //         ? device.geofences.map((geofence) => ({
-        //             // Retain geofence properties
-        //             ...geofence,
-        //             deviceId: device.deviceId, // Associate geofence with its deviceId
-        //             branchId: branch.branchId, // Add branchId to each geofence
-        //             branchName: branch.branchName, // Add branchName to each geofence
-        //           }))
-        //         : [
-        //             {
-        //               deviceId: device.deviceId,
-        //               branchId: branch.branchId,
-        //               branchName: branch.branchName,
-        //               name: "No Geofences",
-        //               area: "",
-        //               isCrossed: false,
-        //               _id: "N/A",
-        //             },
-        //           ]
-        //     )
-        //   );
-        // }
-        // else if (role == 3) {
-        //   allData = response?.data.branches.flatMap((branch) =>
-        //     branch.devices.flatMap((device) => {
-        //       // Check if the device has geofences
-        //       if (device.geofences.length > 0) {
-        //         return device.geofences.map((geofence) => ({
-        //           // Retain geofence properties
-        //           ...geofence,
-        //           deviceId: device.deviceId, // Associate geofence with its deviceId
-        //           branchId: branch.branchId, // Add branchId to each geofence
-        //           branchName: branch.branchName, // Add branchName to each geofence
-        //         }));
-        //       } else {
-        //         // If there are no geofences, return a record indicating no geofences
-        //         return {
-        //           deviceId: device.deviceId,
-        //           branchId: branch.branchId,
-        //           branchName: branch.branchName,
-        //           name: "No Geofences",
-        //           area: "",
-        //           isCrossed: false,
-        //           _id: "N/A",
-        //         };
-        //       }
-        //     })
-        //   );
-        // }
-        // else if (role == 3) {
-        //   allData = response?.data.devices.flatMap((device) =>
-        //       device.geofences.length > 0
-        //         ? device.geofences.map((geofence) => ({
-        //             // Retain geofence properties
-        //             ...geofence,
-        //             deviceId: device.deviceId, // Associate geofence with its deviceId
-        //             // branchId: branch.branchId, // Add branchId to each geofence
-        //             // branchName: branch.branchName, // Add branchName to each geofence
-        //           }))
-        //         : [
-        //             // For devices with no geofences, create a default entry
-        //             {
-        //               deviceId: device.deviceId,
-        //               // branchId: branch.branchId,
-        //               // branchName: branch.branchName,
-        //               name: "No Geofences",
-        //               area: "",
-        //               isCrossed: false,
-        //               _id: "N/A",
-        //             },
-        //           ]
-        //     )
-         
-        
-        //   // Optional: If you only want the geofence records, you can uncomment this line
-        //   // allData = allData.filter(item => item.name !== "No Geofences");
-        
-        //   // To ensure you capture all geofences, you may want to flatten the results.
-        //   console.log(allData);
-        // }
+       
         else if (role == 3) {
           allData = response?.data.devices.flatMap((device) =>
             device.geofences.length > 0
@@ -1180,51 +1098,13 @@ export const Geofence = () => {
               : [] // Simply return an empty array for devices with no geofences
           );
         
-          // Optional: If you only want the geofence records, you can uncomment this line
-          // allData = allData.filter(item => item.name !== "No Geofences");
         
-          // To ensure you capture all geofences, you may want to flatten the results.
           console.log(allData);
         }
         
         
         
-      //  else if (role == 3) {
-      //     if (response?.data?.branches) { // Check if branches exist
-      //       allData = response.data.branches.flatMap((branch) => {
-      //         if (branch.devices) { // Check if devices exist
-      //           return branch.devices.flatMap((device) =>
-      //             device.geofences.length > 0
-      //               ? device.geofences.map((geofence) => ({
-      //                   // Retain geofence properties
-      //                   ...geofence,
-      //                   deviceId: device.deviceId, // Associate geofence with its deviceId
-      //                   branchId: branch.branchId, // Add branchId to each geofence
-      //                   branchName: branch.branchName, // Add branchName to each geofence
-      //                 }))
-      //               : [
-      //                   {
-      //                     deviceId: device.deviceId,
-      //                     branchId: branch.branchId,
-      //                     branchName: branch.branchName,
-      //                     name: "No Geofences",
-      //                     area: "",
-      //                     isCrossed: false,
-      //                     _id: "N/A",
-      //                   },
-      //                 ]
-      //           );
-      //         } else {
-      //           console.error(`No devices found for branch: ${branch.branchId}`);
-      //           return []; // Handle the case where there are no devices
-      //         }
-      //       });
-      //     } else {
-      //       console.error("No branches found in the response:", response.data);
-      //       allData = []; // Handle the case where there are no branches
-      //     }
-      //   }
-        
+   
       
         console.log(allData);
       
