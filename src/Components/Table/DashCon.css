@@ -1,0 +1,205 @@
+.table-container::-webkit-scrollbar {
+  display: none !important; /* Hides scrollbar for Chrome, Safari, and Edge */
+}
+
+/* For Firefox */
+.table-container {
+  scrollbar-width: none !important; /* Hides scrollbar in Firefox */
+}
+
+.content {
+  padding-top: 0 !important;
+}
+
+.countldel {
+  border-left-color: yellow !important;
+  margin-bottom: 5px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.countOverSpeed {
+  border-left-color: #eb6009 !important;
+  margin-bottom: 5px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.countAll {
+  border-left-color: #0d6dec !important;
+  margin-bottom: 5px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.countStop {
+  margin-bottom: 5px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.countRun {
+  margin-bottom: 5px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.allData {
+  color: #0d6dec !important;
+}
+.runningData {
+  color: green !important;
+}
+
+.stopData {
+  color: red !important;
+}
+
+.inactiveData {
+  color: black !important;
+}
+
+.overspeedData {
+  color: #eb6009 !important;
+}
+.vehiclesTable {
+  table-layout: auto;
+  width: 100%; /* Ensure table takes the full width */
+}
+
+.table-cell {
+  padding-right: 1rem !important; /* Adjust this value as needed */
+}
+
+.table-row {
+  overflow: hidden; /* Prevent overflow when transitioning */
+}
+
+.table-row.expanded {
+  transition: height 0.3s ease; /* Smooth transition for height */
+}
+
+.trans {
+  transition: 0.2s ease-in-out; /* Transition for opacity if needed */
+}
+
+.align {
+  /* display: flex; */
+  align-self: center;
+  justify-content: center;
+}
+.dashimg {
+  height: 40px;
+}
+.upperdata {
+  height: 45px;
+}
+.address,
+.last-update {
+  width: 25%; /* Adjust this value as per your requirement */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.status {
+  width: 15%; /* Adjust this value as per your requirement */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.speed {
+  width: 10%; /* Adjust this value as per your requirement */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.device-name {
+  width: 2% !important; /* Adjust this value as per your requirement */
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+.n {
+  font-size: 0.8rem;
+}
+.ld,
+td {
+  font-size: 0.8rem;
+}
+.cd {
+  font-size: 0.9rem;
+}
+
+.sp {
+  font-size: 0.9rem;
+}
+.d {
+  font-size: 0.9rem;
+}
+
+.current-delay {
+  width: 2% !important; /* Adjust this value as per your requirement */
+  /* white-space: nowrap !important; */
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+}
+
+.count-col {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.countallCol {
+  max-width: 9rem !important;
+}
+
+.headCell {
+  background-color: #f4d24a !important;
+  border-right: 1px solid #e3dddd;
+}
+
+/* .table-cell {
+  text-align: center;
+  white-space: nowrap; 
+  padding: 8px; 
+  border: 1px solid #ddd; 
+} */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  list-style: none;
+}
+
+.pagination .active {
+  font-weight: bold;
+}
+
+.pagination .page,
+.pagination .previous,
+.pagination .next {
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination .previous,
+.pagination .next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+}
+
+.paper {
+  width: 98%;
+  /* overflow-x: scroll; */
+  border: 1px solid #fff;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.vehiclesTable{
+
+  border-radius: 10px;
+}
