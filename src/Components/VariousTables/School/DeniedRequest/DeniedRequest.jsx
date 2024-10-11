@@ -841,11 +841,268 @@ export const DeniedRequest = () => {
   const [endDate, setEndDate] = useState("");
   const role = localStorage.getItem("role");
 
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+  //     if (role == 1) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/denied-requests`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 2) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SCHOOL_API}/denied-requests`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }
+
+  //     console.log("fetch data", response.data); // Log the entire response data
+
+  //     if (response.data) {
+  //       const allData =
+  //         role == 1
+  //           ? response?.data.data.flatMap((school) =>
+  //               school.branches.flatMap((branch) =>
+  //                 Array.isArray(branch.requests) && branch.requests.length > 0
+  //                   ? branch.requests
+  //                   : []
+  //               )
+  //             )
+  //           : role == 2
+  //           ? response.data.branches.requests
+  //           : response.data.requests;
+
+  //       // Apply local date filtering if dates are provided
+  //       const filteredData =
+  //         startDate || endDate
+  //           ? allData.filter((row) => {
+  //               const registrationDate = parseDate(row.formattedRequestDate);
+  //               const start = parseDate(startDate);
+  //               const end = parseDate(endDate);
+
+  //               return (
+  //                 (!startDate || registrationDate >= start) &&
+  //                 (!endDate || registrationDate <= end)
+  //               );
+  //             })
+  //           : allData; // If no date range, use all data
+  //       const reversedData = filteredData.reverse();
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponses(reversedData.length);
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+
+  //       // setFilteredRows(
+  //       //   filteredData.map((row) => ({ ...row, isSelected: false }))
+  //       // );
+  //       // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       // setTotalResponses(filteredData.length);
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.requests);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching completes
+  //   }
+  // };
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+  
+  //     if (role == 1) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/denied-requests`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 2) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SCHOOL_API}/denied-requests`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }
+  
+  //     console.log("fetch data", response.data); // Log the entire response data
+  
+  //     if (response.data) {
+  //       const allData =
+  //         role == 1
+  //           ? response?.data.data.flatMap((school) =>
+  //               school.branches.flatMap((branch) =>
+  //                 Array.isArray(branch.requests) && branch.requests.length > 0
+  //                   ? branch.requests
+  //                   : []
+  //               )
+  //             )
+  //           : role == 2
+  //           ? response.data.branches.flatMap((branch) =>
+  //               Array.isArray(branch.requests) && branch.requests.length > 0
+  //                 ? branch.requests
+  //                 : []
+  //             )
+  //           : response.data.requests;
+  
+  //       // Apply local date filtering if dates are provided
+  //       const filteredData =
+  //         startDate || endDate
+  //           ? allData.filter((row) => {
+  //               const registrationDate = parseDate(row.formattedRequestDate);
+  //               const start = parseDate(startDate);
+  //               const end = parseDate(endDate);
+  
+  //               return (
+  //                 (!startDate || registrationDate >= start) &&
+  //                 (!endDate || registrationDate <= end)
+  //               );
+  //             })
+  //           : allData; // If no date range, use all data
+  
+  //       const reversedData = filteredData.reverse();
+  
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponses(reversedData.length);
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.requests);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching completes
+  //   }
+  // };
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+  
+  //     if (role == 1) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/denied-requests`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 2) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SCHOOL_API}/denied-requests`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 3) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_ROLE_3_API}/denied-requests`, // Replace with correct API URL
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }
+  
+  //     console.log("fetch data", response.data); // Log the entire response data
+  
+  //     if (response.data) {
+  //       const allData =
+  //         role == 1
+  //           ? response?.data.data.flatMap((school) =>
+  //               school.branches.flatMap((branch) =>
+  //                 Array.isArray(branch.requests) && branch.requests.length > 0
+  //                   ? branch.requests
+  //                   : []
+  //               )
+  //             )
+  //           : role == 2
+  //           ? response.data.branches.flatMap((branch) =>
+  //               Array.isArray(branch.requests) && branch.requests.length > 0
+  //                 ? branch.requests
+  //                 : []
+  //             )
+  //           : role == 3
+  //           ? response.data.requests
+  //           : response.data.requests;
+  
+  //       // Apply local date filtering if dates are provided
+  //       const filteredData =
+  //         startDate || endDate
+  //           ? allData.filter((row) => {
+  //               const registrationDate = parseDate(row.formattedRequestDate);
+  //               const start = parseDate(startDate);
+  //               const end = parseDate(endDate);
+  
+  //               return (
+  //                 (!startDate || registrationDate >= start) &&
+  //                 (!endDate || registrationDate <= end)
+  //               );
+  //             })
+  //           : allData; // If no date range, use all data
+  
+  //       const reversedData = filteredData.reverse();
+  
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponses(reversedData.length);
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.requests);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching completes
+  //   }
+  // };
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       let response;
+  
+      // Fetch data based on the role
       if (role == 1) {
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/denied-requests`,
@@ -864,10 +1121,20 @@ export const DeniedRequest = () => {
             },
           }
         );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/denied-requests`, // Replace with correct API URL
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
-
+  
       console.log("fetch data", response.data); // Log the entire response data
-
+  
+      // Process the data
       if (response.data) {
         const allData =
           role == 1
@@ -879,9 +1146,15 @@ export const DeniedRequest = () => {
                 )
               )
             : role == 2
-            ? response.data.branches.requests
-            : response.data.requests;
-
+            ? response.data.branches.flatMap((branch) =>
+                Array.isArray(branch.requests) && branch.requests.length > 0
+                  ? branch.requests
+                  : []
+              )
+            : role == 3
+            ? response.data.requests // Handle the requests directly for role == 3
+            : [];
+  
         // Apply local date filtering if dates are provided
         const filteredData =
           startDate || endDate
@@ -889,31 +1162,26 @@ export const DeniedRequest = () => {
                 const registrationDate = parseDate(row.formattedRequestDate);
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);
-
+  
                 return (
                   (!startDate || registrationDate >= start) &&
                   (!endDate || registrationDate <= end)
                 );
               })
             : allData; // If no date range, use all data
+  
         const reversedData = filteredData.reverse();
+  
         // Log the date range and filtered data
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(filteredData);
+  
+        // Update the state with the filtered data
         setFilteredRows(
           reversedData.map((row) => ({ ...row, isSelected: false }))
         );
         setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
         setTotalResponses(reversedData.length);
-        // Log the date range and filtered data
-        console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        console.log(filteredData);
-
-        // setFilteredRows(
-        //   filteredData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(filteredData.length);
       } else {
         console.error("Expected an array but got:", response.data.requests);
       }
@@ -923,7 +1191,7 @@ export const DeniedRequest = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
-
+  
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed

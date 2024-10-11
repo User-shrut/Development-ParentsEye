@@ -22,6 +22,7 @@ export const TotalResponsesProvider = ({ children }) => {
   const [totalLeaveRequest, settotalLeaveRequest] = useState(0); // Add this line
  const [TotalResponsesPresent,setTotalResponsesPresent]=useState(0);
  const [Drivers,setDrivers]=useState(0);
+ const[TotalResponsesStudent,setTotalResponsesStudent]=useState(0);
 //  supervisorsdata
 
 const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
@@ -31,6 +32,80 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
  const [TotalResponsesAbsent,setTotalResponsesAbsent]=useState(0);
   const [role , setRole] = useState(1);
  
+  const fetchDataTotalStudent = async (startDate = "", endDate = "") => {
+    
+    try {
+      let response;
+      if (role == 1) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      console.log("fetch data", response.data); // Log the entire response data
+      // fetchgeofencepoint();
+      if (response?.data) {
+        const allData =
+          role == 1
+            ? response.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.children) && branch.children.length > 0
+                    ? branch.children.map((child) => ({
+                        ...child, // Spread child object to retain all existing properties
+                        schoolName: school.schoolName,
+                        branchName: branch.branchName,
+                      }))
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.children) && branch.children.length > 0
+                  ? branch.children
+                  : []
+              )
+            : response?.data.data;
+
+        console.log(allData);
+
+        
+        setTotalResponsesStudent(allData.length);
+        // Log the date range and filtered data
+      
+      
+      } else {
+        console.error("Expected an array but got:", response.data.children);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } 
+  };
  
   const fetchpresent = async (startDate = "", endDate = "") => {
     // setLoading(true);
@@ -42,58 +117,48 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/present-children`
           : `${process.env.REACT_APP_BRANCH_API}/present-children`;
+          
       const response = await axios.get(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       console.log("fetch data", response.data);
-
-      if (response?.data) {
-        const allData = response?.data.data.flatMap((school) =>
+  
+      let allData = [];
+  
+      if (role == 1 ) {
+        // Handle for role 1 and role 2
+        allData = response?.data.data.flatMap((school) =>
           school.branches.flatMap((branch) =>
             Array.isArray(branch.children) && branch.children.length > 0
               ? branch.children
               : []
           )
         );
-
-        // Apply local date filtering if dates are provided
-        // const filteredData =
-        //   startDate || endDate
-        //     ? allData.filter((row) => {
-        //         const registrationDate = parseDate(row.formattedDate);
-        //         const start = parseDate(startDate);
-        //         const end = parseDate(endDate);
-
-        //         return (
-        //           (!startDate || registrationDate >= start) &&
-        //           (!endDate || registrationDate <= end)
-        //         );
-        //       })
-        //     : allData; // If no date range, use all data
-        // const reversedData = filteredData.reverse();
-        // // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-        // setFilteredRows(
-        //   reversedData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        setTotalResponsesPresent(allData.length);
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-
-        // setFilteredRows(
-        //   filteredData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(filteredData.length);
-      } else {
-        console.error("Expected an array but got:", response.data.children);
+      }else if (role == 2) {
+        // Handle for role 2 (this is your specified data structure)
+        allData = response?.data.branches.flatMap((branch) =>
+          Array.isArray(branch.children) && branch.children.length > 0
+            ? branch.children.map(child => ({
+                ...child,
+                branchName: branch.branchName,  // Assign branchName to child data
+                schoolName: response.data.schoolName,  // Assign schoolName to child data
+              }))
+            : []
+        );
+      }  else if (role == 3) {
+        // Handle for role 3
+        allData = Array.isArray(response.data.children) ? response.data.children : [];
       }
+  
+      // Apply local date filtering if dates are provided
+     
+  
+      // Log the date range and filtered data
+     
+      setTotalResponsesPresent(allData.length);
     } catch (error) {
       console.error("Error:", error);
     } 
@@ -166,102 +231,59 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
   const fetchDataAbsent = async (startDate = "", endDate = "") => {
     // setLoading(true);
     try {
-      let response;
-      if (role == 1) {
-        const token = localStorage.getItem("token");
-        response = await axios.get(
-          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+      const token = localStorage.getItem("token");
+      const apiUrl =
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/absent-children`
+          : `${process.env.REACT_APP_BRANCH_API}/absent-children`; // for role == 3
+  
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      console.log("fetch data", response.data);
+  
+      let allData = [];
+  
+      if (role == 1 ) {
+        // Handle for role 1 and role 2
+        allData = response?.data.data.flatMap((school) =>
+          school.branches.flatMap((branch) =>
+            Array.isArray(branch.children) && branch.children.length > 0
+              ? branch.children.map(child => ({
+                  ...child,
+                  branchName: branch.branchName,  // Assign branchName to child data
+                  schoolName: school.schoolName,  // Assign schoolName to child data
+                }))
+              : []
+          )
         );
-      } else if (role == 2) {
-        const token = localStorage.getItem("token");
-        response = await axios.get(
-          `${process.env.REACT_APP_SCHOOL_API}/read-children`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+      }else if (role == 2) {
+        // Handle for role 2 (this is your specified data structure)
+        allData = response?.data.branches.flatMap((branch) =>
+          Array.isArray(branch.children) && branch.children.length > 0
+            ? branch.children.map(child => ({
+                ...child,
+                branchName: branch.branchName,  // Assign branchName to child data
+                schoolName: response.data.schoolName,  // Assign schoolName to child data
+              }))
+            : []
         );
-      } else if (role == 3) {
-        const token = localStorage.getItem("token");
-        response = await axios.get(
-          `${process.env.REACT_APP_BRANCH_API}/read-children`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+      }  else if (role == 3) {
+        // Handle for role 3 where data is in children array
+        allData = Array.isArray(response.data.children) ? response.data.children : [];
       }
-
-      console.log("fetch data", response.data); // Log the entire response data
-      // fetchgeofencepoint();
-      if (response?.data) {
-        const allData =
-          role == 1
-            ? response.data.data.flatMap((school) =>
-                school.branches.flatMap((branch) =>
-                  Array.isArray(branch.children) && branch.children.length > 0
-                    ? branch.children.map((child) => ({
-                        ...child, // Spread child object to retain all existing properties
-                        schoolName: school.schoolName,
-                        branchName: branch.branchName,
-                      }))
-                    : []
-                )
-              )
-            : role == 2
-            ? response?.data.branches.flatMap((branch) =>
-                Array.isArray(branch.children) && branch.children.length > 0
-                  ? branch.children
-                  : []
-              )
-            : response?.data.data;
-
-        console.log(allData);
-
-       
-        // const filteredData =
-        //   startDate || endDate
-        //     ? allData.filter((row) => {
-        //         const registrationDate = parseDate(
-        //           row.formattedRegistrationDate
-        //         );
-        //         const start = parseDate(startDate);
-        //         const end = parseDate(endDate);
-
-        //         return (
-        //           (!startDate || registrationDate >= start) &&
-        //           (!endDate || registrationDate <= end)
-        //         );
-        //       })
-        //     : allData; // If no date range, use all data
-        // const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-        // setFilteredRows(
-        //   reversedData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        setTotalResponses(allData.length);
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-
-        // setFilteredRows(
-        //   filteredData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(filteredData.length);
-      } else {
-        console.error("Expected an array but got:", response.data.children);
-      }
+  
+      // Apply local date filtering if dates are provided
+     
+     
+      // Update the state with filtered and original rows
+      
+      setTotalResponsesAbsent(allData.length);
     } catch (error) {
       console.error("Error:", error);
     } 
@@ -271,7 +293,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
     try {
       const token = localStorage.getItem("token");
       let response;
-
+  
       if (role == 1) {
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/pending-requests`,
@@ -290,7 +312,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else{
+      } else if (role == 3) {
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/pending-requests`,
           {
@@ -300,130 +322,84 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
           }
         );
       }
-
-      console.log("fetch data", response.data); // Log the entire response data
-
+  
+      
+  
       if (response.data) {
+        // Parse the data differently for each role
         const allData =
-          role === 1
-            ? response?.data.data.flatMap((school) =>
+          role == 1
+            ? response?.data?.data?.flatMap((school) =>
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.requests) && branch.requests.length > 0
                     ? branch.requests
                     : []
                 )
               )
-            : role === 2 ? response.data.branches.requests : response.data.requests;
-
-        console.log(allData);
-
-        // Apply local date filtering if dates are provided
-        // const filteredData =
-        //   startDate || endDate
-        //     ? allData.filter((row) => {
-        //         const registrationDate = parseDate(
-        //           row.requestDate
-        //         );
-        //         const start = parseDate(startDate);
-        //         const end = parseDate(endDate);
-
-        //         return (
-            //       (!startDate || registrationDate >= start) &&
-            //       (!endDate || registrationDate <= end)
-            //     );
-            //   })
-            // : allData; // If no date range, use all data
-        // const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-        // setFilteredRows(
-        //   reversedData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        settotalLeaveRequest(allData.length);
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-
-        // setFilteredRows(filteredData.map((row) => ({ ...row, isSelected: false })));
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // settotalLeaveRequest(filteredData.length);
-      } else {
-        console.error("Expected an array but got:", response.data.children);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    } 
-  };
-
-  const fetchData = async (startDate = "", endDate = "") => {
-    // setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const apiUrl =
-        role == 1
-          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
-          : role == 2
-          ? `${process.env.REACT_APP_SCHOOL_API}/absent-children`
-          : `${process.env.REACT_APP_BRANCH_API}/absent-children`;
-
-      const response = await axios.get(apiUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log("fetch data", response.data); // Log the entire response data
-
-      if (response?.data) {
-        const allData = response?.data.data.flatMap((school) =>
-          school.branches.flatMap((branch) =>
-            Array.isArray(branch.children) && branch.children.length > 0
-              ? branch.children
+            : role == 2
+            ? response?.data?.branches.flatMap((branch) =>
+                Array.isArray(branch.requests) && branch.requests.length > 0
+                  ? branch.requests
+                  : []
+              )
+            : role == 3
+            ? Array.isArray(response.data.requests) && response.data.requests.length > 0
+              ? response.data.requests
               : []
-          )
-        );
-
+            : response.data.requests;
+  
+       
+  
         // Apply local date filtering if dates are provided
-        // const filteredData =
-        //   startDate || endDate
-        //     ? allData.filter((row) => {
-        //         const registrationDate = parseDate(row.formattedDate);
-        //         const start = parseDate(startDate);
-        //         const end = parseDate(endDate);
-
-        //         return (
-        //           (!startDate || registrationDate >= start) &&
-        //           (!endDate || registrationDate <= end)
-        //         );
-        //       })
-        //     : allData; // If no date range, use all data
-        // const reversedData = filteredData.reverse();
-        // // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-        // setFilteredRows(
-        //   reversedData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        setTotalResponsesAbsent(allData.length);
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-
-        // setFilteredRows(
-        //   filteredData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(filteredData.length);
+      
+        
+        settotalLeaveRequest(allData.length);
       } else {
         console.error("Expected an array but got:", response.data.children);
       }
     } catch (error) {
       console.error("Error:", error);
-    } 
+    }
   };
+
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   // setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const apiUrl =
+  //       role == 1
+  //         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
+  //         : role == 2
+  //         ? `${process.env.REACT_APP_SCHOOL_API}/absent-children`
+  //         : `${process.env.REACT_APP_BRANCH_API}/absent-children`;
+
+  //     const response = await axios.get(apiUrl, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+
+  //     console.log("fetch data", response.data); // Log the entire response data
+
+  //     if (response?.data) {
+  //       const allData = response?.data.data.flatMap((school) =>
+  //         school.branches.flatMap((branch) =>
+  //           Array.isArray(branch.children) && branch.children.length > 0
+  //             ? branch.children
+  //             : []
+  //         )
+  //       );
+
+       
+  //       setTotalResponsesAbsent(allData.length);
+       
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.children);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } 
+  // };
   const fetchDataSupervisor = async (startDate = "", endDate = "") => {
     // setLoading(true);
     try {
@@ -566,39 +542,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             : response?.data.drivers;
 
         setDrivers(allData.length);
-        // console.log("hey drivers");
-        // console.log("drivers : ", allData);
-
-        // Apply local date filtering if dates are provided
-        // const filteredData =
-        //   startDate || endDate
-        //     ? allData.filter((row) => {
-        //         const registrationDate = parseDate(
-        //           row.formattedRegistrationDate
-        //         );
-        //         const start = parseDate(startDate);
-        //         const end = parseDate(endDate);
-
-        //         return (
-        //           (!startDate || registrationDate >= start) &&
-        //           (!endDate || registrationDate <= end)
-        //         );
-        //       })
-        //     : allData; // If no date range, use all data
-        // const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-        // setFilteredRows(
-        //   reversedData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(reversedData.length);
-        // setFilteredRows(
-        //   filteredData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(filteredData.length);
+      
       } else {
         console.error("Expected an array but got:", response.data.drivers);
       }
@@ -607,15 +551,16 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
     } 
   };
   useEffect(() => {
-    fetchData();
+    // fetchData();
     fetchleaves();
     fetchpresent();
     fetchDataAbsent();
     fetchDataDrivers();
     fetchDataSupervisor();
+    fetchDataTotalStudent();
   }, []);
   return (
-    <TotalResponsesContext.Provider value={{ totalResponses,TotalResponsesSupervisor,setTotalResponsesSupervisor, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent }}>
+    <TotalResponsesContext.Provider value={{ totalResponses,TotalResponsesSupervisor,setTotalResponsesSupervisor,TotalResponsesStudent,setTotalResponsesStudent, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent }}>
       {children}
     </TotalResponsesContext.Provider>
   );

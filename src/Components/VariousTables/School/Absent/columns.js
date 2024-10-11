@@ -1,15 +1,5 @@
 export const COLUMNS = () => [
-  {
-    Header: '',
-    accessor: 'select',
-    Cell: ({ row }) => (
-      <input
-        type="checkbox"
-        checked={row.original.isSelected}
-        onChange={() => row.original.handleRowSelect(row.index)}
-      />
-    ),
-  },
+  
   
   {
     Header: 'Child Name',
@@ -29,10 +19,26 @@ export const COLUMNS = () => [
     Header: 'Section',
     accessor: 'section',
   },
-
+  {
+    Header: 'pickup Point',
+    accessor: 'pickupPoint',
+  },
+  {
+    Header: 'device Name',
+    accessor: 'deviceName',
+  },
+  
+  {
+    Header: 'School Name',
+    accessor: 'schoolName',
+  },
+  {
+    Header: 'Branch Name',
+    accessor: 'branchName',
+  },
 {
   Header: 'Date',
-  accessor: 'formattedDate',
+  accessor: 'date',
   Cell: ({ value }) => {
     const [day, month, year] = value.split('-').map(Number);
     const date = new Date(year, month - 1, day);

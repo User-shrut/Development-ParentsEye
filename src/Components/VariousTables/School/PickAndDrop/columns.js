@@ -1,17 +1,7 @@
 export const COLUMNS = () => [
  
 
-  {
-    Header: '',
-    accessor: 'select',
-    Cell: ({ row }) => (
-      <input
-        type="checkbox"
-        checked={row.original.isSelected}
-        onChange={() => row.original.handleRowSelect(row.index)}
-      />
-    ),
-  },
+ 
   
   {
     Header: 'Child Name',
@@ -104,7 +94,7 @@ export const COLUMNS = () => [
 
 {
   Header: 'Date',
-  accessor: 'registrationDate',
+  accessor: 'date',
   Cell: ({ value }) => {
     const [day, month, year] = value.split('-').map(Number);
     const date = new Date(year, month - 1, day);

@@ -24,7 +24,7 @@ export const Cards = ({
   vehicleIdleCount,
   vehicleUnreachableCount,
 }) => {
-  const { totalResponses, totalLeaveRequest,TotalResponsesPresent,TotalResponsesAbsent,TotalResponsesDrivers,TotalResponsesSupervisor} = useContext(
+  const {TotalResponsesStudent, totalResponses, totalLeaveRequest,TotalResponsesPresent,TotalResponsesAbsent,TotalResponsesDrivers,TotalResponsesSupervisor} = useContext(
     TotalResponsesContext
   ); // Consume the context
   // const { totalLeaveRequest } = useContext(TotalResponsesContext);
@@ -323,7 +323,7 @@ export const Cards = ({
       color: "success.main", // Mimics `runningData` color
     }}
   >
-    {totalResponses}
+    {TotalResponsesStudent}
   </Typography>
 
   {/* Image at the bottom (car icon) */}

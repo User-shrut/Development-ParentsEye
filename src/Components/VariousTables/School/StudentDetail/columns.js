@@ -51,7 +51,7 @@ export const COLUMNS = () => [
     accessor: "parentName", // accessing mapped field
   },
   {
-    Header: "Parent Email",
+    Header: "User Name",
     accessor: "email", // accessing mapped field
   },
   {

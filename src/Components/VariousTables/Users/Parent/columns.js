@@ -1,15 +1,5 @@
 export const COLUMNS = () => [
-  {
-    Header: '',
-    accessor: 'select',
-    Cell: ({ row }) => (
-      <input
-        type="checkbox"
-        checked={row.original.isSelected}
-        onChange={() => row.original.handleRowSelect(row.index)}
-      />
-    ),
-  },
+  
   
   {
     Header: 'Parent Name',
@@ -32,6 +22,11 @@ export const COLUMNS = () => [
     Header: 'School Name',
     accessor: 'schoolName',
   },
+  {
+    Header: 'Branch Name',
+    accessor: 'branchName',
+  },
+  
   {
     Header: 'Registration Date',
     accessor: 'registrationDate',

@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 // import React, { useState, useEffect, useContext, Component } from "react";
 // import axios from "axios";
 // import Paper from "@mui/material/Paper";
@@ -58,7 +50,7 @@
 // };
 
 // export const Status = () => {
-//   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
+//   const { setTotalResponses,role } = useContext(TotalResponsesContext); // Get the context value
 
 //   const [page, setPage] = useState(0);
 //   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -90,60 +82,177 @@
 //   const [otherSelectedValue, setOtherSelectedValue] = useState("");
 //   const [tableData, setTableData] = useState([]);
 
-//   const fetchData = async (startDate = "", endDate = "") => {
+//   const fetchData = async () => {
 //     setLoading(true);
 //     try {
-//       const token =
-//         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-//       const response = await axios.get(
-//         "https://schoolmanagement-6-6tcs.onrender.com/school/read/all-children",
-//         {
+
+//       const token = localStorage.getItem("token");
+
+//       let response;
+
+//       // Fetch data based on role
+//       if (role == 1) {
+//         response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/status-of-children`, {
 //           headers: {
 //             Authorization: `Bearer ${token}`,
 //           },
-//         }
-//       );
-
-//       console.log("fetch data", response.data); // Log the entire response data
-//       // fetchgeofencepoint();
-//       if (Array.isArray(response.data.children)) {
-//         const allData = response.data.children;
-
-//         // Apply local date filtering if dates are provided
-//         const filteredData =
-//           startDate || endDate
-//             ? allData.filter((row) => {
-//                 const registrationDate = parseDate(
-//                   row.formattedRegistrationDate
-//                 );
-//                 const start = parseDate(startDate);
-//                 const end = parseDate(endDate);
-
-//                 return (
-//                   (!startDate || registrationDate >= start) &&
-//                   (!endDate || registrationDate <= end)
-//                 );
-//               })
-//             : allData; // If no date range, use all data
-//         const reversedData = filteredData.reverse();
-//         // Log the date range and filtered data
-//         console.log(`Data fetched between ${startDate} and ${endDate}:`);
-//         console.log(filteredData);
-//         setFilteredRows(
-//           reversedData.map((row) => ({ ...row, isSelected: false }))
-//         );
-//         setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-//         setTotalResponses(reversedData.length);
-//         // Log the date range and filtered data
-//         console.log(`Data fetched between ${startDate} and ${endDate}:`);
-//         console.log(filteredData);
-//       } else {
-//         console.error("Expected an array but got:", response.data.children);
+//         });
+//       } else if (role == 2) {
+//         response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/status-of-children`, {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+//       } else if (role == 3) {
+//         response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/status-of-children`, {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
 //       }
+//       console.log("fetch data", response.data); // Log the entire response data
+
+//       if (Array.isArray(response.data.data)) {
+//         const allSchools = response.data.data;
+
+//         // Flatten all children from schools and branches
+//         const allChildren = allSchools.flatMap(school =>
+//           school.branches.flatMap(branch => branch.children)
+//         );
+
+//         // Function to parse dates in DD-MM-YYYY format
+//         const parseDate = (dateString) => {
+//           const [day, month, year] = dateString.split('-');
+//           return new Date(`${year}-${month}-${day}`);
+//         };
+
+//         // Filter data based on the provided date range
+//         const filteredData = startDate || endDate
+//           ? allChildren.filter(child => {
+//               const requestDate = parseDate(child.request.requestDate);
+//               const start = startDate ? parseDate(startDate) : null;
+//               const end = endDate ? parseDate(endDate) : null;
+
+//               return (
+//                 (!start || requestDate >= start) &&
+//                 (!end || requestDate <= end)
+//               );
+//             })
+//           : allChildren; // If no date range, use all children
+
+//         const reversedData = filteredData.reverse();
+
+//         // Log the filtered data
+//         console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
+
+//         // Update state with the fetched and filtered data
+//         setFilteredRows(
+//           reversedData.map((child) => ({ ...child, isSelected: false }))
+//         );
+//         setOriginalRows(allChildren.map((child) => ({ ...child, isSelected: false })));
+//         setTotalResponses(reversedData.length);
+
+//       } else {
+//         console.error("Expected an array but got:", response.data);
+//       }
+//       // if (response?.data) {
+//       //   let allData;
+
+//       //   // Logic for role 1: Devices and stops
+//       //   if (role == 1) {
+//       //     allData = response.data.flatMap(school =>
+//       //       school.branches.flatMap(branch =>
+//       //         branch.children.map(child => ({
+//       //           ...child, // Retain all child properties
+//       //           schoolId: school.schoolId, // Add schoolId
+//       //           schoolName: school.schoolName, // Add schoolName
+//       //           branchId: branch.branchId, // Add branchId
+//       //           branchName: branch.branchName, // Add branchName
+//       //         }))
+//       //       )
+//       //     );
+//       //   } else if (role == 2) {
+//       //     allData = response?.data?.flatMap(school =>
+//       //       school.branches.flatMap(branch =>
+//       //         branch.children.map(child => ({
+//       //           ...child, // Retain all child properties
+//       //           branchId: branch.branchId, // Add branchId to each child
+//       //           branchName: branch.branchName, // Add branchName to each child
+//       //           schoolId: school.schoolId, // Add schoolId to each child
+//       //           schoolName: school.schoolName, // Add schoolName to each child
+//       //           // Add any additional properties you need from the child object
+//       //         }))
+//       //       )
+//       //     );
+//       //   }
+//       //   else if (role == 3) {
+//       //     allData = response?.data.flatMap(school =>
+//       //       school.branches.flatMap(branch =>
+//       //         branch.children.flatMap(child =>
+//       //           child.requestType === "leave"
+//       //             ? [{
+//       //                 // Retain child properties
+//       //                 ...child,
+//       //                 childId: child.childId, // Add childId
+//       //                 deviceId: child.deviceId, // Associate with deviceId
+//       //                 branchId: branch.branchId, // Add branchId
+//       //                 branchName: branch.branchName, // Add branchName
+//       //                 schoolId: school.schoolId, // Add schoolId
+//       //                 schoolName: school.schoolName, // Add schoolName
+//       //               }]
+//       //             : [{
+//       //                 childId: child.childId,
+//       //                 deviceId: child.deviceId,
+//       //                 branchId: branch.branchId,
+//       //                 branchName: branch.branchName,
+//       //                 schoolId: school.schoolId,
+//       //                 schoolName: school.schoolName,
+//       //                 childName: child.childName,
+//       //                 requestType: "No Leave Request",
+//       //                 startDate: null,
+//       //                 endDate: null,
+//       //                 statusOfRequest: "N/A",
+//       //               }]
+//       //         )
+//       //       )
+//       //     );
+//       //   }
+
+//       //   console.log(allData);
+
+//       //   // Filter data by date range, if applicable
+//       //   const filteredData = startDate || endDate
+//       //     ? allData.filter((row) => {
+//       //         const registrationDate = parseDate(row.formattedRegistrationDate);
+//       //         const start = parseDate(startDate);
+//       //         const end = parseDate(endDate);
+
+//       //         return (
+//       //           (!startDate || registrationDate >= start) &&
+//       //           (!endDate || registrationDate <= end)
+//       //         );
+//       //       })
+//       //     : allData; // Use all data if no date range specified
+
+//       //   const reversedData = filteredData.reverse();
+
+//       //   // Set filtered data and original data with default selection
+//       //   setFilteredRows(
+//       //     reversedData.map((row) => ({ ...row, isSelected: false }))
+//       //   );
+//       //   setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+
+//       //   setTotalResponses(reversedData.length);
+
+//       //   console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
+
+//       // } else {
+//       //   console.error("Expected an array but got:", response.data.children);
+//       // }
 //     } catch (error) {
 //       console.error("Error:", error);
 //     } finally {
-//       setLoading(false); // Set loading to false after fetching completes
+//       setLoading(false); // Stop loading indicator
 //     }
 //   };
 
@@ -583,9 +692,69 @@
 //   const [expandedRowId, setExpandedRowId] = useState(null);
 //   const [detailedData, setDetailedData] = useState({});
 
+//   const handleExpand = async (id) => {
+//     try {
+//       console.log("Expanding row with ID:", id); // Debugging statement
+//       setExpandedRowId(id);
+
+//       if (!id) {
+//         console.error("ID is undefined or null");
+//         return;
+//       }
+//       const token = localStorage.getItem("token");
+
+//       let response;
+
+//       // Fetch data based on role
+//       if (role == 1) {
+//         response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/status/${id}`, {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+//       } else if (role == 2) {
+//         response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/status/${id}`, {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+//       } else if (role == 3) {
+//         response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/status/${id}`, {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         });
+//       }
+//       // const token =
+//       //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Replace with actual token
+//       // const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
+//       // console.log("Fetching from URL:", apiUrl); // Debugging statement
+
+//       // const response = await axios.get(apiUrl, {
+//       //   headers: {
+//       //     Authorization: `Bearer ${token}`,
+//       //   },
+//       // });
+//       console.log(response.data);
+//       const data = response.data.child;
+//       console.log(data)
+//       setDetailedData((prev) => ({
+//         ...prev,
+//         [id]: data,
+//       }));
+//     } catch (error) {
+//       console.error("Error fetching detailed data:", error);
+//     }
+//   };
+
 //   // const handleExpand = async (id) => {
-//   //   try {
-//   //     console.log("Expanding row with ID:", id); // Debugging statement
+//   //   if (expandedRowId === id) {
+//   //     setExpandedRowId(null);
+//   //     setDetailedData((prev) => {
+//   //       const { [id]: _, ...rest } = prev;
+//   //       return rest;
+//   //     });
+//   //   } else {
 //   //     setExpandedRowId(id);
 
 //   //     if (!id) {
@@ -593,64 +762,69 @@
 //   //       return;
 //   //     }
 
-//   //     const token =
-//   //       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-//   //     const apiUrl = `https://schoolmanagement-6-6tcs.onrender.com/school/status/${id}`;
-//   //     console.log("Fetching from URL:", apiUrl); // Debugging statement
+//   //     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Replace with actual token
+//   //     const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
+//   //     console.log("Fetching from URL:", apiUrl);
 
-//   //     const response = await axios.get(apiUrl, {
-//   //       headers: {
-//   //         Authorization: `Bearer ${token}`,
-//   //       },
-//   //     });
-//   //     console.log(response.data);
-//   //     const data = response.data.children;
-//   //     setDetailedData((prev) => ({
-//   //       ...prev,
-//   //       [id]: data,
-//   //     }));
-//   //   } catch (error) {
-//   //     console.error("Error fetching detailed data:", error);
+//   //     try {
+//   //       const response = await axios.get(apiUrl, {
+//   //         headers: {
+//   //           Authorization: `Bearer ${token}`,
+//   //         },
+//   //       });
+//   //       console.log(response.data);
+//   //       const data = response.data.children;
+//   //       setDetailedData((prev) => ({
+//   //         ...prev,
+//   //         [id]: data,
+//   //       }));
+//   //     } catch (error) {
+//   //       console.error("Error fetching detailed data:", error);
+//   //     }
 //   //   }
 //   // };
 
+//   // const handleExpand = async (id) => {
+//   //   if (expandedRowId === id) {
+//   //     // Collapse the row
+//   //     setExpandedRowId(null);
+//   //     setDetailedData((prev) => {
+//   //       const { [id]: _, ...rest } = prev; // Remove the data for the current row
+//   //       return rest;
+//   //     });
+//   //   } else {
+//   //     // Expand the row
+//   //     setExpandedRowId(id);
 
-//   const handleExpand = async (id) => {
-//     if (expandedRowId === id) {
-//       setExpandedRowId(null);
-//       setDetailedData((prev) => {
-//         const { [id]: _, ...rest } = prev;
-//         return rest;
-//       });
-//     } else {
-//       setExpandedRowId(id);
+//   //     if (!id) {
+//   //       console.error("ID is undefined or null");
+//   //       return;
+//   //     }
 
-//       if (!id) {
-//         console.error("ID is undefined or null");
-//         return;
-//       }
+//   //     const token = "your-token-here"; // Replace with actual token
+//   //     const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
+//   //     console.log("Fetching from URL:", apiUrl);
 
-//       const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-//       const apiUrl = `https://schoolmanagement-6-6tcs.onrender.com/school/status/${id}`;
-//       console.log("Fetching from URL:", apiUrl);
+//   //     try {
+//   //       const response = await axios.get(apiUrl, {
+//   //         headers: {
+//   //           Authorization: `Bearer ${token}`,
+//   //         },
+//   //       });
 
-//       try {
-//         const response = await axios.get(apiUrl, {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-//         console.log(response.data);
-//         const data = response.data.children;
-//         setDetailedData((prev) => ({
-//           ...prev,
-//           [id]: data,
-//         }));
-//       } catch (error) {
-//         console.error("Error fetching detailed data:", error);
-//       }
-//     }
-//   };
+//   //       const data = response.data.child; // Access the `child` key from the response
+//   //       console.log(data);
+
+//   //       // Update detailed data with the new data
+//   //       setDetailedData((prev) => ({
+//   //         ...prev,
+//   //         [id]: data,
+//   //       }));
+//   //     } catch (error) {
+//   //       console.error("Error fetching detailed data:", error);
+//   //     }
+//   //   }
+//   // };
 
 //   return (
 //     <>
@@ -890,172 +1064,307 @@
 //             sortedData
 //               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 //               .map((row, index) => (
-//                 <React.Fragment key={row.id}>
-//                   <TableRow
-//                     hover
-//                     role="checkbox"
-//                     tabIndex={-1}
-//                     onClick={() => handleRowSelect(page * rowsPerPage + index)}
-//                     selected={row.isSelected}
-//                     style={{
-//                       backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-//                       borderBottom: "none",
-//                     }}
-//                   >
-//                     <TableCell
-//                       padding="checkbox"
-//                       style={{ borderRight: "1px solid #e0e0e0" }}
-//                     >
-//                       <Switch checked={row.isSelected} color="primary" />
-//                     </TableCell>
-//                     <TableCell
-//                       style={{
-//                         minWidth: 70,
-//                         borderRight: "1px solid #e0e0e0",
-//                         paddingTop: "4px",
-//                         paddingBottom: "4px",
-//                         borderBottom: "none",
-//                         textAlign: "center",
-//                         fontSize: "smaller",
-//                         backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-//                       }}
-//                     >
-//                       {page * rowsPerPage + index + 1}
-//                     </TableCell>
-//                     <TableCell
-//                       style={{
-//                         minWidth: 70,
-//                         borderRight: "1px solid #e0e0e0",
-//                         paddingTop: "4px",
-//                         paddingBottom: "4px",
-//                         borderBottom: "none",
-//                         textAlign: "center",
-//                         fontSize: "smaller",
-//                         backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-//                       }}
-//                     >
-//                       <button
-//                         style={{border: 'none',            // Removes any border
-//                           backgroundColor: 'transparent', // Ensures no background color
-//                           color: 'inherit',           // Inherits color from parent, ensuring it blends in
-//                           fontSize: '20px',           // Makes the symbol larger
-//                           lineHeight: '1',            // Keeps the symbol vertically aligned
-//                           cursor: 'pointer',          // Indicates it's clickable
-//                           padding: '0',               // Removes any default padding
-//                           margin: '0',                // Removes any default margin
-//                           display: 'inline-flex',     // Aligns the content properly
-//                           alignItems: 'center',       // Centers the content vertically
-//                           justifyContent: 'center', }}
-//                         onClick={(e) => {
-//                           e.stopPropagation();
-//                           handleExpand(row._id);
-//                         }}
-//                       >
-//                         {expandedRowId === row._id ? '-' : '+'}
-//                       </button>
-//                     </TableCell>
-//                     {COLUMNS()
-//                       .filter((col) => columnVisibility[col.accessor])
-//                       .map((column) => {
-//                         const value = row[column.accessor];
-//                         return (
-//                           <TableCell
-//                             key={column.accessor}
-//                             align={column.align}
-//                             style={{
-//                               borderRight: "1px solid #e0e0e0",
-//                               paddingTop: "4px",
-//                               paddingBottom: "4px",
-//                               borderBottom: "none",
-//                               backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-//                               fontSize: "smaller",
-//                             }}
-//                           >
-//                             {column.format && typeof value === "number"
-//                               ? column.format(value)
-//                               : value}
-//                           </TableCell>
-//                         );
-//                       })}
-//                   </TableRow>
-//                   {expandedRowId === row._id && detailedData[row._id] && (
-//                     <TableRow>
-//                       <TableCell
-//                         colSpan={
-//                           COLUMNS().filter((col) => columnVisibility[col.accessor]).length + 2
-//                         }
-//                         style={{ padding: 0 }}
-//                       >
-//                         <Table style={{ border: '1px solid black' }}>
-//                           <TableHead>
-//                             <TableRow>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Name</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Class</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Name</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Number</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Status</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Status</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Time</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Time</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Date</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Request</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Supervisor Name</TableCell>
-//                             </TableRow>
-//                           </TableHead>
-//                           <TableBody>
-//                             <TableRow>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].childName}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].childClass}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].parentName}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].parentNumber}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].pickupStatus}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].dropStatus}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].pickupTime}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].dropTime || "N/A"}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].date}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].request}</TableCell>
-//                               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row._id].supervisorName}</TableCell>
-//                             </TableRow>
-//                           </TableBody>
-//                         </Table>
-//                          {/* <div className="table-container">
-//       <table className="table">
-//         <thead>
-//           <tr>
-//             <th>Child Name</th>
-//             <th>Child Class</th>
-//             <th>Parent Name</th>
-//             <th>Parent Number</th>
-//             <th>Pickup Status</th>
-//             <th>Drop Status</th>
-//             <th>Pickup Time</th>
-//             <th>Drop Time</th>
-//             <th>Date</th>
-//             <th>Request</th>
-//             <th>Supervisor Name</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           <tr>
-//             <td>{detailedData[row._id].childName}</td>
-//             <td>{detailedData[row._id].childClass}</td>
-//             <td>{detailedData[row._id].parentName}</td>
-//             <td>{detailedData[row._id].parentNumber}</td>
-//             <td>{detailedData[row._id].pickupStatus}</td>
-//             <td>{detailedData[row._id].dropStatus}</td>
-//             <td>{detailedData[row._id].pickupTime}</td>
-//             <td>{detailedData[row._id].dropTime || 'N/A'}</td>
-//             <td>{detailedData[row._id].date}</td>
-//             <td>{detailedData[row._id].request}</td>
-//             <td>{detailedData[row._id].supervisorName}</td>
-//           </tr>
-//         </tbody>
-//       </table>
-//     </div> */}
-//                       </TableCell>
-//                     </TableRow>
-//                   )}
-//                 </React.Fragment>
+//     //             <React.Fragment key={row.id}>
+//     //               <TableRow
+//     //                 hover
+//     //                 role="checkbox"
+//     //                 tabIndex={-1}
+//     //                 onClick={() => handleRowSelect(page * rowsPerPage + index)}
+//     //                 selected={row.isSelected}
+//     //                 style={{
+//     //                   backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+//     //                   borderBottom: "none",
+//     //                 }}
+//     //               >
+//     //                 <TableCell
+//     //                   padding="checkbox"
+//     //                   style={{ borderRight: "1px solid #e0e0e0" }}
+//     //                 >
+//     //                   <Switch checked={row.isSelected} color="primary" />
+//     //                 </TableCell>
+//     //                 <TableCell
+//     //                   style={{
+//     //                     minWidth: 70,
+//     //                     borderRight: "1px solid #e0e0e0",
+//     //                     paddingTop: "4px",
+//     //                     paddingBottom: "4px",
+//     //                     borderBottom: "none",
+//     //                     textAlign: "center",
+//     //                     fontSize: "smaller",
+//     //                     backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+//     //                   }}
+//     //                 >
+//     //                   {page * rowsPerPage + index + 1}
+//     //                 </TableCell>
+//     //                 <TableCell
+//     //                   style={{
+//     //                     minWidth: 70,
+//     //                     borderRight: "1px solid #e0e0e0",
+//     //                     paddingTop: "4px",
+//     //                     paddingBottom: "4px",
+//     //                     borderBottom: "none",
+//     //                     textAlign: "center",
+//     //                     fontSize: "smaller",
+//     //                     backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+//     //                   }}
+//     //                 >
+//     //                   <button
+//     //                     style={{border: 'none',            // Removes any border
+//     //                       backgroundColor: 'transparent', // Ensures no background color
+//     //                       color: 'inherit',           // Inherits color from parent, ensuring it blends in
+//     //                       fontSize: '20px',           // Makes the symbol larger
+//     //                       lineHeight: '1',            // Keeps the symbol vertically aligned
+//     //                       cursor: 'pointer',          // Indicates it's clickable
+//     //                       padding: '0',               // Removes any default padding
+//     //                       margin: '0',                // Removes any default margin
+//     //                       display: 'inline-flex',     // Aligns the content properly
+//     //                       alignItems: 'center',       // Centers the content vertically
+//     //                       justifyContent: 'center', }}
+//     //                     onClick={(e) => {
+//     //                       e.stopPropagation();
+//     //                       handleExpand(row.childId);
+//     //                     }}
+//     //                   >
+//     //                     {expandedRowId === row.childId ? '-' : '+'}
+//     //                   </button>
+//     //                 </TableCell>
+//     //                 {COLUMNS()
+//     //                   .filter((col) => columnVisibility[col.accessor])
+//     //                   .map((column) => {
+//     //                     const value = row[column.accessor];
+//     //                     return (
+//     //                       <TableCell
+//     //                         key={column.accessor}
+//     //                         align={column.align}
+//     //                         style={{
+//     //                           borderRight: "1px solid #e0e0e0",
+//     //                           paddingTop: "4px",
+//     //                           paddingBottom: "4px",
+//     //                           borderBottom: "none",
+//     //                           backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+//     //                           fontSize: "smaller",
+//     //                         }}
+//     //                       >
+//     //                         {column.format && typeof value === "number"
+//     //                           ? column.format(value)
+//     //                           : value}
+//     //                       </TableCell>
+//     //                     );
+//     //                   })}
+//     //               </TableRow>
+//     //               {expandedRowId === row._id && detailedData[row._id] && (
+//     //                 <TableRow>
+//     //                   <TableCell
+//     //                     colSpan={
+//     //                       COLUMNS().filter((col) => columnVisibility[col.accessor]).length + 2
+//     //                     }
+//     //                     style={{ padding: 0 }}
+//     //                   >
+//     //                     <Table className="styledetailtable" style={{ border: '1px solid black' }}>
+//     //                       <TableHead>
+//     //                         <TableRow>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Name</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Class</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Name</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Number</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Status</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Status</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Time</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Time</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Date</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Request</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Supervisor Name</TableCell>
+//     //                         </TableRow>
+//     //                       </TableHead>
+//     //                       <TableBody>
+//     //                         <TableRow>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].childName}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].childClass}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].parentName}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].parentNumber}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].pickupStatus}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].dropStatus}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].pickupTime}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].dropTime || "N/A"}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].date}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].request}</TableCell>
+//     //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].supervisorName}</TableCell>
+//     //                         </TableRow>
+//     //                       </TableBody>
+//     //                     </Table>
+//     //                      {/* <div className="table-container">
+//     //   <table className="table">
+//     //     <thead>
+//     //       <tr>
+//     //         <th>Child Name</th>
+//     //         <th>Child Class</th>
+//     //         <th>Parent Name</th>
+//     //         <th>Parent Number</th>
+//     //         <th>Pickup Status</th>
+//     //         <th>Drop Status</th>
+//     //         <th>Pickup Time</th>
+//     //         <th>Drop Time</th>
+//     //         <th>Date</th>
+//     //         <th>Request</th>
+//     //         <th>Supervisor Name</th>
+//     //       </tr>
+//     //     </thead>
+//     //     <tbody>
+//     //       <tr>
+//     //         <td>{detailedData[row._id].childName}</td>
+//     //         <td>{detailedData[row._id].childClass}</td>
+//     //         <td>{detailedData[row._id].parentName}</td>
+//     //         <td>{detailedData[row._id].parentNumber}</td>
+//     //         <td>{detailedData[row._id].pickupStatus}</td>
+//     //         <td>{detailedData[row._id].dropStatus}</td>
+//     //         <td>{detailedData[row._id].pickupTime}</td>
+//     //         <td>{detailedData[row._id].dropTime || 'N/A'}</td>
+//     //         <td>{detailedData[row._id].date}</td>
+//     //         <td>{detailedData[row._id].request}</td>
+//     //         <td>{detailedData[row._id].supervisorName}</td>
+//     //       </tr>
+//     //     </tbody>
+//     //   </table>
+//     // </div> */}
+//     //                   </TableCell>
+//     //                 </TableRow>
+//     //               )}
+//     //             </React.Fragment>
+//     <React.Fragment key={row.childId}>
+//   <TableRow
+//     hover
+//     role="checkbox"
+//     tabIndex={-1}
+//     onClick={() => handleRowSelect(page * rowsPerPage + index)}
+//     selected={row.isSelected}
+//     style={{
+//       backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+//       borderBottom: "none",
+//     }}
+//   >
+//     <TableCell
+//       padding="checkbox"
+//       style={{ borderRight: "1px solid #e0e0e0" }}
+//     >
+//       <Switch checked={row.isSelected} color="primary" />
+//     </TableCell>
+//     <TableCell
+//       style={{
+//         minWidth: 70,
+//         borderRight: "1px solid #e0e0e0",
+//         paddingTop: "4px",
+//         paddingBottom: "4px",
+//         borderBottom: "none",
+//         textAlign: "center",
+//         fontSize: "smaller",
+//         backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+//       }}
+//     >
+//       {page * rowsPerPage + index + 1}
+//     </TableCell>
+//     <TableCell
+//       style={{
+//         minWidth: 70,
+//         borderRight: "1px solid #e0e0e0",
+//         paddingTop: "4px",
+//         paddingBottom: "4px",
+//         borderBottom: "none",
+//         textAlign: "center",
+//         fontSize: "smaller",
+//         backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+//       }}
+//     >
+//       <button
+//         style={{
+//           border: 'none',
+//           backgroundColor: 'transparent',
+//           color: 'inherit',
+//           fontSize: '20px',
+//           lineHeight: '1',
+//           cursor: 'pointer',
+//           padding: '0',
+//           margin: '0',
+//           display: 'inline-flex',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//         }}
+//         onClick={(e) => {
+//           e.stopPropagation();
+//           handleExpand(row.childId);  // Use consistent row childId here
+//         }}
+//       >
+//         {expandedRowId === row.childId ? '-' : '+'}
+//       </button>
+//     </TableCell>
+//     {COLUMNS()
+//       .filter((col) => columnVisibility[col.accessor])
+//       .map((column) => {
+//         const value = row[column.accessor];
+//         return (
+//           <TableCell
+//             key={column.accessor}
+//             align={column.align}
+//             style={{
+//               borderRight: "1px solid #e0e0e0",
+//               paddingTop: "4px",
+//               paddingBottom: "4px",
+//               borderBottom: "none",
+//               backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+//               fontSize: "smaller",
+//             }}
+//           >
+//             {column.format && typeof value === "number"
+//               ? column.format(value)
+//               : value}
+//           </TableCell>
+//         );
+//       })}
+//   </TableRow>
+//   {expandedRowId === row.childId && detailedData[row.childId] && (
+//     <TableRow>
+//       <TableCell
+//         colSpan={
+//           COLUMNS().filter((col) => columnVisibility[col.accessor]).length + 2
+//         }
+//         style={{ padding: 0 }}
+//       >
+//         <Table className="styledetailtable" style={{ border: '1px solid black' }}>
+//           <TableHead>
+//             <TableRow>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Name</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Class</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Name</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Number</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Status</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Status</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Time</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Time</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Date</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Request</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Supervisor Name</TableCell>
+//             </TableRow>
+//           </TableHead>
+//           <TableBody>
+//             <TableRow>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].childName}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].childClass}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].parentName}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].parentNumber}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].pickupStatus}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].dropStatus}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].pickupTime}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].dropTime || "N/A"}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].date}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].request}</TableCell>
+//               <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].supervisorName}</TableCell>
+//             </TableRow>
+//           </TableBody>
+//         </Table>
+//       </TableCell>
+//     </TableRow>
+//   )}
+// </React.Fragment>
+
 //               ))
 //           )}
 //         </TableBody>
@@ -1176,7 +1485,7 @@
 //             </FormControl>
 //             {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
 //       <InputLabel>{lastthirdColumn.Header}</InputLabel>
-     
+
 //        <Select
 //           value={formData[lastthirdColumn.accessor] || ""}
 //           onChange={handleSelectChange2}
@@ -1317,17 +1626,6 @@
 //   );
 // };
 
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect, useContext, Component } from "react";
 import axios from "axios";
 import Paper from "@mui/material/Paper";
@@ -1380,7 +1678,7 @@ const style = {
 };
 
 export const Status = () => {
-  const { setTotalResponses,role } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponses, role } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -1416,201 +1714,209 @@ export const Status = () => {
   //   setLoading(true);
   //   try {
   //     const token = localStorage.getItem("token");
-  //     const response = await axios.get(
-  //       // `${process.env.REACT_APP_SUPER_ADMIN_API}/status/${childId}`
-  //       'http://63.142.251.13:4000/superadmin/status-of-children',
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
 
-  //     console.log("fetch data", response.data); // Log the entire response data
-  //     // fetchgeofencepoint();
-  //     if (Array.isArray(response.data.children)) {
-  //       const allData = response.data.children;
+  //     let response;
 
-  //       // Apply local date filtering if dates are provided
-  //       const filteredData =
-  //         startDate || endDate
-  //           ? allData.filter((row) => {
-  //               const registrationDate = parseDate(
-  //                 row.formattedRegistrationDate
-  //               );
-  //               const start = parseDate(startDate);
-  //               const end = parseDate(endDate);
-
-  //               return (
-  //                 (!startDate || registrationDate >= start) &&
-  //                 (!endDate || registrationDate <= end)
-  //               );
-  //             })
-  //           : allData; // If no date range, use all data
-  //       const reversedData = filteredData.reverse();
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-  //       setFilteredRows(
-  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //     // Fetch data based on role
+  //     if (role == 1) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/status-of-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
   //       );
-  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       setTotalResponses(reversedData.length);
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-  //     } else {
-  //       console.error("Expected an array but got:", response.data.children);
+  //     } else if (role == 2) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SCHOOL_API}/status-of-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 3) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_BRANCH_API}/status-of-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
   //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
-  //   }
-  // };
-
-
-  // const fetchData = async () => {
-  //   setLoading(true);
-  //   try {
-  //     // const token = localStorage.getItem("token");
-  //     const token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"
-  //     const response = await axios.get(
-  //       'http://63.142.251.13:4000/superadmin/status-of-children',
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  
   //     console.log("fetch data", response.data); // Log the entire response data
-  
-  //     // Check if the data exists and contains schools array
+
   //     if (Array.isArray(response.data.data)) {
   //       const allSchools = response.data.data;
-  
-  //       // Flattening the data structure to get all children across all schools and branches
+
+  //       // Flatten all children from schools and branches
   //       const allChildren = allSchools.flatMap((school) =>
   //         school.branches.flatMap((branch) => branch.children)
   //       );
-  
-  //       // Apply date filtering if dates are provided
-  //       const filteredData = startDate || endDate
-  //         ? allChildren.filter((child) => {
-  //             const registrationDate = parseDate(child.request.requestDate);
-  //             const start = parseDate(startDate);
-  //             const end = parseDate(endDate);
-  
-  //             return (
-  //               (!startDate || registrationDate >= start) &&
-  //               (!endDate || registrationDate <= end)
-  //             );
-  //           })
-  //         : allChildren; // If no date range, use all children data
-  
+
+  //       // Function to parse dates in DD-MM-YYYY format
+  //       const parseDate = (dateString) => {
+  //         const [day, month, year] = dateString.split("-");
+  //         return new Date(`${year}-${month}-${day}`);
+  //       };
+
+  //       // Filter data based on the provided date range
+  //       const filteredData =
+  //         startDate || endDate
+  //           ? allChildren.filter((child) => {
+  //               const requestDate = parseDate(child.request.requestDate);
+  //               const start = startDate ? parseDate(startDate) : null;
+  //               const end = endDate ? parseDate(endDate) : null;
+
+  //               return (
+  //                 (!start || requestDate >= start) &&
+  //                 (!end || requestDate <= end)
+  //               );
+  //             })
+  //           : allChildren; // If no date range, use all children
+
   //       const reversedData = filteredData.reverse();
-  
+
   //       // Log the filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
-  
+  //       console.log(
+  //         `Data fetched between ${startDate} and ${endDate}:`,
+  //         filteredData
+  //       );
+
+  //       // Update state with the fetched and filtered data
   //       setFilteredRows(
   //         reversedData.map((child) => ({ ...child, isSelected: false }))
   //       );
-  //       setOriginalRows(allChildren.map((child) => ({ ...child, isSelected: false })));
+  //       setOriginalRows(
+  //         allChildren.map((child) => ({ ...child, isSelected: false }))
+  //       );
   //       setTotalResponses(reversedData.length);
   //     } else {
   //       console.error("Expected an array but got:", response.data);
   //     }
+     
   //   } catch (error) {
   //     console.error("Error:", error);
   //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
+  //     setLoading(false); // Stop loading indicator
   //   }
   // };
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      // const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo";
-      // const response = await axios.get('http://63.142.251.13:4000/superadmin/status-of-children', {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
       const token = localStorage.getItem("token");
-     
+  
       let response;
-      
+  
       // Fetch data based on role
-      if (role === 1) {
-        response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/status-of-children`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } else if (role === 2) {
-        response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/status-of-children`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } else if (role === 3) {
-        response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/status-of-children`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/status-of-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        // Process response for role 1
+        if (Array.isArray(response.data.data)) {
+          const allSchools = response.data.data;
+  
+          // Flatten all children from schools and branches
+          const allChildren = allSchools.flatMap((school) =>
+            school.branches.flatMap((branch) => branch.children)
+          );
+  
+          processAndSetData(allChildren);
+        } else {
+          console.error("Expected an array but got:", response.data);
+        }
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/status-of-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        // Process response for role 2 (single school, with branches)
+        const school = response.data;
+        if (school && Array.isArray(school.branches)) {
+          // Flatten all children from branches
+          const allChildren = school.branches.flatMap((branch) => branch.children);
+  
+          processAndSetData(allChildren);
+        } else {
+          console.error("Expected branches array but got:", response.data);
+        }
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/status-of-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        // Process response for role 3 (array of children directly)
+        if (Array.isArray(response.data)) {
+          processAndSetData(response.data); // Directly use the children data
+        } else {
+          console.error("Expected an array but got:", response.data);
+        }
       }
+  
       console.log("fetch data", response.data); // Log the entire response data
-  
-      if (Array.isArray(response.data.data)) {
-        const allSchools = response.data.data;
-  
-        // Flatten all children from schools and branches
-        const allChildren = allSchools.flatMap(school =>
-          school.branches.flatMap(branch => branch.children)
-        );
-  
-        // Function to parse dates in DD-MM-YYYY format
-        const parseDate = (dateString) => {
-          const [day, month, year] = dateString.split('-');
-          return new Date(`${year}-${month}-${day}`);
-        };
-  
-        // Filter data based on the provided date range
-        const filteredData = startDate || endDate
-          ? allChildren.filter(child => {
-              const requestDate = parseDate(child.request.requestDate);
-              const start = startDate ? parseDate(startDate) : null;
-              const end = endDate ? parseDate(endDate) : null;
-  
-              return (
-                (!start || requestDate >= start) &&
-                (!end || requestDate <= end)
-              );
-            })
-          : allChildren; // If no date range, use all children
-  
-        const reversedData = filteredData.reverse();
-  
-        // Log the filtered data
-        console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
-  
-        // Update state with the fetched and filtered data
-        setFilteredRows(
-          reversedData.map((child) => ({ ...child, isSelected: false }))
-        );
-        setOriginalRows(allChildren.map((child) => ({ ...child, isSelected: false })));
-        setTotalResponses(reversedData.length);
-  
-      } else {
-        console.error("Expected an array but got:", response.data);
-      }
     } catch (error) {
       console.error("Error:", error);
     } finally {
       setLoading(false); // Stop loading indicator
     }
+  };
+  
+  // Helper function to process and filter the data
+  const processAndSetData = (allChildren) => {
+    // Function to parse dates in DD-MM-YYYY format
+    const parseDate = (dateString) => {
+      const [day, month, year] = dateString.split("-");
+      return new Date(`${year}-${month}-${day}`);
+    };
+  
+    // Filter data based on the provided date range
+    const filteredData =
+      startDate || endDate
+        ? allChildren.filter((child) => {
+            const requestDate = parseDate(child.requestDate);
+            const start = startDate ? parseDate(startDate) : null;
+            const end = endDate ? parseDate(endDate) : null;
+  
+            return (
+              (!start || requestDate >= start) &&
+              (!end || requestDate <= end)
+            );
+          })
+        : allChildren; // If no date range, use all children
+  
+    const reversedData = filteredData.reverse();
+  
+    // Update state with the fetched and filtered data
+    setFilteredRows(
+      reversedData.map((child) => ({ ...child, isSelected: false }))
+    );
+    setOriginalRows(
+      allChildren.map((child) => ({ ...child, isSelected: false }))
+    );
+    setTotalResponses(reversedData.length);
+  
+    // Log the filtered data
+    console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
   };
   
   const parseDate = (dateString) => {
@@ -2059,42 +2365,42 @@ export const Status = () => {
         return;
       }
       const token = localStorage.getItem("token");
-     
-      let response;
-      
-      // Fetch data based on role
-      if (role === 1) {
-        response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/status/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } else if (role === 2) {
-        response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/status/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } else if (role === 3) {
-        response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/status/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
-      // const token =
-      //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Replace with actual token
-      // const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
-      // console.log("Fetching from URL:", apiUrl); // Debugging statement
 
-      // const response = await axios.get(apiUrl, {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
+      let response;
+
+      // Fetch data based on role
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/status/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/status/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/status/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+      
       console.log(response.data);
       const data = response.data.child;
-      console.log(data)
+      console.log(data);
       setDetailedData((prev) => ({
         ...prev,
         [id]: data,
@@ -2104,87 +2410,8 @@ export const Status = () => {
     }
   };
 
+ 
 
-  // const handleExpand = async (id) => {
-  //   if (expandedRowId === id) {
-  //     setExpandedRowId(null);
-  //     setDetailedData((prev) => {
-  //       const { [id]: _, ...rest } = prev;
-  //       return rest;
-  //     });
-  //   } else {
-  //     setExpandedRowId(id);
-
-  //     if (!id) {
-  //       console.error("ID is undefined or null");
-  //       return;
-  //     }
-
-  //     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Replace with actual token
-  //     const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
-  //     console.log("Fetching from URL:", apiUrl);
-
-  //     try {
-  //       const response = await axios.get(apiUrl, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       console.log(response.data);
-  //       const data = response.data.children;
-  //       setDetailedData((prev) => ({
-  //         ...prev,
-  //         [id]: data,
-  //       }));
-  //     } catch (error) {
-  //       console.error("Error fetching detailed data:", error);
-  //     }
-  //   }
-  // };
-
-
-  // const handleExpand = async (id) => {
-  //   if (expandedRowId === id) {
-  //     // Collapse the row
-  //     setExpandedRowId(null);
-  //     setDetailedData((prev) => {
-  //       const { [id]: _, ...rest } = prev; // Remove the data for the current row
-  //       return rest;
-  //     });
-  //   } else {
-  //     // Expand the row
-  //     setExpandedRowId(id);
-  
-  //     if (!id) {
-  //       console.error("ID is undefined or null");
-  //       return;
-  //     }
-  
-  //     const token = "your-token-here"; // Replace with actual token
-  //     const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
-  //     console.log("Fetching from URL:", apiUrl);
-  
-  //     try {
-  //       const response = await axios.get(apiUrl, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  
-  //       const data = response.data.child; // Access the `child` key from the response
-  //       console.log(data);
-  
-  //       // Update detailed data with the new data
-  //       setDetailedData((prev) => ({
-  //         ...prev,
-  //         [id]: data,
-  //       }));
-  //     } catch (error) {
-  //       console.error("Error fetching detailed data:", error);
-  //     }
-  //   }
-  // };
-  
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>Status</h1>
@@ -2328,407 +2555,427 @@ export const Status = () => {
           </div>
         ) : (
           <>
-        <TableContainer
-      component={Paper}
-      sx={{
-        maxHeight: 440,
-        border: "1.5px solid black",
-        borderRadius: "7px",
-      }}
-    >
-      <Table stickyHeader aria-label="sticky table" style={{ border: "1px solid black" }}>
-        <TableHead>
-          <TableRow style={{ borderBottom: "1px solid black", borderTop: "1px solid black" }}>
-            <TableCell
-              padding="checkbox"
-              style={{ borderRight: "1px solid #e0e0e0", borderBottom: "2px solid black" }}
-            >
-              <Switch
-                checked={selectAll}
-                onChange={handleSelectAll}
-                color="primary"
-              />
-            </TableCell>
-            <TableCell
-              style={{
-                minWidth: 70,
-                borderRight: "1px solid #e0e0e0",
-                borderBottom: "2px solid black",
-                padding: "4px 4px",
-                textAlign: "center",
-                fontWeight: "bold",
+            <TableContainer
+              component={Paper}
+              sx={{
+                maxHeight: 440,
+                border: "1.5px solid black",
+                borderRadius: "7px",
               }}
             >
-              S.No.
-            </TableCell>
-            <TableCell
-              style={{
-                minWidth: 70,
-                borderRight: "1px solid #e0e0e0",
-                borderBottom: "2px solid black",
-                padding: "4px 4px",
-                textAlign: "center",
-                fontWeight: "bold",
-              }}
-            >
-              More About
-            </TableCell>
-            {COLUMNS()
-              .filter((col) => columnVisibility[col.accessor])
-              .map((column) => (
-                <TableCell
-                  key={column.accessor}
-                  align={column.align}
-                  style={{
-                    minWidth: column.minWidth,
-                    cursor: "pointer",
-                    borderRight: "1px solid #e0e0e0",
-                    borderBottom: "2px solid black",
-                    padding: "4px 4px",
-                    textAlign: "center",
-                    fontWeight: "bold",
-                  }}
-                  onClick={() => requestSort(column.accessor)}
-                >
-                  {column.Header}
-                  {sortConfig.key === column.accessor ? (
-                    sortConfig.direction === "ascending" ? (
-                      <ArrowUpwardIcon fontSize="small" />
-                    ) : (
-                      <ArrowDownwardIcon fontSize="small" />
-                    )
-                  ) : null}
-                </TableCell>
-              ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sortedData.length === 0 ? (
-            <TableRow>
-              <TableCell
-                colSpan={
-                  COLUMNS().filter((col) => columnVisibility[col.accessor]).length + 2
-                }
-                style={{
-                  textAlign: "center",
-                  padding: "16px",
-                  fontSize: "16px",
-                  color: "#757575",
-                }}
+              <Table
+                stickyHeader
+                aria-label="sticky table"
+                style={{ border: "1px solid black" }}
               >
-                <h4>No Data Available</h4>
-              </TableCell>
-            </TableRow>
-          ) : (
-            sortedData
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => (
-    //             <React.Fragment key={row.id}>
-    //               <TableRow
-    //                 hover
-    //                 role="checkbox"
-    //                 tabIndex={-1}
-    //                 onClick={() => handleRowSelect(page * rowsPerPage + index)}
-    //                 selected={row.isSelected}
-    //                 style={{
-    //                   backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-    //                   borderBottom: "none",
-    //                 }}
-    //               >
-    //                 <TableCell
-    //                   padding="checkbox"
-    //                   style={{ borderRight: "1px solid #e0e0e0" }}
-    //                 >
-    //                   <Switch checked={row.isSelected} color="primary" />
-    //                 </TableCell>
-    //                 <TableCell
-    //                   style={{
-    //                     minWidth: 70,
-    //                     borderRight: "1px solid #e0e0e0",
-    //                     paddingTop: "4px",
-    //                     paddingBottom: "4px",
-    //                     borderBottom: "none",
-    //                     textAlign: "center",
-    //                     fontSize: "smaller",
-    //                     backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-    //                   }}
-    //                 >
-    //                   {page * rowsPerPage + index + 1}
-    //                 </TableCell>
-    //                 <TableCell
-    //                   style={{
-    //                     minWidth: 70,
-    //                     borderRight: "1px solid #e0e0e0",
-    //                     paddingTop: "4px",
-    //                     paddingBottom: "4px",
-    //                     borderBottom: "none",
-    //                     textAlign: "center",
-    //                     fontSize: "smaller",
-    //                     backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-    //                   }}
-    //                 >
-    //                   <button
-    //                     style={{border: 'none',            // Removes any border
-    //                       backgroundColor: 'transparent', // Ensures no background color
-    //                       color: 'inherit',           // Inherits color from parent, ensuring it blends in
-    //                       fontSize: '20px',           // Makes the symbol larger
-    //                       lineHeight: '1',            // Keeps the symbol vertically aligned
-    //                       cursor: 'pointer',          // Indicates it's clickable
-    //                       padding: '0',               // Removes any default padding
-    //                       margin: '0',                // Removes any default margin
-    //                       display: 'inline-flex',     // Aligns the content properly
-    //                       alignItems: 'center',       // Centers the content vertically
-    //                       justifyContent: 'center', }}
-    //                     onClick={(e) => {
-    //                       e.stopPropagation();
-    //                       handleExpand(row.childId);
-    //                     }}
-    //                   >
-    //                     {expandedRowId === row.childId ? '-' : '+'}
-    //                   </button>
-    //                 </TableCell>
-    //                 {COLUMNS()
-    //                   .filter((col) => columnVisibility[col.accessor])
-    //                   .map((column) => {
-    //                     const value = row[column.accessor];
-    //                     return (
-    //                       <TableCell
-    //                         key={column.accessor}
-    //                         align={column.align}
-    //                         style={{
-    //                           borderRight: "1px solid #e0e0e0",
-    //                           paddingTop: "4px",
-    //                           paddingBottom: "4px",
-    //                           borderBottom: "none",
-    //                           backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-    //                           fontSize: "smaller",
-    //                         }}
-    //                       >
-    //                         {column.format && typeof value === "number"
-    //                           ? column.format(value)
-    //                           : value}
-    //                       </TableCell>
-    //                     );
-    //                   })}
-    //               </TableRow>
-    //               {expandedRowId === row._id && detailedData[row._id] && (
-    //                 <TableRow>
-    //                   <TableCell
-    //                     colSpan={
-    //                       COLUMNS().filter((col) => columnVisibility[col.accessor]).length + 2
-    //                     }
-    //                     style={{ padding: 0 }}
-    //                   >
-    //                     <Table className="styledetailtable" style={{ border: '1px solid black' }}>
-    //                       <TableHead>
-    //                         <TableRow>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Name</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Class</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Name</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Number</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Status</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Status</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Time</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Time</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Date</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Request</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Supervisor Name</TableCell>
-    //                         </TableRow>
-    //                       </TableHead>
-    //                       <TableBody>
-    //                         <TableRow>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].childName}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].childClass}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].parentName}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].parentNumber}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].pickupStatus}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].dropStatus}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].pickupTime}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].dropTime || "N/A"}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].date}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].request}</TableCell>
-    //                           <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].supervisorName}</TableCell>
-    //                         </TableRow>
-    //                       </TableBody>
-    //                     </Table>
-    //                      {/* <div className="table-container">
-    //   <table className="table">
-    //     <thead>
-    //       <tr>
-    //         <th>Child Name</th>
-    //         <th>Child Class</th>
-    //         <th>Parent Name</th>
-    //         <th>Parent Number</th>
-    //         <th>Pickup Status</th>
-    //         <th>Drop Status</th>
-    //         <th>Pickup Time</th>
-    //         <th>Drop Time</th>
-    //         <th>Date</th>
-    //         <th>Request</th>
-    //         <th>Supervisor Name</th>
-    //       </tr>
-    //     </thead>
-    //     <tbody>
-    //       <tr>
-    //         <td>{detailedData[row._id].childName}</td>
-    //         <td>{detailedData[row._id].childClass}</td>
-    //         <td>{detailedData[row._id].parentName}</td>
-    //         <td>{detailedData[row._id].parentNumber}</td>
-    //         <td>{detailedData[row._id].pickupStatus}</td>
-    //         <td>{detailedData[row._id].dropStatus}</td>
-    //         <td>{detailedData[row._id].pickupTime}</td>
-    //         <td>{detailedData[row._id].dropTime || 'N/A'}</td>
-    //         <td>{detailedData[row._id].date}</td>
-    //         <td>{detailedData[row._id].request}</td>
-    //         <td>{detailedData[row._id].supervisorName}</td>
-    //       </tr>
-    //     </tbody>
-    //   </table>
-    // </div> */}
-    //                   </TableCell>
-    //                 </TableRow>
-    //               )}
-    //             </React.Fragment>
-    <React.Fragment key={row.childId}>
-  <TableRow
-    hover
-    role="checkbox"
-    tabIndex={-1}
-    onClick={() => handleRowSelect(page * rowsPerPage + index)}
-    selected={row.isSelected}
-    style={{
-      backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-      borderBottom: "none",
-    }}
-  >
-    <TableCell
-      padding="checkbox"
-      style={{ borderRight: "1px solid #e0e0e0" }}
-    >
-      <Switch checked={row.isSelected} color="primary" />
-    </TableCell>
-    <TableCell
-      style={{
-        minWidth: 70,
-        borderRight: "1px solid #e0e0e0",
-        paddingTop: "4px",
-        paddingBottom: "4px",
-        borderBottom: "none",
-        textAlign: "center",
-        fontSize: "smaller",
-        backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-      }}
-    >
-      {page * rowsPerPage + index + 1}
-    </TableCell>
-    <TableCell
-      style={{
-        minWidth: 70,
-        borderRight: "1px solid #e0e0e0",
-        paddingTop: "4px",
-        paddingBottom: "4px",
-        borderBottom: "none",
-        textAlign: "center",
-        fontSize: "smaller",
-        backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-      }}
-    >
-      <button
-        style={{
-          border: 'none',
-          backgroundColor: 'transparent',
-          color: 'inherit',
-          fontSize: '20px',
-          lineHeight: '1',
-          cursor: 'pointer',
-          padding: '0',
-          margin: '0',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          handleExpand(row.childId);  // Use consistent row childId here
-        }}
-      >
-        {expandedRowId === row.childId ? '-' : '+'}
-      </button>
-    </TableCell>
-    {COLUMNS()
-      .filter((col) => columnVisibility[col.accessor])
-      .map((column) => {
-        const value = row[column.accessor];
-        return (
-          <TableCell
-            key={column.accessor}
-            align={column.align}
-            style={{
-              borderRight: "1px solid #e0e0e0",
-              paddingTop: "4px",
-              paddingBottom: "4px",
-              borderBottom: "none",
-              backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-              fontSize: "smaller",
-            }}
-          >
-            {column.format && typeof value === "number"
-              ? column.format(value)
-              : value}
-          </TableCell>
-        );
-      })}
-  </TableRow>
-  {expandedRowId === row.childId && detailedData[row.childId] && (
-    <TableRow>
-      <TableCell
-        colSpan={
-          COLUMNS().filter((col) => columnVisibility[col.accessor]).length + 2
-        }
-        style={{ padding: 0 }}
-      >
-        <Table className="styledetailtable" style={{ border: '1px solid black' }}>
-          <TableHead>
-            <TableRow>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Name</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Child Class</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Name</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Parent Number</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Status</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Status</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Pickup Time</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Drop Time</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Date</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Request</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0", fontWeight: "bold" }}>Supervisor Name</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].childName}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].childClass}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].parentName}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].parentNumber}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].pickupStatus}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].dropStatus}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].pickupTime}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].dropTime || "N/A"}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].date}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].request}</TableCell>
-              <TableCell style={{ borderRight: "1px solid #e0e0e0" }}>{detailedData[row.childId].supervisorName}</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableCell>
-    </TableRow>
-  )}
-</React.Fragment>
-
-              ))
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                <TableHead>
+                  <TableRow
+                    style={{
+                      borderBottom: "1px solid black",
+                      borderTop: "1px solid black",
+                    }}
+                  >
+                    <TableCell
+                      padding="checkbox"
+                      style={{
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                      }}
+                    >
+                      <Switch
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                        color="primary"
+                      />
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        minWidth: 70,
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      S.No.
+                    </TableCell>
+                    <TableCell
+                      style={{
+                        minWidth: 70,
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      More About
+                    </TableCell>
+                    {COLUMNS()
+                      .filter((col) => columnVisibility[col.accessor])
+                      .map((column) => (
+                        <TableCell
+                          key={column.accessor}
+                          align={column.align}
+                          style={{
+                            minWidth: column.minWidth,
+                            cursor: "pointer",
+                            borderRight: "1px solid #e0e0e0",
+                            borderBottom: "2px solid black",
+                            padding: "4px 4px",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                          }}
+                          onClick={() => requestSort(column.accessor)}
+                        >
+                          {column.Header}
+                          {sortConfig.key === column.accessor ? (
+                            sortConfig.direction === "ascending" ? (
+                              <ArrowUpwardIcon fontSize="small" />
+                            ) : (
+                              <ArrowDownwardIcon fontSize="small" />
+                            )
+                          ) : null}
+                        </TableCell>
+                      ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sortedData.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={
+                          COLUMNS().filter(
+                            (col) => columnVisibility[col.accessor]
+                          ).length + 2
+                        }
+                        style={{
+                          textAlign: "center",
+                          padding: "16px",
+                          fontSize: "16px",
+                          color: "#757575",
+                        }}
+                      >
+                        <h4>No Data Available</h4>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    sortedData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row, index) => (
+                        <React.Fragment key={row.childId}>
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tabIndex={-1}
+                            onClick={() =>
+                              handleRowSelect(page * rowsPerPage + index)
+                            }
+                            selected={row.isSelected}
+                            style={{
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              borderBottom: "none",
+                            }}
+                          >
+                            <TableCell
+                              padding="checkbox"
+                              style={{ borderRight: "1px solid #e0e0e0" }}
+                            >
+                              <Switch
+                                checked={row.isSelected}
+                                color="primary"
+                              />
+                            </TableCell>
+                            <TableCell
+                              style={{
+                                minWidth: 70,
+                                borderRight: "1px solid #e0e0e0",
+                                paddingTop: "4px",
+                                paddingBottom: "4px",
+                                borderBottom: "none",
+                                textAlign: "center",
+                                fontSize: "smaller",
+                                backgroundColor:
+                                  index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              }}
+                            >
+                              {page * rowsPerPage + index + 1}
+                            </TableCell>
+                            <TableCell
+                              style={{
+                                minWidth: 70,
+                                borderRight: "1px solid #e0e0e0",
+                                paddingTop: "4px",
+                                paddingBottom: "4px",
+                                borderBottom: "none",
+                                textAlign: "center",
+                                fontSize: "smaller",
+                                backgroundColor:
+                                  index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              }}
+                            >
+                              <button
+                                style={{
+                                  border: "none",
+                                  backgroundColor: "transparent",
+                                  color: "inherit",
+                                  fontSize: "20px",
+                                  lineHeight: "1",
+                                  cursor: "pointer",
+                                  padding: "0",
+                                  margin: "0",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleExpand(row.childId); // Use consistent row childId here
+                                }}
+                              >
+                                {expandedRowId === row.childId ? "-" : "+"}
+                              </button>
+                            </TableCell>
+                            {COLUMNS()
+                              .filter((col) => columnVisibility[col.accessor])
+                              .map((column) => {
+                                const value = row[column.accessor];
+                                return (
+                                  <TableCell
+                                    key={column.accessor}
+                                    align={column.align}
+                                    style={{
+                                      borderRight: "1px solid #e0e0e0",
+                                      paddingTop: "4px",
+                                      paddingBottom: "4px",
+                                      borderBottom: "none",
+                                      backgroundColor:
+                                        index % 2 === 0
+                                          ? "#ffffff"
+                                          : "#eeeeefc2",
+                                      fontSize: "smaller",
+                                    }}
+                                  >
+                                    {column.format && typeof value === "number"
+                                      ? column.format(value)
+                                      : value}
+                                  </TableCell>
+                                );
+                              })}
+                          </TableRow>
+                          {expandedRowId === row.childId &&
+                            detailedData[row.childId] && (
+                              <TableRow>
+                                <TableCell
+                                  colSpan={
+                                    COLUMNS().filter(
+                                      (col) => columnVisibility[col.accessor]
+                                    ).length + 2
+                                  }
+                                  style={{ padding: 0 }}
+                                >
+                                  <Table
+                                    className="styledetailtable"
+                                    style={{ border: "1px solid black" }}
+                                  >
+                                    <TableHead>
+                                      <TableRow>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Child Name
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Child Class
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Parent Name
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Parent Number
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Pickup Status
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Drop Status
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Pickup Time
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Drop Time
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Date
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Request
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                            fontWeight: "bold",
+                                          }}
+                                        >
+                                          Supervisor Name
+                                        </TableCell>
+                                      </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                      <TableRow>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {detailedData[row.childId].childName}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {detailedData[row.childId].childClass}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {detailedData[row.childId].parentName}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {
+                                            detailedData[row.childId]
+                                              .parentNumber
+                                          }
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {
+                                            detailedData[row.childId]
+                                              .pickupStatus
+                                          }
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {detailedData[row.childId].dropStatus}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {detailedData[row.childId].pickupTime}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {detailedData[row.childId].dropTime ||
+                                            "N/A"}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {detailedData[row.childId].date}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {detailedData[row.childId].request}
+                                        </TableCell>
+                                        <TableCell
+                                          style={{
+                                            borderRight: "1px solid #e0e0e0",
+                                          }}
+                                        >
+                                          {
+                                            detailedData[row.childId]
+                                              .supervisorName
+                                          }
+                                        </TableCell>
+                                      </TableRow>
+                                    </TableBody>
+                                  </Table>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                        </React.Fragment>
+                      ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
             <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
@@ -2785,22 +3032,7 @@ export const Status = () => {
                   fullWidth
                 />
               ))}
-            {/* Dropdown for the last column */}
-            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-      <InputLabel>{lastColumn.Header}</InputLabel>
-      <Select
-        value={formData[lastColumn.accessor] || ""}
-        onChange={handleInputChange}
-        name={lastColumn.accessor}
-        label={lastColumn.Header}
-      >
-        {dropdownOptions.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl> */}
+           
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -2842,22 +3074,7 @@ export const Status = () => {
                 ))}
               </Select>
             </FormControl>
-            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-      <InputLabel>{lastthirdColumn.Header}</InputLabel>
-     
-       <Select
-          value={formData[lastthirdColumn.accessor] || ""}
-          onChange={handleSelectChange2}
-          name={lastthirdColumn.accessor}
-          label={lastthirdColumn.Header}
-        >
-        {dropdownOptions.map(option => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>     */}
+          
             <Button
               variant="contained"
               color="primary"
@@ -2923,11 +3140,7 @@ export const Status = () => {
               fullWidth
             >
               <InputLabel>{lastSecondColumn.Header}</InputLabel>
-              {/* <Select
-        value={selectedValue}
-        onChange={handleChange}
-        label="Select Geofence"
-      > */}
+             
               <Select
                 value={formData[lastSecondColumn.accessor] || ""}
                 onChange={handleSelectChange}
