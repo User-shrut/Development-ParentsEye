@@ -92,6 +92,10 @@ import { Stops } from "./Components/VariousTables/ReportsUpdated/Stops/Stops.jsx
 import { Summary } from "./Components/VariousTables/ReportsUpdated/Summary/Summary.jsx";
 import {Statistics} from "./Components/VariousTables/ReportsUpdated/Statistics/Statistics.jsx";
 import { MyBranchDevices } from "./Components/VariousTables/Users/MyBranchDevices/MyBranchDevices.jsx";
+
+import '@coreui/coreui/dist/css/coreui.min.css';
+import './scss/style.scss';
+
 // import { Newdemo } from "./Components/VariousTables/Institutestudent/Newdemo/Newdemo.jsx";
 // import { New2 } from "./Components/VariousTables/Institutestudent/New2/New2.jsx";
 // import { ComputedAttributes } from "./Components/VariousTables/MASTERUPDATED/ComputedAttributes/ComputedAttributes.jsx";
@@ -124,13 +128,12 @@ function App() {
   const [deviceApiData, setDeviceApiData] = useState([]); // State variable to store device API data
   const [positionApiData, setPositionApiData] = useState([]); // State variable to store position API data
   const [mergedData, setMergedData] = useState([]);
-
+  const username = "hbtrack";
+  const password = "123456@";
   useEffect(() => {
     const fetchDeviceData = async () => {
       try {
 
-        const username = "hbtrack"; // Replace with your actual username
-        const password = "123456@"; // Replace with your actual password
 
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
         const response1 = await axios.get(
@@ -150,8 +153,6 @@ function App() {
 
     const fetchPositionData = async () => {
       try {
-        const username = "hbtrack"; // Replace with your actual username
-        const password = "123456@"; // Replace with your actual password
 
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
