@@ -429,39 +429,94 @@ const SchoolMaster = () => {
     }
   };
 
+  // const handleDeleteSelected = async () => {
+  //   // Log filteredRows to check its structure
+  //   console.log("Filtered rows:", filteredRows);
+
+  //   // Get selected row IDs
+  //   const selectedIds = filteredRows
+  //     .filter((row) => row.isSelected)
+  //     .map((row) => {
+  //       // Log each row to check its structure
+  //       console.log("Processing row:", row);
+  //       return row._id; // Ensure id exists and is not undefined
+  //     });
+
+  //   console.log("Selected IDs:", selectedIds);
+
+  //   if (selectedIds.length === 0) {
+  //     alert("No rows selected for deletion.");
+  //     return;
+  //   }
+  //   const userConfirmed = window.confirm(
+  //     `Are you sure you want to delete ${selectedIds.length} record(s)?`
+  //   );
+
+  //   if (!userConfirmed) {
+  //     // If the user clicks "Cancel", exit the function
+  //     return;
+  //   }
+  //   try {
+  //     // Define the API endpoint and token
+  //     const apiUrl =
+  //       `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-school`;
+  //     const token = localStorage.getItem('token');
+  //     // Send delete requests for each selected ID
+  //     const deleteRequests = selectedIds.map((id) =>
+  //       fetch(`${apiUrl}/${id}`, {
+  //         method: "DELETE",
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }).then((response) => {
+  //         if (!response.ok) {
+  //           throw new Error(
+  //             `Error deleting record with ID ${id}: ${response.statusText}`
+  //           );
+  //         }
+  //         return response.json();
+  //       })
+  //     );
+
+  //     // Wait for all delete requests to complete
+  //     await Promise.all(deleteRequests);
+
+  //     // Filter out deleted rows
+  //     const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
+
+  //     // Update state
+  //     setFilteredRows(newFilteredRows);
+  //     setSelectAll(false);
+
+  //     alert("Selected records deleted successfully.");
+  //   } catch (error) {
+  //     console.error("Error during deletion:", error);
+  //     alert("Failed to delete selected records.");
+  //   }
+  //   fetchData();
+  // };
   const handleDeleteSelected = async () => {
-    // Log filteredRows to check its structure
-    console.log("Filtered rows:", filteredRows);
-
-    // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
-
-    console.log("Selected IDs:", selectedIds);
-
-    if (selectedIds.length === 0) {
-      alert("No rows selected for deletion.");
-      return;
-    }
-    const userConfirmed = window.confirm(
-      `Are you sure you want to delete ${selectedIds.length} record(s)?`
-    );
-
-    if (!userConfirmed) {
-      // If the user clicks "Cancel", exit the function
-      return;
-    }
     try {
-      // Define the API endpoint and token
-      const apiUrl =
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-school`;
+      // Get selected row IDs
+      const selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => row._id);
+      
+      if (selectedIds.length === 0) {
+        alert("No rows selected for deletion.");
+        return;
+      }
+      
+      const userConfirmed = window.confirm(
+        `Are you sure you want to delete ${selectedIds.length} record(s)?`
+      );
+      if (!userConfirmed) return;
+  
+      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-school`;
       const token = localStorage.getItem('token');
-      // Send delete requests for each selected ID
+  
+      // Send DELETE requests
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
           method: "DELETE",
@@ -471,32 +526,30 @@ const SchoolMaster = () => {
           },
         }).then((response) => {
           if (!response.ok) {
-            throw new Error(
-              `Error deleting record with ID ${id}: ${response.statusText}`
-            );
+            throw new Error(`Error deleting record with ID ${id}: ${response.statusText}`);
           }
           return response.json();
         })
       );
-
-      // Wait for all delete requests to complete
+  
+      // Wait for all deletions
       await Promise.all(deleteRequests);
-
-      // Filter out deleted rows
+  
+      // Filter out deleted rows from UI
       const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
-
-      // Update state
       setFilteredRows(newFilteredRows);
       setSelectAll(false);
-
+      
       alert("Selected records deleted successfully.");
     } catch (error) {
       console.error("Error during deletion:", error);
       alert("Failed to delete selected records.");
     }
+  
+    // Re-fetch data after deletion
     fetchData();
   };
-
+  
   const handleExport = () => {
     const dataToExport = filteredRows.map((row) => {
       const { isSelected, ...rowData } = row;
@@ -505,7 +558,7 @@ const SchoolMaster = () => {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Supervisor.xlsx");
+    XLSX.writeFile(workbook, "schools.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -562,15 +615,20 @@ const SchoolMaster = () => {
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-4-pzsf.onrender.com/school/update-supervisor/${selectedRow.id}`; // Replace with your actual API URL
-    const token = localStorage.getItem('token');
-    // Prepare the updated data
-    const updatedData = {
-      ...formData,
-      isSelected: false,
-    };
 
     try {
+      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/edit-school/${selectedRow._id}`
+        
+
+      const token = localStorage.getItem("token");
+      // Prepare the updated data
+      const updatedData = {
+        ...formData,
+        isSelected: false,
+      };
+
+      console.log(updatedData);
+
       // Perform the PUT request
       const response = await fetch(apiUrl, {
         method: "PUT",
@@ -592,7 +650,7 @@ const SchoolMaster = () => {
       alert("updated successfully");
       // Update local state after successful API call
       const updatedRows = filteredRows.map((row) =>
-        row.id === selectedRow.id
+        row._id === selectedRow._id
           ? { ...row, ...formData, isSelected: false }
           : row
       );
@@ -828,6 +886,18 @@ const SchoolMaster = () => {
                         color="primary"
                       />
                     </TableCell>
+                    <TableCell
+                      style={{
+                        minWidth: 70, // Adjust width if needed
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      S.No.
+                    </TableCell>
                     {COLUMNS()
                       .filter((col) => columnVisibility[col.accessor])
                       .map((column) => (
@@ -889,7 +959,7 @@ const SchoolMaster = () => {
                           hover
                           role="checkbox"
                           tabIndex={-1}
-                          key={row.id}
+                          key={row._id}
                           onClick={() =>
                             handleRowSelect(page * rowsPerPage + index)
                           }
@@ -905,6 +975,23 @@ const SchoolMaster = () => {
                             style={{ borderRight: "1px solid #e0e0e0" }}
                           >
                             <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              minWidth: 70, // Adjust width if needed
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              textAlign: "center",
+                              fontSize: "smaller",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              // borderBottom: "none",
+                            }}
+                          >
+                            {page * rowsPerPage + index + 1}{" "}
+                            {/* Serial number starts from 1 */}
                           </TableCell>
                           {COLUMNS()
                             .filter((col) => columnVisibility[col.accessor])
@@ -978,9 +1065,7 @@ const SchoolMaster = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
+            {COLUMNS().map((col) => (
                 <TextField
                   key={col.accessor}
                   label={col.Header}

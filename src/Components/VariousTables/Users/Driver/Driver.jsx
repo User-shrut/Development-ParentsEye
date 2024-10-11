@@ -1081,52 +1081,40 @@ export const Driver = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
-
+  const [allDevices, setAllDevices] = useState([]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    const decoded = jwtDecode(localStorage.getItem("token"));
-    console.log(decoded.id);
-
-    if (role == 2 && name === "branchName") {
+  
+    if (name === "schoolName") {
       setFormData({
         ...formData,
-        schoolName: decoded.schoolName, // Fetch schoolName from token
-        [name]: value, // Update branch name
+        [name]: value,
+        branchName: "", // Reset branch when school changes
       });
-    } else if (name === "schoolName") {
+      
+      // Filter branches for the selected school
+      const selectedSchool = schools.find(school => school.schoolName === value);
+      if (selectedSchool) {
+        const branches = selectedSchool.branches.map(branch => ({
+          branchName: branch.branchName,
+          branchId: branch.branchId,
+        }));
+        setBranches(branches);
+  
+        // Filter devices for the selected school
+        const filteredDevices = allDevices.filter(device => device.schoolName === value);
+        setBuses(filteredDevices); // Update buses based on selected school
+      }
+    } else if (name === "branchName") {
       setFormData({
         ...formData,
         [name]: value,
       });
-      const selectedSchoolData = schools.find(
-        (school) => school.schoolName === value
-      );
-
-      console.log(selectedSchoolData);
-      if (selectedSchoolData) {
-        const allBranches = [];
-        if (selectedSchoolData.branchName) {
-          allBranches.push({
-            branchName: selectedSchoolData.branchName,
-            branchId: selectedSchoolData._id,
-          });
-        }
-
-        if (
-          selectedSchoolData.branches &&
-          selectedSchoolData.branches.length > 0
-        ) {
-          selectedSchoolData.branches.forEach((branch) => {
-            allBranches.push({
-              branchName: branch.branchName,
-              branchId: branch._id,
-            });
-          });
-        }
-
-        setBranches(allBranches);
-      }
-    } else {
+  
+      // Filter devices for the selected branch
+      const filteredDevices = allDevices.filter(device => device.branchName === value);
+      setBuses(filteredDevices); // Update buses based on selected branch
+    }  else {
       setFormData({
         ...formData,
         [name]: value,
@@ -1136,16 +1124,34 @@ export const Driver = () => {
 
   const handleBusChange = (e) => {
     const { value } = e.target;
-
-    // Find the selected bus object based on the selected deviceId
-    const selectedBus = buses.find((bus) => bus.id === value);
-
-    // Update formData with both deviceId and busName
-    setFormData({
-      ...formData,
-      deviceId: selectedBus.id, // Store deviceId
-      deviceName: selectedBus.name, // Store busName
-    });
+  
+    if (!buses || !Array.isArray(buses)) {
+        console.error("Buses data is not available or not an array");
+        return;
+    }
+  
+    // Find the selected bus by its deviceId
+    const selectedBus = buses.find(bus => bus.deviceId === value);
+  
+    if (!selectedBus) {
+        console.error("Selected bus not found");
+        return;
+    }
+  
+    // Update the form data with the selected device details
+    setFormData((prevData) => ({
+        ...prevData,
+        deviceId: selectedBus.deviceId,
+        deviceName: selectedBus.deviceName,
+        // pickupPoint: '', // Reset geofence selection
+    }));
+  
+    let geofencesForSelectedDevice = [];
+  
+   
+  
+    // Update the filtered geofences state
+   
   };
 
   const handleEditSubmit = async () => {
@@ -1265,7 +1271,7 @@ export const Driver = () => {
   useEffect(() => {
     const fetchSchool = async (startDate = "", endDate = "") => {
       setLoading(true);
-      if (role === 1) {
+      if (role == 1) {
         try {
           const token = localStorage.getItem("token");
           const response = await axios.get(
@@ -1277,11 +1283,12 @@ export const Driver = () => {
             }
           );
 
-          console.log("fetch data", response.data);
+          console.log("fetch data", response.data); // Log the entire response data
 
           if (Array.isArray(response.data.schools)) {
             const allData = response.data.schools;
             setSchools(allData);
+
             console.log(allData);
           } else {
             console.error(
@@ -1294,7 +1301,7 @@ export const Driver = () => {
         } finally {
           setLoading(false);
         }
-      } else if (role === 2) {
+      } else if (role == 2) {
         const apiUrl = `${process.env.REACT_APP_SCHOOL_API}/branches`;
         const token = localStorage.getItem("token");
 
@@ -1313,25 +1320,64 @@ export const Driver = () => {
     };
 
     const fetchBuses = async () => {
-      const url = "http://104.251.216.99:8082/api/devices";
-      const username = "hbtrack";
-      const password = "123456@";
-
-      // Encode credentials to base64 using btoa
-      const token = btoa(`${username}:${password}`);
-
       try {
-        const response = await axios.get(url, {
+        const token = localStorage.getItem("token");
+        const apiUrl =
+          role == 1
+            ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
+            : role == 2
+            ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
+            : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+    
+        const response = await axios.get(apiUrl, {
           headers: {
-            Authorization: `Basic ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-        setBuses(response.data);
-        console.log("Buses Data:", response.data);
+    
+        let allData = [];
+        if (role == 1) {
+          allData = response?.data.data.flatMap((school) =>
+            school.branches.flatMap((branch) =>
+              Array.isArray(branch.devices) && branch.devices.length > 0
+                ? branch.devices.map((device) => ({
+                    ...device,
+                    schoolName: school.schoolName,
+                    branchName: branch.branchName,
+                  }))
+                : []
+            )
+          );
+        } else if (role == 2) {
+          allData = response?.data.branches.flatMap((branch) =>
+            Array.isArray(branch.devices) && branch.devices.length > 0
+              ? branch.devices.map((device) => ({
+                  ...device,
+                  branchName: branch.branchName,
+                  schoolName: response.data.schoolName,
+                }))
+              : []
+          );
+        } else if (role == 3) {
+          const branchName = response.data.branchName;
+          const schoolName = response.data.schoolName;
+    
+          allData = Array.isArray(response.data.devices)
+            ? response.data.devices.map((device) => ({
+                ...device,
+                branchName,
+                schoolName,
+              }))
+            : [];
+        }
+    
+        setAllDevices(allData); // Store all devices
+        setBuses(allData); // Set initial buses as well
+        console.log("filter devices according to branch",allData)
       } catch (error) {
-        console.error("Error fetching buses data:", error);
+        console.error("Error fetching buses:", error);
       }
-    };
+    }
 
     fetchBuses();
     fetchSchool();
@@ -1623,6 +1669,18 @@ export const Driver = () => {
                         color="primary"
                       />
                     </TableCell>
+                    <TableCell
+                      style={{
+                        minWidth: 70, // Adjust width if needed
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      S.No.
+                    </TableCell>
                     {COLUMNS()
                       .filter((col) => columnVisibility[col.accessor])
                       .map((column) => (
@@ -1712,6 +1770,23 @@ export const Driver = () => {
                             style={{ borderRight: "1px solid #e0e0e0" }}
                           >
                             <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              minWidth: 70, // Adjust width if needed
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              textAlign: "center",
+                              fontSize: "smaller",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              // borderBottom: "none",
+                            }}
+                          >
+                            {page * rowsPerPage + index + 1}{" "}
+                            {/* Serial number starts from 1 */}
                           </TableCell>
                           {COLUMNS()
                             .filter((col) => columnVisibility[col.accessor])
@@ -1877,26 +1952,21 @@ export const Driver = () => {
                 </Select>
               </FormControl>
             )}
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"Bus Name"}</InputLabel>
-
-              <Select
-                value={formData["deviceId"] || ""}
-                onChange={handleBusChange}
-                name="busName"
-                label={"Bus Name"}
-              >
-                {buses.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <InputLabel>{"Bus Name"}</InputLabel>
+  <Select
+    value={formData["deviceId"] || ""}
+    onChange={handleBusChange}
+    name="deviceId"
+    label={"Bus Name"}
+  >
+    {buses?.map((option) => (
+      <MenuItem key={option.deviceId} value={option.deviceId}>
+        {option.deviceName}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
             <Button
               variant="contained"
               color="primary"
@@ -2001,26 +2071,21 @@ export const Driver = () => {
                 </Select>
               </FormControl>
             ) : null}
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"Bus Name"}</InputLabel>
-
-              <Select
-                value={formData["deviceId"] || ""}
-                onChange={handleBusChange}
-                name="deviceName"
-                label={"Bus Name"}
-              >
-                {buses.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+           <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <InputLabel>{"Bus Name"}</InputLabel>
+  <Select
+    value={formData["deviceId"] || ""}
+    onChange={handleBusChange}
+    name="deviceId"
+    label={"Bus Name"}
+  >
+    {buses?.map((option) => (
+      <MenuItem key={option.deviceId} value={option.deviceId}>
+        {option.deviceName}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
             <Button
               variant="contained"
               color="primary"

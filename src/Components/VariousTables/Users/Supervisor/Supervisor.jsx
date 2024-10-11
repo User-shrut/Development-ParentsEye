@@ -1076,60 +1076,128 @@ export const Supervisor = () => {
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
+  const [allDevices, setAllDevices] = useState([]);
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+  //   if (name == "schoolName") {
+  //     const selectedSchoolData = schools.find(
+  //       (school) => school.schoolName === value
+  //     );
 
+  //     console.log(selectedSchoolData);
+  //     if (selectedSchoolData) {
+  //       // Combine branchName and branches
+  //       const allBranches = [];
+  //       if (selectedSchoolData.branchName) {
+  //         allBranches.push({
+  //           branchName: selectedSchoolData.branchName,
+  //           branchId: selectedSchoolData._id,
+  //         });
+  //       }
+
+  //       if (
+  //         selectedSchoolData.branches &&
+  //         selectedSchoolData.branches.length > 0
+  //       ) {
+  //         selectedSchoolData.branches.forEach((branch) => {
+  //           allBranches.push({
+  //             branchName: branch.branchName,
+  //             branchId: branch._id,
+  //           });
+  //         });
+  //       }
+
+  //       setBranches(allBranches);
+  //     }
+  //   }
+  // };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-    if (name == "schoolName") {
-      const selectedSchoolData = schools.find(
-        (school) => school.schoolName === value
-      );
-
-      console.log(selectedSchoolData);
-      if (selectedSchoolData) {
-        // Combine branchName and branches
-        const allBranches = [];
-        if (selectedSchoolData.branchName) {
-          allBranches.push({
-            branchName: selectedSchoolData.branchName,
-            branchId: selectedSchoolData._id,
-          });
-        }
-
-        if (
-          selectedSchoolData.branches &&
-          selectedSchoolData.branches.length > 0
-        ) {
-          selectedSchoolData.branches.forEach((branch) => {
-            allBranches.push({
-              branchName: branch.branchName,
-              branchId: branch._id,
-            });
-          });
-        }
-
-        setBranches(allBranches);
+  
+    if (name === "schoolName") {
+      setFormData({
+        ...formData,
+        [name]: value,
+        branchName: "", // Reset branch when school changes
+      });
+      
+      // Filter branches for the selected school
+      const selectedSchool = schools.find(school => school.schoolName === value);
+      if (selectedSchool) {
+        const branches = selectedSchool.branches.map(branch => ({
+          branchName: branch.branchName,
+          branchId: branch.branchId,
+        }));
+        setBranches(branches);
+  
+        // Filter devices for the selected school
+        const filteredDevices = allDevices.filter(device => device.schoolName === value);
+        setBuses(filteredDevices); // Update buses based on selected school
       }
+    } else if (name === "branchName") {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+  
+      // Filter devices for the selected branch
+      const filteredDevices = allDevices.filter(device => device.branchName === value);
+      setBuses(filteredDevices); // Update buses based on selected branch
+    }  else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     }
   };
+  // const handleBusChange = (e) => {
+  //   const { value } = e.target;
 
+  //   // Find the selected bus object based on the selected deviceId
+  //   const selectedBus = buses.find((bus) => bus.id === value);
+
+  //   // Update formData with both deviceId and busName
+  //   setFormData({
+  //     ...formData,
+  //     deviceId: selectedBus.id, // Store deviceId
+  //     deviceName: selectedBus.name, // Store busName
+  //   });
+  // };
   const handleBusChange = (e) => {
     const { value } = e.target;
-
-    // Find the selected bus object based on the selected deviceId
-    const selectedBus = buses.find((bus) => bus.id === value);
-
-    // Update formData with both deviceId and busName
-    setFormData({
-      ...formData,
-      deviceId: selectedBus.id, // Store deviceId
-      deviceName: selectedBus.name, // Store busName
-    });
+  
+    if (!buses || !Array.isArray(buses)) {
+        console.error("Buses data is not available or not an array");
+        return;
+    }
+  
+    // Find the selected bus by its deviceId
+    const selectedBus = buses.find(bus => bus.deviceId === value);
+  
+    if (!selectedBus) {
+        console.error("Selected bus not found");
+        return;
+    }
+  
+    // Update the form data with the selected device details
+    setFormData((prevData) => ({
+        ...prevData,
+        deviceId: selectedBus.deviceId,
+        deviceName: selectedBus.deviceName,
+        // pickupPoint: '', // Reset geofence selection
+    }));
+  
+    let geofencesForSelectedDevice = [];
+  
+   
+  
+    // Update the filtered geofences state
+   
   };
-
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
     
@@ -1313,25 +1381,64 @@ export const Supervisor = () => {
     };
 
     const fetchBuses = async () => {
-      const url = "http://104.251.216.99:8082/api/devices";
-      const username = "hbtrack";
-      const password = "123456@";
-
-      // Encode credentials to base64 using btoa
-      const token = btoa(`${username}:${password}`);
-
       try {
-        const response = await axios.get(url, {
+        const token = localStorage.getItem("token");
+        const apiUrl =
+          role == 1
+            ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
+            : role == 2
+            ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
+            : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+    
+        const response = await axios.get(apiUrl, {
           headers: {
-            Authorization: `Basic ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-        setBuses(response.data);
-        console.log("Buses Data:", response.data);
+    
+        let allData = [];
+        if (role == 1) {
+          allData = response?.data.data.flatMap((school) =>
+            school.branches.flatMap((branch) =>
+              Array.isArray(branch.devices) && branch.devices.length > 0
+                ? branch.devices.map((device) => ({
+                    ...device,
+                    schoolName: school.schoolName,
+                    branchName: branch.branchName,
+                  }))
+                : []
+            )
+          );
+        } else if (role == 2) {
+          allData = response?.data.branches.flatMap((branch) =>
+            Array.isArray(branch.devices) && branch.devices.length > 0
+              ? branch.devices.map((device) => ({
+                  ...device,
+                  branchName: branch.branchName,
+                  schoolName: response.data.schoolName,
+                }))
+              : []
+          );
+        } else if (role == 3) {
+          const branchName = response.data.branchName;
+          const schoolName = response.data.schoolName;
+    
+          allData = Array.isArray(response.data.devices)
+            ? response.data.devices.map((device) => ({
+                ...device,
+                branchName,
+                schoolName,
+              }))
+            : [];
+        }
+    
+        setAllDevices(allData); // Store all devices
+        setBuses(allData); // Set initial buses as well
+        console.log("filter devices according to branch",allData)
       } catch (error) {
-        console.error("Error fetching buses data:", error);
+        console.error("Error fetching buses:", error);
       }
-    };
+    }
 
     fetchBuses();
 
@@ -1626,6 +1733,18 @@ export const Supervisor = () => {
                         color="primary"
                       />
                     </TableCell>
+                    <TableCell
+                      style={{
+                        minWidth: 70, // Adjust width if needed
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      S.No.
+                    </TableCell>
                     {COLUMNS()
                       .filter((col) => columnVisibility[col.accessor])
                       .map((column) => (
@@ -1715,6 +1834,23 @@ export const Supervisor = () => {
                             style={{ borderRight: "1px solid #e0e0e0" }}
                           >
                             <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              minWidth: 70, // Adjust width if needed
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              textAlign: "center",
+                              fontSize: "smaller",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              // borderBottom: "none",
+                            }}
+                          >
+                            {page * rowsPerPage + index + 1}{" "}
+                            {/* Serial number starts from 1 */}
                           </TableCell>
                           {COLUMNS()
                             .filter((col) => columnVisibility[col.accessor])
@@ -1852,7 +1988,7 @@ export const Supervisor = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1, -5)
+              .slice(0, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -1905,26 +2041,21 @@ export const Supervisor = () => {
                 ))}
               </Select>
             </FormControl> */}
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"Bus Name"}</InputLabel>
-
-              <Select
-                value={formData["deviceId"] || ""}
-                onChange={handleBusChange}
-                name="busName"
-                label={"Bus Name"}
-              >
-                {buses.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+               <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <InputLabel>{"Bus Name"}</InputLabel>
+  <Select
+    value={formData["deviceId"] || ""}
+    onChange={handleBusChange}
+    name="deviceId"
+    label={"Bus Name"}
+  >
+    {buses?.map((option) => (
+      <MenuItem key={option.deviceId} value={option.deviceId}>
+        {option.deviceName}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
             <Button
               variant="contained"
               color="primary"
@@ -1950,7 +2081,7 @@ export const Supervisor = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1, -5)
+              .slice(0, -5)
               .map((col) => (
                 <TextField
                   key={col.accessor}
@@ -2008,26 +2139,21 @@ export const Supervisor = () => {
                 </Select>
               </FormControl>
             )}
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"Bus Name"}</InputLabel>
-
-              <Select
-                value={formData["deviceId"] || ""}
-                onChange={handleBusChange}
-                name="deviceName"
-                label={"Bus Name"}
-              >
-                {buses.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <InputLabel>{"Bus Name"}</InputLabel>
+  <Select
+    value={formData["deviceId"] || ""}
+    onChange={handleBusChange}
+    name="deviceId"
+    label={"Bus Name"}
+  >
+    {buses?.map((option) => (
+      <MenuItem key={option.deviceId} value={option.deviceId}>
+        {option.deviceName}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
             <Button
               variant="contained"
               color="primary"
