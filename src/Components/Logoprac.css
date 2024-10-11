@@ -127,12 +127,13 @@ height: 60px;
             font-size: 20px;
         }
         .button-col button{
-            background-color: #def01a;
+            background-color: rgb(244, 210, 74);
         width: 90px;
         height:40px;
         font-size: 20px;
         color: black;
         border: none;
+        padding: 0px 34px;
         }
         .setinput input{
         height: 60px;
@@ -205,7 +206,7 @@ height: 60px;
           }
           
           .button-col button {
-            background-color: #def01a;
+            background-color: rgb(244, 210, 74);
             width: 100%;
             height: 40px; /* Reduced button height */
             font-size: 16px; /* Smaller font size */

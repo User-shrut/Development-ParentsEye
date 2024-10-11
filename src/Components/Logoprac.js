@@ -615,7 +615,7 @@ const Logoprac = () => {
 
         <div className="nedd-sign">
           <div>
-            <a style={{color:"black"}} href="https://hbgadget.in/">Need Help ?</a>
+            <a style={{color:"#FD8B37"}} href="https://hbgadget.in/">Need Help ?</a>
           </div>
           <div className="button-col">
             <button
