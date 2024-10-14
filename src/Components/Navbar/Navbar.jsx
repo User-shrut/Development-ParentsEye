@@ -40,7 +40,7 @@ const pages = [
   
   { title: 'School', icon: <DriveEtaIcon />, arr:['Student Detail','Geofence','Pickup And Drop List', 'Absent','Present','Leave','Status','Approved Request','Denied Request'] },
   { title: 'Users', icon: <DriveEtaIcon />, arr:["SchoolMaster", "BranchMaster",'Driver', 'Parent','Supervisor','AddDevices','MyBranchDevices'] },
-  { title: 'Geofencing', icon: <DriveEtaIcon />, arr: ['Create Landmark', 'Edit Landmarks','Create Route','Edit Routes','Create Area','Edit Areas','Create Zone','Edit Zones','Trips'] },
+  // { title: 'Geofencing', icon: <DriveEtaIcon />, arr: ['Create Landmark', 'Edit Landmarks','Create Route','Edit Routes','Create Area','Edit Areas','Create Zone','Edit Zones','Trips'] },
   //  { title: 'Reports', icon: <BarChartIcon />, arr: ['Summary', 'Stop Report', 'Area In/Out Report', 'Area Report', 'Landmark Distance', 'Landmark Report', 'Location Wise Distance', 'Distance Report', 'Run Report', 'Distance Graph', 'Speed Graph', 'Trip Report', 'All Point Report','RFID','Distance Between Report','Vehicle Average','Alerts','Data Logs','AC Report', 'Petrolling Report','Bin Details Report','ETA details report','ETA details'] },
    { title: 'ReportsUpdated', icon: <BarChartIcon />, arr: ['Combined','Route','Event','Trips','Stops','Summary','Statistics'] },
   // {title: 'Institutestudent', icon: <BarChartIcon />, arr: ['Combined1','Route1','Events1','Trips1','Stops1','Summary1','Statistics1','Newdemo',"New2","Server2"]}
