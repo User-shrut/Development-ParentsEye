@@ -125,59 +125,277 @@ function App() {
   // const handleDrivername = () => {};
   // const handleMobileNo = () => {};
   //API FETCHING
+  const role = localStorage.getItem("role");
   const [deviceApiData, setDeviceApiData] = useState([]); // State variable to store device API data
   const [positionApiData, setPositionApiData] = useState([]); // State variable to store position API data
+  const [hierarchydeviceData,sethierarchydeviceData]=useState([]);
   const [mergedData, setMergedData] = useState([]);
   const username = "hbtrack";
   const password = "123456@";
+  // useEffect(() => {
+  //   const fetchBuses = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const apiUrl =
+  //         role == 1
+  //           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
+  //           : role == 2
+  //           ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
+  //           : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+    
+  //       const response = await axios.get(apiUrl, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+    
+  //       let allData = [];
+  //       if (role == 1) {
+  //         // Loop through each school
+  //         response.data.data.forEach((school) => {
+  //           const schoolName = school.schoolName;
+            
+  //           // Loop through each branch of the school
+  //           school.branches.forEach((branch) => {
+  //             const branchName = branch.branchName;
+              
+  //             // Loop through each device in the branch and store relevant data
+  //             branch.devices.forEach((device) => {
+  //               allData.push({
+  //                 schoolId: school.schoolId,
+  //                 schoolName: schoolName,
+  //                 branchId: branch.branchId,
+  //                 branchName: branchName,
+  //                 actualDeviceId: device.actualDeviceId,
+  //                 deviceId: device.deviceId,
+  //                 deviceName: device.deviceName,
+  //               });
+  //             });
+  //           });
+  //         });
+  //       } else if (role == 2) {
+         
+  //       } else if (role == 3) {
+          
+  //       }
+    
+  //      sethierarchydeviceData(allData);
+  //        console.log("My data:",allData)
+  //     } catch (error) {
+  //       console.error("Error fetching buses:", error);
+  //     }
+  //   };
+
+  //   const fetchDeviceData = async () => {
+  //     try {
+
+
+  //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
+  //       const response1 = await axios.get(
+  //           "http://104.251.212.84/api/devices",
+  //         {
+  //           headers: {
+  //             Authorization: `Basic ${token}`, // Replace with your actual token
+  //           },
+  //         }
+  //       );
+
+  //       setDeviceApiData(response1.data); // Update state variable with device API data
+  //     } catch (error) {
+  //       console.error("Error fetching device data:", error);
+  //     }
+  //   };
+
+  //   const fetchPositionData = async () => {
+  //     try {
+
+  //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
+
+  //       const response2 = await axios.get(
+  //            "http://104.251.212.84/api/positions",
+  //         {
+  //           headers: {
+  //             Authorization: `Basic ${token}`,
+  //           },
+  //         }
+  //       );
+
+  //       setPositionApiData(response2.data); // Update state variable with position API data
+  //     } catch (error) {
+  //       console.error("Error fetching position data:", error);
+  //     }
+  //   };
+  //   fetchBuses();
+  //   fetchDeviceData();
+  //   fetchPositionData();
+  // },[]); // Empty dependency array ensures this effect runs only once on component mount
+
+ 
+
+  // useEffect(() => {
+  //   if (deviceApiData?.length > 0 && positionApiData?.length > 0) {
+  //     // Assuming both APIs have a common key to merge data, e.g., 'deviceId'
+  //     const merged = deviceApiData.map((device) => {
+  //       const position = positionApiData.find(
+  //         (pos) => pos.deviceId == device.id
+  //       );
+  //       return { ...device, ...position };
+  //     });
+  //     setMergedData(merged);
+  //     console.log(merged)
+  //     console.log(deviceApiData)
+  //     console.log(positionApiData)
+  //     // setFilteredRows(merged.map(row => ({ ...row, isSelected: false })));
+  //   }
+  // }, [deviceApiData, positionApiData]);
+
   useEffect(() => {
-    const fetchDeviceData = async () => {
+    const fetchBuses = async () => {
       try {
-
-
+        const token = localStorage.getItem("token");
+        const apiUrl =
+          role == 1
+            ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
+            : role == 2
+            ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
+            : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+  
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        let allData = [];
+        let deviceIdsFromBuses = []; // To store deviceIds from the buses
+  
+        if (role == 1) {
+          // Loop through each school
+          response.data.data.forEach((school) => {
+            const schoolName = school.schoolName;
+  
+            // Loop through each branch of the school
+            school.branches.forEach((branch) => {
+              const branchName = branch.branchName;
+  
+              // Loop through each device in the branch and store relevant data
+              branch.devices.forEach((device) => {
+                allData.push({
+                  schoolId: school.schoolId,
+                  schoolName: schoolName,
+                  branchId: branch.branchId,
+                  branchName: branchName,
+                  actualDeviceId: device.actualDeviceId,
+                  deviceId: device.deviceId, // This is the deviceId from buses
+                  deviceName: device.deviceName,
+                });
+  
+                // Collect deviceIds
+                deviceIdsFromBuses.push(device.deviceId);
+              });
+            });
+          });
+        }else if (role == 2) {
+          // Handling for role 2 (School Admin)
+          response.data.branches.forEach((branch) => {
+            const branchName = branch.branchName;
+            branch.devices.forEach((device) => {
+              allData.push({
+                schoolId: response.data.schoolId, // Directly from the response
+                branchId: branch.branchId,
+                branchName: branchName,
+                actualDeviceId: device.actualDeviceId,
+                deviceId: device.deviceId,
+                deviceName: device.deviceName,
+              });
+              deviceIdsFromBuses.push(device.deviceId);
+            });
+          });
+        }else if (role == 3) {
+          // Handling for role 3 (Branch Admin)
+          const schoolName = response.data.schoolName;
+          const branchName = response.data.branchName;
+  
+          response.data.devices.forEach((device) => {
+            allData.push({
+              schoolName: schoolName,
+              branchName: branchName,
+              actualDeviceId: device.actualDeviceId,
+              deviceId: device.deviceId,
+              deviceName: device.deviceName,
+            });
+  
+            // Collect deviceIds
+            deviceIdsFromBuses.push(device.deviceId);
+          });
+        }
+        
+        // Store the hierarchy data for further use
+        sethierarchydeviceData(allData);
+        console.log("Hierarchy device data:", allData);
+  
+        // Call fetchDeviceData now with the collected deviceIds
+        await fetchDeviceData(deviceIdsFromBuses);
+      } catch (error) {
+        console.error("Error fetching buses:", error);
+      }
+    };
+  
+    const fetchDeviceData = async (deviceIdsFromBuses) => {
+      try {
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
         const response1 = await axios.get(
-            "http://104.251.212.84/api/devices",
+          "http://104.251.212.84/api/devices",
           {
             headers: {
               Authorization: `Basic ${token}`, // Replace with your actual token
             },
           }
         );
-
-        setDeviceApiData(response1.data); // Update state variable with device API data
+    
+        // Log the data for debugging
+        console.log("Device API Data:", response1.data);
+        console.log("Device IDs from Buses:", deviceIdsFromBuses);
+    
+        // Ensure both are strings for comparison
+        const filteredDeviceData = response1.data.filter((device) =>
+          deviceIdsFromBuses.includes(String(device.id)) // Convert device.id to string
+        );
+    
+        // Log the filtered result
+        console.log("Filtered Device Data:", filteredDeviceData);
+    
+        // Store the filtered device data
+        setDeviceApiData(filteredDeviceData);
       } catch (error) {
         console.error("Error fetching device data:", error);
       }
     };
-
+    
+  
     const fetchPositionData = async () => {
       try {
-
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-
         const response2 = await axios.get(
-             "http://104.251.212.84/api/positions",
+          "http://104.251.212.84/api/positions",
           {
             headers: {
               Authorization: `Basic ${token}`,
             },
           }
         );
-
+  
         setPositionApiData(response2.data); // Update state variable with position API data
       } catch (error) {
         console.error("Error fetching position data:", error);
       }
     };
-
-    fetchDeviceData();
+  
+    // Trigger fetching data when the component mounts
+    fetchBuses();
     fetchPositionData();
-  },[]); // Empty dependency array ensures this effect runs only once on component mount
-
-  // console.log(deviceApiData)
-  // console.log(positionApiData)
-
+  }, []); // Empty dependency array ensures this effect runs only once on component mount
+  
   useEffect(() => {
     if (deviceApiData?.length > 0 && positionApiData?.length > 0) {
       // Assuming both APIs have a common key to merge data, e.g., 'deviceId'
@@ -188,16 +406,10 @@ function App() {
         return { ...device, ...position };
       });
       setMergedData(merged);
-      console.log(merged)
-      console.log(deviceApiData)
-      console.log(positionApiData)
-      // setFilteredRows(merged.map(row => ({ ...row, isSelected: false })));
+      console.log("Merged data:", merged);
     }
   }, [deviceApiData, positionApiData]);
-
-  // console.log(mergedData)
-
-  // console.log(tabs[selectedTab]);
+  
 
   const handleClickSideBar = (data) => {
     setState(data);

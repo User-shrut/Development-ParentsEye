@@ -2414,13 +2414,13 @@ const BranchMaster = () => {
     variant="outlined"
     style={{ fontSize: "smaller" }}
   >
-    <MenuItem value="" disabled>
+    <MenuItem value="" >
       All Devices
     </MenuItem>
 
     {/* Access row.devices */}
     {row?.devices?.map((device) => (
-      <MenuItem key={device.deviceId} value={device.deviceId}>
+      <MenuItem key={device.deviceId} value={device.deviceId} disabled>
         {device.deviceName}
       </MenuItem>
     ))}

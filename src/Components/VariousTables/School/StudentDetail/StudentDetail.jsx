@@ -40,7 +40,7 @@ import {
 import { MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 //import { TextField } from '@mui/material';
-
+import { Autocomplete } from "@mui/material";
 const style = {
   position: "absolute",
   top: "50%",
@@ -1826,7 +1826,7 @@ const handleBusChange = (e) => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Parent</h2>
+              <h2 style={{ flexGrow: 1 }}>Add student</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
@@ -1913,7 +1913,7 @@ const handleBusChange = (e) => {
               fullWidth
             />
 
-            <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <InputLabel id="demo-simple-select-label">Class</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -1934,8 +1934,28 @@ const handleBusChange = (e) => {
                 <MenuItem value={9}>9</MenuItem>
                 <MenuItem value={10}>10</MenuItem>
               </Select>
-            </FormControl>
-
+            </FormControl> */}
+<FormControl fullWidth sx={{ marginBottom: "10px" }}>
+  <Autocomplete
+    id="searchable-select"
+    options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}  // Array of values to choose from
+    getOptionLabel={(option) => option.toString()}  // Convert numeric values to string for display
+    value={formData["class"] || null}
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "class", value: newValue },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Class"
+        variant="outlined"
+        name="class"
+      />
+    )}
+  />
+</FormControl>
             <TextField
               key={"roleno"}
               label={"Roll No"}
@@ -1958,7 +1978,7 @@ const handleBusChange = (e) => {
             />
             {role == 1 ? (
               <>
-                <FormControl
+                {/* <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
                   fullWidth
@@ -1977,8 +1997,29 @@ const handleBusChange = (e) => {
                       </MenuItem>
                     ))}
                   </Select>
-                </FormControl>
-                <FormControl
+                </FormControl> */}
+                <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-school-select"
+    options={schools || []} // Ensure schools is an array
+    getOptionLabel={(option) => option.schoolName || ""} // Display school name
+    value={Array.isArray(schools) ? schools.find(school => school.schoolName === formData["schoolName"]) : null} // Safely find the selected school
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "schoolName", value: newValue?.schoolName || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="School Name"
+        variant="outlined"
+        name="schoolName"
+      />
+    )}
+  />
+</FormControl>
+                {/* <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
                   fullWidth
@@ -1997,29 +2038,71 @@ const handleBusChange = (e) => {
                       </MenuItem>
                     ))}
                   </Select>
-                </FormControl>
+                </FormControl> */}
+                 <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-branch-select"
+    options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
+    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) : null} // Safely find the selected branch
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "branchName", value: newValue?.branchName || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Branch Name"
+        variant="outlined"
+        name="branchName"
+      />
+    )}
+  />
+</FormControl>
               </>
             ) : role == 2 ? (
-              <FormControl
-                variant="outlined"
-                sx={{ marginBottom: "10px" }}
-                fullWidth
-              >
-                <InputLabel>{"Branch Name"}</InputLabel>
+              // <FormControl
+              //   variant="outlined"
+              //   sx={{ marginBottom: "10px" }}
+              //   fullWidth
+              // >
+              //   <InputLabel>{"Branch Name"}</InputLabel>
 
-                <Select
-                  value={formData["branchName"] || ""}
-                  onChange={handleInputChange}
-                  name="branchName"
-                  label={"Branch Name"}
-                >
-                  {branches?.map((option) => (
-                    <MenuItem key={option.branchId} value={option.branchName}>
-                      {option.branchName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              //   <Select
+              //     value={formData["branchName"] || ""}
+              //     onChange={handleInputChange}
+              //     name="branchName"
+              //     label={"Branch Name"}
+              //   >
+              //     {branches?.map((option) => (
+              //       <MenuItem key={option.branchId} value={option.branchName}>
+              //         {option.branchName}
+              //       </MenuItem>
+              //     ))}
+              //   </Select>
+              // </FormControl>
+              <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+              <Autocomplete
+                id="searchable-branch-select"
+                options={branches || []} // List of branch objects
+                getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
+                onChange={(event, newValue) => {
+                  handleInputChange({
+                    target: { name: "branchName", value: newValue?.branchName || "" },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Branch Name"
+                    variant="outlined"
+                    name="branchName"
+                  />
+                )}
+              />
+            </FormControl>
             ) : null}
             {/* <FormControl
   variant="outlined"
@@ -2041,7 +2124,7 @@ const handleBusChange = (e) => {
     ))}
   </Select>
 </FormControl> */}
- <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+ {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <InputLabel>{"Bus Name"}</InputLabel>
   <Select
     value={formData["deviceId"] || ""}
@@ -2055,10 +2138,30 @@ const handleBusChange = (e) => {
       </MenuItem>
     ))}
   </Select>
+</FormControl> */}
+<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-bus-select"
+    options={Array.isArray(buses) ? buses : []} // Ensure buses is an array
+    getOptionLabel={(option) => option.deviceName || ""} // Display bus name
+    value={Array.isArray(buses) ? buses.find(bus => bus.deviceId === formData["deviceId"]) : null} // Safely find the selected bus
+    onChange={(event, newValue) => {
+      handleBusChange({
+        target: { name: "deviceId", value: newValue?.deviceId || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Bus Name"
+        variant="outlined"
+        name="deviceId"
+      />
+    )}
+  />
 </FormControl>
-
 {/* Geofences display based on selected Bus */}
-<FormControl fullWidth sx={{ marginBottom: "10px" }}>
+{/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="geofence-id-label">Select Geofence</InputLabel>
   <Select
     labelId="geofence-id-label"
@@ -2069,15 +2172,35 @@ const handleBusChange = (e) => {
     {filteredGeofences.length > 0 ? (
       filteredGeofences.map(geofence => (
         <MenuItem key={geofence._id} value={geofence.name}>
-          {geofence.name} {/* Display geofence name */}
+          {geofence.name} 
         </MenuItem>
       ))
     ) : (
       <MenuItem disabled>No geofences available</MenuItem>
     )}
   </Select>
+</FormControl> */}
+<FormControl fullWidth sx={{ marginBottom: "10px" }}>
+  <Autocomplete
+    id="geofence-autocomplete"
+    options={filteredGeofences || []} // List of geofence objects
+    getOptionLabel={(option) => option.name || ""} // Display geofence name
+    value={filteredGeofences.find(geofence => geofence.name === formData["pickupPoint"]) || null} // Find the selected geofence
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "pickupPoint", value: newValue?.name || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Select Geofence"
+        variant="outlined"
+        name="pickupPoint"
+      />
+    )}
+  />
 </FormControl>
-
 
 
 
@@ -2180,7 +2303,7 @@ const handleBusChange = (e) => {
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add Parent</h2>
+              <h2 style={{ flexGrow: 1 }}>Add Student</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
@@ -2267,7 +2390,7 @@ const handleBusChange = (e) => {
               fullWidth
             />
 
-            <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <InputLabel id="demo-simple-select-label">Class</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -2288,8 +2411,28 @@ const handleBusChange = (e) => {
                 <MenuItem value={9}>9</MenuItem>
                 <MenuItem value={10}>10</MenuItem>
               </Select>
-            </FormControl>
-
+            </FormControl> */}
+<FormControl fullWidth sx={{ marginBottom: "10px" }}>
+  <Autocomplete
+    id="searchable-select"
+    options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}  // Array of values to choose from
+    getOptionLabel={(option) => option.toString()}  // Convert numeric values to string for display
+    value={formData["class"] || null}
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "class", value: newValue },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Class"
+        variant="outlined"
+        name="class"
+      />
+    )}
+  />
+</FormControl>
             <TextField
               key={"roleno"}
               label={"Roll No"}
@@ -2312,7 +2455,7 @@ const handleBusChange = (e) => {
             />
             {role == 1 ? (
               <>
-                <FormControl
+                {/* <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
                   fullWidth
@@ -2331,8 +2474,29 @@ const handleBusChange = (e) => {
                       </MenuItem>
                     ))}
                   </Select>
-                </FormControl>
-                <FormControl
+                </FormControl> */}
+                <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-school-select"
+    options={schools || []} // Ensure schools is an array
+    getOptionLabel={(option) => option.schoolName || ""} // Display school name
+    value={Array.isArray(schools) ? schools.find(school => school.schoolName === formData["schoolName"]) : null} // Safely find the selected school
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "schoolName", value: newValue?.schoolName || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="School Name"
+        variant="outlined"
+        name="schoolName"
+      />
+    )}
+  />
+</FormControl>
+                {/* <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
                   fullWidth
@@ -2351,29 +2515,71 @@ const handleBusChange = (e) => {
                       </MenuItem>
                     ))}
                   </Select>
-                </FormControl>
+                </FormControl> */}
+                <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-branch-select"
+    options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
+    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) : null} // Safely find the selected branch
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "branchName", value: newValue?.branchName || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Branch Name"
+        variant="outlined"
+        name="branchName"
+      />
+    )}
+  />
+</FormControl>
               </>
             ) : role == 2 ? (
-              <FormControl
-                variant="outlined"
-                sx={{ marginBottom: "10px" }}
-                fullWidth
-              >
-                <InputLabel>{"Branch Name"}</InputLabel>
+              // <FormControl
+              //   variant="outlined"
+              //   sx={{ marginBottom: "10px" }}
+              //   fullWidth
+              // >
+              //   <InputLabel>{"Branch Name"}</InputLabel>
 
-                <Select
-                  value={formData["branchName"] || ""}
-                  onChange={handleInputChange}
-                  name="branchName"
-                  label={"Branch Name"}
-                >
-                  {branches?.map((option) => (
-                    <MenuItem key={option.branchId} value={option.branchName}>
-                      {option.branchName}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              //   <Select
+              //     value={formData["branchName"] || ""}
+              //     onChange={handleInputChange}
+              //     name="branchName"
+              //     label={"Branch Name"}
+              //   >
+              //     {branches?.map((option) => (
+              //       <MenuItem key={option.branchId} value={option.branchName}>
+              //         {option.branchName}
+              //       </MenuItem>
+              //     ))}
+              //   </Select>
+              // </FormControl>
+              <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+              <Autocomplete
+                id="searchable-branch-select"
+                options={branches || []} // List of branch objects
+                getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
+                onChange={(event, newValue) => {
+                  handleInputChange({
+                    target: { name: "branchName", value: newValue?.branchName || "" },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Branch Name"
+                    variant="outlined"
+                    name="branchName"
+                  />
+                )}
+              />
+            </FormControl>
             ) : null}
             {/* <FormControl
   variant="outlined"
@@ -2395,7 +2601,7 @@ const handleBusChange = (e) => {
     ))}
   </Select>
 </FormControl> */}
- <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+ {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <InputLabel>{"Bus Name"}</InputLabel>
   <Select
     value={formData["deviceId"] || ""}
@@ -2409,10 +2615,30 @@ const handleBusChange = (e) => {
       </MenuItem>
     ))}
   </Select>
+</FormControl> */}
+<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-bus-select"
+    options={Array.isArray(buses) ? buses : []} // Ensure buses is an array
+    getOptionLabel={(option) => option.deviceName || ""} // Display bus name
+    value={Array.isArray(buses) ? buses.find(bus => bus.deviceId === formData["deviceId"]) : null} // Safely find the selected bus
+    onChange={(event, newValue) => {
+      handleBusChange({
+        target: { name: "deviceId", value: newValue?.deviceId || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Bus Name"
+        variant="outlined"
+        name="deviceId"
+      />
+    )}
+  />
 </FormControl>
-
 {/* Geofences display based on selected Bus */}
-<FormControl fullWidth sx={{ marginBottom: "10px" }}>
+{/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="geofence-id-label">Select Geofence</InputLabel>
   <Select
     labelId="geofence-id-label"
@@ -2423,15 +2649,35 @@ const handleBusChange = (e) => {
     {filteredGeofences.length > 0 ? (
       filteredGeofences.map(geofence => (
         <MenuItem key={geofence._id} value={geofence.name}>
-          {geofence.name} {/* Display geofence name */}
+          {geofence.name} 
         </MenuItem>
       ))
     ) : (
       <MenuItem disabled>No geofences available</MenuItem>
     )}
   </Select>
+</FormControl> */}
+<FormControl fullWidth sx={{ marginBottom: "10px" }}>
+  <Autocomplete
+    id="geofence-autocomplete"
+    options={filteredGeofences || []} // List of geofence objects
+    getOptionLabel={(option) => option.name || ""} // Display geofence name
+    value={filteredGeofences.find(geofence => geofence.name === formData["pickupPoint"]) || null} // Find the selected geofence
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "pickupPoint", value: newValue?.name || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Select Geofence"
+        variant="outlined"
+        name="pickupPoint"
+      />
+    )}
+  />
 </FormControl>
-
 
 
 

@@ -427,8 +427,7 @@ export const Tablee = ({ data }) => {
   const handleSelectVehicle = (event) => {
     setVehiclesValue(event.target.value);
   };
-  // const [usersValue, setUsersValue] = useState("");
-  // const [filteredRows, setFilteredRows] = useState([]);
+  
   const [totalResponses, setTotalResponses] = useState(0);
   const fetchData = async () => {
     console.log("Fetching data...");
@@ -531,104 +530,6 @@ export const Tablee = ({ data }) => {
     fetchAreasData();
   }, []);
 
-  const fetchDataDriver = async (startDate = "", endDate = "") => {
-    // setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      let response;
-      if (role == 1) {
-        response = await axios.get(
-          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-drivers`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } else if (role == 2) {
-        response = await axios.get(
-          `${process.env.REACT_APP_SCHOOL_API}/read-drivers`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      } else if (role == 3) {
-        response = await axios.get(
-          `${process.env.REACT_APP_BRANCH_API}/read-drivers`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
-
-      console.log("fetch data", response.data);
-
-      if (response?.data) {
-        console.log(response.data);
-        const allData =
-          role == 1
-            ? response?.data.data.flatMap((school) =>
-                school.branches.flatMap((branch) =>
-                  Array.isArray(branch.drivers) && branch.drivers.length > 0
-                    ? branch.drivers
-                    : []
-                )
-              )
-            : role == 2
-            ? response?.data.branches.flatMap((branch) => branch.drivers)
-            : response?.data.drivers;
-
-        // setDrivers(allData);
-        // console.log("hey drivers");
-        console.log("drivers : ", allData);
-
-        // Apply local date filtering if dates are provided
-        // const filteredData =
-        //   startDate || endDate
-        //     ? allData.filter((row) => {
-        //         const registrationDate = parseDate(
-        //           row.formattedRegistrationDate
-        //         );
-        //         const start = parseDate(startDate);
-        //         const end = parseDate(endDate);
-
-        //         return (
-        //           (!startDate || registrationDate >= start) &&
-        //           (!endDate || registrationDate <= end)
-        //         );
-        //       })
-        //     : allData;
-        console.log("this is drivers data", allData);
-
-        setDrivers(allData); // If no date range, use all data
-        // const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-        // setFilteredRows(
-        //   reversedData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(reversedData.length);
-        // setFilteredRows(
-        //   filteredData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-        // setTotalResponses(filteredData.length);
-      } else {
-        console.error("Expected an array but got:", response.data.drivers);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-  useEffect(() => {
-    fetchDataDriver();
-  }, []);
   // const fetchDataDriver = async (startDate = "", endDate = "") => {
   //   // setLoading(true);
   //   try {
@@ -680,6 +581,13 @@ export const Tablee = ({ data }) => {
   //           ? response?.data.branches.flatMap((branch) => branch.drivers)
   //           : response?.data.drivers;
 
+       
+  //       console.log("drivers : ", allData);
+
+  //       console.log("this is drivers data", allData);
+
+  //       setDrivers(allData); // If no date range, use all data
+       
   //     } else {
   //       console.error("Expected an array but got:", response.data.drivers);
   //     }
@@ -687,13 +595,82 @@ export const Tablee = ({ data }) => {
   //     console.error("Error:", error);
   //   }
   // };
-  // useEffect(() => {
-  //   fetchData();
-  //   fetchleaves();
-  //   fetchpresent();
-  //   fetchDataAbsent();
+ 
+  const fetchDataDriver = async (startDate = "", endDate = "") => {
+    // setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      let response;
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-drivers`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
 
-  // }, []);
+      console.log("fetch data", response.data);
+
+      if (response?.data) {
+        console.log(response.data);
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.drivers) && branch.drivers.length > 0
+                    ? branch.drivers
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) => branch.drivers)
+            : response?.data.drivers;
+
+       
+        console.log("drivers : ", allData);
+
+        console.log("this is drivers data", allData);
+
+        setDrivers(allData); // If no date range, use all data
+       
+      } else {
+        console.error("Expected an array but got:", response.data.drivers);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+ 
+  useEffect(() => {
+    fetchDataDriver();
+  }, []);
+  
+  
+
+ 
+
+  
 
   return (
     <>

@@ -1,7 +1,10 @@
 
 export const COLUMNS = () => [
   
-  
+  {
+    Header: 'Bus Name',
+    accessor: 'deviceName',
+  },
   {
     Header: 'Driver Name',
     accessor: 'driverName',
@@ -30,10 +33,7 @@ export const COLUMNS = () => [
     Header: 'Branch Name',
     accessor: 'branchName',
   },
-  {
-    Header: 'Bus Name',
-    accessor: 'deviceName',
-  },
+  
   {
     Header: 'Device Id',
     accessor: 'deviceId',

@@ -2203,7 +2203,7 @@ export const Geofence = () => {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "ApprovedRequest.xlsx");
+    XLSX.writeFile(workbook, "Geofences.xlsx");
   };
 
   const handleFileUpload = (event) => {

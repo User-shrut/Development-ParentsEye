@@ -6,7 +6,7 @@ export const COLUMNS = () => [
     accessor: 'parentName',
   },
   {
-    Header: 'Email',
+    Header: 'Username or Email',
     accessor: 'email',
   },
   {

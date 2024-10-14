@@ -10,10 +10,10 @@ export const COLUMNS = () => [
   //     />
   //   ),
   // },
-  {
-    Header: 'Device ID',
-    accessor: 'deviceId', // Each geofence is associated with a deviceId
-  },
+  // {
+  //   Header: 'Device ID',
+  //   accessor: 'deviceId', // Each geofence is associated with a deviceId
+  // },
   {
     Header: 'device Name',
     accessor: 'deviceName', // Each geofence is associated with a deviceId
@@ -50,9 +50,9 @@ export const COLUMNS = () => [
   //   accessor: 'isCrossed', // Whether the geofence has been crossed
   //   Cell: ({ value }) => (value ? 'Yes' : 'No'),
   // },
-  {
-    Header: 'Geofence ID',
-    accessor: '_id', // Unique ID of the geofence
-  },
+  // {
+  //   Header: 'Geofence ID',
+  //   accessor: '_id', // Unique ID of the geofence
+  // },
  
 ];
