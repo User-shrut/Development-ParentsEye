@@ -1771,7 +1771,7 @@ export const Parent = () => {
               })
             : allData; // If no date range, use all data
 
-        const reversedData = filteredData.reverse();
+        const reversedData = filteredData;
 
         // Add fields for all child names and number of children
         const processedData = reversedData.map((parent) => {
