@@ -3347,7 +3347,7 @@ export const Tablee = ({ data }) => {
                         })()}
                       </CTableDataCell>
 
-                      <CTableDataCell className="text-center address table-cell" style={{ width: "20rem" }}>
+                      {/* <CTableDataCell className="text-center address table-cell" style={{ width: "20rem" }}>
   <div className="upperdata" style={{ fontSize: "1rem" }}>
     {(() => {
       // Check if addressesValue is an object with the required properties
@@ -3358,8 +3358,15 @@ export const Tablee = ({ data }) => {
       return "Fetching..."; // Default value when addressesValue is not available
     })()}
   </div>
-</CTableDataCell>
-
+</CTableDataCell> */}
+   <CTableDataCell
+                        className="text-center address table-cell"
+                        style={{ width: "20rem" }}
+                      >
+                        <div className="upperdata" style={{ fontSize: "1rem" }}>
+                          shiv kailasa, mihan, khapri, nagpur, maharshtra 111111
+                        </div>
+                      </CTableDataCell>
                       {/* <CTableDataCell
                         className="text-center address table-cell"
                         style={{ width: "20rem" }}
