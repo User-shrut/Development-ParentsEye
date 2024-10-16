@@ -1033,10 +1033,27 @@ export const Driver = () => {
         const sheetNames = workbook.SheetNames;
         const sheet = workbook.Sheets[sheetNames[0]];
         const parsedData = XLSX.utils.sheet_to_json(sheet);
-        setImportData(parsedData);
+  
+        // Log the parsed data for verification
+        console.log("Uploaded file data:", parsedData);
+  
+        // Now make the POST request with parsedData
+        axios.post('http://63.142.251.13:4000/driver/import', parsedData)
+          .then(response => {
+            console.log('Data successfully posted:', response.data);
+            alert('File imported and data posted successfully!');
+          })
+          .catch(error => {
+            console.error('Error posting data:', error);
+            alert('Error posting data. Please fill data in valid form as shown in sample excel sheet.');
+          });
       };
       reader.readAsArrayBuffer(file);
+  
     }
+   
+    fetchData();
+     setImportModalOpen(false);
   };
 
   const sortedData = [...filteredRows];
@@ -1076,6 +1093,7 @@ export const Driver = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
     setFormData({});
+    setImportModalOpen(false);
   };
 
   const handleSnackbarClose = () => {
@@ -1490,6 +1508,17 @@ export const Driver = () => {
     } catch (error) {
       console.error("Error rejecting request:", error);
     }
+  };
+  const sampleData = [
+    ["Student Name", "Class", "Roll No.", "Section","School Name","Branch Name","DOB","Child Age","Parent Name","User Name","Phone Numnber","Password"],
+    ["John Doe", "10", "16", "A","Study Point","Branch1","13-03-2009","12","Vicky Doe","Vicky Doe","8989898989","5678"],
+    ["Jane Doe", "10", "16", "A","Udemy","Branch6","11-03-2008","13","Vicky Doe","username","8989898989","5678"],
+  ];
+  const handleDownloadSample = () => {
+    const link = document.createElement("a");
+    link.href = "DriverSample.xlsx";  // Adjust the path here
+    link.download = "DriverSample.xlsx";  // Specify the download filename
+    link.click();
   };
   return (
     <>
@@ -2243,26 +2272,72 @@ export const Driver = () => {
           </Box>
         </Modal>
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
-          <Box sx={style}>
-            <h2>Import Data</h2>
-            <input type="file" onChange={handleFileUpload} />
-            {importData.length > 0 && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  setFilteredRows([
-                    ...filteredRows,
-                    ...importData.map((row) => ({ ...row, isSelected: false })),
-                  ])
-                }
-                sx={{ marginTop: "10px" }}
-              >
-                Import
-              </Button>
-            )}
-          </Box>
-        </Modal>
+      <Box sx={style}>
+        <div style={{display:"flex",justifyContent:"space-between"}}>
+        <h2>Import Data</h2>
+        <IconButton onClick={handleModalClose}>
+                <CloseIcon />
+              </IconButton>
+        </div>
+        {/* <h2>Import Data</h2>
+        <IconButton onClick={handleModalClose}>
+                <CloseIcon />
+              </IconButton> */}
+        <p>Please upload the file in the following format:</p>
+
+        {/* Sample Excel Format Table */}
+        <Table>
+          <TableHead>
+            <TableRow>
+              {sampleData[0].map((header, index) => (
+                <TableCell key={index}>{header}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sampleData.slice(1).map((row, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {row.map((cell, cellIndex) => (
+                  <TableCell key={cellIndex}>{cell}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+
+        {/* Button to Download Sample Excel */}
+        <Button variant="contained" color="primary" onClick={handleDownloadSample} sx={{ marginTop: "10px" }}>
+          Download Sample Excel
+        </Button>
+<p>
+
+
+Note: Please do not make changes to the column headers. Follow the sample Excel sheet's headings and fill in your data according to our format. The required fields are:
+
+Email (must be unique),
+Driver Name,
+Password </p>
+        {/* File Upload Input */}
+        <input type="file" onChange={handleFileUpload} style={{ marginTop: "10px" }} />
+
+        {/* Import Button */}
+        {importData.length > 0 && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() =>
+              setFilteredRows([
+                ...filteredRows,
+                ...importData.map((row) => ({ ...row, isSelected: false })),
+              ])
+            }
+            sx={{ marginTop: "10px" }}
+          >
+            Import
+          </Button>
+        )}
+      </Box>
+    </Modal>
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={3000}
