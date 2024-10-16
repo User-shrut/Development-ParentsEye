@@ -1102,7 +1102,6 @@ const SchoolMaster = () => {
               </IconButton>
             </Box>
             {COLUMNS()
-              .slice(1)
               .map((col) => (
                 <TextField
                   key={col.accessor}
