@@ -24,7 +24,8 @@ export const Cards = ({
   vehicleIdleCount,
   vehicleUnreachableCount,
 }) => {
-  const {TotalResponsesStudent, totalResponses, totalLeaveRequest,TotalResponsesPresent,TotalResponsesAbsent,TotalResponsesDrivers,TotalResponsesSupervisor} = useContext(
+  const {TotalResponsesStudent, totalResponses,allDevices,
+     totalLeaveRequest,TotalResponsesPresent,TotalResponsesAbsent,TotalResponsesDrivers,TotalResponsesSupervisor} = useContext(
     TotalResponsesContext
   ); // Consume the context
   // const { totalLeaveRequest } = useContext(TotalResponsesContext);
@@ -640,6 +641,59 @@ export const Cards = ({
     }}
   >
     {TotalResponsesSupervisor}
+  </Typography>
+
+  {/* Image at the bottom (car icon) */}
+  <Box
+    sx={{
+      position: "absolute",
+      bottom: "10px",
+      right: "10px",
+      cursor: "pointer", // Mimics `onClick` behavior
+    }}
+   
+  >
+    <img style={{ width: '7.5rem',marginBottom: '9px',marginRight:'-48px' }} src={cartoonimgbus} alt="" />
+  </Box>
+</Box>
+<Box
+  sx={{
+    width: "186px",
+    height: "101px", // Adjust height based on your image
+    marginTop: "23px",
+    // backgroundImage: `url(${cartoonimgbus})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    position: "relative",
+    borderRadius: 2,
+    borderLeft: "4px solid", // Mimics `border-start-4`
+    borderColor: "success.main", // Mimics `border-start-success`
+    padding: "10px", // Add padding similar to `py-1 px-3`
+  }}
+>
+  {/* Running text */}
+  <Box
+    sx={{
+      color: "text.secondary",
+      fontSize: "0.875rem", // Equivalent to `small`
+      whiteSpace: "nowrap", // Mimics `text-truncate`
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      marginBottom: "8px", // Space between text and number
+    }}
+  >
+    Total Devices 
+  </Box>
+
+  {/* Student count */}
+  <Typography
+    sx={{
+      fontSize: "1.25rem", // Equivalent to `fs-5`
+      fontWeight: "bold", // Equivalent to `fw-semibold`
+      color: "success.main", // Mimics `runningData` color
+    }}
+  >
+    {allDevices}
   </Typography>
 
   {/* Image at the bottom (car icon) */}

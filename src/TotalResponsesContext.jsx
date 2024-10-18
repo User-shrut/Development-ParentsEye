@@ -24,7 +24,7 @@ export const TotalResponsesProvider = ({ children }) => {
  const [Drivers,setDrivers]=useState(0);
  const[TotalResponsesStudent,setTotalResponsesStudent]=useState(0);
 //  supervisorsdata
-
+const [allDevices, setAllDevices] = useState([]);
 const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
 //  const[supervisorsdata,setsupervisorsdata]=useState(0);
 //  setTotalResponsesLeave
@@ -550,6 +550,65 @@ const [role , setRole] = useState(1);
       console.error("Error:", error);
     } 
   };
+  const fetchBuses = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const apiUrl =
+        role1 == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
+          : role1 == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
+          : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+  
+      const response = await axios.get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      let allData = [];
+      if (role1 == 1) {
+        allData = response?.data.data.flatMap((school) =>
+          school.branches.flatMap((branch) =>
+            Array.isArray(branch.devices) && branch.devices.length > 0
+              ? branch.devices.map((device) => ({
+                  ...device,
+                  schoolName: school.schoolName,
+                  branchName: branch.branchName,
+                }))
+              : []
+          )
+        );
+      } else if (role1 == 2) {
+        allData = response?.data.branches.flatMap((branch) =>
+          Array.isArray(branch.devices) && branch.devices.length > 0
+            ? branch.devices.map((device) => ({
+                ...device,
+                branchName: branch.branchName,
+                schoolName: response.data.schoolName,
+              }))
+            : []
+        );
+      } else if (role1 == 3) {
+        const branchName = response.data.branchName;
+        const schoolName = response.data.schoolName;
+  
+        allData = Array.isArray(response.data.devices)
+          ? response.data.devices.map((device) => ({
+              ...device,
+              branchName,
+              schoolName,
+            }))
+          : [];
+      }
+  
+      setAllDevices(allData.length); // Store all devices
+      // setBuses(allData); // Set initial buses as well
+      console.log("filter devices according to branch",allData)
+    } catch (error) {
+      console.error("Error fetching buses:", error);
+    }
+  };
   useEffect(() => {
     // fetchData();
     fetchleaves();
@@ -558,9 +617,10 @@ const [role , setRole] = useState(1);
     fetchDataDrivers();
     fetchDataSupervisor();
     fetchDataTotalStudent();
+    fetchBuses();
   }, []);
   return (
-    <TotalResponsesContext.Provider value={{ totalResponses,TotalResponsesSupervisor,setTotalResponsesSupervisor,TotalResponsesStudent,setTotalResponsesStudent, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent }}>
+    <TotalResponsesContext.Provider value={{ totalResponses,allDevices, setAllDevices,TotalResponsesSupervisor,setTotalResponsesSupervisor,TotalResponsesStudent,setTotalResponsesStudent, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent }}>
       {children}
     </TotalResponsesContext.Provider>
   );
