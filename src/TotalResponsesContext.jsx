@@ -30,13 +30,13 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
 //  setTotalResponsesLeave
  const [TotalResponsesDrivers,setTotalResponsesDrivers]=useState(0);
  const [TotalResponsesAbsent,setTotalResponsesAbsent]=useState(0);
-  const [role , setRole] = useState(1);
- 
+const [role , setRole] = useState(1);
+  const role1 = localStorage.getItem("role");
   const fetchDataTotalStudent = async (startDate = "", endDate = "") => {
     
     try {
       let response;
-      if (role == 1) {
+      if (role1 == 1) {
         const token = localStorage.getItem("token");
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
@@ -46,7 +46,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 2) {
+      } else if (role1 == 2) {
         const token = localStorage.getItem("token");
         response = await axios.get(
           `${process.env.REACT_APP_SCHOOL_API}/read-children`,
@@ -56,7 +56,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 3) {
+      } else if (role1 == 3) {
         const token = localStorage.getItem("token");
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/read-children`,
@@ -67,12 +67,12 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
           }
         );
       }
-
+      console.log("my role is :",role1);
       console.log("fetch data", response.data); // Log the entire response data
       // fetchgeofencepoint();
       if (response?.data) {
         const allData =
-          role == 1
+          role1 == 1
             ? response.data.data.flatMap((school) =>
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.children) && branch.children.length > 0
@@ -84,7 +84,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
                     : []
                 )
               )
-            : role == 2
+            : role1 == 2
             ? response?.data.branches.flatMap((branch) =>
                 Array.isArray(branch.children) && branch.children.length > 0
                   ? branch.children
@@ -112,9 +112,9 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
     try {
       const token = localStorage.getItem("token");
       const apiUrl =
-        role == 1
+        role1 == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children`
-          : role == 2
+          : role1 == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/present-children`
           : `${process.env.REACT_APP_BRANCH_API}/present-children`;
           
@@ -128,7 +128,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
   
       let allData = [];
   
-      if (role == 1 ) {
+      if (role1 == 1 ) {
         // Handle for role 1 and role 2
         allData = response?.data.data.flatMap((school) =>
           school.branches.flatMap((branch) =>
@@ -137,7 +137,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
               : []
           )
         );
-      }else if (role == 2) {
+      }else if (role1 == 2) {
         // Handle for role 2 (this is your specified data structure)
         allData = response?.data.branches.flatMap((branch) =>
           Array.isArray(branch.children) && branch.children.length > 0
@@ -148,7 +148,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
               }))
             : []
         );
-      }  else if (role == 3) {
+      }  else if (role1 == 3) {
         // Handle for role 3
         allData = Array.isArray(response.data.children) ? response.data.children : [];
       }
@@ -170,7 +170,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
     try {
       const token = localStorage.getItem("token");
       let response;
-      if (role == 1) {
+      if (role1 == 1) {
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/read-drivers`,
           {
@@ -179,7 +179,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 2) {
+      } else if (role1 == 2) {
         response = await axios.get(
           `${process.env.REACT_APP_SCHOOL_API}/read-drivers`,
           {
@@ -188,7 +188,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 3) {
+      } else if (role1 == 3) {
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/read-drivers`,
           {
@@ -204,7 +204,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
       if (response?.data) {
         console.log(response.data);
         const allData =
-          role == 1
+          role1 == 1
             ? response?.data.data.flatMap((school) =>
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.drivers) && branch.drivers.length > 0
@@ -212,7 +212,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
                     : []
                 )
               )
-            : role == 2
+            : role1 == 2
             ? response?.data.branches.flatMap((branch) => branch.drivers)
             : response?.data.drivers;
 
@@ -233,9 +233,9 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
     try {
       const token = localStorage.getItem("token");
       const apiUrl =
-        role == 1
+        role1 == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
-          : role == 2
+          : role1 == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/absent-children`
           : `${process.env.REACT_APP_BRANCH_API}/absent-children`; // for role == 3
   
@@ -249,7 +249,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
   
       let allData = [];
   
-      if (role == 1 ) {
+      if (role1 == 1 ) {
         // Handle for role 1 and role 2
         allData = response?.data.data.flatMap((school) =>
           school.branches.flatMap((branch) =>
@@ -262,7 +262,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
               : []
           )
         );
-      }else if (role == 2) {
+      }else if (role1 == 2) {
         // Handle for role 2 (this is your specified data structure)
         allData = response?.data.branches.flatMap((branch) =>
           Array.isArray(branch.children) && branch.children.length > 0
@@ -273,7 +273,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
               }))
             : []
         );
-      }  else if (role == 3) {
+      }  else if (role1 == 3) {
         // Handle for role 3 where data is in children array
         allData = Array.isArray(response.data.children) ? response.data.children : [];
       }
@@ -294,7 +294,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
       const token = localStorage.getItem("token");
       let response;
   
-      if (role == 1) {
+      if (role1 == 1) {
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/pending-requests`,
           {
@@ -303,7 +303,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 2) {
+      } else if (role1 == 2) {
         response = await axios.get(
           `${process.env.REACT_APP_SCHOOL_API}/pending-requests`,
           {
@@ -312,7 +312,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 3) {
+      } else if (role1 == 3) {
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/pending-requests`,
           {
@@ -328,7 +328,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
       if (response.data) {
         // Parse the data differently for each role
         const allData =
-          role == 1
+          role1 == 1
             ? response?.data?.data?.flatMap((school) =>
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.requests) && branch.requests.length > 0
@@ -336,13 +336,13 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
                     : []
                 )
               )
-            : role == 2
+            : role1 == 2
             ? response?.data?.branches.flatMap((branch) =>
                 Array.isArray(branch.requests) && branch.requests.length > 0
                   ? branch.requests
                   : []
               )
-            : role == 3
+            : role1 == 3
             ? Array.isArray(response.data.requests) && response.data.requests.length > 0
               ? response.data.requests
               : []
@@ -406,7 +406,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
       const token = localStorage.getItem("token");
       let response;
 
-      if (role == 1) {
+      if (role1 == 1) {
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/read-supervisors`,
           {
@@ -415,7 +415,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 2) {
+      } else if (role1 == 2) {
         response = await axios.get(
           `${process.env.REACT_APP_SCHOOL_API}/read-supervisors`,
           {
@@ -424,7 +424,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 3) {
+      } else if (role1 == 3) {
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/read-supervisors`,
           {
@@ -439,7 +439,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
 
       if (response?.data) {
         const allData =
-          role == 1
+          role1 == 1
             ? response?.data.data.flatMap((school) =>
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.supervisors) &&
@@ -448,7 +448,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
                     : []
                 )
               )
-            : role == 2
+            : role1 == 2
             ? response?.data.branches.flatMap((branch) =>
                 Array.isArray(branch.supervisors) &&
                 branch.supervisors.length > 0
@@ -495,7 +495,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
     try {
       const token = localStorage.getItem("token");
       let response;
-      if (role == 1) {
+      if (role1 == 1) {
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/read-drivers`,
           {
@@ -504,7 +504,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 2) {
+      } else if (role1 == 2) {
         response = await axios.get(
           `${process.env.REACT_APP_SCHOOL_API}/read-drivers`,
           {
@@ -513,7 +513,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
             },
           }
         );
-      } else if (role == 3) {
+      } else if (role1 == 3) {
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/read-drivers`,
           {
@@ -529,7 +529,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
       if (response?.data) {
         console.log(response.data);
         const allData =
-          role == 1
+          role1 == 1
             ? response?.data.data.flatMap((school) =>
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.drivers) && branch.drivers.length > 0
@@ -537,7 +537,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
                     : []
                 )
               )
-            : role == 2
+            : role1 == 2
             ? response?.data.branches.flatMap((branch) => branch.drivers)
             : response?.data.drivers;
 
