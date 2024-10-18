@@ -3491,12 +3491,33 @@ const lastThirdColumn = columns[columns.length - 3];
               //     ))}
               //   </Select>
               // </FormControl>
-              <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+//               <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+//   <Autocomplete
+//     id="searchable-branch-select"
+//     options={branches || []} // List of branch objects
+//     getOptionLabel={(option) => option.branchName || ""} // Display branch name
+//     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
+//     onChange={(event, newValue) => {
+//       handleInputChange({
+//         target: { name: "branchName", value: newValue?.branchName || "" },
+//       });
+//     }}
+//     renderInput={(params) => (
+//       <TextField
+//         {...params}
+//         label="Branch Name"
+//         variant="outlined"
+//         name="branchName"
+//       />
+//     )}
+//   />
+// </FormControl>
+<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <Autocomplete
     id="searchable-branch-select"
     options={branches || []} // List of branch objects
     getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
+    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) || null : null} // Ensure branches is an array before find
     onChange={(event, newValue) => {
       handleInputChange({
         target: { name: "branchName", value: newValue?.branchName || "" },
@@ -3512,6 +3533,7 @@ const lastThirdColumn = columns[columns.length - 3];
     )}
   />
 </FormControl>
+
             ) : null}
             {/* <FormControl
   variant="outlined"
@@ -3967,27 +3989,49 @@ const lastThirdColumn = columns[columns.length - 3];
               //     ))}
               //   </Select>
               // </FormControl>
-              <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-              <Autocomplete
-                id="searchable-branch-select"
-                options={branches || []} // List of branch objects
-                getOptionLabel={(option) => option.branchName || ""} // Display branch name
-                value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
-                onChange={(event, newValue) => {
-                  handleInputChange({
-                    target: { name: "branchName", value: newValue?.branchName || "" },
-                  });
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Branch Name"
-                    variant="outlined"
-                    name="branchName"
-                  />
-                )}
-              />
-            </FormControl>
+            //   <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+            //   <Autocomplete
+            //     id="searchable-branch-select"
+            //     options={branches || []} // List of branch objects
+            //     getOptionLabel={(option) => option.branchName || ""} // Display branch name
+            //     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
+            //     onChange={(event, newValue) => {
+            //       handleInputChange({
+            //         target: { name: "branchName", value: newValue?.branchName || "" },
+            //       });
+            //     }}
+            //     renderInput={(params) => (
+            //       <TextField
+            //         {...params}
+            //         label="Branch Name"
+            //         variant="outlined"
+            //         name="branchName"
+            //       />
+            //     )}
+            //   />
+            // </FormControl>
+            <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-branch-select"
+    options={branches || []} // List of branch objects
+    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) || null : null} // Ensure branches is an array before calling find
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "branchName", value: newValue?.branchName || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Branch Name"
+        variant="outlined"
+        name="branchName"
+      />
+    )}
+  />
+</FormControl>
+
             ) : null}
             {/* <FormControl
   variant="outlined"
