@@ -22,6 +22,7 @@ import { PiPlugsFill } from "react-icons/pi";
 
 // import carIcon from "../SVG/car-s.png";
 import carIcon from "./SVG/car-s.png";
+import busIcon from "./SVG/bus-s.png";
 import motorcycleIcon from "./SVG/bike-s.png";
 import truckIcon from "./SVG/truck-s.png";
 import axios from "axios";
@@ -30,7 +31,7 @@ import { MdLocationPin, MdAccessTime } from "react-icons/md";
 import GeoFencing from "../GeoFencing/GeoFencing";
 
 const car = new L.Icon({
-  iconUrl: carIcon,
+  iconUrl: busIcon,
   iconSize: [35, 45],
   iconAnchor: [17, 45],
   popupAnchor: [0, -30],
@@ -91,7 +92,7 @@ function GoogleMapComponent({ latitude, longitude, data }) {
   //       }
   //     };
 
-      
+
   //     const addressPromises = filteredVehicles.map(async (item) => {
   //       const address = await fetchAddress(item.latitude, item.longitude);
   //       return {
@@ -131,13 +132,13 @@ function GoogleMapComponent({ latitude, longitude, data }) {
   //       const response = await fetch(
   //         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
   //       );
-        
+
   //       if (!response.ok) {
   //         throw new Error(`HTTP error! status: ${response.status}`);
   //       }
-        
+
   //       const data = await response.json();
-        
+
   //       if (data.address) {
   //         setAddress(
   //           `${data.address.neighbourhood || ''}, ${data.address.city || ''}, ${data.address.state || ''}, ${data.address.postcode || ''}`
@@ -150,39 +151,39 @@ function GoogleMapComponent({ latitude, longitude, data }) {
   //       setError(`Error fetching address: ${error.message}`);
   //     }
   //   };
-  
+
   //   if (latitude && longitude) {
   //     fetchAddress();
   //   }
   // }, [latitude, longitude]);
-  
 
- 
 
-useEffect(() => {
-  const fetchAddress = async () => {
-    try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
-        { timeout: 5000 } // 5 seconds timeout
-      );
-      
-      const data = response.data;
-      console.log(data);
-      
-      setAddress(
-        `${data.address.neighbourhood || ''}, ${data.address.city || ''}, ${data.address.state || ''}, ${data.address.postcode || ''}`
-      );
-    } catch (error) {
-      console.error('Error fetching address:', error.message || error);
-      setError(`Error fetching address: ${error.message || error}`);
+
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      try {
+        const response = await axios.get(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+          { timeout: 5000 } // 5 seconds timeout
+        );
+
+        const data = response.data;
+        console.log(data);
+
+        setAddress(
+          `${data.address.neighbourhood || ''}, ${data.address.city || ''}, ${data.address.state || ''}, ${data.address.postcode || ''}`
+        );
+      } catch (error) {
+        console.error('Error fetching address:', error.message || error);
+        setError(`Error fetching address: ${error.message || error}`);
+      }
+    };
+
+    if (latitude && longitude) {
+      fetchAddress();
     }
-  };
-
-  if (latitude && longitude) {
-    fetchAddress();
-  }
-}, [latitude, longitude]);
+  }, [latitude, longitude]);
 
   // Function to get the appropriate icon based on the category
   const getIconByCategory = (category) => {
@@ -207,11 +208,11 @@ useEffect(() => {
         ref={mapRef}
         style={{
           height: "500px",
-              width: "99vw",
-              border: "2px solid rgb(140 133 118)",
-              // borderRadius: "6px",
-              marginBottom: "0px",
-              marginLeft:"0.75px",
+          width: "99vw",
+          border: "2px solid rgb(140 133 118)",
+          // borderRadius: "6px",
+          marginBottom: "0px",
+          marginLeft: "0.75px",
         }}
       >
         <TileLayer
@@ -268,7 +269,7 @@ useEffect(() => {
                       icon={<MdAccessTime style={{ color: "#74f27e" }} />}
                       text="12D 01H 04M"
                     />
-                    <PopupElement icon={<FaRegSnowflake style={{color:"#aa9d6f"}} />} text="Ac off" />
+                    <PopupElement icon={<FaRegSnowflake style={{ color: "#aa9d6f" }} />} text="Ac off" />
                     <PopupElement
                       icon={<BsFillFuelPumpFill style={{ color: "#5fb1fe" }} />}
                       text="0.00 L"
