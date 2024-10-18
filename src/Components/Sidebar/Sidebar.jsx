@@ -65,7 +65,7 @@ export const Sidebar = ({ propFunc, propArr, propBoolFunc, propBoolIn, onItemCli
         variant="outlined"
         margin="normal"
         fullWidth
-        placeholder="Filter items"
+        placeholder="　Filter items"
         value={filterText}
         onChange={(e) => setFilterText(e.target.value)}
         sx={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 1, margin: '0 10px 10px 10px', width:'90%' }}

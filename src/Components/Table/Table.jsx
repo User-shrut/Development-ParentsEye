@@ -435,7 +435,7 @@
 //   const handleSelectVehicle = (event) => {
 //     setVehiclesValue(event.target.value);
 //   };
-  
+
 //   const [totalResponses, setTotalResponses] = useState(0);
 //   const fetchData = async () => {
 //     console.log("Fetching data...");
@@ -589,13 +589,13 @@
 //   //           ? response?.data.branches.flatMap((branch) => branch.drivers)
 //   //           : response?.data.drivers;
 
-       
+
 //   //       console.log("drivers : ", allData);
 
 //   //       console.log("this is drivers data", allData);
 
 //   //       setDrivers(allData); // If no date range, use all data
-       
+
 //   //     } else {
 //   //       console.error("Expected an array but got:", response.data.drivers);
 //   //     }
@@ -603,7 +603,7 @@
 //   //     console.error("Error:", error);
 //   //   }
 //   // };
- 
+
 //   const fetchDataDriver = async (startDate = "", endDate = "") => {
 //     // setLoading(true);
 //     try {
@@ -655,13 +655,13 @@
 //             ? response?.data.branches.flatMap((branch) => branch.drivers)
 //             : response?.data.drivers;
 
-       
+
 //         console.log("drivers : ", allData);
 
 //         console.log("this is drivers data", allData);
 
 //         setDrivers(allData); // If no date range, use all data
-       
+
 //       } else {
 //         console.error("Expected an array but got:", response.data.drivers);
 //       }
@@ -669,12 +669,12 @@
 //       console.error("Error:", error);
 //     }
 //   };
- 
+
 //   useEffect(() => {
 //     fetchDataDriver();
 //   }, []);
-  
-  
+
+
 
 
 //   // Handle the search input change
@@ -686,17 +686,17 @@
 //   // const filteredData = data.filter(item => {
 //   //   // Convert search term to lower case for case-insensitive comparison
 //   //   const lowerCaseSearchTerm = searchTerm.toLowerCase();
-  
+
 //   //   return (
 //   //     (item.name && item.name.toLowerCase().includes(lowerCaseSearchTerm)) || // Check if name exists
 //   //     (item.deviceId && item.deviceId.toString().includes(lowerCaseSearchTerm)) || // Check if deviceId exists
 //   //     (item.attributes && item.attributes.distance && item.attributes.distance.toString().includes(searchTerm)) // Check if attributes and distance exist
 //   //   );
 //   // });
- 
-  
 
-  
+
+
+
 
 //   return (
 //     <>
@@ -1005,7 +1005,7 @@
 
 //             {/* <br />
 //         <div style={{ display: "flex", justifyContent: "right" }}>
-          
+
 //         </div> */}
 //           </>
 //         )}
@@ -1386,15 +1386,15 @@
 
 //                       <CTableDataCell className="text-center vehicle table-cell">
 //                             <div>
-                              
+
 //                                   <img
 //                                     src={busY}
 //                                     className="dashimg upperdata"
 //                                     alt="vehicle"
 //                                   />
-                               
+
 //                             </div>
-                            
+
 //                           </CTableDataCell>
 
 //                       <CTableDataCell className="device-name table-cell n text-center">
@@ -1452,7 +1452,7 @@
 //     {(() => {
 //       // Find the driver based on the matching deviceId from item
 //       const driver = drivers.find(driver => driver.deviceId == item.deviceId);
-      
+
 //       // Return driver name or "N/A" if not found
 //       return driver ? driver.driverName : "N/A";
 //     })()}
@@ -1833,7 +1833,7 @@
 //           aria-labelledby="modal-modal-title"
 //           aria-describedby="modal-modal-description"
 //         >
-           
+
 //     <Box sx={style}>
 //     <div style={{ height: '500px', width: '100%' }}>
 //       <iframe
@@ -1846,7 +1846,7 @@
 //       ></iframe>
 //     </div>
 //           </Box>
-    
+
 //         </Modal> */}
 //       </div>
 //     </>
@@ -2087,11 +2087,11 @@ export const Tablee = ({ data }) => {
     // };
     // const getAddressFromLatLng = async (lat, lng) => {
     //   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-   
+
     //   try {
     //     const response = await axios.get(url); // 5 seconds timeout
     //     console.log("my address response: ", response.data);
-        
+
     //     if (response.data) {
     //       setAddressesValue(response.data.display_name); // Use display_name from Nominatim API
     //     console.log("my address",response.data.display_name)
@@ -2105,12 +2105,12 @@ export const Tablee = ({ data }) => {
     // };
     // const getAddressFromLatLng = async (lat, lng) => {
     //   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-    
+
     //   try {
     //     // Adding a timeout of 10 seconds (10000 ms) to the request
     //     const response = await axios.get(url, { timeout: 10000 });
     //     console.log("my address response: ", response.data);
-    
+
     //     if (response.data && response.data.display_name) {
     //       // Use display_name from Nominatim API
     //       setAddressesValue(response.data.display_name);
@@ -2129,12 +2129,12 @@ export const Tablee = ({ data }) => {
     // };
     const getAddressFromLatLng = async (lat, lng) => {
       const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-    
+
       try {
         // Increase timeout to 20 seconds (20000 ms)
         const response = await axios.get(url, { timeout: 20000 });
         console.log("my address response: ", response.data);
-    
+
         if (response.data && response.data.display_name) {
           setAddressesValue(response.data.display_name);
           console.log("my address", response.data.display_name);
@@ -2150,8 +2150,8 @@ export const Tablee = ({ data }) => {
         setAddressesValue("Error fetching address");
       }
     };
-    
-    
+
+
     const fetchAddresses = async () => {
       const addresses = await Promise.all(
         data.map(async (row) => {
@@ -2272,12 +2272,12 @@ export const Tablee = ({ data }) => {
     Cell:
       col.accessor === "select"
         ? ({ row }) => (
-            <input
-              type="checkbox"
-              checked={row.original.isSelected}
-              onChange={() => handleRowSelect(row.index)}
-            />
-          )
+          <input
+            type="checkbox"
+            checked={row.original.isSelected}
+            onChange={() => handleRowSelect(row.index)}
+          />
+        )
         : col.Cell,
   }));
   const [error, setError] = useState("");
@@ -2360,7 +2360,7 @@ export const Tablee = ({ data }) => {
   const handleSelectVehicle = (event) => {
     setVehiclesValue(event.target.value);
   };
-  
+
   const [totalResponses, setTotalResponses] = useState(0);
   const fetchData = async () => {
     console.log("Fetching data...");
@@ -2514,13 +2514,13 @@ export const Tablee = ({ data }) => {
   //           ? response?.data.branches.flatMap((branch) => branch.drivers)
   //           : response?.data.drivers;
 
-       
+
   //       console.log("drivers : ", allData);
 
   //       console.log("this is drivers data", allData);
 
   //       setDrivers(allData); // If no date range, use all data
-       
+
   //     } else {
   //       console.error("Expected an array but got:", response.data.drivers);
   //     }
@@ -2528,7 +2528,7 @@ export const Tablee = ({ data }) => {
   //     console.error("Error:", error);
   //   }
   // };
- 
+
   const fetchDataDriver = async (startDate = "", endDate = "") => {
     // setLoading(true);
     try {
@@ -2570,23 +2570,23 @@ export const Tablee = ({ data }) => {
         const allData =
           role == 1
             ? response?.data.data.flatMap((school) =>
-                school.branches.flatMap((branch) =>
-                  Array.isArray(branch.drivers) && branch.drivers.length > 0
-                    ? branch.drivers
-                    : []
-                )
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.drivers) && branch.drivers.length > 0
+                  ? branch.drivers
+                  : []
               )
+            )
             : role == 2
-            ? response?.data.branches.flatMap((branch) => branch.drivers)
-            : response?.data.drivers;
+              ? response?.data.branches.flatMap((branch) => branch.drivers)
+              : response?.data.drivers;
 
-       
+
         console.log("drivers : ", allData);
 
         console.log("this is drivers data", allData);
 
         setDrivers(allData); // If no date range, use all data
-       
+
       } else {
         console.error("Expected an array but got:", response.data.drivers);
       }
@@ -2594,12 +2594,12 @@ export const Tablee = ({ data }) => {
       console.error("Error:", error);
     }
   };
- 
+
   useEffect(() => {
     fetchDataDriver();
   }, []);
-  
-  
+
+
 
 
   // Handle the search input change
@@ -2611,17 +2611,17 @@ export const Tablee = ({ data }) => {
   // const filteredData = data.filter(item => {
   //   // Convert search term to lower case for case-insensitive comparison
   //   const lowerCaseSearchTerm = searchTerm.toLowerCase();
-  
+
   //   return (
   //     (item.name && item.name.toLowerCase().includes(lowerCaseSearchTerm)) || // Check if name exists
   //     (item.deviceId && item.deviceId.toString().includes(lowerCaseSearchTerm)) || // Check if deviceId exists
   //     (item.attributes && item.attributes.distance && item.attributes.distance.toString().includes(searchTerm)) // Check if attributes and distance exist
   //   );
   // });
- 
-  
 
-  
+
+
+
 
   return (
     <>
@@ -2630,7 +2630,7 @@ export const Tablee = ({ data }) => {
           <></>
         ) : (
           <>
-            <hr />
+            {/* <hr /> */}
             <div
               style={{
                 display: "flex",
@@ -2642,7 +2642,7 @@ export const Tablee = ({ data }) => {
               <FormControl
                 variant="outlined"
                 fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
               >
                 <InputLabel id="asset-status-label-1">Asset Status</InputLabel>
                 <Select
@@ -2679,7 +2679,7 @@ export const Tablee = ({ data }) => {
               <FormControl
                 variant="outlined"
                 fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
               >
                 <InputLabel id="asset-status-label-2">Assets</InputLabel>
                 <Select
@@ -2738,7 +2738,7 @@ export const Tablee = ({ data }) => {
               <FormControl
                 variant="outlined"
                 fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
               >
                 <InputLabel id="users-label-3">Users</InputLabel>
                 <Select
@@ -2785,7 +2785,7 @@ export const Tablee = ({ data }) => {
               <FormControl
                 variant="outlined"
                 fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
               >
                 <InputLabel
                   id="groups-label-4"
@@ -2835,7 +2835,7 @@ export const Tablee = ({ data }) => {
               <FormControl
                 variant="outlined"
                 fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
               >
                 <InputLabel id="areas-label-5">Areas</InputLabel>
                 <Select
@@ -2861,7 +2861,7 @@ export const Tablee = ({ data }) => {
               <FormControl
                 variant="outlined"
                 fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
+                sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
               >
                 <InputLabel id="landmarks-label-6">Landmarks</InputLabel>
                 <Select
@@ -2887,7 +2887,7 @@ export const Tablee = ({ data }) => {
                 fullWidth
                 sx={{
                   width: 250,
-                  "& .MuiInputBase-root": { height: 40 },
+                  "& .MuiInputBase-root": { height: 50 },
                   marginBottom: 2,
                 }}
               >
@@ -2939,6 +2939,7 @@ export const Tablee = ({ data }) => {
         {individualMap ? (
           <IndividualGooglemap
             latitude={latitude}
+
             longitude={longitude}
             setIndividualMap={setIndividualMap}
             style={{ width: "100%" }}
@@ -2979,144 +2980,98 @@ export const Tablee = ({ data }) => {
               alignItems: "center",
             }}
           >
-            <hr
+            {/* <hr
               style={{
                 margin: "0px",
                 width: "88%",
                 borderBottom: "1px solid black",
               }}
-            />
+            /> */}
           </div>
           {/* Horizontal line added here */}
         </>
       )}
 
-      <br />
+      {/* <br /> */}
 
       {individualMap ? <></> : <hr />}
       <div>
         {individualMap ? (
           <></>
         ) : (
-    //       <div
-    //         style={{
-    //           display: "flex",
-    //           alignItems: "center",
-    //           marginBottom: "15px",
-    //           marginLeft: "3.5rem",
-    //         }}
-    //       >
-    //         {/* <TextField
-    //           label="Search"
-    //           variant="outlined"
-    //           value={filterText}
-    //           onChange={handleFilterChange}
-    //           sx={{
-    //             marginRight: "10px",
-    //             marginLeft: "1053px",
-    //             width: "200px",
-    //             "& .MuiInputBase-root": { height: 40 },
-    //           }}
-    //           InputProps={{
-    //             startAdornment: (
-    //               <SearchIcon
-    //                 style={{
-    //                   cursor: "pointer",
-    //                   marginLeft: "10px",
-    //                   marginRight: "5px",
-    //                 }}
-    //               />
-    //             ),
-    //           }}
-    //         /> */}
-    //           <TextField
-    //   label="Search"
-    //   variant="outlined"
-    //   value={searchTerm}
-    //   onChange={handleSearchChange}
-    //   sx={{
-    //     marginRight: '10px',
-    //     marginLeft: 'auto', // Center align if needed or adjust as per your layout
-    //     width: '200px',
-    //     "& .MuiInputBase-root": { height: 40 },
-    //     marginBottom: '1rem',
-    //   }}
-    //   InputProps={{
-    //     startAdornment: (
-    //       <SearchIcon
-    //         style={{
-    //           cursor: 'pointer',
-    //           marginLeft: '10px',
-    //           marginRight: '5px',
-    //         }}
-    //       />
-    //     ),
-    //   }}
-    // />
-    //         <Button
-    //           variant="contained"
-    //           onClick={() => setModalOpen(true)}
-    //           sx={{
-    //             color: "black",
-    //             backgroundColor: "#f4d24a",
-    //             "&:hover": {
-    //               backgroundColor: "#f8ebb5",
-    //             },
-    //           }}
-    //         >
-    //           Manage Columns
-    //         </Button>
-    //       </div>
-    <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between", // Align search and button with space between them
-    padding: "0 3.5rem", // Adjust as per your layout
-    marginBottom: "15px",
-  }}
->
-  <TextField
-    label="Search"
-    variant="outlined"
-    value={searchTerm}
-    onChange={handleSearchChange}
-    sx={{
-      width: '250px', // Adjust width as needed
-      "& .MuiInputBase-root": { height: 40 },
-    }}
-    InputProps={{
-      startAdornment: (
-        <SearchIcon
-          style={{
-            cursor: 'pointer',
-            marginLeft: '10px',
-            marginRight: '5px',
-          }}
-        />
-      ),
-    }}
-  />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between", // Align search and buttons with space between them
+              padding: "0 3.5rem", // Adjust as per your layout
+              marginBottom: "10px",
+            }}
+          >
+            <TextField
+              label="Search"
+              variant="outlined"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              sx={{
+                width: '250px', // Adjust width as needed
+                "& .MuiInputBase-root": { height: 40 },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <SearchIcon
+                    style={{
+                      cursor: 'pointer',
+                      marginLeft: '200px',
+                    }}
+                  />
+                ),
+              }}
+            />
 
-  <Button
-    variant="contained"
-    onClick={() => setModalOpen(true)}
-    sx={{
-      color: "black",
-      backgroundColor: "#f4d24a",
-      height: "40px", // Match button height with input field
-      "&:hover": {
-        backgroundColor: "#f8ebb5",
-      },
-    }}
-  >
-    Manage Columns
-  </Button>
-</div>
+            {/* Wrapping both buttons in a div */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <Button
+                variant="contained"
+                onClick={() => setModalOpen(true)}
+                sx={{
+                  color: "black",
+                  backgroundColor: "#f4d24a",
+                  height: "30px", // Match button height with input field
+                  "&:hover": {
+                    backgroundColor: "#f8ebb5",
+                  },
+                }}
+              >
+                Manage Columns
+              </Button>
+
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<ImportExportIcon />}
+                onClick={handleExport}
+                sx={{
+                  color: "black",
+                  height: "30px",
+                  backgroundColor: "#f4d24a",
+                  "&:hover": {
+                    backgroundColor: "#1a242f",
+                  },
+                }}
+                // style={{
+                //   marginTop: "20px",
+                //   marginBottom: "20px",
+                // }}
+              >
+                Export
+              </Button>
+            </div>
+          </div>
 
         )}
 
-        {individualMap ? <></> : <hr />}
+        {/* {individualMap ? <></> : <hr />} */}
 
         {/* GoogleMaps */}
         {individualMap ? (
@@ -3148,11 +3103,11 @@ export const Tablee = ({ data }) => {
                       Sr No.
                     </CTableHeaderCell>
                     <CTableHeaderCell
-                          className="text-center vehicle table-cell headCell"
-                          style={{ position: 'sticky', top: 0 }}
-                        >
-                          Vehicle
-                        </CTableHeaderCell>
+                      className="text-center vehicle table-cell headCell"
+                      style={{ position: 'sticky', top: 0 }}
+                    >
+                      Vehicle
+                    </CTableHeaderCell>
 
                     <CTableHeaderCell
                       className="text-center device-name table-cell headCell"
@@ -3205,7 +3160,7 @@ export const Tablee = ({ data }) => {
                       Last Update
                     </CTableHeaderCell>
 
-                    <CTableHeaderCell
+                    {/* <CTableHeaderCell
                       className="text-center current-delay table-cell headCell"
                       style={{
                         position: "sticky",
@@ -3213,7 +3168,7 @@ export const Tablee = ({ data }) => {
                       }}
                     >
                       &nbsp;&nbsp; C/D &nbsp;&nbsp;
-                    </CTableHeaderCell>
+                    </CTableHeaderCell> */}
 
                     <CTableHeaderCell
                       className="text-center speed table-cell headCell"
@@ -3235,7 +3190,7 @@ export const Tablee = ({ data }) => {
                       Distance
                     </CTableHeaderCell>
 
-                    <CTableHeaderCell
+                    {/* <CTableHeaderCell
                       className="text-center total-distance table-cell headCell"
                       style={{
                         position: "sticky",
@@ -3243,7 +3198,7 @@ export const Tablee = ({ data }) => {
                       }}
                     >
                       T/D
-                    </CTableHeaderCell>
+                    </CTableHeaderCell> */}
 
                     <CTableHeaderCell
                       className="text-center satellite table-cell headCell"
@@ -3310,17 +3265,17 @@ export const Tablee = ({ data }) => {
                       </CTableDataCell>
 
                       <CTableDataCell className="text-center vehicle table-cell">
-                            <div>
-                              
-                                  <img
-                                    src={busY}
-                                    className="dashimg upperdata"
-                                    alt="vehicle"
-                                  />
-                               
-                            </div>
-                            
-                          </CTableDataCell>
+                        <div>
+
+                          <img
+                            src={busY}
+                            className="dashimg upperdata"
+                            alt="vehicle"
+                          />
+
+                        </div>
+
+                      </CTableDataCell>
 
                       <CTableDataCell className="device-name table-cell n text-center">
                         {(() => {
@@ -3359,7 +3314,7 @@ export const Tablee = ({ data }) => {
     })()}
   </div>
 </CTableDataCell> */}
-   <CTableDataCell
+                      <CTableDataCell
                         className="text-center address table-cell"
                         style={{ width: "20rem" }}
                       >
@@ -3380,20 +3335,20 @@ export const Tablee = ({ data }) => {
                           })()}
                         </div>
                       </CTableDataCell> */}
-                    <CTableDataCell
-  className="text-center address table-cell"
-  style={{ width: "20rem" }}
->
-  <div className="upperdata" style={{ fontSize: "1rem" }}>
-    {(() => {
-      // Find the driver based on the matching deviceId from item
-      const driver = drivers.find(driver => driver.deviceId == item.deviceId);
-      
-      // Return driver name or "N/A" if not found
-      return driver ? driver.driverName : "N/A";
-    })()}
-  </div>
-</CTableDataCell>
+                      <CTableDataCell
+                        className="text-center address table-cell"
+                        style={{ width: "20rem" }}
+                      >
+                        <div className="upperdata" style={{ fontSize: "1rem" }}>
+                          {(() => {
+                            // Find the driver based on the matching deviceId from item
+                            const driver = drivers.find(driver => driver.deviceId == item.deviceId);
+
+                            // Return driver name or "N/A" if not found
+                            return driver ? driver.driverName : "N/A";
+                          })()}
+                        </div>
+                      </CTableDataCell>
                       {/* {visibleColumns.lastUpdate && ( */}
                       <CTableDataCell className="text-center last-update table-cell">
                         {(() => {
@@ -3417,7 +3372,7 @@ export const Tablee = ({ data }) => {
                       </CTableDataCell>
                       {/* )} */}
                       {/* {visibleColumns.cd && ( */}
-                      <CTableDataCell className="text-center cd current-delay table-cell">
+                      {/* <CTableDataCell className="text-center cd current-delay table-cell">
                         {(() => {
                           // const device = salesman.find((device) => device.id === item.deviceId)
                           if (item && item.lastUpdate) {
@@ -3445,7 +3400,7 @@ export const Tablee = ({ data }) => {
                           }
                           return "0s"; // Default if no device or lastUpdate
                         })()}
-                      </CTableDataCell>
+                      </CTableDataCell> */}
 
                       {/* {visibleColumns.sp && ( */}
                       <CTableDataCell className="text-center sp speed table-cell">
@@ -3460,9 +3415,9 @@ export const Tablee = ({ data }) => {
                       </CTableDataCell>
 
                       {/* {visibleColumns.td && ( */}
-                      <CTableDataCell className="text-center td total-distance table-cell">
+                      {/* <CTableDataCell className="text-center td total-distance table-cell">
                         {`${Math.round(item.attributes.totalDistance)} km`}
-                      </CTableDataCell>
+                      </CTableDataCell> */}
 
                       {/* {visibleColumns.sat && ( */}
                       <CTableDataCell className="text-center satelite table-cell">
@@ -3569,7 +3524,7 @@ export const Tablee = ({ data }) => {
                       <CTableDataCell className="text-center status table-cell">
                         <button
                           className="btn btn-primary"
-                          // onClick={() => handleClickOnTrack(item)}
+                        // onClick={() => handleClickOnTrack(item)}
                         >
                           Live Track
                         </button>
@@ -3619,7 +3574,7 @@ export const Tablee = ({ data }) => {
           </div>
         )}
 
-        {individualMap ? (
+        {/* {individualMap ? (
           <></>
         ) : (
           <Button
@@ -3643,7 +3598,7 @@ export const Tablee = ({ data }) => {
           >
             Export
           </Button>
-        )}
+        )} */}
 
         <Modal
           open={modalOpen}

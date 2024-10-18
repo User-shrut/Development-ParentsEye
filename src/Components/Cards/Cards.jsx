@@ -13,7 +13,7 @@ import NewReleasesIcon from "@mui/icons-material/NewReleases";
 import { useContext } from "react";
 import { TotalResponsesContext } from "../../TotalResponsesContext";
 import animetedcarimg  from "../googlemap/SVG/animetedcarimg.png" ;
-import cartoonimgbus from "../googlemap/SVG/cartoonimgbus.avif"
+import cartoonimgbus from "../googlemap/SVG/cartoonimgbus.png"
 //import {StudentDetail} from "./Components/VariousTables/School/StudentDetail/StudentDetail.jsx"
 //import {StudentDetail} from ".VariousTables/StudentDetail"
 // import Leave from './Components/School/Leave/Leave.jsx';
@@ -35,7 +35,7 @@ export const Cards = ({
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
-        gap:'11px 48px'
+        gap:'1px 100px'
       }}
     >
     {/* <Card
@@ -336,7 +336,7 @@ export const Cards = ({
     }}
    
   >
-    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+    <img style={{ width: '7.5rem',marginBottom: '9px',marginRight:'-68px' }} src={cartoonimgbus} alt="" />
   </Box>
 </Box>
 
@@ -391,7 +391,7 @@ export const Cards = ({
     }}
    
   >
-    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+    <img style={{ width: '7.5rem',marginBottom: '9px',marginRight:'-68px' }} src={cartoonimgbus} alt="" />
   </Box>
 </Box>
       {/* Stopped */}
@@ -489,7 +489,7 @@ export const Cards = ({
     }}
    
   >
-    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+    <img style={{ width: '7.5rem',marginBottom: '9px',marginRight:'-68px' }} src={cartoonimgbus} alt="" />
   </Box>
 </Box>
    
@@ -544,7 +544,7 @@ export const Cards = ({
     }}
    
   >
-    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+    <img style={{ width: '7.5rem',marginBottom: '9px',marginRight:'-68px' }} src={cartoonimgbus} alt="" />
   </Box>
 </Box>
 
@@ -598,7 +598,7 @@ export const Cards = ({
     }}
    
   >
-    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+    <img style={{ width: '7.5rem',marginBottom: '9px',marginRight:'-68px' }} src={cartoonimgbus} alt="" />
   </Box>
 </Box>
 
@@ -652,7 +652,7 @@ export const Cards = ({
     }}
    
   >
-    <img style={{ width: '5.5rem',marginBottom: '9px',marginRight:'-18px' }} src={cartoonimgbus} alt="" />
+    <img style={{ width: '7.5rem',marginBottom: '9px',marginRight:'-48px' }} src={cartoonimgbus} alt="" />
   </Box>
 </Box>
       {/* <Card sx={{ width: 197, margin: "5px" }}>
