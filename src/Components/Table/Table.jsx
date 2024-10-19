@@ -2069,22 +2069,26 @@ export const Tablee = ({ data }) => {
   }, [data]);
 
   useEffect(() => {
-    // const getAddressFromLatLng = async (lat, lng) => {
-    //   // const apiKey = "AIzaSyAvHHoPKPwRFui0undeEUrz00-8w6qFtik";
-    //   const url =  `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+    const getAddressFromLatLng = async (lat, lng) => {
+       const apiKey = "AIzaSyDy9RYx3BOhbCg6ncwxmlMI3Sr86myIA88";
+      //  https://maps.googleapis.com/maps/api/geocode/json?latlng=21.128457777777776,79.10473777777777&key=YOUR_API_KEY
 
-    //   try {
-    //     const response = await axios.get(url);
-    //     if (response.data.results.length > 0) {
-    //       setAddressesValue(response.data.results[0].formatted_address);
-    //     } else {
-    //       setAddressesValue("Address not found");
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching address:", error);
-    //     setAddressesValue("Error fetching address");
-    //   }
-    // };
+      // const url =  `https://maps.googleapis.com/maps/api/geocode/json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&key=${apiKey}`;
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+
+      try {
+        const response = await axios.get(url);
+        if (response.data.results.length > 0) {
+          setAddressesValue(response.data.results[0].formatted_address);
+          console.log(response.data.results[0].formatted_address)
+        } else {
+          setAddressesValue("Address not found");
+        }
+      } catch (error) {
+        console.error("Error fetching address:", error);
+        setAddressesValue("Error fetching address");
+      }
+    };
     // const getAddressFromLatLng = async (lat, lng) => {
     //   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
 
@@ -2127,29 +2131,29 @@ export const Tablee = ({ data }) => {
     //     setAddressesValue("Error fetching address");
     //   }
     // };
-    const getAddressFromLatLng = async (lat, lng) => {
-      const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+    // const getAddressFromLatLng = async (lat, lng) => {
+    //   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
 
-      try {
-        // Increase timeout to 20 seconds (20000 ms)
-        const response = await axios.get(url, { timeout: 20000 });
-        console.log("my address response: ", response.data);
+    //   try {
+    //     // Increase timeout to 20 seconds (20000 ms)
+    //     const response = await axios.get(url, { timeout: 20000 });
+    //     console.log("my address response: ", response.data);
 
-        if (response.data && response.data.display_name) {
-          setAddressesValue(response.data.display_name);
-          console.log("my address", response.data.display_name);
-        } else {
-          setAddressesValue("Address not found");
-        }
-      } catch (error) {
-        if (error.code == 'ECONNABORTED') {
-          console.error('Request timeout. Please try again later.');
-        } else {
-          console.error("Error fetching address:", error.message);
-        }
-        setAddressesValue("Error fetching address");
-      }
-    };
+    //     if (response.data && response.data.display_name) {
+    //       setAddressesValue(response.data.display_name);
+    //       console.log("my address", response.data.display_name);
+    //     } else {
+    //       setAddressesValue("Address not found");
+    //     }
+    //   } catch (error) {
+    //     if (error.code == 'ECONNABORTED') {
+    //       console.error('Request timeout. Please try again later.');
+    //     } else {
+    //       console.error("Error fetching address:", error.message);
+    //     }
+    //     setAddressesValue("Error fetching address");
+    //   }
+    // };
 
 
     const fetchAddresses = async () => {
@@ -2164,6 +2168,7 @@ export const Tablee = ({ data }) => {
         })
       );
       setAddressesValue(addresses);
+      console.log("my addresses",addresses)
       // console.log(addresses);
     };
 

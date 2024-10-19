@@ -1044,10 +1044,27 @@ export const Supervisor = () => {
         const sheetNames = workbook.SheetNames;
         const sheet = workbook.Sheets[sheetNames[0]];
         const parsedData = XLSX.utils.sheet_to_json(sheet);
-        setImportData(parsedData);
+  
+        // Log the parsed data for verification
+        console.log("Uploaded file data:", parsedData);
+  
+        // Now make the POST request with parsedData
+        axios.post('http://63.142.251.13:4000/supervisor/importsupervisor', parsedData)
+          .then(response => {
+            console.log('Data successfully posted:', response.data);
+            alert('File imported and data posted successfully!');
+          })
+          .catch(error => {
+            console.error('Error posting data:', error);
+            alert('Error posting data. Please fill data in valid form as shown in sample excel sheet.');
+          });
       };
       reader.readAsArrayBuffer(file);
+  
     }
+   
+    fetchData();
+     setImportModalOpen(false);
   };
 
   const sortedData = [...filteredRows];
@@ -1071,6 +1088,7 @@ export const Supervisor = () => {
   const handleModalClose = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
+    setImportModalOpen(false);
     setFormData({});
   };
 
@@ -1555,6 +1573,18 @@ export const Supervisor = () => {
     } catch (error) {
       console.error("Error rejecting request:", error);
     }
+  };
+  const sampleData = [
+    ["supervisorName", "address", "phone_no", "password", "email", "deviceName", "deviceId", "schoolName", "branchName"],
+    ["supervisor1", "new nandanwan 1111", "7878787878", "123456", "youemail", "MH565656", "8978","school1","branch1"],
+    ["supervisor2", "krida square 234533", "7878787878", "123456", "youremail2", "MH343434", "5656","school2","branch2"],
+   
+];
+  const handleDownloadSample = () => {
+    const link = document.createElement("a");
+    link.href = "supervisorDetail.xlsx";  // Adjust the path here
+    link.download = "supervisorDetail.xlsx";  // Specify the download filename
+    link.click();
   };
   return (
     <>
@@ -2336,26 +2366,91 @@ export const Supervisor = () => {
           </Box>
         </Modal>
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
-          <Box sx={style}>
-            <h2>Import Data</h2>
-            <input type="file" onChange={handleFileUpload} />
-            {importData.length > 0 && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  setFilteredRows([
-                    ...filteredRows,
-                    ...importData.map((row) => ({ ...row, isSelected: false })),
-                  ])
-                }
-                sx={{ marginTop: "10px" }}
-              >
-                Import
-              </Button>
-            )}
-          </Box>
-        </Modal>
+      <Box sx={style}>
+        <div style={{display:"flex",justifyContent:"space-between"}}>
+        <h2>Import Data</h2>
+        <IconButton onClick={handleModalClose}>
+                <CloseIcon />
+              </IconButton>
+        </div>
+        {/* <h2>Import Data</h2>
+        <IconButton onClick={handleModalClose}>
+                <CloseIcon />
+              </IconButton> */}
+        <p>Please upload the file in the following format:</p>
+
+        {/* Sample Excel Format Table */}
+        {/* <Table>
+          <TableHead>
+            <TableRow>
+              {sampleData[0].map((header, index) => (
+                <TableCell key={index}>{header}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sampleData.slice(1).map((row, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {row.map((cell, cellIndex) => (
+                  <TableCell key={cellIndex}>{cell}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table> */}
+<Box sx={{ overflowX: "auto" }}> {/* Makes table scrollable if needed */}
+      <Table size="small" sx={{ minWidth: 650 }}>
+        <TableHead>
+          <TableRow>
+            {sampleData[0].map((header, index) => (
+              <TableCell key={index} sx={{ padding: "4px", fontSize: "0.85rem" }}>{header}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {sampleData.slice(1).map((row, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {row.map((cell, cellIndex) => (
+                <TableCell key={cellIndex} sx={{ padding: "4px", fontSize: "0.8rem" }}>{cell}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Box>
+        {/* Button to Download Sample Excel */}
+        <Button variant="contained" color="primary" onClick={handleDownloadSample} sx={{ marginTop: "10px" }}>
+          Download Sample Excel
+        </Button>
+<p>
+
+
+Note: Please do not make changes to the column headers. Follow the sample Excel sheet's headings and fill in your data according to our format. The required fields are:
+supervisor Name,address,
+Email (must be unique),
+phone,
+Password </p>
+        {/* File Upload Input */}
+        <input type="file" onChange={handleFileUpload} style={{ marginTop: "10px" }} />
+
+        {/* Import Button */}
+        {importData.length > 0 && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() =>
+              setFilteredRows([
+                ...filteredRows,
+                ...importData.map((row) => ({ ...row, isSelected: false })),
+              ])
+            }
+            sx={{ marginTop: "10px" }}
+          >
+            Import
+          </Button>
+        )}
+      </Box>
+    </Modal>
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={3000}

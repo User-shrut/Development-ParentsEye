@@ -1510,10 +1510,11 @@ export const Driver = () => {
     }
   };
   const sampleData = [
-    ["Student Name", "Class", "Roll No.", "Section","School Name","Branch Name","DOB","Child Age","Parent Name","User Name","Phone Numnber","Password"],
-    ["John Doe", "10", "16", "A","Study Point","Branch1","13-03-2009","12","Vicky Doe","Vicky Doe","8989898989","5678"],
-    ["Jane Doe", "10", "16", "A","Udemy","Branch6","11-03-2008","13","Vicky Doe","username","8989898989","5678"],
-  ];
+    ["driverName", "address", "driverMobile", "password", "email", "deviceName", "deviceId", "schoolName", "branchName"],
+    ["driver1", "new nandanwan 1111", "7878787878", "123456", "youemail", "MH565656", "8978","school1","branch1"],
+    ["driver2", "krida square 234533", "7878787878", "123456", "youremail2", "MH343434", "5656","school2","branch2"],
+   
+];
   const handleDownloadSample = () => {
     const link = document.createElement("a");
     link.href = "DriverSample.xlsx";  // Adjust the path here
@@ -2286,7 +2287,7 @@ export const Driver = () => {
         <p>Please upload the file in the following format:</p>
 
         {/* Sample Excel Format Table */}
-        <Table>
+        {/* <Table>
           <TableHead>
             <TableRow>
               {sampleData[0].map((header, index) => (
@@ -2303,8 +2304,27 @@ export const Driver = () => {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
-
+        </Table> */}
+ <Box sx={{ overflowX: "auto" }}> {/* Makes table scrollable if needed */}
+      <Table size="small" sx={{ minWidth: 650 }}>
+        <TableHead>
+          <TableRow>
+            {sampleData[0].map((header, index) => (
+              <TableCell key={index} sx={{ padding: "4px", fontSize: "0.85rem" }}>{header}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {sampleData.slice(1).map((row, rowIndex) => (
+            <TableRow key={rowIndex}>
+              {row.map((cell, cellIndex) => (
+                <TableCell key={cellIndex} sx={{ padding: "4px", fontSize: "0.8rem" }}>{cell}</TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Box>
         {/* Button to Download Sample Excel */}
         <Button variant="contained" color="primary" onClick={handleDownloadSample} sx={{ marginTop: "10px" }}>
           Download Sample Excel
