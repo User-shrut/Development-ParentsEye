@@ -2070,7 +2070,8 @@ export const Tablee = ({ data }) => {
 
   useEffect(() => {
     const getAddressFromLatLng = async (lat, lng) => {
-       const apiKey = "AIzaSyDy9RYx3BOhbCg6ncwxmlMI3Sr86myIA88";
+      //  const apiKey = "AIzaSyDy9RYx3BOhbCg6ncwxmlMI3Sr86myIA88";
+      const apiKey = "AIzaSyDy9RYx3BOhbCg6ncwxmlMI3Sr86myIA88";
       //  https://maps.googleapis.com/maps/api/geocode/json?latlng=21.128457777777776,79.10473777777777&key=YOUR_API_KEY
 
       // const url =  `https://maps.googleapis.com/maps/api/geocode/json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&key=${apiKey}`;
@@ -2367,38 +2368,81 @@ export const Tablee = ({ data }) => {
   };
 
   const [totalResponses, setTotalResponses] = useState(0);
-  const fetchData = async () => {
-    console.log("Fetching data...");
-    // setLoading(true); // Set loading to true when starting fetch
+
+  const [childrenList, setChildrenList] = useState([]); // State to hold child names
+
+  const fetchData = async (startDate = "", endDate = "") => {
+   
     try {
-      const username = "hbtrack";
-      const password = "123456@";
-      const token = btoa(`${username}:${password}`);
-
-      const response = await axios.get("http://104.251.212.84/api/users", {
-        headers: {
-          Authorization: `Basic ${token}`,
-        },
-      });
-
-      console.log("Fetched data:", response.data);
-
-      // Check if response.data is an array
-      if (Array.isArray(response.data)) {
-        // Set the fetched data with isSelected property for each user
-        setFilteredRows(
-          response.data.map((row) => ({ ...row, isSelected: false }))
+      let response;
+      if (role == 1) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        setTotalResponses(response.data.length);
-      } else {
-        console.error("Expected an array but got:", response.data);
+      } else if (role == 2) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-children`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      console.log("fetch data", response.data); // Log the entire response data
+      // fetchgeofencepoint();
+      if (response?.data) {
+        const allData =
+          role == 1
+            ? response.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.children) && branch.children.length > 0
+                    ? branch.children.map((child) => ({
+                        ...child, // Spread child object to retain all existing properties
+                        schoolName: school.schoolName,
+                        branchName: branch.branchName,
+                      }))
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.children) && branch.children.length > 0
+                  ? branch.children
+                  : []
+              )
+            : response?.data.data;
+
+        console.log(allData);
+        const childNames = allData.map((child) => child.childName);
+        // const childNames = response.data; // Replace this with the actual extracted childName array
+        setChildrenList(childNames);
+        console.log("All Child Names:", childNames); 
+
+    } else {
+        console.error("Expected an array but got:", response.data.children);
       }
     } catch (error) {
-      console.error("Fetch data error:", error);
-      alert("An error occurred while fetching data.");
-    } finally {
-      // setLoading(false);
-    }
+      console.error("Error:", error);
+    } 
   };
 
   // Call fetchData on component mount
@@ -2705,42 +2749,8 @@ export const Tablee = ({ data }) => {
                   ))}
                 </Select>
               </FormControl>
-              {/* <FormControl
-                variant="outlined"
-                fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
-              >
-                <InputLabel id="users-label-3">Users</InputLabel>
-                <Select
-                  labelId="users-label-3"
-                  id="users-select-3"
-                  value={usersValue}
-                  onChange={(e) => setUsersValue(e.target.value)}
-                  label="Select Users"
-                >
-                  <MenuItem value="All users">All users</MenuItem>
-                  <MenuItem value="ankur(Ankur Jain)">
-                    ankur(Ankur Jain)
-                  </MenuItem>
-                  <MenuItem value="ashwini(Ashwini Gaikwad)">
-                    ashwini(Ashwini Gaikwad)
-                  </MenuItem>
-                  <MenuItem value="harshal(harshal harshal)">
-                    harshal(harshal harshal)
-                  </MenuItem>
-                  <MenuItem value="Harshal 123 (HARSHAL CREDANCE)">
-                    Harshal 123 (HARSHAL CREDANCE)
-                  </MenuItem>
-                  <MenuItem value="josh(josh JOSH)">josh(josh JOSH)</MenuItem>
-                  <MenuItem value="vts(CGS Company)">vts(CGS Company)</MenuItem>
-                  <MenuItem value="vtsdemo1 (chate global services)">
-                    vtsdemo1 (chate global services)
-                  </MenuItem>
-                  <MenuItem value="wcldemo(wcl wcl)">wcldemo(wcl wcl)</MenuItem>
-                  {/* Add your user options here 
-                </Select>
-              </FormControl> */}
-              <FormControl
+          
+             {/*  <FormControl
                 variant="outlined"
                 fullWidth
                 sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
@@ -2755,7 +2765,7 @@ export const Tablee = ({ data }) => {
                 >
                   <MenuItem value="All users">All users</MenuItem>
 
-                  {/* Dynamically create MenuItems from filteredRows */}
+                
                   {filteredRows.map((user) => (
                     <MenuItem key={user.id} value={user.name}>
                       {user.name} (
@@ -2764,29 +2774,50 @@ export const Tablee = ({ data }) => {
                   ))}
                 </Select>
               </FormControl>
-              {/* <FormControl
-                variant="outlined"
-                fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
-              >
-                <InputLabel
-                  id="groups-label-4"
-                  style={{ alignItems: "center" }}
-                >
-                  Groups
-                </InputLabel>
-                <Select
-                  labelId="groups-label-4"
-                  id="groups-select-4"
-                  value={groupsValue}
-                  onChange={(e) => setGroupsValue(e.target.value)}
-                  label="Select Groups"
-                >
-                  <MenuItem value="All Group">All Group</MenuItem>
-                  <MenuItem value="Ankur asset">Ankur asset</MenuItem>
-                  {/* Add your group options here 
-                </Select>
-              </FormControl> */}
+            */}
+   <FormControl
+  variant="outlined"
+  fullWidth
+  sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }} // Match the width and height of the Assets dropdown
+>
+  <InputLabel id="students-label">Student List</InputLabel>
+  <Select
+    labelId="students-label"
+    id="students-select"
+    value={usersValue}
+    onChange={(e) => setUsersValue(e.target.value)}
+    label="Select Student"
+    MenuProps={{
+      PaperProps: {
+        sx: {
+          maxHeight: 200, // Set max height for dropdown
+          minWidth: 150, // Set minimum width for the dropdown menu
+          "& .MuiMenu-list": {
+            maxWidth: 150, // Limit the max width of the menu items
+             // Enable horizontal scrolling for overflow
+          },
+        },
+      },
+       // sx:{overflowX: "auto",}
+    }}
+  >
+    <MenuItem value="All students">All students</MenuItem>
+
+    {/* Dynamically create MenuItems from childrenList */}
+    {childrenList.map((child, index) => (
+      <MenuItem 
+        key={index} 
+        value={child}
+        sx={{ maxWidth: 150, overflowX: "auto" }} // Limit item width and add horizontal scrolling
+      >
+        {child}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
+
+
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -2818,25 +2849,7 @@ export const Tablee = ({ data }) => {
                 {/* Error Handling */}
                 {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
               </FormControl>
-              {/* <FormControl
-                variant="outlined"
-                fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
-              >
-                <InputLabel id="areas-label-5">Areas</InputLabel>
-                <Select
-                  labelId="areas-label-5"
-                  id="areas-select-5"
-                  value={areasValue}
-                  onChange={(e) => setAreasValue(e.target.value)}
-                  label="Select Areas"
-                >
-                  <MenuItem value="All Areas">All Areas</MenuItem>
-                  <MenuItem value="amanora">amanora</MenuItem>
-                  <MenuItem value="Ram Nager">Ram Nager</MenuItem>
-                  {/* Add your area options here 
-                </Select>
-              </FormControl> */}
+           
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -2860,8 +2873,7 @@ export const Tablee = ({ data }) => {
                   ))}
                 </Select>
 
-                {/* Error Handling */}
-                {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
+              
               </FormControl>
               <FormControl
                 variant="outlined"
