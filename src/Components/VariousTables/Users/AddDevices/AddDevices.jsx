@@ -89,8 +89,8 @@
 //   setLoading(true); // Set loading to true when starting fetch
 
 //   try {
-//     const username = "hbtrack";
-//     const password = "123456@";
+//     const username = "schoolmaster";
+//     const password = "123456";
 //     const token = btoa(`${username}:${password}`);
 
 //     // First API call to fetch devices
@@ -278,8 +278,8 @@
 //     try {
 //       // Define the API endpoint and credentials
 //       const apiUrl = "http://104.251.212.84/api/devices"; // Replace with actual API endpoint
-//       const username = "hbtrack"; // Replace with your actual username
-//       const password = "123456@"; // Replace with your actual password
+//       const username = "schoolmaster"; // Replace with your actual username
+//       const password = "123456"; // Replace with your actual password
 //       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
 //       // Send delete requests for each selected ID
@@ -383,8 +383,8 @@
 //     const apiUrl1 = `http://104.251.212.84/api/devices/${selectedRow.id}`;
 //     const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
 
-//     const username = "hbtrack";
-//     const password = "123456@";
+//     const username = "schoolmaster";
+//     const password = "123456";
 //     const token1 = btoa(`${username}:${password}`);
 //     const token2 = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`;
 
@@ -623,8 +623,8 @@
 //     // Define the API endpoints and credentials
 //     const apiUrl1 = "http://104.251.212.84/api/devices"; // First API endpoint
 //     const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
-//     const username = "hbtrack"; // Replace with your actual username
-//     const password = "123456@"; // Replace with your actual password
+//     const username = "schoolmaster"; // Replace with your actual username
+//     const password = "123456"; // Replace with your actual password
 //     const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
 //     const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Token for the second URL
 
@@ -1376,8 +1376,8 @@ const fetchData = async () => {
   setLoading(true); // Set loading to true when starting fetch
 
   try {
-    const username = "hbtrack";
-    const password = "123456@";
+    const username = "schoolmaster";
+    const password = "123456";
     const token = btoa(`${username}:${password}`);
 
     // First API call to fetch devices
@@ -1595,8 +1595,8 @@ const fetchData = async () => {
     try {
       // Define the API endpoint and credentials
       const apiUrl = "http://104.251.212.84/api/devices"; // Replace with actual API endpoint
-      const username = "hbtrack"; // Replace with your actual username
-      const password = "123456@"; // Replace with your actual password
+      const username = "schoolmaster"; // Replace with your actual username
+      const password = "123456"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
   
       // Send delete requests for each selected ID
@@ -1719,8 +1719,8 @@ const handleEditSubmit = async () => {
     const apiUrl1 = `http://104.251.212.84/api/devices/${selectedRow.id}`;
     const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
 
-    const username = "hbtrack";
-    const password = "123456@";
+    const username = "schoolmaster";
+    const password = "123456";
     const token1 = btoa(`${username}:${password}`);
     const token2 = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`;
 
@@ -1959,8 +1959,8 @@ const handleAddSubmit = async () => {
     // Define the API endpoints and credentials
     const apiUrl1 = "http://104.251.212.84/api/devices"; // First API endpoint
     const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
-    const username = "hbtrack"; // Replace with your actual username
-    const password = "123456@"; // Replace with your actual password
+    const username = "schoolmaster"; // Replace with your actual username
+    const password = "123456"; // Replace with your actual password
     const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
     const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Token for the second URL
 
