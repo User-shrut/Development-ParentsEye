@@ -39,7 +39,7 @@ import { CHeaderNav } from '@coreui/react';
 const pages = [
   { title: 'Home', icon: <HomeIcon />, arr: ['Dashboard'] },
   // { title: 'Master', icon: <DriveEtaIcon />, arr: ['Server','Device','Groups','Assets','School', 'Assets Type','Assets Command','Assets Category','Assets Class','Assets Group','Users','Assets URL','User Profile','Users Assets Mapping','User Menu Master','Import Location','Assets Division','Assets Owner','Driver Master','Over speed setting','Device Settings','Geo Data', 'Landmark Group','Commands','Top Main Menu Master','Import Trip','Top Menu Master','Broker','Address Book','Main Menu Master','Address Book Group','User Display Settings','RFID','Telecom Master','Landmark Images','Landmark Waypoints','Emails'] },
-  { title: 'Masterupdated', icon: <DriveEtaIcon />, arr: ['Preferences', 'Notifications', 'Account', 'Devices', 'Geofences', 'Groups', 'Drivers', 'Calendars', 'Computed Attributes', 'Maintenance', 'Saved Commands', 'Server', 'Userrr'] },
+  // { title: 'Masterupdated', icon: <DriveEtaIcon />, arr: ['Preferences', 'Notifications', 'Account', 'Devices', 'Geofences', 'Groups', 'Drivers', 'Calendars', 'Computed Attributes', 'Maintenance', 'Saved Commands', 'Server', 'Userrr'] },
 
   { title: 'School', icon: <DriveEtaIcon />, arr: ['Student Detail', 'Geofence', 'Pickup And Drop List', 'Absent', 'Present', 'Leave', 'Status', 'Approved Request', 'Denied Request'] },
   { title: 'Users', icon: <DriveEtaIcon />, arr: ["SchoolMaster", "BranchMaster", 'Driver', 'Parent', 'Supervisor', 'AddDevices', 'MyBranchDevices'] },
