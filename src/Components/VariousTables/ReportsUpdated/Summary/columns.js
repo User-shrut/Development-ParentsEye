@@ -46,10 +46,10 @@ export const COLUMNS = () => [
   //   accessor: 'startTime',
    
   // },
-  {
-    Header: 'End Time',
-    accessor: 'endTime',
-  },
+  // {
+  //   Header: 'End Time',
+  //   accessor: 'endTime',
+  // },
   {
     Header: 'End Time',
     accessor: 'endTime',
