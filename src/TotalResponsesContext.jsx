@@ -30,6 +30,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
 //  setTotalResponsesLeave
  const [TotalResponsesDrivers,setTotalResponsesDrivers]=useState(0);
  const [TotalResponsesAbsent,setTotalResponsesAbsent]=useState(0);
+ const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null,name:null });
 const [role , setRole] = useState(1);
   const role1 = localStorage.getItem("role");
   const fetchDataTotalStudent = async (startDate = "", endDate = "") => {
@@ -278,10 +279,7 @@ const [role , setRole] = useState(1);
         allData = Array.isArray(response.data.children) ? response.data.children : [];
       }
   
-      // Apply local date filtering if dates are provided
-     
-     
-      // Update the state with filtered and original rows
+    
       
       setTotalResponsesAbsent(allData.length);
     } catch (error) {
@@ -362,44 +360,7 @@ const [role , setRole] = useState(1);
     }
   };
 
-  // const fetchData = async (startDate = "", endDate = "") => {
-  //   // setLoading(true);
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     const apiUrl =
-  //       role == 1
-  //         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
-  //         : role == 2
-  //         ? `${process.env.REACT_APP_SCHOOL_API}/absent-children`
-  //         : `${process.env.REACT_APP_BRANCH_API}/absent-children`;
-
-  //     const response = await axios.get(apiUrl, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     console.log("fetch data", response.data); // Log the entire response data
-
-  //     if (response?.data) {
-  //       const allData = response?.data.data.flatMap((school) =>
-  //         school.branches.flatMap((branch) =>
-  //           Array.isArray(branch.children) && branch.children.length > 0
-  //             ? branch.children
-  //             : []
-  //         )
-  //       );
-
-       
-  //       setTotalResponsesAbsent(allData.length);
-       
-  //     } else {
-  //       console.error("Expected an array but got:", response.data.children);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   } 
-  // };
+ 
   const fetchDataSupervisor = async (startDate = "", endDate = "") => {
     // setLoading(true);
     try {
@@ -458,30 +419,7 @@ const [role , setRole] = useState(1);
             : response.data.supervisors;
 
         console.log("supervisirs", allData);
-        // Apply local date filtering if dates are provided
-        // const filteredData =
-        //   startDate || endDate
-        //     ? allData.filter((row) => {
-        //         const registrationDate = parseDate(
-        //           row.formattedRegistrationDate
-        //         );
-        //         const start = parseDate(startDate);
-        //         const end = parseDate(endDate);
-
-        //         return (
-        //           (!startDate || registrationDate >= start) &&
-        //           (!endDate || registrationDate <= end)
-        //         );
-        //       })
-        //     : allData; // If no date range, use all data
-        // const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        // console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        // console.log(filteredData);
-        // setFilteredRows(
-        //   reversedData.map((row) => ({ ...row, isSelected: false }))
-        // );
-        // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+      
         setTotalResponsesSupervisor(allData.length);
       } else {
         console.error("Expected an array but got:", response.data.supervisors);
@@ -620,7 +558,8 @@ const [role , setRole] = useState(1);
     fetchBuses();
   }, []);
   return (
-    <TotalResponsesContext.Provider value={{ totalResponses,allDevices, setAllDevices,TotalResponsesSupervisor,setTotalResponsesSupervisor,TotalResponsesStudent,setTotalResponsesStudent, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent }}>
+    <TotalResponsesContext.Provider value={{ totalResponses,allDevices, setAllDevices,TotalResponsesSupervisor,setTotalResponsesSupervisor,TotalResponsesStudent,setTotalResponsesStudent, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent, coordinates,       // Provide the coordinates state
+      setCoordinates}}>
       {children}
     </TotalResponsesContext.Provider>
   );

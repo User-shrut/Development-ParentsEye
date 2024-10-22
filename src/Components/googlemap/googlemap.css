@@ -14,7 +14,9 @@
 .leaflet-popup-content-wrapper {
     z-index: 500; /* Lower z-index */
   }
-  
+  .leaflet-interactive{
+    stroke-width: 8;
+  }
   .leaflet-tooltip {
     background-color: #000000;
     color: #ffffff;

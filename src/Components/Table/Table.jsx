@@ -1857,7 +1857,7 @@
 
 
 //NEWCODEWORK ON ADDRESS
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback,useContext } from "react";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
@@ -1905,7 +1905,8 @@ import "./DashCon.css";
 import ReactPaginate from "react-paginate";
 import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 // Extend dayjs with the duration plugin
-import busY from "../../assets/school-bus-yellow.png"
+import busY from "../../assets/school-bus-yellow.png";
+import { TotalResponsesContext } from "../../TotalResponsesContext.jsx";
 dayjs.extend(duration);
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -1976,6 +1977,7 @@ export const Tablee = ({ data }) => {
   const role = localStorage.getItem("role");
   const [currentPage, setCurrentPage] = useState(0); // State for the current page
   const [rowsPerPage, setRowsPerPage] = useState(13); // State for the number of rows per page
+  const [selectedDriver, setSelectedDriver] = useState(""); // To manage selected value
 
   // Handle page change
   const handlePageClick = (data) => {
@@ -2071,12 +2073,18 @@ export const Tablee = ({ data }) => {
   useEffect(() => {
     const getAddressFromLatLng = async (lat, lng) => {
       //  const apiKey = "AIzaSyDy9RYx3BOhbCg6ncwxmlMI3Sr86myIA88";
-      const apiKey = "AIzaSyDy9RYx3BOhbCg6ncwxmlMI3Sr86myIA88";
+      // const apiKey = "bf0498f6486fb8c911519e5e2dcbe8b0";
       //  https://maps.googleapis.com/maps/api/geocode/json?latlng=21.128457777777776,79.10473777777777&key=YOUR_API_KEY
 
-      // const url =  `https://maps.googleapis.com/maps/api/geocode/json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&key=${apiKey}`;
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+      
 
+
+      //working
+      const apiKey = 'ca60f0512d2dc95a689dd38178bd0541';  // Replace with your Mappls API key
+      const url = `https://apis.mappls.com/advancedmaps/v1/${apiKey}/rev_geocode?lat=${lat}&lng=${lng}`;
+      console.log("mera url",url);
+
+      
       try {
         const response = await axios.get(url);
         if (response.data.results.length > 0) {
@@ -2370,7 +2378,17 @@ export const Tablee = ({ data }) => {
   const [totalResponses, setTotalResponses] = useState(0);
 
   const [childrenList, setChildrenList] = useState([]); // State to hold child names
+  // const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null });
+  const { setCoordinates } = useContext(TotalResponsesContext);
 
+  const handleRowDoubleClick = (item) => {
+    // Assuming `item` has latitude and longitude properties
+    if (item ) {
+      const { latitude, longitude,name } = item;
+      setCoordinates({ latitude, longitude,name});
+      console.log(`Latitude: ${latitude}, Longitude: ${longitude}, deviceName: ${name}`); // Optional: Log the coordinates
+    }
+  };
   const fetchData = async (startDate = "", endDate = "") => {
    
     try {
@@ -2577,7 +2595,7 @@ export const Tablee = ({ data }) => {
   //     console.error("Error:", error);
   //   }
   // };
-
+  const [drivername, setdrivername] = useState([]);
   const fetchDataDriver = async (startDate = "", endDate = "") => {
     // setLoading(true);
     try {
@@ -2633,9 +2651,12 @@ export const Tablee = ({ data }) => {
         console.log("drivers : ", allData);
 
         console.log("this is drivers data", allData);
-
+        const driverNames = allData.map((child) => child.driverName);
+        // const childNames = response.data; // Replace this with the actual extracted childName array
+      
+        console.log("All driver Names:", driverNames); 
         setDrivers(allData); // If no date range, use all data
-
+        setdrivername(driverNames);
       } else {
         console.error("Expected an array but got:", response.data.drivers);
       }
@@ -2709,22 +2730,7 @@ export const Tablee = ({ data }) => {
                   <MenuItem value="Device Fault">Device Fault</MenuItem>
                 </Select>
               </FormControl>
-              {/* <FormControl
-                variant="outlined"
-                fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 40 } }}
-              >
-                <InputLabel id="asset-status-label-2">Assets</InputLabel>
-                <Select
-                  labelId="assets-label-2"
-                  id="assets-select-2"
-                  value={assetsValue}
-                  onChange={(e) => setAssetsValue(e.target.value)}
-                  label="Select Assets"
-                >
-                  {/* Add your asset options here 
-                </Select>
-              </FormControl> */}
+            
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -2750,31 +2756,7 @@ export const Tablee = ({ data }) => {
                 </Select>
               </FormControl>
           
-             {/*  <FormControl
-                variant="outlined"
-                fullWidth
-                sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
-              >
-                <InputLabel id="users-label-3">Users</InputLabel>
-                <Select
-                  labelId="users-label-3"
-                  id="users-select-3"
-                  value={usersValue}
-                  onChange={(e) => setUsersValue(e.target.value)}
-                  label="Select Users"
-                >
-                  <MenuItem value="All users">All users</MenuItem>
-
-                
-                  {filteredRows.map((user) => (
-                    <MenuItem key={user.id} value={user.name}>
-                      {user.name} (
-                      {user.fullName || user.companyName || "Unknown"})
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            */}
+            
    <FormControl
   variant="outlined"
   fullWidth
@@ -2808,7 +2790,7 @@ export const Tablee = ({ data }) => {
       <MenuItem 
         key={index} 
         value={child}
-        sx={{ maxWidth: 150, overflowX: "auto" }} // Limit item width and add horizontal scrolling
+        sx={{ maxWidth: 150 }} // Limit item width and add horizontal scrolling
       >
         {child}
       </MenuItem>
@@ -2818,7 +2800,7 @@ export const Tablee = ({ data }) => {
 
 
 
-              <FormControl
+              {/* <FormControl
                 variant="outlined"
                 fullWidth
                 sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
@@ -2838,7 +2820,7 @@ export const Tablee = ({ data }) => {
                 >
                   <MenuItem value="All Group">All Group</MenuItem>
 
-                  {/* Dynamically generate MenuItem components based on the fetched groups */}
+                 
                   {groups.map((group) => (
                     <MenuItem key={group.id} value={group.name}>
                       {group.name}
@@ -2846,10 +2828,43 @@ export const Tablee = ({ data }) => {
                   ))}
                 </Select>
 
-                {/* Error Handling */}
-                {/* {error && <p style={{ color: 'red' }}>Error: {error}</p>} */}
+               
               </FormControl>
-           
+            */}
+            <FormControl
+      variant="outlined"
+      fullWidth
+      sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }} // Match the width and height
+    >
+      <InputLabel id="drivers-label">Driver List</InputLabel>
+      <Select
+        labelId="drivers-label"
+        id="drivers-select"
+        value={selectedDriver}
+        onChange={(e) => setSelectedDriver(e.target.value)}
+        label="Select Driver"
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              maxHeight: 200, // Set max height for dropdown
+              minWidth: 150, // Set minimum width for the dropdown menu
+              "& .MuiMenu-list": {
+                maxWidth: 150, // Limit the max width of the menu items
+              },
+            },
+          },
+        }}
+      >
+        <MenuItem value="All drivers">All drivers</MenuItem>
+
+        {/* Dynamically create MenuItems from drivername list */}
+        {drivername.map((driver, index) => (
+          <MenuItem key={index} value={driver}>
+            {driver}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
               <FormControl
                 variant="outlined"
                 fullWidth
@@ -2997,13 +3012,7 @@ export const Tablee = ({ data }) => {
               alignItems: "center",
             }}
           >
-            {/* <hr
-              style={{
-                margin: "0px",
-                width: "88%",
-                borderBottom: "1px solid black",
-              }}
-            /> */}
+           
           </div>
           {/* Horizontal line added here */}
         </>
@@ -3177,15 +3186,7 @@ export const Tablee = ({ data }) => {
                       Last Update
                     </CTableHeaderCell>
 
-                    {/* <CTableHeaderCell
-                      className="text-center current-delay table-cell headCell"
-                      style={{
-                        position: "sticky",
-                        top: 0,
-                      }}
-                    >
-                      &nbsp;&nbsp; C/D &nbsp;&nbsp;
-                    </CTableHeaderCell> */}
+                    
 
                     <CTableHeaderCell
                       className="text-center speed table-cell headCell"
@@ -3207,15 +3208,7 @@ export const Tablee = ({ data }) => {
                       Distance
                     </CTableHeaderCell>
 
-                    {/* <CTableHeaderCell
-                      className="text-center total-distance table-cell headCell"
-                      style={{
-                        position: "sticky",
-                        top: 0,
-                      }}
-                    >
-                      T/D
-                    </CTableHeaderCell> */}
+                  
 
                     <CTableHeaderCell
                       className="text-center satellite table-cell headCell"
@@ -3275,6 +3268,7 @@ export const Tablee = ({ data }) => {
                     <CTableRow
                       key={index}
                       className={`table-row collapsed trans`}
+                      onDoubleClick={() => handleRowDoubleClick(item)}
                     >
                       {/* Sr No. */}
                       <CTableDataCell className="text-center sr-no table-cell">
@@ -3319,18 +3313,7 @@ export const Tablee = ({ data }) => {
                         })()}
                       </CTableDataCell>
 
-                      {/* <CTableDataCell className="text-center address table-cell" style={{ width: "20rem" }}>
-  <div className="upperdata" style={{ fontSize: "1rem" }}>
-    {(() => {
-      // Check if addressesValue is an object with the required properties
-      if (addressesValue && typeof addressesValue == 'object') {
-        const address = addressesValue.display_name || "Fetching...";
-        return <span>{address}</span>;
-      }
-      return "Fetching..."; // Default value when addressesValue is not available
-    })()}
-  </div>
-</CTableDataCell> */}
+                     
                       <CTableDataCell
                         className="text-center address table-cell"
                         style={{ width: "20rem" }}
@@ -3339,19 +3322,7 @@ export const Tablee = ({ data }) => {
                           shiv kailasa, mihan, khapri, nagpur, maharshtra 111111
                         </div>
                       </CTableDataCell>
-                      {/* <CTableDataCell
-                        className="text-center address table-cell"
-                        style={{ width: "20rem" }}
-                      >
-                        <div className="upperdata" style={{ fontSize: "1rem" }}>
-                          {(() => {
-                            const driver = drivers.find(
-                              (driver) => driver.deviceId === item.deviceId
-                            );
-                            return driver ? driver.driverName : "N/A";
-                          })()}
-                        </div>
-                      </CTableDataCell> */}
+                     
                       <CTableDataCell
                         className="text-center address table-cell"
                         style={{ width: "20rem" }}
@@ -3387,39 +3358,7 @@ export const Tablee = ({ data }) => {
                           return <div>N/A</div>;
                         })()}
                       </CTableDataCell>
-                      {/* )} */}
-                      {/* {visibleColumns.cd && ( */}
-                      {/* <CTableDataCell className="text-center cd current-delay table-cell">
-                        {(() => {
-                          // const device = salesman.find((device) => device.id === item.deviceId)
-                          if (item && item.lastUpdate) {
-                            const now = dayjs();
-                            const lastUpdate = dayjs(item.lastUpdate);
-                            const duration = dayjs.duration(
-                              now.diff(lastUpdate)
-                            );
-
-                            const days = duration.days();
-                            const hours = duration.hours();
-                            const minutes = duration.minutes();
-                            const seconds = duration.seconds();
-
-                            // Conditional formatting based on duration values
-                            if (days > 0) {
-                              return `${days}d ${hours}h ${minutes}m`;
-                            } else if (hours > 0) {
-                              return `${hours}h ${minutes}m`;
-                            } else if (minutes > 0) {
-                              return `${minutes}m`;
-                            } else {
-                              return `${seconds}s`; // Display seconds if all else is zero
-                            }
-                          }
-                          return "0s"; // Default if no device or lastUpdate
-                        })()}
-                      </CTableDataCell> */}
-
-                      {/* {visibleColumns.sp && ( */}
+                     
                       <CTableDataCell className="text-center sp speed table-cell">
                         <div className="upperdata">{`${Math.round(
                           item.speed
@@ -3431,12 +3370,7 @@ export const Tablee = ({ data }) => {
                         {`${Math.round(item.attributes.distance)} km`}
                       </CTableDataCell>
 
-                      {/* {visibleColumns.td && ( */}
-                      {/* <CTableDataCell className="text-center td total-distance table-cell">
-                        {`${Math.round(item.attributes.totalDistance)} km`}
-                      </CTableDataCell> */}
-
-                      {/* {visibleColumns.sat && ( */}
+                     
                       <CTableDataCell className="text-center satelite table-cell">
                         <div
                           style={{

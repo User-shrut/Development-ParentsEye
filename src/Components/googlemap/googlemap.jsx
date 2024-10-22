@@ -512,7 +512,7 @@
 // export default GoogleMapComponent;
 
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState,useContext } from "react";
 import {
   MapContainer,
   Marker,
@@ -520,7 +520,9 @@ import {
   Popup,
   TileLayer,
   Circle, // Import Circle
+  
 } from "react-leaflet";
+import { DivIcon } from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { FcAlarmClock } from "react-icons/fc";
@@ -529,7 +531,7 @@ import { FaRegSnowflake } from "react-icons/fa";
 import { BsFillFuelPumpFill } from "react-icons/bs";
 import "../googlemap/googlemap.css";
 import { PiPlugsFill } from "react-icons/pi";
-
+// import Tablee from "./Table"; // Assuming table.jsx is TableComponent
   
 // import carIcon from "./SVG/car-s.png";
 import carIcon from "./SVG/bus-s.png";
@@ -540,7 +542,8 @@ import axios from "axios";
 
 import { MdLocationPin, MdAccessTime } from "react-icons/md";
 import GeoFencing from "../GeoFencing/GeoFencing";
-
+import { TotalResponsesContext } from '../../TotalResponsesContext';
+import locationimg from "../../../src/Components/googlemap/SVG/locationfinal.png";
 const car = new L.Icon({
   iconUrl: carIcon,
   iconSize: [35, 45],
@@ -590,7 +593,7 @@ function GoogleMapComponent({ latitude, longitude, data }) {
  
   
 
- 
+  const { coordinates } = useContext(TotalResponsesContext);
   const role = localStorage.getItem("role");
 useEffect(() => {
   const fetchAddress = async () => {
@@ -694,6 +697,7 @@ useEffect(() => {
               }
 
               console.log("my geeofencesss",allData);
+             
               setGeofence(allData);
 
           } else {
@@ -730,8 +734,23 @@ useEffect(() => {
                       eventHandlers={{
                         click: () => {
                           setSelectedGeofence(geofence); // Set the selected geofence on click
-                          alert(`Geofence Name: ${geofence.name}\nDevice Name: ${geofence.deviceName}`);
+                          //  alert(`Geofence Name: ${geofence.name}\nDevice Name: ${geofence.deviceName}`);
+
+                          mapRef.current.setView([lat, lng], 18); // Adjust zoom level as needed
                         },
+                        dblclick: () => {
+                          // Reset the map zoom on double-clicking the selected geofence
+                          const currentZoom = mapRef.current.getZoom();
+                          mapRef.current.setZoom(currentZoom -7); // Decrease zoom level by 1
+                          console.log('Coordinates in GoogleMap areee:', coordinates);
+                      },
+                      mouseover: () => {
+                        setSelectedGeofence(geofence); // Show popup on hover
+                    },
+                    mouseout: () => {
+                        setSelectedGeofence(null); // Hide popup when not hovering
+                    },
+                       
                       }}
                   />
               );
@@ -739,6 +758,7 @@ useEffect(() => {
           return null; // Return null if area data is not valid
       });
   };
+  
   const [showGeofences, setShowGeofences] = useState(false); // State to track geofence visibility
   // const [selectedGeofence, setSelectedGeofence] = useState(null); // State for selected geofence
 
@@ -754,6 +774,17 @@ useEffect(() => {
       return !prev; // Toggle the state
     });
   };
+  useEffect(() => {
+    if (coordinates && coordinates.latitude && coordinates.longitude && mapRef.current) {
+      const map = mapRef.current;
+      map.setView([coordinates.latitude, coordinates.longitude,coordinates.name], 16); // Zoom level 13 can be adjusted as needed
+
+    }
+  }, [coordinates]);
+  const customIcon = new DivIcon({
+    html: `<img src="${locationimg}" style="width: 25px; height: 25px;" alt="Location Icon"/>`,
+    className: 'custom-icon', // Optional: Add a custom class if you want to style it further
+  });
   return (
     <div style={{ position: 'relative', height: '500px', width: '99vw' }}>
     <button 
@@ -852,20 +883,26 @@ useEffect(() => {
             </Marker>
           ) : null
         )}
+         {/* Add custom marker for current coordinates with the location icon */}
+         {coordinates && coordinates.latitude && coordinates.longitude && (
+          <Marker
+            position={[coordinates.latitude, coordinates.longitude]}
+            icon={customIcon}
+          >
+            <Popup>
+              <div>
+                <h4>Device And Location</h4>
+<p>Bus Name:{coordinates.name}</p>
+                <p>Latitude: {coordinates.latitude}</p>
+                <p>Longitude: {coordinates.longitude}</p>
+
+              </div>
+            </Popup>
+          </Marker>
+        )}
           {/* Render geofences */}
           {showGeofences && renderGeofences()}
-              {/* Render popup for selected geofence */}
-      {/* {selectedGeofence && (
-        <Popup
-          position={[parseFloat(selectedGeofence.area.split(' ')[1]), parseFloat(selectedGeofence.area.split(' ')[0].split('(')[1])]}
-          onClose={() => setSelectedGeofence(null)} // Close popup on close event
-        >
-          <div>
-            <h4>{selectedGeofence.name}</h4>
-            <p>Device: {selectedGeofence.deviceName}</p>
-          </div>
-        </Popup>
-      )} */}
+             
              {/* Render popup for selected geofence */}
              {selectedGeofence && (
           <Popup

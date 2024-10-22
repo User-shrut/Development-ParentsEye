@@ -709,7 +709,49 @@ const SchoolMaster = () => {
     
     }
   };
-
+  // const handleAccessClick = async (id) => {
+  //   const token = localStorage.getItem("token");
+  //   try {
+  //     const response = await axios.put(
+  //       `http://63.142.251.13:4000/superadmin/updateAccess/${id}`, // Pass row._id in the URL
+  //       {
+  //         fullAccess: false, // Payload
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`, // Token for authorization
+  //         },
+  //       }
+  //     );
+  //     alert("access given");
+  //     console.log("Access updated successfully", response.data);
+  //   } catch (error) {
+  //     console.error("Error updating access", error);
+  //     alert("access false");
+  //   }
+  // };
+  const handleAccessClick = async (id, currentFullAccess) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.put(
+        `http://63.142.251.13:4000/superadmin/updateAccess/${id}`, // Pass row._id in the URL
+        {
+          fullAccess: !currentFullAccess, // Toggle fullAccess based on current value
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Token for authorization
+          },
+        }
+      );
+      alert(currentFullAccess ? "Access revoked (Less Access)" : "Access granted (Full Access)");
+      console.log("Access updated successfully", response.data);
+    } catch (error) {
+      console.error("Error updating access", error);
+      alert(currentFullAccess ? "Error revoking full access" : "Error granting full access");
+    }
+    fetchData();
+  };
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>School Master</h1>
@@ -925,6 +967,18 @@ const SchoolMaster = () => {
                           ) : null}
                         </TableCell>
                       ))}
+                       <TableCell
+                      style={{
+                        minWidth: 70, // Adjust width if needed
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                        padding: "4px 4px",
+                        textAlign: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Access
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -1017,6 +1071,36 @@ const SchoolMaster = () => {
                                 </TableCell>
                               );
                             })}
+                            <TableCell
+      style={{
+        minWidth: 70,
+        borderRight: "1px solid #e0e0e0",
+        paddingTop: "4px",
+        paddingBottom: "4px",
+        borderBottom: "none",
+        textAlign: "center",
+        fontSize: "smaller",
+        backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+      }}
+    >
+      {/* Pass row._id when calling handleAccessClick */}
+      <Button
+        onClick={() => handleAccessClick(row._id, row.fullAccess)}
+        variant="contained"
+        color={row.fullAccess ? "error" : "success"} // Change color based on access status
+        size="small"
+        style={{
+          width: "160px", // Set fixed width for button
+          height: "40px", // Set fixed height for button
+          textTransform: "none", // Prevent button text from being uppercase
+          fontWeight: "bold",
+          whiteSpace: "nowrap", // Prevent text from wrapping
+          overflow: "hidden", // Hide overflow text if it's too long
+          textOverflow: "ellipsis", // Show ellipsis if text overflows
+        }}
+      >
+        {row.fullAccess ? "Give Limited App access" : "Give full App access"}
+      </Button></TableCell>
                         </TableRow>
                       ))
                   )}
