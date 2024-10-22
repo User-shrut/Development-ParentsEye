@@ -16,6 +16,10 @@ export const COLUMNS = () => [
   //     return date.toLocaleString('en-IN', { hour12: true }); // Format the date for Indian locale (12-hour format)
   //   },
   // },
+  // {
+  //   Header: 'Start Time',
+  //   accessor: 'startTime',
+  // },
   {
     Header: 'Start Time',
     accessor: 'startTime',
@@ -36,7 +40,7 @@ export const COLUMNS = () => [
         return "Invalid Date"; // Return a fallback if the date is invalid
       }
   
-      date.setMinutes(date.getMinutes() + 330); // Add 5 hours and 30 minutes (330 minutes)
+      date.setMinutes(date.getMinutes() + 114+21); // Add 5 hours and 30 minutes (330 minutes)
       return date.toLocaleString('en-IN', { hour12: true }); // Format the date for Indian locale (12-hour format)
     },
   },
@@ -70,7 +74,7 @@ export const COLUMNS = () => [
         return "Invalid Date"; // Return a fallback if the date is invalid
       }
   
-      date.setMinutes(date.getMinutes() + 330); // Add 5 hours and 30 minutes (330 minutes)
+      date.setMinutes(date.getMinutes() -2332); // Add 5 hours and 30 minutes (330 minutes)
       return date.toLocaleString('en-IN', { hour12: true }); // Format the date for Indian locale (12-hour format)
     },
   },
