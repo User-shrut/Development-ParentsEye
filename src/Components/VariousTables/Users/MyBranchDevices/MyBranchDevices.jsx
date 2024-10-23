@@ -198,6 +198,7 @@ export const MyBranchDevices = () => {
           reversedData.map((device) => ({
             deviceId: device.deviceId,
             deviceName: device.deviceName,
+            actualDeviceId:device.actualDeviceId,
             isSelected: false,
           }))
         );
@@ -348,13 +349,32 @@ export const MyBranchDevices = () => {
     console.log("Filtered rows:", filteredRows);
 
     // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
+    let selectedIds;
+    if (role == 1) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.actualDeviceId; // Ensure id exists and is not undefined
+        });
+    } else if (role == 2) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.actualDeviceId; // Ensure id exists and is not undefined
+        });
+    } else {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.actualDeviceId; // Ensure id exists and is not undefined
+        });
+    }
 
     console.log("Selected IDs:", selectedIds);
 
@@ -373,10 +393,13 @@ export const MyBranchDevices = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-1-hurx.onrender.com/school/delete";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-device`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete-device`
+          : `${process.env.REACT_APP_BRANCH_API}/delete-device`;
 
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
