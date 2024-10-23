@@ -192,7 +192,7 @@ function App() {
 
   //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
   //       const response1 = await axios.get(
-  //           "http://104.251.212.84/api/devices",
+  //           "https://rocketsalestracker.com/api/devices",
   //         {
   //           headers: {
   //             Authorization: `Basic ${token}`, // Replace with your actual token
@@ -212,7 +212,7 @@ function App() {
   //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
 
   //       const response2 = await axios.get(
-  //            "http://104.251.212.84/api/positions",
+  //            "https://rocketsalestracker.com/api/positions",
   //         {
   //           headers: {
   //             Authorization: `Basic ${token}`,
@@ -345,7 +345,7 @@ function App() {
       try {
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
         const response1 = await axios.get(
-          "http://104.251.212.84/api/devices",
+          "https://rocketsalestracker.com/api/devices",
           {
             headers: {
               Authorization: `Basic ${token}`, // Replace with your actual token
@@ -377,7 +377,7 @@ function App() {
       try {
         const token = btoa(`${username}:${password}`); // Base64 encode the username and password
         const response2 = await axios.get(
-          "http://104.251.212.84/api/positions",
+          "https://rocketsalestracker.com/api/positions",
           {
             headers: {
               Authorization: `Basic ${token}`,

@@ -552,7 +552,7 @@ const handleEditSubmit = async () => {
       try {
         const response = await fetch('http://104.251.212.84/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('harshal:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('hansagroup:123456'), // Replace with your username and password
           },
         });
 
@@ -581,7 +581,7 @@ const handleEditSubmit = async () => {
         const response = await fetch('http://104.251.212.84/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('harshal:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('hansagroup:123456') // Replace with actual credentials
           }
         });
 
@@ -849,7 +849,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-    const username = "harshal";
+    const username = "hansagroup";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -1499,7 +1499,7 @@ style={{ marginRight: '10px', padding: '5px' }}
     </Table>
             </TableContainer>
             <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
+              rowsPerPageOptions={[10, 25, 100,5000]}
               component="div"
               count={sortedData.length}
               rowsPerPage={rowsPerPage}

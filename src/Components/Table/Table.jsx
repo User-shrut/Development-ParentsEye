@@ -2370,7 +2370,7 @@ export const Tablee = ({ data }) => {
 
     setFilteredAssets(filteredData);
   }, [vehiclesValue, data]);
-
+  const [selectedSupervisor, setSelectedSupervisor] = useState('');
   const handleSelectVehicle = (event) => {
     setVehiclesValue(event.target.value);
   };
@@ -2664,9 +2664,236 @@ export const Tablee = ({ data }) => {
       console.error("Error:", error);
     }
   };
+  const [supervisorsNames, setsupervisorsNames] = useState([]);
+  const fetchDatasupervisor = async (startDate = "", endDate = "") => {
 
+    try {
+      const token = localStorage.getItem("token");
+      let response;
+
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-supervisors`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-supervisors`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-supervisors`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      console.log("fetch data", response.data); // Log the entire response data
+
+      if (response?.data) {
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.supervisors) &&
+                  branch.supervisors.length > 0
+                    ? branch.supervisors
+                    : []
+                )
+              )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.supervisors) &&
+                branch.supervisors.length > 0
+                  ? branch.supervisors
+                  : []
+              )
+            : response.data.supervisors;
+
+        console.log("supervisirs", allData);
+        const SupervisorsNames = allData.map((child) => child.supervisorName);
+       
+        setsupervisorsNames(SupervisorsNames);
+        
+       
+      } else {
+        console.error("Expected an array but got:", response.data.supervisors);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } 
+  };
+  const [parentsNames, setparentsNames] = useState([]);
+  const [selectedParent, setSelectedParent] = useState("");
+  const fetchDataparent = async (startDate = "", endDate = "") => {
+   
+    try {
+      const token = localStorage.getItem("token");
+      let response;
+      if (role == 1) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-parents`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 2) {
+        response = await axios.get(
+          `${process.env.REACT_APP_SCHOOL_API}/read-parents`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 3) {
+        response = await axios.get(
+          `${process.env.REACT_APP_BRANCH_API}/read-parents`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      console.log("fetch data", response.data); // Log the entire response data
+
+      if (response.data) {
+        const allData =
+          role == 1
+            ? response?.data.data.flatMap((school) =>
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.parents) && branch.parents.length > 0
+                  ? branch.parents.map((parent) => ({
+                      ...parent,
+                      schoolName: school.schoolName,
+                      branchName: branch.branchName,
+                    }))
+                  : []
+              )
+            )
+            : role == 2
+            ? response?.data.branches.flatMap((branch) =>
+                Array.isArray(branch.parents) && branch.parents.length > 0
+                  ? branch.parents
+                  : []
+              )
+            : response.data.parents;
+
+        console.log(allData);
+        const ParentsNames = allData.map((child) => child.parentName);
+       
+        setparentsNames(ParentsNames);
+        // Apply local date filtering if dates are provided
+    
+      } else {
+        console.error("Expected an array but got:", response.data.parents);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    } 
+  };
+
+  const [selectedGeofence, setSelectedGeofence] = useState("");
+
+  const [geofencesNames, setgeofencesNames] = useState([]);
+  const fetchDatageofences = async (startDate = "", endDate = "") => {
+
+    try {
+      const token = localStorage.getItem("token");
+      let response;
+      
+      // Fetch data based on role
+      if (role == 1) {
+        response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else if (role == 2) {
+        response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/geofences`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else if (role == 3) {
+        response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+  
+      console.log("fetch data", response.data);
+      if (response?.data) {
+        let allData;
+      
+        // Logic for role 1: Devices and stops
+        if (role ==1) {
+          allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
+            stops.map((stop) => ({
+              ...stop, // Retain all stop properties
+              deviceId, // Add deviceId to each stop
+            }))
+          );
+      
+        // Logic for role 2: Branches and geofences
+        } else if (role == 2) {
+          allData = response?.data?.branches.flatMap(branch => 
+            branch.geofences?.map(geofence => ({
+              ...geofence, // Retain all geofence properties
+              branchId: branch.branchId, // Add branchId to each geofence
+              branchName: branch.branchName, // Add branchName to each geofence
+            })) || [] // Handle the case where geofences is undefined or empty
+          );
+      
+        // Logic for role 3: Branches and devices
+        } 
+       
+      
+        else if (role == 3) {
+          allData = response?.data.geofences.map((geofence) => ({
+            ...geofence, // Keep all geofence properties
+            branchId: response.data.branchId, // Add branchId from the response
+            branchName: response.data.branchName, // Add branchName from the response
+            schoolName: response.data.schoolName, // Add schoolName from the response
+          }));
+        
+          console.log(allData);
+        }
+        
+        const geofencesNames = allData.map((child) => child.name);
+       
+        setgeofencesNames(geofencesNames);
+      
+      } else {
+        console.error("Expected an array but got:", response.data.children);
+      }
+    
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   useEffect(() => {
     fetchDataDriver();
+    fetchDatasupervisor();
+    fetchDataparent();
+    fetchDatageofences();
   }, []);
 
 
@@ -2743,13 +2970,13 @@ export const Tablee = ({ data }) => {
                   value={assetsValue}
                   onChange={(e) => {
                     setAssetsValue(e.target.value);
-                    handleSelectVehicle();
+                    handleSelectVehicle(e);
                   }}
                   label="Select Assets"
                 >
                   <MenuItem value="All assets">All assets</MenuItem>
                   {data.map((asset) => (
-                    <MenuItem key={asset.name} value={asset.name}>
+                    <MenuItem key={asset.deviceId} value={asset.deviceId}>
                       {asset.name}
                     </MenuItem>
                   ))}
@@ -2865,7 +3092,41 @@ export const Tablee = ({ data }) => {
         ))}
       </Select>
     </FormControl>
-              <FormControl
+    <FormControl
+      variant="outlined"
+      fullWidth
+      sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }} // Match the width and height
+    >
+      <InputLabel id="supervisors-label">Supervisor List</InputLabel>
+      <Select
+        labelId="supervisors-label"
+        id="supervisors-select"
+        value={selectedSupervisor}
+        onChange={(e) => setSelectedSupervisor(e.target.value)}
+        label="Select Supervisor"
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              maxHeight: 200, // Set max height for dropdown
+              minWidth: 150, // Set minimum width for the dropdown menu
+              "& .MuiMenu-list": {
+                maxWidth: 150, // Limit the max width of the menu items
+              },
+            },
+          },
+        }}
+      >
+        <MenuItem value="All supervisors">All Supervisors</MenuItem>
+
+        {/* Dynamically create MenuItems from supervisorsNames list */}
+        {supervisorsNames.map((supervisor, index) => (
+          <MenuItem key={index} value={supervisor}>
+            {supervisor}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+              {/* <FormControl
                 variant="outlined"
                 fullWidth
                 sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
@@ -2880,7 +3141,7 @@ export const Tablee = ({ data }) => {
                 >
                   <MenuItem value="All Areas">All Areas</MenuItem>
 
-                  {/* Dynamically generate MenuItem components based on the fetched areas */}
+               
                   {areas.map((area, index) => (
                     <MenuItem key={index} value={area}>
                       {area}
@@ -2889,8 +3150,8 @@ export const Tablee = ({ data }) => {
                 </Select>
 
               
-              </FormControl>
-              <FormControl
+              </FormControl> */}
+              {/* <FormControl
                 variant="outlined"
                 fullWidth
                 sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
@@ -2910,54 +3171,83 @@ export const Tablee = ({ data }) => {
                   <MenuItem value="UNLOADING POINT">UNLOADING POINT</MenuItem>
                   <MenuItem value="weighing bridge">weighing bridge</MenuItem>
                   <MenuItem value="yashwant nagar">yashwant nagar</MenuItem>
-                  {/* Add your landmark options here */}
+                
                 </Select>
-              </FormControl>
+              </FormControl> */}
+ <FormControl
+      variant="outlined"
+      fullWidth
+      sx={{ width: 250, "& .MuiInputBase-root": { height: 50 } }}
+    >
+      <InputLabel id="parents-label">Parent List</InputLabel>
+      <Select
+        labelId="parents-label"
+        id="parents-select"
+        value={selectedParent}
+        onChange={(e) => setSelectedParent(e.target.value)}
+        label="Select Parent"
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              maxHeight: 200,
+              minWidth: 150,
+              "& .MuiMenu-list": {
+                maxWidth: 150,
+              },
+            },
+          },
+        }}
+      >
+        <MenuItem value="">All parents</MenuItem>
 
-              <FormControl
-                variant="outlined"
-                fullWidth
-                sx={{
-                  width: 250,
-                  "& .MuiInputBase-root": { height: 50 },
-                  marginBottom: 2,
-                }}
-              >
-                <InputLabel id="vehicles-label-6">Select Vehicles</InputLabel>
-                <Select
-                  labelId="vehicles-label-6"
-                  id="vehicles-select-6"
-                  value={vehiclesValue}
-                  onChange={(e) => setVehiclesValue(e.target.value)} // Uncomment to handle changes
-                  label="Select Asset Status"
-                >
-                  {/* You can add 'All Vehicles' as the default option */}
-                  <MenuItem value="All assets">All Vehicles</MenuItem>
+        {/* Dynamically create MenuItems from parentsNames list */}
+        {parentsNames.map((parent, index) => (
+          <MenuItem key={index} value={parent}>
+            {parent}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+             
+               <FormControl
+      variant="outlined"
+      fullWidth
+      sx={{
+        width: 250,
+        "& .MuiInputBase-root": { height: 50 },
+        marginBottom: 2,
+      }}
+    >
+      <InputLabel id="geofences-label">Geofence List</InputLabel>
+      <Select
+        labelId="geofences-label"
+        id="geofences-select"
+        value={selectedGeofence}
+        onChange={(e) => setSelectedGeofence(e.target.value)}
+        label="Select Geofence"
+        MenuProps={{
+          PaperProps: {
+            sx: {
+              maxHeight: 200,
+              minWidth: 150,
+               marginBottom: 2,
+              "& .MuiMenu-list": {
+                maxWidth: 150,
+              },
+            },
+          },
+        }}
+      >
+        <MenuItem value="">All geofences</MenuItem>
 
-                  {/* New vehicle types you provided */}
-                  <MenuItem value="Default">Default</MenuItem>
-                  <MenuItem value="Animal">Animal</MenuItem>
-                  <MenuItem value="Bicycle">Bicycle</MenuItem>
-                  <MenuItem value="Boat">Boat</MenuItem>
-                  <MenuItem value="Bus">Bus</MenuItem>
-                  <MenuItem value="Camper">Camper</MenuItem>
-                  <MenuItem value="Crane">Crane</MenuItem>
-                  <MenuItem value="Helicopter">Helicopter</MenuItem>
-                  <MenuItem value="Motorcycle">Motorcycle</MenuItem>
-                  <MenuItem value="Offroad">Offroad</MenuItem>
-                  <MenuItem value="Person">Person</MenuItem>
-                  <MenuItem value="Pickup">Pickup</MenuItem>
-                  <MenuItem value="Plane">Plane</MenuItem>
-                  <MenuItem value="Ship">Ship</MenuItem>
-                  <MenuItem value="Tractor">Tractor</MenuItem>
-                  <MenuItem value="Train">Train</MenuItem>
-                  <MenuItem value="Tram">Tram</MenuItem>
-                  <MenuItem value="Trolleybus">Trolleybus</MenuItem>
-                  <MenuItem value="Truck">Truck</MenuItem>
-                  <MenuItem value="Van">Van</MenuItem>
-                  <MenuItem value="Scooter">Scooter</MenuItem>
-                </Select>
-              </FormControl>
+      
+        {geofencesNames.map((geofence, index) => (
+          <MenuItem key={index} value={geofence}>
+            {geofence}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
             </div>
 
             {/* <br />

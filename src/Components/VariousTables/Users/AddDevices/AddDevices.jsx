@@ -94,7 +94,7 @@
 //     const token = btoa(`${username}:${password}`);
 
 //     // First API call to fetch devices
-//     const firstApiResponse = await axios.get("http://104.251.212.84/api/devices", {
+//     const firstApiResponse = await axios.get("https://rocketsalestracker.com/api/devices", {
 //       headers: {
 //         Authorization: `Basic ${token}`,
 //       },
@@ -277,7 +277,7 @@
   
 //     try {
 //       // Define the API endpoint and credentials
-//       const apiUrl = "http://104.251.212.84/api/devices"; // Replace with actual API endpoint
+//       const apiUrl = "https://rocketsalestracker.com/api/devices"; // Replace with actual API endpoint
 //       const username = "schoolmaster"; // Replace with your actual username
 //       const password = "123456"; // Replace with your actual password
 //       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
@@ -380,7 +380,7 @@
 
 // const handleEditSubmit = async () => {
 //   try {
-//     const apiUrl1 = `http://104.251.212.84/api/devices/${selectedRow.id}`;
+//     const apiUrl1 = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
 //     const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
 
 //     const username = "schoolmaster";
@@ -621,7 +621,7 @@
 // const handleAddSubmit = async () => {
 //   try {
 //     // Define the API endpoints and credentials
-//     const apiUrl1 = "http://104.251.212.84/api/devices"; // First API endpoint
+//     const apiUrl1 = "https://rocketsalestracker.com/api/devices"; // First API endpoint
 //     const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
 //     const username = "schoolmaster"; // Replace with your actual username
 //     const password = "123456"; // Replace with your actual password
@@ -1381,7 +1381,7 @@ const fetchData = async () => {
     const token = btoa(`${username}:${password}`);
 
     // First API call to fetch devices
-    const firstApiResponse = await axios.get("http://104.251.212.84/api/devices", {
+    const firstApiResponse = await axios.get("https://rocketsalestracker.com/api/devices", {
       headers: {
         Authorization: `Basic ${token}`,
       },
@@ -1594,7 +1594,7 @@ const fetchData = async () => {
   
     try {
       // Define the API endpoint and credentials
-      const apiUrl = "http://104.251.212.84/api/devices"; // Replace with actual API endpoint
+      const apiUrl = "https://rocketsalestracker.com/api/devices"; // Replace with actual API endpoint
       const username = "schoolmaster"; // Replace with your actual username
       const password = "123456"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
@@ -1716,7 +1716,7 @@ const fetchData = async () => {
 
 const handleEditSubmit = async () => {
   try {
-    const apiUrl1 = `http://104.251.212.84/api/devices/${selectedRow.id}`;
+    const apiUrl1 = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
     const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
 
     const username = "schoolmaster";
@@ -1822,7 +1822,7 @@ useEffect(() => {
       const response = await fetch('https://rocketsalestracker.com/api/groups', {
         method: 'GET',
         headers: {
-          'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+          'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
         }
       });
 
@@ -1853,7 +1853,7 @@ useEffect(() => {
       const response = await fetch('https://rocketsalestracker.com/api/calendars', {
         method: 'GET',
         headers: {
-          'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+          'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
         }
       });
 
@@ -1957,7 +1957,7 @@ useEffect(() => {
 const handleAddSubmit = async () => {
   try {
     // Define the API endpoints and credentials
-    const apiUrl1 = "http://104.251.212.84/api/devices"; // First API endpoint
+    const apiUrl1 = "https://rocketsalestracker.com/api/devices"; // First API endpoint
     const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
     const username = "schoolmaster"; // Replace with your actual username
     const password = "123456"; // Replace with your actual password

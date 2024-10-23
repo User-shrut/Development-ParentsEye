@@ -3079,7 +3079,7 @@ const lastThirdColumn = columns[columns.length - 3];
       <Button onClick={() => handleApprove(role==3?row._id:row.parentId)} color="primary">
         Approve
       </Button>
-      <Button onClick={() => handleReject(role==3?row._id:row.parentId)} color="secondary">
+      <Button onClick={() => handleReject(role==3?row.id:row.parentId)} color="secondary">
         Reject
       </Button>
     </>
