@@ -84,7 +84,8 @@ export const COLUMNS = () => [
     accessor: 'distance',
     Cell: ({ value }) => {
       const distanceInKm = value / 1000;
-      return distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
+      // return distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
+      return distanceInKm.toFixed(2);
     },
   },
   // {
