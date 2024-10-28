@@ -195,7 +195,7 @@ export const Trips = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete";
+        "https://jnmcmanagement-4-pzsf.onrender.com/jnmc/delete";
       const token =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
 
@@ -300,7 +300,7 @@ export const Trips = () => {
 
 
 const handleEditSubmit = async () => {
-  const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
+  const apiUrl = `http://104.251.212.84/api/server`; // Ensure this is correct
   const username = "test";
   const password = "123456";
   const token = btoa(`${username}:${password}`);
@@ -368,7 +368,7 @@ const handleEditSubmit = async () => {
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/parent/register",
+        "https://jnmcmanagement-4-pzsf.onrender.com/parent/register",
         {
           method: "POST",
           headers: {
@@ -408,9 +408,9 @@ const handleEditSubmit = async () => {
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/devices', {
+        const response = await fetch('http://104.251.212.84/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('jnmc:123456'), // Replace with your username and password
           },
         });
 
@@ -435,10 +435,10 @@ const handleEditSubmit = async () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/groups', {
+        const response = await fetch('http://104.251.212.84/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('jnmc:123456') // Replace with actual credentials
           }
         });
 
@@ -473,7 +473,7 @@ const handleEditSubmit = async () => {
 
     // Construct the API URL
     const url = `
-https://rocketsalestracker.com/api/reports/trips?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}`;
+http://104.251.212.84/api/reports/trips?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}`;
     
     setApiUrl(url); // Update the state with the generated URL
     fetchData(url); // Call fetchData with the generated URL
@@ -501,7 +501,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-    const username = "school";
+    const username = "jnmc";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 

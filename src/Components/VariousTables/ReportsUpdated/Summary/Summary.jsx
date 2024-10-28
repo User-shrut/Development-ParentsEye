@@ -552,7 +552,7 @@ const handleEditSubmit = async () => {
       try {
         const response = await fetch('http://104.251.212.84/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('hansaschool:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('jnmc:123456'), // Replace with your username and password
           },
         });
 
@@ -581,7 +581,7 @@ const handleEditSubmit = async () => {
         const response = await fetch('http://104.251.212.84/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('hansaschool:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('jnmc:123456') // Replace with actual credentials
           }
         });
 
@@ -849,7 +849,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-    const username = "hansaschool";
+    const username = "jnmc";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
