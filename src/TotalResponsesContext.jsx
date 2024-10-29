@@ -32,6 +32,7 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
  const [TotalResponsesAbsent,setTotalResponsesAbsent]=useState(0);
  const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null,name:null });
 const [role , setRole] = useState(1);
+const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: null,latitude: null, longitude: null}); 
   const role1 = localStorage.getItem("role");
   const fetchDataTotalStudent = async (startDate = "", endDate = "") => {
     
@@ -558,7 +559,7 @@ const [role , setRole] = useState(1);
     fetchBuses();
   }, []);
   return (
-    <TotalResponsesContext.Provider value={{ totalResponses,allDevices, setAllDevices,TotalResponsesSupervisor,setTotalResponsesSupervisor,TotalResponsesStudent,setTotalResponsesStudent, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent, coordinates,       // Provide the coordinates state
+    <TotalResponsesContext.Provider value={{ totalResponses,allDevices,  selectedVehicle, setSelectedVehicle,setAllDevices,TotalResponsesSupervisor,setTotalResponsesSupervisor,TotalResponsesStudent,setTotalResponsesStudent, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent, coordinates,       // Provide the coordinates state
       setCoordinates}}>
       {children}
     </TotalResponsesContext.Provider>

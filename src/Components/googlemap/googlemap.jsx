@@ -594,6 +594,7 @@ function GoogleMapComponent({ latitude, longitude, data }) {
   
 
   const { coordinates } = useContext(TotalResponsesContext);
+  const {selectedVehicle} =useContext(TotalResponsesContext);
   const role = localStorage.getItem("role");
 useEffect(() => {
   const fetchAddress = async () => {
@@ -774,6 +775,7 @@ useEffect(() => {
       return !prev; // Toggle the state
     });
   };
+  const [hoveredVehicle, setHoveredVehicle] = useState(null);
   useEffect(() => {
     if (coordinates && coordinates.latitude && coordinates.longitude && mapRef.current) {
       const map = mapRef.current;
@@ -785,6 +787,34 @@ useEffect(() => {
     html: `<img src="${locationimg}" style="width: 25px; height: 25px;" alt="Location Icon"/>`,
     className: 'custom-icon', // Optional: Add a custom class if you want to style it further
   });
+  const currentZoom = mapRef.current ? mapRef.current.getZoom() : 13; // Default zoom level
+
+  useEffect(() => {
+    if (selectedVehicle && selectedVehicle.latitude && selectedVehicle.longitude && mapRef.current) {
+      // Smoothly animate the map to the selected vehicle's location with flyTo
+      mapRef.current.flyTo([selectedVehicle.latitude, selectedVehicle.longitude], 13, {
+        animate: true,
+        duration: 1.5, // duration in seconds
+      });
+    } else if (mapRef.current) {
+      // Zoom out by 7 levels if no vehicle is selected
+      mapRef.current.setZoom(currentZoom - 7);
+    }
+  }, [selectedVehicle]);
+ 
+const [clickedVehicle, setClickedVehicle] = useState(null); // State for clicked vehicle
+
+const handleMouseOver = (vehicle) => {
+  setHoveredVehicle(vehicle.deviceId);
+};
+
+const handleMouseOut = () => {
+  setHoveredVehicle(null);
+};
+
+const handleMarkerClick = (vehicle) => {
+  setClickedVehicle(vehicle); // Set clicked vehicle
+};
   return (
     <div style={{ position: 'relative', height: '500px', width: '99vw' }}>
     <button 
@@ -822,8 +852,9 @@ useEffect(() => {
           attribution={osmProvider.attribution}
         />
 
-        {data.map((vehicle, index) =>
-          vehicle.latitude && vehicle.longitude ? (
+        {  data.filter((vehicle) => !selectedVehicle.deviceId || vehicle.deviceId === selectedVehicle.deviceId)
+      .map((vehicle, index) =>
+        vehicle.latitude && vehicle.longitude ? (
             <Marker
               key={index}
               position={[vehicle.latitude, vehicle.longitude]}
@@ -832,8 +863,17 @@ useEffect(() => {
                 click: () => {
                   showMyLocation(vehicle.latitude, vehicle.longitude);
                 },
+                mouseover: () => {
+                  // Set the hovered vehicle to show popup on hover
+                  setHoveredVehicle(vehicle.deviceId);
+                },
+                mouseout: () => {
+                  // Clear the hovered vehicle on mouse out
+                  setHoveredVehicle(null);
+                },
               }}
             >
+              
               <Popup
                 offset={[0, 0]}
                 style={{ zIndex: 300, fontSize: "1.1rem", color: "black" }}

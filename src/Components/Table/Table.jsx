@@ -4095,25 +4095,40 @@ export const Tablee = ({ data }) => {
     setFilteredAssets(filteredData);
   }, [vehiclesValue, data]);
   const [selectedSupervisor, setSelectedSupervisor] = useState('');
-  const { setSelectedVehicle } = useContext(TotalResponsesContext); // Access the context
+  const { selectedVehicle, setSelectedVehicle } = useContext(TotalResponsesContext);
+  // Access the context
   // const { setCoordinates } = useContext(TotalResponsesContext);
-  const handleSelectVehicle = (event) => {
-    // Find the selected device based on the deviceId
-    const selectedDevice = data.find((asset) => asset.deviceId === event.target.value);
-    
-    // Store the selected device's id and name in a variable
-    const selectedDeviceDetails = {
-      deviceId: selectedDevice.deviceId,
-      name: selectedDevice.name,
-    };
-  
-    // Store the value of the selected vehicle
-    setSelectedVehicle(selectedDeviceDetails);
-    
-    // Now, you have an object with deviceId and name
-    console.log('Selected Device:', selectedDeviceDetails);
-  };
+  // const handleSelectVehicle = (event) => {
+  //   const selectedDevice = data.find((asset) => asset.deviceId == event.target.value);
+  //   const selectedDeviceDetails = {
+  //     deviceId: selectedDevice.deviceId,
+  //     name: selectedDevice.name,
+  //     latitude:selectedDevice.latitude,
+  //     longitude:selectedDevice.longitude,
+  //   };
 
+  //   setSelectedVehicle(selectedDeviceDetails);
+  //   console.log('Selected Device:', selectedDeviceDetails);
+  // };
+  const handleSelectVehicle = (event) => {
+    const selectedValue = event.target.value;
+  
+    if (selectedValue == "All assets") {
+      // Clear selection to show all devices
+      setSelectedVehicle({});
+    } else {
+      // Find the selected device and set its details
+      const selectedDevice = data.find((asset) => asset.deviceId == selectedValue);
+      const selectedDeviceDetails = {
+        deviceId: selectedDevice.deviceId,
+        name: selectedDevice.name,
+        latitude: selectedDevice.latitude,
+        longitude: selectedDevice.longitude,
+      };
+      setSelectedVehicle(selectedDeviceDetails);
+      console.log('Selected Device:', selectedDeviceDetails);
+    }
+  };
   const [totalResponses, setTotalResponses] = useState(0);
 
   const [childrenList, setChildrenList] = useState([]); // State to hold child names
@@ -4575,11 +4590,14 @@ export const Tablee = ({ data }) => {
 
 
   // Handle the search input change
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+  // const handleSearchChange = (event) => {
+  //   setSearchTerm(event.target.value);
+  // };
 
-  
+  // const [searchTerm, setSearchTerm] = useState("");
+const handleSearchChange = (event) => {
+  setSearchTerm(event.target.value);
+};
 
 
 
@@ -4909,26 +4927,26 @@ export const Tablee = ({ data }) => {
               marginBottom: "10px",
             }}
           >
-            <TextField
-              label="Search"
-              variant="outlined"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              sx={{
-                width: '250px', // Adjust width as needed
-                "& .MuiInputBase-root": { height: 40 },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <SearchIcon
-                    style={{
-                      cursor: 'pointer',
-                      marginLeft: '200px',
-                    }}
-                  />
-                ),
-              }}
-            />
+           <TextField
+  label="Search"
+  variant="outlined"
+  value={searchTerm}
+  onChange={handleSearchChange}
+  sx={{
+    width: '250px', // Adjust width as needed
+    "& .MuiInputBase-root": { height: 40 },
+  }}
+  InputProps={{
+    startAdornment: (
+      <SearchIcon
+        style={{
+          cursor: 'pointer',
+          marginLeft: '8px', // Adjusted margin for better alignment
+        }}
+      />
+    ),
+  }}
+/>
 
             {/* Wrapping both buttons in a div */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
