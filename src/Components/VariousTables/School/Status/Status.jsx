@@ -727,7 +727,7 @@
 //       }
 //       // const token =
 //       //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Replace with actual token
-//       // const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
+//       // const apiUrl = `https://track.parentseye.in/superadmin/status/${id}`;
 //       // console.log("Fetching from URL:", apiUrl); // Debugging statement
 
 //       // const response = await axios.get(apiUrl, {
@@ -763,7 +763,7 @@
 //   //     }
 
 //   //     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Replace with actual token
-//   //     const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
+//   //     const apiUrl = `https://track.parentseye.in/superadmin/status/${id}`;
 //   //     console.log("Fetching from URL:", apiUrl);
 
 //   //     try {
@@ -802,7 +802,7 @@
 //   //     }
 
 //   //     const token = "your-token-here"; // Replace with actual token
-//   //     const apiUrl = `http://63.142.251.13:4000/superadmin/status/${id}`;
+//   //     const apiUrl = `https://track.parentseye.in/superadmin/status/${id}`;
 //   //     console.log("Fetching from URL:", apiUrl);
 
 //   //     try {
@@ -1796,7 +1796,7 @@ export const Status = () => {
   //     } else {
   //       console.error("Expected an array but got:", response.data);
   //     }
-     
+
   //   } catch (error) {
   //     console.error("Error:", error);
   //   } finally {
@@ -1808,9 +1808,9 @@ export const Status = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-  
+
       let response;
-  
+
       // Fetch data based on role
       if (role == 1) {
         response = await axios.get(
@@ -1821,16 +1821,16 @@ export const Status = () => {
             },
           }
         );
-  
+
         // Process response for role 1
         if (Array.isArray(response.data.data)) {
           const allSchools = response.data.data;
-  
+
           // Flatten all children from schools and branches
           const allChildren = allSchools.flatMap((school) =>
             school.branches.flatMap((branch) => branch.children)
           );
-  
+
           processAndSetData(allChildren);
         } else {
           console.error("Expected an array but got:", response.data);
@@ -1844,13 +1844,15 @@ export const Status = () => {
             },
           }
         );
-  
+
         // Process response for role 2 (single school, with branches)
         const school = response.data;
         if (school && Array.isArray(school.branches)) {
           // Flatten all children from branches
-          const allChildren = school.branches.flatMap((branch) => branch.children);
-  
+          const allChildren = school.branches.flatMap(
+            (branch) => branch.children
+          );
+
           processAndSetData(allChildren);
         } else {
           console.error("Expected branches array but got:", response.data);
@@ -1864,7 +1866,7 @@ export const Status = () => {
             },
           }
         );
-  
+
         // Process response for role 3 (array of children directly)
         if (Array.isArray(response.data)) {
           processAndSetData(response.data); // Directly use the children data
@@ -1872,7 +1874,7 @@ export const Status = () => {
           console.error("Expected an array but got:", response.data);
         }
       }
-  
+
       console.log("fetch data", response.data); // Log the entire response data
     } catch (error) {
       console.error("Error:", error);
@@ -1880,7 +1882,7 @@ export const Status = () => {
       setLoading(false); // Stop loading indicator
     }
   };
-  
+
   // Helper function to process and filter the data
   const processAndSetData = (allChildren) => {
     // Function to parse dates in DD-MM-YYYY format
@@ -1888,7 +1890,7 @@ export const Status = () => {
       const [day, month, year] = dateString.split("-");
       return new Date(`${year}-${month}-${day}`);
     };
-  
+
     // Filter data based on the provided date range
     const filteredData =
       startDate || endDate
@@ -1896,16 +1898,15 @@ export const Status = () => {
             const requestDate = parseDate(child.requestDate);
             const start = startDate ? parseDate(startDate) : null;
             const end = endDate ? parseDate(endDate) : null;
-  
+
             return (
-              (!start || requestDate >= start) &&
-              (!end || requestDate <= end)
+              (!start || requestDate >= start) && (!end || requestDate <= end)
             );
           })
         : allChildren; // If no date range, use all children
-  
+
     const reversedData = filteredData.reverse();
-  
+
     // Update state with the fetched and filtered data
     setFilteredRows(
       reversedData.map((child) => ({ ...child, isSelected: false }))
@@ -1914,11 +1915,14 @@ export const Status = () => {
       allChildren.map((child) => ({ ...child, isSelected: false }))
     );
     setTotalResponses(reversedData.length);
-  
+
     // Log the filtered data
-    console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
+    console.log(
+      `Data fetched between ${startDate} and ${endDate}:`,
+      filteredData
+    );
   };
-  
+
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -2397,7 +2401,7 @@ export const Status = () => {
           }
         );
       }
-      
+
       console.log(response.data);
       const data = response.data.child;
       console.log(data);
@@ -2409,8 +2413,6 @@ export const Status = () => {
       console.error("Error fetching detailed data:", error);
     }
   };
-
- 
 
   return (
     <>
@@ -3032,7 +3034,7 @@ export const Status = () => {
                   fullWidth
                 />
               ))}
-           
+
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -3074,7 +3076,7 @@ export const Status = () => {
                 ))}
               </Select>
             </FormControl>
-          
+
             <Button
               variant="contained"
               color="primary"
@@ -3140,7 +3142,7 @@ export const Status = () => {
               fullWidth
             >
               <InputLabel>{lastSecondColumn.Header}</InputLabel>
-             
+
               <Select
                 value={formData[lastSecondColumn.accessor] || ""}
                 onChange={handleSelectChange}

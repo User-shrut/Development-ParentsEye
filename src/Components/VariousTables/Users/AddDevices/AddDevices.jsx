@@ -1,8 +1,3 @@
-
-
-
-
-
 // import React, { useState, useEffect, useContext, Component } from "react";
 // import axios from "axios";
 // import Paper from "@mui/material/Paper";
@@ -82,8 +77,6 @@
 //   const [startDate, setStartDate] = useState("");
 //   const [endDate, setEndDate] = useState("");
 
-
-
 // const fetchData = async () => {
 //   console.log('Fetching data...');
 //   setLoading(true); // Set loading to true when starting fetch
@@ -103,7 +96,7 @@
 //     console.log('First API Data:', firstApiResponse.data);
 
 //     // Second API call to fetch school, branch, and device info
-//     const secondApiResponse = await axios.get("http://63.142.251.13:4000/superadmin/read-devices", {
+//     const secondApiResponse = await axios.get("https://track.parentseye.in/superadmin/read-devices", {
 //       headers: {
 //         Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`, // Replace with actual token if necessary
 //       },
@@ -158,7 +151,6 @@
 //   }
 // };
 
-
 //   useEffect(() => {
 //     fetchData();
 //   }, []);
@@ -166,8 +158,6 @@
 //   useEffect(() => {
 //     filterData(filterText);
 //   }, [filterText]);
-
- 
 
 //   const handleChangePage = (event, newPage) => {
 //     setPage(newPage);
@@ -183,7 +173,6 @@
 //     setFilterText(text);
 //   };
 
- 
 //   const filterData = (text) => {
 //     // Apply text-based filtering
 //     if (text === "") {
@@ -200,11 +189,11 @@
 //           )
 //         )
 //         .map((row) => ({ ...row, isSelected: false }));
-  
+
 //       setFilteredRows(filteredData);
 //     }
 //   };
-  
+
 //   const requestSort = (key) => {
 //     let direction = "ascending";
 //     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -249,7 +238,7 @@
 //   const handleDeleteSelected = async () => {
 //     // Log filteredRows to check its structure
 //     console.log("Filtered rows:", filteredRows);
-  
+
 //     // Get selected row IDs
 //     const selectedIds = filteredRows
 //       .filter((row) => row.isSelected)
@@ -258,30 +247,30 @@
 //         console.log("Processing row:", row);
 //         return row.id; // Use 'id' if '_id' is not defined; ensure id exists and is not undefined
 //       });
-  
+
 //     console.log("Selected IDs:", selectedIds);
-  
+
 //     if (selectedIds.length === 0) {
 //       alert("No rows selected for deletion.");
 //       return;
 //     }
-  
+
 //     const userConfirmed = window.confirm(
 //       `Are you sure you want to delete ${selectedIds.length} record(s)?`
 //     );
-  
+
 //     if (!userConfirmed) {
 //       // If the user clicks "Cancel", exit the function
 //       return;
 //     }
-  
+
 //     try {
 //       // Define the API endpoint and credentials
 //       const apiUrl = "https://rocketsalestracker.com/api/devices"; // Replace with actual API endpoint
 //       const username = "schoolmaster"; // Replace with your actual username
 //       const password = "123456"; // Replace with your actual password
 //       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
-  
+
 //       // Send delete requests for each selected ID
 //       const deleteRequests = selectedIds.map((id) =>
 //         fetch(`${apiUrl}/${id}`, {
@@ -299,27 +288,26 @@
 //           return response; // No need to parse JSON for a 204 response
 //         })
 //       );
-  
+
 //       // Wait for all delete requests to complete
 //       await Promise.all(deleteRequests);
-  
+
 //       // Filter out deleted rows
 //       const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
-  
+
 //       // Update state
 //       setFilteredRows(newFilteredRows);
 //       setSelectAll(false);
-  
+
 //       alert("Selected records deleted successfully.");
 //     } catch (error) {
 //       console.error("Error during deletion:", error);
 //       alert("Failed to delete selected records.");
 //     }
-  
+
 //     // Refresh data
 //     fetchData();
 //   };
- 
 
 //   const handleExport = () => {
 //     const dataToExport = filteredRows.map((row) => {
@@ -376,12 +364,10 @@
 //     setSnackbarOpen(false);
 //   };
 
-  
-
 // const handleEditSubmit = async () => {
 //   try {
 //     const apiUrl1 = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
-//     const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
+//     const apiUrl2 = `https://track.parentseye.in/superadmin/add-device`;
 
 //     const username = "schoolmaster";
 //     const password = "123456";
@@ -470,13 +456,6 @@
 //   }
 // };
 
-
-
-
-
- 
-
-
 // const [groups, setGroups] = useState([]);
 // // const [error, setError] = useState(null);
 // const [error, setError] = useState(null);
@@ -503,10 +482,6 @@
 
 //   fetchGroups();
 // }, []);
-
-
-
-
 
 // const [calendars, setCalendars] = useState([]); // State to store calendar data
 // const [calendarError, setCalendarError] = useState(null); // State to store error
@@ -611,18 +586,14 @@
 //     }
 //   };
 
- 
-
 //   fetchSchool();
 // }, [addModalOpen]);
-
-
 
 // const handleAddSubmit = async () => {
 //   try {
 //     // Define the API endpoints and credentials
 //     const apiUrl1 = "https://rocketsalestracker.com/api/devices"; // First API endpoint
-//     const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
+//     const apiUrl2 = "https://track.parentseye.in/superadmin/add-device"; // Second API endpoint
 //     const username = "schoolmaster"; // Replace with your actual username
 //     const password = "123456"; // Replace with your actual password
 //     const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
@@ -698,8 +669,6 @@
 //     alert("Unable to create record");
 //   }
 // };
-
-
 
 //   return (
 //     <>
@@ -785,7 +754,6 @@
 //             Export
 //           </Button>
 //         </div>
-       
 
 //         {loading ? (
 //           <div
@@ -807,7 +775,7 @@
 //                 borderRadius: "7px",
 //               }}
 //             >
-             
+
 //               <Table
 //   stickyHeader
 //   aria-label="sticky table"
@@ -1103,8 +1071,6 @@
 //   </Box>
 // </Modal>
 
-  
-
 // <Modal open={addModalOpen} onClose={handleModalClose}>
 //   <Box sx={style}>
 //     <Box
@@ -1244,7 +1210,6 @@
 //   </Box>
 // </Modal>
 
-
 //         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
 //           <Box sx={style}>
 //             <h2>Import Data</h2>
@@ -1280,17 +1245,15 @@
 //   );
 // };
 
-
-
-
 //new code for search
 
-
-
-
-
-
-import React, { useState, useEffect, useContext, Component, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  Component,
+  useMemo,
+} from "react";
 import axios from "axios";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -1321,7 +1284,7 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
-import {Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import { Category } from "@mui/icons-material";
 //import { TextField } from '@mui/material';
 
@@ -1369,82 +1332,90 @@ export const AddDevices = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
+  const fetchData = async () => {
+    console.log("Fetching data...");
+    setLoading(true); // Set loading to true when starting fetch
 
+    try {
+      const username = "schoolmaster";
+      const password = "123456";
+      const token = btoa(`${username}:${password}`);
 
-const fetchData = async () => {
-  console.log('Fetching data...');
-  setLoading(true); // Set loading to true when starting fetch
+      // First API call to fetch devices
+      const firstApiResponse = await axios.get(
+        "https://rocketsalestracker.com/api/devices",
+        {
+          headers: {
+            Authorization: `Basic ${token}`,
+          },
+        }
+      );
 
-  try {
-    const username = "schoolmaster";
-    const password = "123456";
-    const token = btoa(`${username}:${password}`);
+      console.log("First API Data:", firstApiResponse.data);
 
-    // First API call to fetch devices
-    const firstApiResponse = await axios.get("https://rocketsalestracker.com/api/devices", {
-      headers: {
-        Authorization: `Basic ${token}`,
-      },
-    });
+      // Second API call to fetch school, branch, and device info
+      const secondApiResponse = await axios.get(
+        "https://track.parentseye.in/superadmin/read-devices",
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`, // Replace with actual token if necessary
+          },
+        }
+      );
 
-    console.log('First API Data:', firstApiResponse.data);
+      console.log("Second API Data:", secondApiResponse.data.data);
 
-    // Second API call to fetch school, branch, and device info
-    const secondApiResponse = await axios.get("http://63.142.251.13:4000/superadmin/read-devices", {
-      headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`, // Replace with actual token if necessary
-      },
-    });
+      // Check if the first API returns an array
+      if (Array.isArray(firstApiResponse.data)) {
+        // Map through the first API response
+        const wrappedData = firstApiResponse.data.map((device) => {
+          // Find matching school/branch device in the second API response
+          let schoolName = "";
+          let branchName = "";
+          let foundDevice = null;
 
-    console.log('Second API Data:', secondApiResponse.data.data);
-
-    // Check if the first API returns an array
-    if (Array.isArray(firstApiResponse.data)) {
-      // Map through the first API response
-      const wrappedData = firstApiResponse.data.map((device) => {
-        // Find matching school/branch device in the second API response
-        let schoolName = '';
-        let branchName = '';
-        let foundDevice = null;
-
-        // Loop through each school and its branches in the second API response
-        secondApiResponse.data.data.forEach(school => {
-          school.branches.forEach(branch => {
-            // Search for the device by deviceId
-            const matchingDevice = branch.devices.find(d => d.deviceId === device.id.toString());
-            if (matchingDevice) {
-              schoolName = school.schoolName;
-              branchName = branch.branchName;
-              foundDevice = matchingDevice;
-            }
+          // Loop through each school and its branches in the second API response
+          secondApiResponse.data.data.forEach((school) => {
+            school.branches.forEach((branch) => {
+              // Search for the device by deviceId
+              const matchingDevice = branch.devices.find(
+                (d) => d.deviceId === device.id.toString()
+              );
+              if (matchingDevice) {
+                schoolName = school.schoolName;
+                branchName = branch.branchName;
+                foundDevice = matchingDevice;
+              }
+            });
           });
+
+          // Return the combined data, including schoolName and branchName
+          return {
+            ...device,
+            isSelected: false,
+            schoolName: schoolName || "Unknown School",
+            branchName: branchName || "Unknown Branch",
+            deviceName: foundDevice ? foundDevice.deviceName : device.name,
+          };
         });
 
-        // Return the combined data, including schoolName and branchName
-        return {
-          ...device,
-          isSelected: false,
-          schoolName: schoolName || 'Unknown School',
-          branchName: branchName || 'Unknown Branch',
-          deviceName: foundDevice ? foundDevice.deviceName : device.name
-        };
-      });
-
-      // Set the state with the combined data
-      setFilteredRows(wrappedData);
-      setTotalResponses(wrappedData.length);
-    } else {
-      console.error('Expected an array from the first API, but got:', firstApiResponse.data);
-      alert('Unexpected data format received from the first API.');
+        // Set the state with the combined data
+        setFilteredRows(wrappedData);
+        setTotalResponses(wrappedData.length);
+      } else {
+        console.error(
+          "Expected an array from the first API, but got:",
+          firstApiResponse.data
+        );
+        alert("Unexpected data format received from the first API.");
+      }
+    } catch (error) {
+      console.error("Fetch data error:", error);
+      alert("An error occurred while fetching data.");
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error('Fetch data error:', error);
-    alert('An error occurred while fetching data.');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   useEffect(() => {
     fetchData();
@@ -1452,9 +1423,7 @@ const fetchData = async () => {
 
   useEffect(() => {
     filterData(filterText); // Apply the filter when the text changes
-  }, [filterText, startDate, endDate]); 
-
- 
+  }, [filterText, startDate, endDate]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -1489,13 +1458,13 @@ const fetchData = async () => {
   //         )
   //       )
   //       .map((row) => ({ ...row, isSelected: false }));
-  
+
   //     setFilteredRows(filteredData);
   //   }
   // };
   const filterData = (text) => {
     let dataToFilter = originalRows;
-  
+
     // Apply date filter
     if (startDate && endDate) {
       dataToFilter = dataToFilter.filter((row) => {
@@ -1503,7 +1472,7 @@ const fetchData = async () => {
         return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
       });
     }
-  
+
     // Apply text filter
     if (text === "") {
       setFilteredRows(dataToFilter); // Reset to full filtered data
@@ -1517,11 +1486,11 @@ const fetchData = async () => {
           )
         )
         .map((row) => ({ ...row, isSelected: false }));
-      
+
       setFilteredRows(filteredData); // Update filtered rows
     }
   };
-  
+
   const requestSort = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
@@ -1566,7 +1535,7 @@ const fetchData = async () => {
   const handleDeleteSelected = async () => {
     // Log filteredRows to check its structure
     console.log("Filtered rows:", filteredRows);
-  
+
     // Get selected row IDs
     const selectedIds = filteredRows
       .filter((row) => row.isSelected)
@@ -1575,36 +1544,36 @@ const fetchData = async () => {
         console.log("Processing row:", row);
         return row.id; // Use 'id' if '_id' is not defined; ensure id exists and is not undefined
       });
-  
+
     console.log("Selected IDs:", selectedIds);
-  
+
     if (selectedIds.length === 0) {
       alert("No rows selected for deletion.");
       return;
     }
-  
+
     const userConfirmed = window.confirm(
       `Are you sure you want to delete ${selectedIds.length} record(s)?`
     );
-  
+
     if (!userConfirmed) {
       // If the user clicks "Cancel", exit the function
       return;
     }
-  
+
     try {
       // Define the API endpoint and credentials
       const apiUrl = "https://rocketsalestracker.com/api/devices"; // Replace with actual API endpoint
       const username = "schoolmaster"; // Replace with your actual username
       const password = "123456"; // Replace with your actual password
       const token = btoa(`${username}:${password}`); // Encode credentials in Base64
-  
+
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
           method: "DELETE",
           headers: {
-            "Authorization": `Basic ${token}`, // Add Basic Auth header
+            Authorization: `Basic ${token}`, // Add Basic Auth header
             "Content-Type": "application/json",
           },
         }).then((response) => {
@@ -1616,27 +1585,26 @@ const fetchData = async () => {
           return response; // No need to parse JSON for a 204 response
         })
       );
-  
+
       // Wait for all delete requests to complete
       await Promise.all(deleteRequests);
-  
+
       // Filter out deleted rows
       const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
-  
+
       // Update state
       setFilteredRows(newFilteredRows);
       setSelectAll(false);
-  
+
       alert("Selected records deleted successfully.");
     } catch (error) {
       console.error("Error during deletion:", error);
       alert("Failed to delete selected records.");
     }
-  
+
     // Refresh data
     fetchData();
   };
- 
 
   const handleExport = () => {
     const dataToExport = filteredRows.map((row) => {
@@ -1667,7 +1635,7 @@ const fetchData = async () => {
 
   const sortedData = useMemo(() => {
     if (!filteredRows) return [];
-  
+
     return filteredRows.sort((a, b) => {
       if (sortConfig.key) {
         const aValue = a[sortConfig.key];
@@ -1683,7 +1651,7 @@ const fetchData = async () => {
       return 0;
     });
   }, [filteredRows, sortConfig]);
-  
+
   // const sortedData = [...filteredRows];
   // if (sortConfig.key !== null) {
   //   sortedData.sort((a, b) => {
@@ -1712,343 +1680,371 @@ const fetchData = async () => {
     setSnackbarOpen(false);
   };
 
-  
+  const handleEditSubmit = async () => {
+    try {
+      const apiUrl1 = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
+      const apiUrl2 = `https://track.parentseye.in/superadmin/add-device`;
 
-const handleEditSubmit = async () => {
-  try {
-    const apiUrl1 = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
-    const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
+      const username = "schoolmaster";
+      const password = "123456";
+      const token1 = btoa(`${username}:${password}`);
+      const token2 = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`;
 
-    const username = "schoolmaster";
-    const password = "123456";
-    const token1 = btoa(`${username}:${password}`);
-    const token2 = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`;
+      const { isSelected, ...updatedData } = formData;
 
-    const { isSelected, ...updatedData } = formData;
-
-    const updatedRow = {
-      name: updatedData.name,
-      uniqueId: updatedData.uniqueId,
-      groupId: updatedData.groupId,
-      attributes: updatedData.attributes || {},
-      calendarId: updatedData.calendarId,
-      status: updatedData.status,
-      phone: updatedData.phone,
-      model: updatedData.model,
-      expirationTime: updatedData.expirationTime,
-      contact: updatedData.contact,
-      category: updatedData.category,
-    };
-
-    // Send PUT request to the first API
-    const response1 = await fetch(apiUrl1, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Basic ${token1}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedRow),
-    });
-
-    const result1 = await response1.json();
-    console.log("First API Response (result1):", result1);
-
-    if (response1.ok) {
-      console.log("Record updated successfully in the first API:", result1);
-
-      // Prepare data for the second API (POST)
-      const schoolData = {
-        deviceId: selectedRow.id,    // Ensure the correct deviceId
-        deviceName: result1.name,
-        schoolName: updatedData.schoolName,
-        branchName: updatedData.branchName,
+      const updatedRow = {
+        name: updatedData.name,
+        uniqueId: updatedData.uniqueId,
+        groupId: updatedData.groupId,
+        attributes: updatedData.attributes || {},
+        calendarId: updatedData.calendarId,
+        status: updatedData.status,
+        phone: updatedData.phone,
+        model: updatedData.model,
+        expirationTime: updatedData.expirationTime,
+        contact: updatedData.contact,
+        category: updatedData.category,
       };
 
-      // Log the data to be sent to the second API
-      console.log("Data being sent to the second API (POST):", schoolData);
-
-      // Send POST request to the second API
-      const response2 = await fetch(apiUrl2, {
-        method: "POST",
+      // Send PUT request to the first API
+      const response1 = await fetch(apiUrl1, {
+        method: "PUT",
         headers: {
-          "Authorization": `Bearer ${token2}`,
+          Authorization: `Basic ${token1}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(schoolData),
+        body: JSON.stringify(updatedRow),
       });
 
-      // Try to parse the response as JSON only if the content type is JSON
-      const contentType = response2.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        const result2 = await response2.json();
-        console.log("Second API Response (result2):", result2);
+      const result1 = await response1.json();
+      console.log("First API Response (result1):", result1);
 
-        if (response2.ok) {
-          console.log("Record updated successfully in the second API (POST):", result2);
-          alert("Record updated successfully");
-        } else {
-          console.error("Server responded with an error for the second API:", result2);
-          alert(`Unable to update record in the second API (POST): ${result2.message || response2.statusText}`);
-        }
-      } else {
-        // Handle cases where the response is not JSON
-        const textResponse = await response2.text();
-        console.error("Second API Response (non-JSON):", textResponse);
-        alert(`Error: ${textResponse}`);
-      }
-    } else {
-      console.error("Server responded with an error for the first API:", result1);
-      alert(`Unable to update record in the first API: ${result1.message || response1.statusText}`);
-    }
-  } catch (error) {
-    console.error("Error during requests:", error);
-    alert("Unable to update record");
-  }
-};
+      if (response1.ok) {
+        console.log("Record updated successfully in the first API:", result1);
 
+        // Prepare data for the second API (POST)
+        const schoolData = {
+          deviceId: selectedRow.id, // Ensure the correct deviceId
+          deviceName: result1.name,
+          schoolName: updatedData.schoolName,
+          branchName: updatedData.branchName,
+        };
 
+        // Log the data to be sent to the second API
+        console.log("Data being sent to the second API (POST):", schoolData);
 
-
-
- 
-
-
-const [groups, setGroups] = useState([]);
-// const [error, setError] = useState(null);
-const [error, setError] = useState(null);
-useEffect(() => {
-  const fetchGroups = async () => {
-    try {
-      const response = await fetch('https://rocketsalestracker.com/api/groups', {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      setGroups(data); // Assuming the API returns { groups: [...] }
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  fetchGroups();
-}, []);
-
-
-
-
-
-const [calendars, setCalendars] = useState([]); // State to store calendar data
-const [calendarError, setCalendarError] = useState(null); // State to store error
-
-useEffect(() => {
-  const fetchCalendars = async () => {
-    try {
-      const response = await fetch('https://rocketsalestracker.com/api/calendars', {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      setCalendars(data); // Assuming the API returns { calendars: [...] }
-    } catch (error) {
-      setCalendarError(error.message);
-    }
-  };
-
-  fetchCalendars();
-}, []);
-
-const [schools, setSchools] = useState([]); // State for schools
-const [branches, setBranches] = useState([]); // State for branches
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
-  setFormData({
-    ...formData,
-    [name]: value,
-  });
-  if (name === "schoolName") {
-    const selectedSchoolData = schools.find(
-      (school) => school.schoolName === value
-    );
-
-    console.log(selectedSchoolData);
-    if (selectedSchoolData) {
-      // Combine branchName and branches
-      const allBranches = [];
-      if (selectedSchoolData.branchName) {
-        allBranches.push({
-          branchName: selectedSchoolData.branchName,
-          branchId: selectedSchoolData._id,
-        });
-      }
-
-      if (
-        selectedSchoolData.branches &&
-        selectedSchoolData.branches.length > 0
-      ) {
-        selectedSchoolData.branches.forEach((branch) => {
-          allBranches.push({
-            branchName: branch.branchName,
-            branchId: branch._id,
-          });
-        });
-      }
-
-      setBranches(allBranches);
-    }
-  }
-};
-useEffect(() => {
-  const fetchSchool = async (startDate = "", endDate = "") => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
-        {
+        // Send POST request to the second API
+        const response2 = await fetch(apiUrl2, {
+          method: "POST",
           headers: {
-            Authorization:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI1NTE5MTc3fQ.bdjnmN2c20DjmMAvNL1L_TN59iGOa_MnblhcQQK5d4w",
+            Authorization: `Bearer ${token2}`,
+            "Content-Type": "application/json",
           },
+          body: JSON.stringify(schoolData),
+        });
+
+        // Try to parse the response as JSON only if the content type is JSON
+        const contentType = response2.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const result2 = await response2.json();
+          console.log("Second API Response (result2):", result2);
+
+          if (response2.ok) {
+            console.log(
+              "Record updated successfully in the second API (POST):",
+              result2
+            );
+            alert("Record updated successfully");
+          } else {
+            console.error(
+              "Server responded with an error for the second API:",
+              result2
+            );
+            alert(
+              `Unable to update record in the second API (POST): ${
+                result2.message || response2.statusText
+              }`
+            );
+          }
+        } else {
+          // Handle cases where the response is not JSON
+          const textResponse = await response2.text();
+          console.error("Second API Response (non-JSON):", textResponse);
+          alert(`Error: ${textResponse}`);
         }
-      );
-
-      console.log("fetch data", response.data); // Log the entire response data
-
-      if (Array.isArray(response.data.schools)) {
-        const allData = response.data.schools;
-        setSchools(allData);
-
-        // console.log(school);
-
-        console.log(allData);
       } else {
         console.error(
-          "Expected an array but got:",
-          response.data.supervisors
+          "Server responded with an error for the first API:",
+          result1
+        );
+        alert(
+          `Unable to update record in the first API: ${
+            result1.message || response1.statusText
+          }`
         );
       }
     } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error during requests:", error);
+      alert("Unable to update record");
     }
   };
 
- 
+  const [groups, setGroups] = useState([]);
+  // const [error, setError] = useState(null);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const response = await fetch(
+          "https://rocketsalestracker.com/api/groups",
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Basic " + btoa("schoolmaster:123456"), // Replace with actual credentials
+            },
+          }
+        );
 
-  fetchSchool();
-}, [addModalOpen]);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
 
-
-
-const handleAddSubmit = async () => {
-  try {
-    // Define the API endpoints and credentials
-    const apiUrl1 = "https://rocketsalestracker.com/api/devices"; // First API endpoint
-    const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
-    const username = "schoolmaster"; // Replace with your actual username
-    const password = "123456"; // Replace with your actual password
-    const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
-    const token2 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Token for the second URL
-
-    // Prepare the data for the first API
-    const newRow = {
-      name: formData.name,
-      uniqueId: formData.uniqueId,
-      groupId: formData.groupId,
-      attributes: formData.attributes || {},
-      calendarId: formData.calendarId,
-      status: formData.status,
-      phone: formData.phone,
-      model: formData.model,
-      expirationTime: formData.expirationTime,
-      contact: formData.contact,
-      category: formData.category,
+        const data = await response.json();
+        setGroups(data); // Assuming the API returns { groups: [...] }
+      } catch (error) {
+        setError(error.message);
+      }
     };
 
-    // Post data to the first URL
-    const response1 = await fetch(apiUrl1, {
-      method: "POST",
-      headers: {
-        "Authorization": `Basic ${token1}`, // Add Basic Auth header for the first URL
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newRow),
+    fetchGroups();
+  }, []);
+
+  const [calendars, setCalendars] = useState([]); // State to store calendar data
+  const [calendarError, setCalendarError] = useState(null); // State to store error
+
+  useEffect(() => {
+    const fetchCalendars = async () => {
+      try {
+        const response = await fetch(
+          "https://rocketsalestracker.com/api/calendars",
+          {
+            method: "GET",
+            headers: {
+              Authorization: "Basic " + btoa("schoolmaster:123456"), // Replace with actual credentials
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        setCalendars(data); // Assuming the API returns { calendars: [...] }
+      } catch (error) {
+        setCalendarError(error.message);
+      }
+    };
+
+    fetchCalendars();
+  }, []);
+
+  const [schools, setSchools] = useState([]); // State for schools
+  const [branches, setBranches] = useState([]); // State for branches
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
     });
+    if (name === "schoolName") {
+      const selectedSchoolData = schools.find(
+        (school) => school.schoolName === value
+      );
 
-    const result1 = await response1.json();
+      console.log(selectedSchoolData);
+      if (selectedSchoolData) {
+        // Combine branchName and branches
+        const allBranches = [];
+        if (selectedSchoolData.branchName) {
+          allBranches.push({
+            branchName: selectedSchoolData.branchName,
+            branchId: selectedSchoolData._id,
+          });
+        }
 
-    if (response1.ok) {
-      console.log("Record created successfully in the first API:", result1);
+        if (
+          selectedSchoolData.branches &&
+          selectedSchoolData.branches.length > 0
+        ) {
+          selectedSchoolData.branches.forEach((branch) => {
+            allBranches.push({
+              branchName: branch.branchName,
+              branchId: branch._id,
+            });
+          });
+        }
 
-      // Prepare the data for the second API using the response from the first API
-      const schoolData = {
-        deviceId: result1.id, // Use the ID returned by the first API
-        deviceName: result1.name, // Use the name returned by the first API
-        schoolName: formData.schoolName, // From form data
-        branchName: formData.branchName, // From form data
+        setBranches(allBranches);
+      }
+    }
+  };
+  useEffect(() => {
+    const fetchSchool = async (startDate = "", endDate = "") => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/getschools`,
+          {
+            headers: {
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI1NTE5MTc3fQ.bdjnmN2c20DjmMAvNL1L_TN59iGOa_MnblhcQQK5d4w",
+            },
+          }
+        );
+
+        console.log("fetch data", response.data); // Log the entire response data
+
+        if (Array.isArray(response.data.schools)) {
+          const allData = response.data.schools;
+          setSchools(allData);
+
+          // console.log(school);
+
+          console.log(allData);
+        } else {
+          console.error(
+            "Expected an array but got:",
+            response.data.supervisors
+          );
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchool();
+  }, [addModalOpen]);
+
+  const handleAddSubmit = async () => {
+    try {
+      // Define the API endpoints and credentials
+      const apiUrl1 = "https://rocketsalestracker.com/api/devices"; // First API endpoint
+      const apiUrl2 = "https://track.parentseye.in/superadmin/add-device"; // Second API endpoint
+      const username = "schoolmaster"; // Replace with your actual username
+      const password = "123456"; // Replace with your actual password
+      const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
+      const token2 =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Token for the second URL
+
+      // Prepare the data for the first API
+      const newRow = {
+        name: formData.name,
+        uniqueId: formData.uniqueId,
+        groupId: formData.groupId,
+        attributes: formData.attributes || {},
+        calendarId: formData.calendarId,
+        status: formData.status,
+        phone: formData.phone,
+        model: formData.model,
+        expirationTime: formData.expirationTime,
+        contact: formData.contact,
+        category: formData.category,
       };
 
-      // Post data to the second URL
-      const response2 = await fetch(apiUrl2, {
+      // Post data to the first URL
+      const response1 = await fetch(apiUrl1, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token2}`, // Add Bearer Auth header for the second URL
+          Authorization: `Basic ${token1}`, // Add Basic Auth header for the first URL
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(schoolData),
+        body: JSON.stringify(newRow),
       });
 
-      const result2 = await response2.json();
+      const result1 = await response1.json();
 
-      if (response2.ok) {
-        // Update the state and close the modal if both requests succeed
-        setFilteredRows([...filteredRows, result1]);
-        handleModalClose();
-        fetchData();
-        console.log("Record created successfully in the second API:", result2);
-        alert("Record created successfully");
+      if (response1.ok) {
+        console.log("Record created successfully in the first API:", result1);
+
+        // Prepare the data for the second API using the response from the first API
+        const schoolData = {
+          deviceId: result1.id, // Use the ID returned by the first API
+          deviceName: result1.name, // Use the name returned by the first API
+          schoolName: formData.schoolName, // From form data
+          branchName: formData.branchName, // From form data
+        };
+
+        // Post data to the second URL
+        const response2 = await fetch(apiUrl2, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token2}`, // Add Bearer Auth header for the second URL
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(schoolData),
+        });
+
+        const result2 = await response2.json();
+
+        if (response2.ok) {
+          // Update the state and close the modal if both requests succeed
+          setFilteredRows([...filteredRows, result1]);
+          handleModalClose();
+          fetchData();
+          console.log(
+            "Record created successfully in the second API:",
+            result2
+          );
+          alert("Record created successfully");
+        } else {
+          console.error(
+            "Server responded with an error for the second API:",
+            result2
+          );
+          alert(
+            `Unable to create record in the second API: ${
+              result2.message || response2.statusText
+            }`
+          );
+        }
       } else {
-        console.error("Server responded with an error for the second API:", result2);
-        alert(`Unable to create record in the second API: ${result2.message || response2.statusText}`);
+        console.error(
+          "Server responded with an error for the first API:",
+          result1
+        );
+        alert(
+          `Unable to create record in the first API: ${
+            result1.message || response1.statusText
+          }`
+        );
       }
-    } else {
-      console.error("Server responded with an error for the first API:", result1);
-      alert(`Unable to create record in the first API: ${result1.message || response1.statusText}`);
+    } catch (error) {
+      console.error("Error during POST requests:", error);
+      alert("Unable to create record");
     }
-  } catch (error) {
-    console.error("Error during POST requests:", error);
-    alert("Unable to create record");
-  }
-};
-const [searchTerm, setSearchTerm] = useState('');
+  };
+  const [searchTerm, setSearchTerm] = useState("");
 
-// Filter the data based on the search term
-const filteredData = sortedData.filter(row =>
-  COLUMNS().some(column => {
-    const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-    return value && value.toString().toLowerCase().includes(searchTerm.toLowerCase());
-  })
-);
-
+  // Filter the data based on the search term
+  const filteredData = sortedData.filter((row) =>
+    COLUMNS().some((column) => {
+      const value = column.accessor
+        .split(".")
+        .reduce((acc, part) => acc && acc[part], row);
+      return (
+        value &&
+        value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    })
+  );
 
   return (
     <>
-      <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-      Add Devices      </h1>
+      <h1 style={{ textAlign: "center", marginTop: "80px" }}>Add Devices </h1>
       <div>
         <div
           style={{
@@ -2057,22 +2053,21 @@ const filteredData = sortedData.filter(row =>
             marginBottom: "10px",
           }}
         >
-         
-         <div style={{ marginBottom: '16px' }}>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            padding: '8px',
-            borderRadius: '4px',
-            border: '1px solid #e0e0e0',
-            width: '100%',
-            maxWidth: '400px',
-          }}
-        />
-      </div>
+          <div style={{ marginBottom: "16px" }}>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                padding: "8px",
+                borderRadius: "4px",
+                border: "1px solid #e0e0e0",
+                width: "100%",
+                maxWidth: "400px",
+              }}
+            />
+          </div>
           <Button
             onClick={() => setModalOpen(true)}
             sx={{
@@ -2127,7 +2122,6 @@ const filteredData = sortedData.filter(row =>
             Export
           </Button>
         </div>
-       
 
         {loading ? (
           <div
@@ -2141,40 +2135,40 @@ const filteredData = sortedData.filter(row =>
           </div>
         ) : (
           <>
-           <TableContainer
-        component={Paper}
-        sx={{
-          maxHeight: 440,
-          border: "1.5px solid black",
-          borderRadius: "7px",
-        }}
-      >
-        <Table
-          stickyHeader
-          aria-label="sticky table"
-          style={{ border: "1px solid black" }}
-        >
-          <TableHead>
-            <TableRow
-              style={{
-                borderBottom: "1px solid black",
-                borderTop: "1px solid black",
+            <TableContainer
+              component={Paper}
+              sx={{
+                maxHeight: 440,
+                border: "1.5px solid black",
+                borderRadius: "7px",
               }}
             >
-              <TableCell
-                padding="checkbox"
-                style={{
-                  borderRight: "1px solid #e0e0e0",
-                  borderBottom: "2px solid black",
-                }}
+              <Table
+                stickyHeader
+                aria-label="sticky table"
+                style={{ border: "1px solid black" }}
               >
-                <Switch
-                  checked={selectAll}
-                  onChange={handleSelectAll}
-                  color="primary"
-                />
-              </TableCell>
-              <TableCell
+                <TableHead>
+                  <TableRow
+                    style={{
+                      borderBottom: "1px solid black",
+                      borderTop: "1px solid black",
+                    }}
+                  >
+                    <TableCell
+                      padding="checkbox"
+                      style={{
+                        borderRight: "1px solid #e0e0e0",
+                        borderBottom: "2px solid black",
+                      }}
+                    >
+                      <Switch
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                        color="primary"
+                      />
+                    </TableCell>
+                    <TableCell
                       style={{
                         minWidth: 70, // Adjust width if needed
                         borderRight: "1px solid #e0e0e0",
@@ -2186,71 +2180,83 @@ const filteredData = sortedData.filter(row =>
                     >
                       S.No.
                     </TableCell>
-              {COLUMNS()
-                .filter((col) => columnVisibility[col.accessor])
-                .map((column) => (
-                  <TableCell
-                    key={column.accessor}
-                    align={column.align}
-                    style={{
-                      minWidth: column.minWidth,
-                      cursor: "pointer",
-                      borderRight: "1px solid #e0e0e0",
-                      borderBottom: "2px solid black",
-                      padding: "4px 4px",
-                      textAlign: "center",
-                      fontWeight: "bold",
-                    }}
-                    onClick={() => requestSort(column.accessor)}
-                  >
-                    {column.Header}
-                    {sortConfig.key === column.accessor ? (
-                      sortConfig.direction === "ascending" ? (
-                        <ArrowUpwardIcon fontSize="small" />
-                      ) : (
-                        <ArrowDownwardIcon fontSize="small" />
+                    {COLUMNS()
+                      .filter((col) => columnVisibility[col.accessor])
+                      .map((column) => (
+                        <TableCell
+                          key={column.accessor}
+                          align={column.align}
+                          style={{
+                            minWidth: column.minWidth,
+                            cursor: "pointer",
+                            borderRight: "1px solid #e0e0e0",
+                            borderBottom: "2px solid black",
+                            padding: "4px 4px",
+                            textAlign: "center",
+                            fontWeight: "bold",
+                          }}
+                          onClick={() => requestSort(column.accessor)}
+                        >
+                          {column.Header}
+                          {sortConfig.key === column.accessor ? (
+                            sortConfig.direction === "ascending" ? (
+                              <ArrowUpwardIcon fontSize="small" />
+                            ) : (
+                              <ArrowDownwardIcon fontSize="small" />
+                            )
+                          ) : null}
+                        </TableCell>
+                      ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredData.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={
+                          COLUMNS().filter(
+                            (col) => columnVisibility[col.accessor]
+                          ).length
+                        }
+                        style={{
+                          textAlign: "center",
+                          padding: "16px",
+                          fontSize: "16px",
+                          color: "#757575",
+                        }}
+                      >
+                        <h4>No Data Available</h4>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
                       )
-                    ) : null}
-                  </TableCell>
-                ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
-                  style={{
-                    textAlign: 'center',
-                    padding: '16px',
-                    fontSize: '16px',
-                    color: '#757575',
-                  }}
-                >
-                  <h4>No Data Available</h4>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredData
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
-                  <TableRow
-                    hover
-                    role="checkbox"
-                    tabIndex={-1}
-                    key={row.id}
-                    onClick={() => handleRowSelect(page * rowsPerPage + index)}
-                    selected={row.isSelected}
-                    style={{
-                      backgroundColor:
-                        index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                      borderBottom: "none",
-                    }}
-                  >
-                    <TableCell padding="checkbox" style={{ borderRight: "1px solid #e0e0e0" }}>
-                      <Switch checked={row.isSelected} color="primary" />
-                    </TableCell>
-                    <TableCell
+                      .map((row, index) => (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={row.id}
+                          onClick={() =>
+                            handleRowSelect(page * rowsPerPage + index)
+                          }
+                          selected={row.isSelected}
+                          style={{
+                            backgroundColor:
+                              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                            borderBottom: "none",
+                          }}
+                        >
+                          <TableCell
+                            padding="checkbox"
+                            style={{ borderRight: "1px solid #e0e0e0" }}
+                          >
+                            <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          <TableCell
                             style={{
                               minWidth: 70, // Adjust width if needed
                               borderRight: "1px solid #e0e0e0",
@@ -2267,37 +2273,39 @@ const filteredData = sortedData.filter(row =>
                             {page * rowsPerPage + index + 1}{" "}
                             {/* Serial number starts from 1 */}
                           </TableCell>
-                    {COLUMNS()
-                      .filter((col) => columnVisibility[col.accessor])
-                      .map((column) => {
-                        const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
+                          {COLUMNS()
+                            .filter((col) => columnVisibility[col.accessor])
+                            .map((column) => {
+                              const value = column.accessor
+                                .split(".")
+                                .reduce((acc, part) => acc && acc[part], row);
 
-                        return (
-                          <TableCell
-                            key={column.accessor}
-                            align={column.align}
-                            style={{
-                              borderRight: "1px solid #e0e0e0",
-                              paddingTop: "4px",
-                              paddingBottom: "4px",
-                              borderBottom: "none",
-                              backgroundColor:
-                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                              fontSize: "smaller",
-                            }}
-                          >
-                            {column.Cell ? column.Cell({ value }) : value}
-                          </TableCell>
-                        );
-                      })}
-                  </TableRow>
-                ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                              return (
+                                <TableCell
+                                  key={column.accessor}
+                                  align={column.align}
+                                  style={{
+                                    borderRight: "1px solid #e0e0e0",
+                                    paddingTop: "4px",
+                                    paddingBottom: "4px",
+                                    borderBottom: "none",
+                                    backgroundColor:
+                                      index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                                    fontSize: "smaller",
+                                  }}
+                                >
+                                  {column.Cell ? column.Cell({ value }) : value}
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
             <TablePagination
-              rowsPerPageOptions={[10, 25, 100,1000,3000]}
+              rowsPerPageOptions={[10, 25, 100, 1000, 3000]}
               component="div"
               count={sortedData.length}
               rowsPerPage={rowsPerPage}
@@ -2323,287 +2331,334 @@ const filteredData = sortedData.filter(row =>
             ))}
           </Box>
         </Modal>
-       {/* Edit model dropdown */}
+        {/* Edit model dropdown */}
         <Modal open={editModalOpen} onClose={handleModalClose}>
-  <Box sx={style}>
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        marginBottom: "20px",
-      }}
-    >
-      <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
-      <IconButton onClick={handleModalClose}>
-        <CloseIcon />
-      </IconButton>
-    </Box>
-    {COLUMNS().map((col) => (
-        col.accessor === 'groupId' && col.Header === 'Group ID' ? (
-          <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
-            <InputLabel id="group-select-label">Group ID</InputLabel>
-            <Select
-              labelId="group-select-label"
-              label="Group ID"
-              name={col.accessor}
-              value={formData[col.accessor] || ''}
-              onChange={handleInputChange}
+          <Box sx={style}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
             >
-              {groups.map((group) => (
-                <MenuItem key={group.id} value={group.id}>
-                  {group.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : col.accessor === 'category' && col.Header === 'Category' ? (
-          <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
-            <InputLabel id="category-select-label">Category</InputLabel>
-            <Select
-              labelId="category-select-label"
-              label="Category"
-              name={col.accessor}
-              value={formData[col.accessor] || ''}
-              onChange={handleInputChange}
+              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
+              <IconButton onClick={handleModalClose}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+            {COLUMNS().map((col) =>
+              col.accessor === "groupId" && col.Header === "Group ID" ? (
+                <FormControl
+                  fullWidth
+                  sx={{ marginBottom: "10px" }}
+                  key={col.accessor}
+                >
+                  <InputLabel id="group-select-label">Group ID</InputLabel>
+                  <Select
+                    labelId="group-select-label"
+                    label="Group ID"
+                    name={col.accessor}
+                    value={formData[col.accessor] || ""}
+                    onChange={handleInputChange}
+                  >
+                    {groups.map((group) => (
+                      <MenuItem key={group.id} value={group.id}>
+                        {group.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : col.accessor === "category" && col.Header === "Category" ? (
+                <FormControl
+                  fullWidth
+                  sx={{ marginBottom: "10px" }}
+                  key={col.accessor}
+                >
+                  <InputLabel id="category-select-label">Category</InputLabel>
+                  <Select
+                    labelId="category-select-label"
+                    label="Category"
+                    name={col.accessor}
+                    value={formData[col.accessor] || ""}
+                    onChange={handleInputChange}
+                  >
+                    <MenuItem value={"Default"}>Default</MenuItem>
+                    <MenuItem value={"Animal"}>Animal</MenuItem>
+                    <MenuItem value={"Bicycle"}>Bicycle</MenuItem>
+                    <MenuItem value={"Boat"}>Boat</MenuItem>
+                    <MenuItem value={"Bus"}>Bus</MenuItem>
+                    <MenuItem value={"Car"}>Car</MenuItem>
+                    <MenuItem value={"Camper"}>Camper</MenuItem>
+                    <MenuItem value={"Crane"}>Crane</MenuItem>
+                    <MenuItem value={"Helicopter"}>Helicopter</MenuItem>
+                    <MenuItem value={"Motorcycle"}>Motorcycle</MenuItem>
+                    <MenuItem value={"Offroad"}>Offroad</MenuItem>
+                    <MenuItem value={"Person"}>Person</MenuItem>
+                    <MenuItem value={"Pickup"}>Pickup</MenuItem>
+                    <MenuItem value={"Plane"}>Plane</MenuItem>
+                    <MenuItem value={"Ship"}>Ship</MenuItem>
+                    <MenuItem value={"Tractor"}>Tractor</MenuItem>
+                    <MenuItem value={"Train"}>Train</MenuItem>
+                    <MenuItem value={"Tram"}>Tram</MenuItem>
+                    <MenuItem value={"Trolleybus"}>Trolleybus</MenuItem>
+                    <MenuItem value={"Truck"}>Truck</MenuItem>
+                    <MenuItem value={"Van"}>Van</MenuItem>
+                    <MenuItem value={"Scooter"}>Scooter</MenuItem>
+                  </Select>
+                </FormControl>
+              ) : col.accessor === "calendarId" &&
+                col.Header === "Calendar ID" ? (
+                <FormControl
+                  fullWidth
+                  sx={{ marginBottom: "10px" }}
+                  key={col.accessor}
+                >
+                  <InputLabel id="calendar-select-label">
+                    Calendar ID
+                  </InputLabel>
+                  <Select
+                    labelId="calendar-select-label"
+                    label="Calendar ID"
+                    name={col.accessor}
+                    value={formData[col.accessor] || ""}
+                    onChange={handleInputChange}
+                  >
+                    {calendars.map((calendar) => (
+                      <MenuItem key={calendar.id} value={calendar.id}>
+                        {calendar.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  key={col.accessor}
+                  label={col.Header}
+                  variant="outlined"
+                  name={col.accessor}
+                  value={formData[col.accessor] || ""}
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                />
+              )
+            )}
+            {/* School Name dropdown */}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
             >
-              <MenuItem value={"Default"}>Default</MenuItem>
-              <MenuItem value={"Animal"}>Animal</MenuItem>
-              <MenuItem value={"Bicycle"}>Bicycle</MenuItem>
-              <MenuItem value={"Boat"}>Boat</MenuItem>
-              <MenuItem value={"Bus"}>Bus</MenuItem>
-              <MenuItem value={"Car"}>Car</MenuItem>
-              <MenuItem value={"Camper"}>Camper</MenuItem>
-              <MenuItem value={"Crane"}>Crane</MenuItem>
-              <MenuItem value={"Helicopter"}>Helicopter</MenuItem>
-              <MenuItem value={"Motorcycle"}>Motorcycle</MenuItem>
-              <MenuItem value={"Offroad"}>Offroad</MenuItem>
-              <MenuItem value={"Person"}>Person</MenuItem>
-              <MenuItem value={"Pickup"}>Pickup</MenuItem>
-              <MenuItem value={"Plane"}>Plane</MenuItem>
-              <MenuItem value={"Ship"}>Ship</MenuItem>
-              <MenuItem value={"Tractor"}>Tractor</MenuItem>
-              <MenuItem value={"Train"}>Train</MenuItem>
-              <MenuItem value={"Tram"}>Tram</MenuItem>
-              <MenuItem value={"Trolleybus"}>Trolleybus</MenuItem>
-              <MenuItem value={"Truck"}>Truck</MenuItem>
-              <MenuItem value={"Van"}>Van</MenuItem>
-              <MenuItem value={"Scooter"}>Scooter</MenuItem>
-            </Select>
-          </FormControl>
-        ) : col.accessor === 'calendarId' && col.Header === 'Calendar ID' ? (
-          <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
-            <InputLabel id="calendar-select-label">Calendar ID</InputLabel>
-            <Select
-              labelId="calendar-select-label"
-              label="Calendar ID"
-              name={col.accessor}
-              value={formData[col.accessor] || ''}
-              onChange={handleInputChange}
+              <InputLabel>School Name</InputLabel>
+              <Select
+                value={formData["schoolName"] || ""}
+                onChange={handleInputChange}
+                name="schoolName"
+                label="School Name"
+              >
+                {schools.map((option) => (
+                  <MenuItem key={option._id} value={option.schoolName}>
+                    {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {/* Branch Name dropdown */}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
             >
-              {calendars.map((calendar) => (
-                <MenuItem key={calendar.id} value={calendar.id}>
-                  {calendar.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : (
-          <TextField
-            key={col.accessor}
-            label={col.Header}
-            variant="outlined"
-            name={col.accessor}
-            value={formData[col.accessor] || ""}
-            onChange={handleInputChange}
-            sx={{ marginBottom: "10px" }}
-            fullWidth
-          />
-        )
-      ))}
-        {/* School Name dropdown */}
-    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
-      <InputLabel>School Name</InputLabel>
-      <Select
-        value={formData['schoolName'] || ''}
-        onChange={handleInputChange}
-        name="schoolName"
-        label="School Name"
-      >
-        {schools.map((option) => (
-          <MenuItem key={option._id} value={option.schoolName}>
-            {option.schoolName}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+              <InputLabel>Branch Name</InputLabel>
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label="Branch Name"
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleEditSubmit}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Modal>
 
-    {/* Branch Name dropdown */}
-    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
-      <InputLabel>Branch Name</InputLabel>
-      <Select
-        value={formData['branchName'] || ''}
-        onChange={handleInputChange}
-        name="branchName"
-        label="Branch Name"
-      >
-        {branches?.map((option) => (
-          <MenuItem key={option.branchId} value={option.branchName}>
-            {option.branchName}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={handleEditSubmit}
-    >
-      Submit
-    </Button>
-  </Box>
-</Modal>
+        <Modal open={addModalOpen} onClose={handleModalClose}>
+          <Box sx={style}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
+              <IconButton onClick={handleModalClose}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
 
-  
+            {COLUMNS().map((col) =>
+              col.accessor === "groupId" && col.Header === "Group ID" ? (
+                <FormControl
+                  fullWidth
+                  sx={{ marginBottom: "10px" }}
+                  key={col.accessor}
+                >
+                  <InputLabel id="group-select-label">Group ID</InputLabel>
+                  <Select
+                    labelId="group-select-label"
+                    label="Group ID"
+                    name={col.accessor}
+                    value={formData[col.accessor] || ""}
+                    onChange={handleInputChange}
+                  >
+                    {groups.map((group) => (
+                      <MenuItem key={group.id} value={group.id}>
+                        {group.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : col.accessor === "category" && col.Header === "Category" ? (
+                <FormControl
+                  fullWidth
+                  sx={{ marginBottom: "10px" }}
+                  key={col.accessor}
+                >
+                  <InputLabel id="category-select-label">Category</InputLabel>
+                  <Select
+                    labelId="category-select-label"
+                    label="Category"
+                    name={col.accessor}
+                    value={formData[col.accessor] || ""}
+                    onChange={handleInputChange}
+                  >
+                    <MenuItem value={"Default"}>Default</MenuItem>
+                    <MenuItem value={"Animal"}>Animal</MenuItem>
+                    <MenuItem value={"Bicycle"}>Bicycle</MenuItem>
+                    <MenuItem value={"Boat"}>Boat</MenuItem>
+                    <MenuItem value={"Bus"}>Bus</MenuItem>
+                    <MenuItem value={"Car"}>Car</MenuItem>
+                    <MenuItem value={"Camper"}>Camper</MenuItem>
+                    <MenuItem value={"Crane"}>Crane</MenuItem>
+                    <MenuItem value={"Helicopter"}>Helicopter</MenuItem>
+                    <MenuItem value={"Motorcycle"}>Motorcycle</MenuItem>
+                    <MenuItem value={"Offroad"}>Offroad</MenuItem>
+                    <MenuItem value={"Person"}>Person</MenuItem>
+                    <MenuItem value={"Pickup"}>Pickup</MenuItem>
+                    <MenuItem value={"Plane"}>Plane</MenuItem>
+                    <MenuItem value={"Ship"}>Ship</MenuItem>
+                    <MenuItem value={"Tractor"}>Tractor</MenuItem>
+                    <MenuItem value={"Train"}>Train</MenuItem>
+                    <MenuItem value={"Tram"}>Tram</MenuItem>
+                    <MenuItem value={"Trolleybus"}>Trolleybus</MenuItem>
+                    <MenuItem value={"Truck"}>Truck</MenuItem>
+                    <MenuItem value={"Van"}>Van</MenuItem>
+                    <MenuItem value={"Scooter"}>Scooter</MenuItem>
+                  </Select>
+                </FormControl>
+              ) : col.accessor === "calendarId" &&
+                col.Header === "Calendar ID" ? (
+                <FormControl
+                  fullWidth
+                  sx={{ marginBottom: "10px" }}
+                  key={col.accessor}
+                >
+                  <InputLabel id="calendar-select-label">
+                    Calendar ID
+                  </InputLabel>
+                  <Select
+                    labelId="calendar-select-label"
+                    label="Calendar ID"
+                    name={col.accessor}
+                    value={formData[col.accessor] || ""}
+                    onChange={handleInputChange}
+                  >
+                    {calendars.map((calendar) => (
+                      <MenuItem key={calendar.id} value={calendar.id}>
+                        {calendar.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              ) : (
+                <TextField
+                  key={col.accessor}
+                  label={col.Header}
+                  variant="outlined"
+                  name={col.accessor}
+                  value={formData[col.accessor] || ""}
+                  onChange={handleInputChange}
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                />
+              )
+            )}
 
-<Modal open={addModalOpen} onClose={handleModalClose}>
-  <Box sx={style}>
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '20px',
-      }}
-    >
-      <h2 style={{ flexGrow: 1 }}>Add Row</h2>
-      <IconButton onClick={handleModalClose}>
-        <CloseIcon />
-      </IconButton>
-    </Box>
+            {/* School Name dropdown */}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>School Name</InputLabel>
+              <Select
+                value={formData["schoolName"] || ""}
+                onChange={handleInputChange}
+                name="schoolName"
+                label="School Name"
+              >
+                {schools.map((option) => (
+                  <MenuItem key={option._id} value={option.schoolName}>
+                    {option.schoolName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-    {COLUMNS().map((col) =>
-      col.accessor === 'groupId' && col.Header === 'Group ID' ? (
-        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
-          <InputLabel id="group-select-label">Group ID</InputLabel>
-          <Select
-            labelId="group-select-label"
-            label="Group ID"
-            name={col.accessor}
-            value={formData[col.accessor] || ''}
-            onChange={handleInputChange}
-          >
-            {groups.map((group) => (
-              <MenuItem key={group.id} value={group.id}>
-                {group.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      ) : col.accessor === 'category' && col.Header === 'Category' ? (
-        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
-          <InputLabel id="category-select-label">Category</InputLabel>
-          <Select
-            labelId="category-select-label"
-            label="Category"
-            name={col.accessor}
-            value={formData[col.accessor] || ''}
-            onChange={handleInputChange}
-          >
-            <MenuItem value={"Default"}>Default</MenuItem>
-            <MenuItem value={"Animal"}>Animal</MenuItem>
-            <MenuItem value={"Bicycle"}>Bicycle</MenuItem>
-            <MenuItem value={"Boat"}>Boat</MenuItem>
-            <MenuItem value={"Bus"}>Bus</MenuItem>
-            <MenuItem value={"Car"}>Car</MenuItem>
-            <MenuItem value={"Camper"}>Camper</MenuItem>
-            <MenuItem value={"Crane"}>Crane</MenuItem>
-            <MenuItem value={"Helicopter"}>Helicopter</MenuItem>
-            <MenuItem value={"Motorcycle"}>Motorcycle</MenuItem>
-            <MenuItem value={"Offroad"}>Offroad</MenuItem>
-            <MenuItem value={"Person"}>Person</MenuItem>
-            <MenuItem value={"Pickup"}>Pickup</MenuItem>
-            <MenuItem value={"Plane"}>Plane</MenuItem>
-            <MenuItem value={"Ship"}>Ship</MenuItem>
-            <MenuItem value={"Tractor"}>Tractor</MenuItem>
-            <MenuItem value={"Train"}>Train</MenuItem>
-            <MenuItem value={"Tram"}>Tram</MenuItem>
-            <MenuItem value={"Trolleybus"}>Trolleybus</MenuItem>
-            <MenuItem value={"Truck"}>Truck</MenuItem>
-            <MenuItem value={"Van"}>Van</MenuItem>
-            <MenuItem value={"Scooter"}>Scooter</MenuItem>
-          </Select>
-        </FormControl>
-      ) : col.accessor === 'calendarId' && col.Header === 'Calendar ID' ? (
-        <FormControl fullWidth sx={{ marginBottom: '10px' }} key={col.accessor}>
-          <InputLabel id="calendar-select-label">Calendar ID</InputLabel>
-          <Select
-            labelId="calendar-select-label"
-            label="Calendar ID"
-            name={col.accessor}
-            value={formData[col.accessor] || ''}
-            onChange={handleInputChange}
-          >
-            {calendars.map((calendar) => (
-              <MenuItem key={calendar.id} value={calendar.id}>
-                {calendar.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      ) : (
-        <TextField
-          key={col.accessor}
-          label={col.Header}
-          variant="outlined"
-          name={col.accessor}
-          value={formData[col.accessor] || ''}
-          onChange={handleInputChange}
-          sx={{ marginBottom: '10px' }}
-          fullWidth
-        />
-      )
-    )}
+            {/* Branch Name dropdown */}
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <InputLabel>Branch Name</InputLabel>
+              <Select
+                value={formData["branchName"] || ""}
+                onChange={handleInputChange}
+                name="branchName"
+                label="Branch Name"
+              >
+                {branches?.map((option) => (
+                  <MenuItem key={option.branchId} value={option.branchName}>
+                    {option.branchName}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
-    {/* School Name dropdown */}
-    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
-      <InputLabel>School Name</InputLabel>
-      <Select
-        value={formData['schoolName'] || ''}
-        onChange={handleInputChange}
-        name="schoolName"
-        label="School Name"
-      >
-        {schools.map((option) => (
-          <MenuItem key={option._id} value={option.schoolName}>
-            {option.schoolName}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-
-    {/* Branch Name dropdown */}
-    <FormControl variant="outlined" sx={{ marginBottom: '10px' }} fullWidth>
-      <InputLabel>Branch Name</InputLabel>
-      <Select
-        value={formData['branchName'] || ''}
-        onChange={handleInputChange}
-        name="branchName"
-        label="Branch Name"
-      >
-        {branches?.map((option) => (
-          <MenuItem key={option.branchId} value={option.branchName}>
-            {option.branchName}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-
-    {/* Submit button */}
-    <Button variant="contained" color="primary" onClick={handleAddSubmit}>
-      Submit
-    </Button>
-  </Box>
-</Modal>
-
+            {/* Submit button */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAddSubmit}
+            >
+              Submit
+            </Button>
+          </Box>
+        </Modal>
 
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
           <Box sx={style}>

@@ -1044,27 +1044,32 @@ export const Supervisor = () => {
         const sheetNames = workbook.SheetNames;
         const sheet = workbook.Sheets[sheetNames[0]];
         const parsedData = XLSX.utils.sheet_to_json(sheet);
-  
+
         // Log the parsed data for verification
         console.log("Uploaded file data:", parsedData);
-  
+
         // Now make the POST request with parsedData
-        axios.post('http://63.142.251.13:4000/supervisor/importsupervisor', parsedData)
-          .then(response => {
-            console.log('Data successfully posted:', response.data);
-            alert('File imported and data posted successfully!');
+        axios
+          .post(
+            "https://track.parentseye.in/supervisor/importsupervisor",
+            parsedData
+          )
+          .then((response) => {
+            console.log("Data successfully posted:", response.data);
+            alert("File imported and data posted successfully!");
           })
-          .catch(error => {
-            console.error('Error posting data:', error);
-            alert('Error posting data. Please fill data in valid form as shown in sample excel sheet.');
+          .catch((error) => {
+            console.error("Error posting data:", error);
+            alert(
+              "Error posting data. Please fill data in valid form as shown in sample excel sheet."
+            );
           });
       };
       reader.readAsArrayBuffer(file);
-  
     }
-   
+
     fetchData();
-     setImportModalOpen(false);
+    setImportModalOpen(false);
   };
 
   const sortedData = [...filteredRows];
@@ -1136,25 +1141,29 @@ export const Supervisor = () => {
   // };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     if (name === "schoolName") {
       setFormData({
         ...formData,
         [name]: value,
         branchName: "", // Reset branch when school changes
       });
-      
+
       // Filter branches for the selected school
-      const selectedSchool = schools.find(school => school.schoolName === value);
+      const selectedSchool = schools.find(
+        (school) => school.schoolName === value
+      );
       if (selectedSchool) {
-        const branches = selectedSchool.branches.map(branch => ({
+        const branches = selectedSchool.branches.map((branch) => ({
           branchName: branch.branchName,
           branchId: branch.branchId,
         }));
         setBranches(branches);
-  
+
         // Filter devices for the selected school
-        const filteredDevices = allDevices.filter(device => device.schoolName === value);
+        const filteredDevices = allDevices.filter(
+          (device) => device.schoolName === value
+        );
         setBuses(filteredDevices); // Update buses based on selected school
       }
     } else if (name === "branchName") {
@@ -1162,11 +1171,13 @@ export const Supervisor = () => {
         ...formData,
         [name]: value,
       });
-  
+
       // Filter devices for the selected branch
-      const filteredDevices = allDevices.filter(device => device.branchName === value);
+      const filteredDevices = allDevices.filter(
+        (device) => device.branchName === value
+      );
       setBuses(filteredDevices); // Update buses based on selected branch
-    }  else {
+    } else {
       setFormData({
         ...formData,
         [name]: value,
@@ -1188,38 +1199,35 @@ export const Supervisor = () => {
   // };
   const handleBusChange = (e) => {
     const { value } = e.target;
-  
+
     if (!buses || !Array.isArray(buses)) {
-        console.error("Buses data is not available or not an array");
-        return;
+      console.error("Buses data is not available or not an array");
+      return;
     }
-  
+
     // Find the selected bus by its deviceId
-    const selectedBus = buses.find(bus => bus.deviceId === value);
-  
+    const selectedBus = buses.find((bus) => bus.deviceId === value);
+
     if (!selectedBus) {
-        console.error("Selected bus not found");
-        return;
+      console.error("Selected bus not found");
+      return;
     }
-  
+
     // Update the form data with the selected device details
     setFormData((prevData) => ({
-        ...prevData,
-        deviceId: selectedBus.deviceId,
-        deviceName: selectedBus.deviceName,
-        // pickupPoint: '', // Reset geofence selection
+      ...prevData,
+      deviceId: selectedBus.deviceId,
+      deviceName: selectedBus.deviceName,
+      // pickupPoint: '', // Reset geofence selection
     }));
-  
+
     let geofencesForSelectedDevice = [];
-  
-   
-  
+
     // Update the filtered geofences state
-   
   };
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    
+
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
@@ -1233,32 +1241,41 @@ export const Supervisor = () => {
       // Perform the PUT request
       let response;
       if (role == 1) {
-        response = await fetch(`${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor/${updatedData.supervisorId}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(updatedData),
-        });
+        response = await fetch(
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/update-supervisor/${updatedData.supervisorId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedData),
+          }
+        );
       } else if (role == 2) {
-        response = await fetch(`${process.env.REACT_APP_SCHOOL_API}/update-supervisor/${updatedData.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(updatedData),
-        });
-      }else{
-        response = await fetch(`${process.env.REACT_APP_BRANCH_API}/update-supervisor/${updatedData.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(updatedData),
-        });
+        response = await fetch(
+          `${process.env.REACT_APP_SCHOOL_API}/update-supervisor/${updatedData.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedData),
+          }
+        );
+      } else {
+        response = await fetch(
+          `${process.env.REACT_APP_BRANCH_API}/update-supervisor/${updatedData.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedData),
+          }
+        );
       }
 
       // Check if the response is okay (status code 200-299)
@@ -1408,13 +1425,13 @@ export const Supervisor = () => {
             : role == 2
             ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
             : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
-    
+
         const response = await axios.get(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-    
+
         let allData = [];
         if (role == 1) {
           allData = response?.data.data.flatMap((school) =>
@@ -1441,7 +1458,7 @@ export const Supervisor = () => {
         } else if (role == 3) {
           const branchName = response.data.branchName;
           const schoolName = response.data.schoolName;
-    
+
           allData = Array.isArray(response.data.devices)
             ? response.data.devices.map((device) => ({
                 ...device,
@@ -1450,20 +1467,19 @@ export const Supervisor = () => {
               }))
             : [];
         }
-    
+
         setAllDevices(allData); // Store all devices
         setBuses(allData); // Set initial buses as well
-        console.log("filter devices according to branch",allData)
+        console.log("filter devices according to branch", allData);
       } catch (error) {
         console.error("Error fetching buses:", error);
       }
-    }
+    };
 
     fetchBuses();
 
     fetchSchool();
   }, [addModalOpen, editModalOpen]);
-
 
   const [rowStatuses, setRowStatuses] = useState({});
 
@@ -1471,7 +1487,7 @@ export const Supervisor = () => {
     try {
       const token = localStorage.getItem("token");
       let response;
-  
+
       if (role == 1) {
         response = await axios.post(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus-supervisor/${_id}`,
@@ -1503,29 +1519,29 @@ export const Supervisor = () => {
           }
         );
       }
-  
+
       if (response && response.status === 200) {
         setSnackbarOpen(true);
         fetchData(); // Refresh data
-  
+
         // Update the status for this row
         setRowStatuses((prevStatuses) => ({
           ...prevStatuses,
           [_id]: "approved",
         }));
-  
+
         alert("Your request is approved");
       }
     } catch (error) {
       console.error("Error approving request:", error);
     }
   };
-  
+
   const handleReject = async (_id) => {
     try {
       const token = localStorage.getItem("token");
       let response;
-  
+
       if (role == 1) {
         response = await axios.post(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/registerStatus-supervisor/${_id}`,
@@ -1557,17 +1573,17 @@ export const Supervisor = () => {
           }
         );
       }
-  
+
       if (response && response.status === 200) {
         setSnackbarOpen(true);
         fetchData(); // Refresh data
-  
+
         // Update the status for this row
         setRowStatuses((prevStatuses) => ({
           ...prevStatuses,
           [_id]: "rejected",
         }));
-  
+
         alert("Request is rejected");
       }
     } catch (error) {
@@ -1575,15 +1591,44 @@ export const Supervisor = () => {
     }
   };
   const sampleData = [
-    ["supervisorName", "address", "phone_no", "password", "email", "deviceName", "deviceId", "schoolName", "branchName"],
-    ["supervisor1", "new nandanwan 1111", "7878787878", "123456", "youemail", "MH565656", "8978","school1","branch1"],
-    ["supervisor2", "krida square 234533", "7878787878", "123456", "youremail2", "MH343434", "5656","school2","branch2"],
-   
-];
+    [
+      "supervisorName",
+      "address",
+      "phone_no",
+      "password",
+      "email",
+      "deviceName",
+      "deviceId",
+      "schoolName",
+      "branchName",
+    ],
+    [
+      "supervisor1",
+      "new nandanwan 1111",
+      "7878787878",
+      "123456",
+      "youemail",
+      "MH565656",
+      "8978",
+      "school1",
+      "branch1",
+    ],
+    [
+      "supervisor2",
+      "krida square 234533",
+      "7878787878",
+      "123456",
+      "youremail2",
+      "MH343434",
+      "5656",
+      "school2",
+      "branch2",
+    ],
+  ];
   const handleDownloadSample = () => {
     const link = document.createElement("a");
-    link.href = "supervisorDetail.xlsx";  // Adjust the path here
-    link.download = "supervisorDetail.xlsx";  // Specify the download filename
+    link.href = "supervisorDetail.xlsx"; // Adjust the path here
+    link.download = "supervisorDetail.xlsx"; // Specify the download filename
     link.click();
   };
   return (
@@ -1803,7 +1848,7 @@ export const Supervisor = () => {
                           ) : null}
                         </TableCell>
                       ))}
-                       <TableCell
+                    <TableCell
                       style={{
                         cursor: "pointer",
                         borderRight: "1px solid #e0e0e0",
@@ -1907,7 +1952,7 @@ export const Supervisor = () => {
                                 </TableCell>
                               );
                             })}
-                {/* <TableCell
+                          {/* <TableCell
   style={{
     borderRight: "1px solid #e0e0e0",
     paddingTop: "4px",
@@ -1935,41 +1980,49 @@ export const Supervisor = () => {
     <span style={{ color: "red" }}>Rejected</span>
   ) : null}
 </TableCell> */}
-<TableCell
-  style={{
-    borderRight: "1px solid #e0e0e0",
-    paddingTop: "4px",
-    paddingBottom: "4px",
-    borderBottom: "none",
-    display: "flex",
-    textAlign: "center",
-    justifyContent: "space-around",
-    backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-    fontSize: "smaller",
-  }}
->
-  {row.statusOfRegister === "pending" ? (
-    <>
-      <Button
-        onClick={() => handleApprove(role == 1 ? row.supervisorId : row.id)}
-        color="primary"
-      >
-        Approve
-      </Button>
-      <Button
-        onClick={() => handleReject(role == 1 ? row.supervisorId : row.id)}
-        color="secondary"
-      >
-        Reject
-      </Button>
-    </>
-  ) : row.statusOfRegister === "approved" ? (
-    <span style={{ color: "green" }}>Approved</span>
-  ) : row.statusOfRegister === "rejected" ? (
-    <span style={{ color: "red" }}>Rejected</span>
-  ) : null}
-</TableCell>
-
+                          <TableCell
+                            style={{
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              display: "flex",
+                              textAlign: "center",
+                              justifyContent: "space-around",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                              fontSize: "smaller",
+                            }}
+                          >
+                            {row.statusOfRegister === "pending" ? (
+                              <>
+                                <Button
+                                  onClick={() =>
+                                    handleApprove(
+                                      role == 1 ? row.supervisorId : row.id
+                                    )
+                                  }
+                                  color="primary"
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  onClick={() =>
+                                    handleReject(
+                                      role == 1 ? row.supervisorId : row.id
+                                    )
+                                  }
+                                  color="secondary"
+                                >
+                                  Reject
+                                </Button>
+                              </>
+                            ) : row.statusOfRegister === "approved" ? (
+                              <span style={{ color: "green" }}>Approved</span>
+                            ) : row.statusOfRegister === "rejected" ? (
+                              <span style={{ color: "red" }}>Rejected</span>
+                            ) : null}
+                          </TableCell>
                         </TableRow>
                       ))
                   )}
@@ -2032,7 +2085,7 @@ export const Supervisor = () => {
                   fullWidth
                 />
               ))}
-               {role == 1 && (
+            {role == 1 && (
               // <FormControl
               //   variant="outlined"
               //   sx={{ marginBottom: "10px" }}
@@ -2053,27 +2106,38 @@ export const Supervisor = () => {
               //     ))}
               //   </Select>
               // </FormControl>
-              <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-school-select"
-    options={schools || []} // List of school objects
-    getOptionLabel={(option) => option.schoolName || ""} // Display school name
-    value={schools.find(school => school.schoolName === formData["schoolName"]) || null} // Find the selected school
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "schoolName", value: newValue?.schoolName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="School Name"
-        variant="outlined"
-        name="schoolName"
-      />
-    )}
-  />
-</FormControl>
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-school-select"
+                  options={schools || []} // List of school objects
+                  getOptionLabel={(option) => option.schoolName || ""} // Display school name
+                  value={
+                    schools.find(
+                      (school) => school.schoolName === formData["schoolName"]
+                    ) || null
+                  } // Find the selected school
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "schoolName",
+                        value: newValue?.schoolName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="School Name"
+                      variant="outlined"
+                      name="schoolName"
+                    />
+                  )}
+                />
+              </FormControl>
             )}
 
             {(role == 1 || role == 2) && (
@@ -2097,27 +2161,38 @@ export const Supervisor = () => {
               //     ))}
               //   </Select>
               // </FormControl>
-              <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={branches || []} // List of branch objects
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "branchName", value: newValue?.branchName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-      />
-    )}
-  />
-</FormControl>
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // List of branch objects
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    branches.find(
+                      (branch) => branch.branchName === formData["branchName"]
+                    ) || null
+                  } // Find the selected branch
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
             )}
             {/* <FormControl
               variant="outlined"
@@ -2159,7 +2234,7 @@ export const Supervisor = () => {
                 ))}
               </Select>
             </FormControl> */}
-               {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <InputLabel>{"Bus Name"}</InputLabel>
   <Select
     value={formData["deviceId"] || ""}
@@ -2174,27 +2249,37 @@ export const Supervisor = () => {
     ))}
   </Select>
 </FormControl> */}
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-bus-select"
-    options={buses || []} // List of bus objects
-    getOptionLabel={(option) => option.deviceName || ""} // Display bus name
-    value={buses.find(bus => bus.deviceId === formData["deviceId"]) || null} // Find the selected bus by deviceId
-    onChange={(event, newValue) => {
-      handleBusChange({
-        target: { name: "deviceId", value: newValue?.deviceId || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Bus Name"
-        variant="outlined"
-        name="deviceId"
-      />
-    )}
-  />
-</FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <Autocomplete
+                id="searchable-bus-select"
+                options={buses || []} // List of bus objects
+                getOptionLabel={(option) => option.deviceName || ""} // Display bus name
+                value={
+                  buses.find((bus) => bus.deviceId === formData["deviceId"]) ||
+                  null
+                } // Find the selected bus by deviceId
+                onChange={(event, newValue) => {
+                  handleBusChange({
+                    target: {
+                      name: "deviceId",
+                      value: newValue?.deviceId || "",
+                    },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Bus Name"
+                    variant="outlined"
+                    name="deviceId"
+                  />
+                )}
+              />
+            </FormControl>
             <Button
               variant="contained"
               color="primary"
@@ -2254,27 +2339,38 @@ export const Supervisor = () => {
               //     ))}
               //   </Select>
               // </FormControl>
-              <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-school-select"
-    options={schools || []} // List of school objects
-    getOptionLabel={(option) => option.schoolName || ""} // Display school name
-    value={schools.find(school => school.schoolName === formData["schoolName"]) || null} // Find the selected school
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "schoolName", value: newValue?.schoolName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="School Name"
-        variant="outlined"
-        name="schoolName"
-      />
-    )}
-  />
-</FormControl>
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-school-select"
+                  options={schools || []} // List of school objects
+                  getOptionLabel={(option) => option.schoolName || ""} // Display school name
+                  value={
+                    schools.find(
+                      (school) => school.schoolName === formData["schoolName"]
+                    ) || null
+                  } // Find the selected school
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "schoolName",
+                        value: newValue?.schoolName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="School Name"
+                      variant="outlined"
+                      name="schoolName"
+                    />
+                  )}
+                />
+              </FormControl>
             )}
 
             {(role == 1 || role == 2) && (
@@ -2298,29 +2394,40 @@ export const Supervisor = () => {
               //     ))}
               //   </Select>
               // </FormControl>
-              <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={branches || []} // List of branch objects
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "branchName", value: newValue?.branchName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-      />
-    )}
-  />
-</FormControl>
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // List of branch objects
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    branches.find(
+                      (branch) => branch.branchName === formData["branchName"]
+                    ) || null
+                  } // Find the selected branch
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
             )}
-          {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <InputLabel>{"Bus Name"}</InputLabel>
   <Select
     value={formData["deviceId"] || ""}
@@ -2335,27 +2442,37 @@ export const Supervisor = () => {
     ))}
   </Select>
 </FormControl> */}
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-bus-select"
-    options={buses || []} // List of bus objects
-    getOptionLabel={(option) => option.deviceName || ""} // Display bus name
-    value={buses.find(bus => bus.deviceId === formData["deviceId"]) || null} // Find the selected bus by deviceId
-    onChange={(event, newValue) => {
-      handleBusChange({
-        target: { name: "deviceId", value: newValue?.deviceId || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Bus Name"
-        variant="outlined"
-        name="deviceId"
-      />
-    )}
-  />
-</FormControl>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <Autocomplete
+                id="searchable-bus-select"
+                options={buses || []} // List of bus objects
+                getOptionLabel={(option) => option.deviceName || ""} // Display bus name
+                value={
+                  buses.find((bus) => bus.deviceId === formData["deviceId"]) ||
+                  null
+                } // Find the selected bus by deviceId
+                onChange={(event, newValue) => {
+                  handleBusChange({
+                    target: {
+                      name: "deviceId",
+                      value: newValue?.deviceId || "",
+                    },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Bus Name"
+                    variant="outlined"
+                    name="deviceId"
+                  />
+                )}
+              />
+            </FormControl>
             <Button
               variant="contained"
               color="primary"
@@ -2366,21 +2483,21 @@ export const Supervisor = () => {
           </Box>
         </Modal>
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
-      <Box sx={style}>
-        <div style={{display:"flex",justifyContent:"space-between"}}>
-        <h2>Import Data</h2>
-        <IconButton onClick={handleModalClose}>
+          <Box sx={style}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h2>Import Data</h2>
+              <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
-        </div>
-        {/* <h2>Import Data</h2>
+            </div>
+            {/* <h2>Import Data</h2>
         <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton> */}
-        <p>Please upload the file in the following format:</p>
+            <p>Please upload the file in the following format:</p>
 
-        {/* Sample Excel Format Table */}
-        {/* <Table>
+            {/* Sample Excel Format Table */}
+            {/* <Table>
           <TableHead>
             <TableRow>
               {sampleData[0].map((header, index) => (
@@ -2398,59 +2515,78 @@ export const Supervisor = () => {
             ))}
           </TableBody>
         </Table> */}
-<Box sx={{ overflowX: "auto" }}> {/* Makes table scrollable if needed */}
-      <Table size="small" sx={{ minWidth: 650 }}>
-        <TableHead>
-          <TableRow>
-            {sampleData[0].map((header, index) => (
-              <TableCell key={index} sx={{ padding: "4px", fontSize: "0.85rem" }}>{header}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sampleData.slice(1).map((row, rowIndex) => (
-            <TableRow key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <TableCell key={cellIndex} sx={{ padding: "4px", fontSize: "0.8rem" }}>{cell}</TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
-        {/* Button to Download Sample Excel */}
-        <Button variant="contained" color="primary" onClick={handleDownloadSample} sx={{ marginTop: "10px" }}>
-          Download Sample Excel
-        </Button>
-<p>
+            <Box sx={{ overflowX: "auto" }}>
+              {" "}
+              {/* Makes table scrollable if needed */}
+              <Table size="small" sx={{ minWidth: 650 }}>
+                <TableHead>
+                  <TableRow>
+                    {sampleData[0].map((header, index) => (
+                      <TableCell
+                        key={index}
+                        sx={{ padding: "4px", fontSize: "0.85rem" }}
+                      >
+                        {header}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sampleData.slice(1).map((row, rowIndex) => (
+                    <TableRow key={rowIndex}>
+                      {row.map((cell, cellIndex) => (
+                        <TableCell
+                          key={cellIndex}
+                          sx={{ padding: "4px", fontSize: "0.8rem" }}
+                        >
+                          {cell}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+            {/* Button to Download Sample Excel */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleDownloadSample}
+              sx={{ marginTop: "10px" }}
+            >
+              Download Sample Excel
+            </Button>
+            <p>
+              Note: Please do not make changes to the column headers. Follow the
+              sample Excel sheet's headings and fill in your data according to
+              our format. The required fields are: supervisor Name,address,
+              Email (must be unique), phone, Password{" "}
+            </p>
+            {/* File Upload Input */}
+            <input
+              type="file"
+              onChange={handleFileUpload}
+              style={{ marginTop: "10px" }}
+            />
 
-
-Note: Please do not make changes to the column headers. Follow the sample Excel sheet's headings and fill in your data according to our format. The required fields are:
-supervisor Name,address,
-Email (must be unique),
-phone,
-Password </p>
-        {/* File Upload Input */}
-        <input type="file" onChange={handleFileUpload} style={{ marginTop: "10px" }} />
-
-        {/* Import Button */}
-        {importData.length > 0 && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() =>
-              setFilteredRows([
-                ...filteredRows,
-                ...importData.map((row) => ({ ...row, isSelected: false })),
-              ])
-            }
-            sx={{ marginTop: "10px" }}
-          >
-            Import
-          </Button>
-        )}
-      </Box>
-    </Modal>
+            {/* Import Button */}
+            {importData.length > 0 && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  setFilteredRows([
+                    ...filteredRows,
+                    ...importData.map((row) => ({ ...row, isSelected: false })),
+                  ])
+                }
+                sx={{ marginTop: "10px" }}
+              >
+                Import
+              </Button>
+            )}
+          </Box>
+        </Modal>
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={3000}

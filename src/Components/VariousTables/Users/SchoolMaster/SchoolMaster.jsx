@@ -133,7 +133,7 @@ const SchoolMaster = () => {
   //     console.error("Expected schools to be an array, but got:", schools);
   //     return [];
   //   }
-  
+
   //   return schools.flatMap((school) =>
   //     Array.isArray(school.branches)
   //       ? school.branches.flatMap((branch) =>
@@ -167,12 +167,12 @@ const SchoolMaster = () => {
   //     );
 
   //     console.log(response.data)
-  
+
   //     const { schools } = response.data;
-  
+
   //     if (Array.isArray(schools)) {
   //       const transformedData = transformData(schools);
-  
+
   //       setFilteredRows(transformedData.map((row) => ({ ...row, isSelected: false })));
   //       setOriginalRows(transformedData.map((row) => ({ ...row, isSelected: false })));
   //       setTotalResponses(transformedData.length);
@@ -249,20 +249,22 @@ const SchoolMaster = () => {
           },
         }
       );
-  
+
       console.log("fetch data", response.data); // Log the entire response data
-  
+
       if (Array.isArray(response.data.schools)) {
         const allData = response.data.schools;
-  
+
         // Apply local date filtering if dates are provided
         const filteredData =
           startDate || endDate
             ? allData.filter((row) => {
-                const registrationDate = parseDate(row.formattedRegistrationDate);
+                const registrationDate = parseDate(
+                  row.formattedRegistrationDate
+                );
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);
-  
+
                 return (
                   (!startDate || registrationDate >= start) &&
                   (!endDate || registrationDate <= end)
@@ -270,7 +272,7 @@ const SchoolMaster = () => {
               })
             : allData; // If no date range, use all data
         const reversedData = filteredData.reverse();
-  
+
         // Map the data to include the first branch name
         const mappedData = reversedData.map((row) => {
           const firstBranchName =
@@ -283,11 +285,11 @@ const SchoolMaster = () => {
             isSelected: false,
           };
         });
-  
+
         // Log the date range and filtered data
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(filteredData);
-  
+
         setFilteredRows(mappedData);
         setOriginalRows(
           allData.map((row) => {
@@ -308,7 +310,7 @@ const SchoolMaster = () => {
       setLoading(false); // Set loading to false after fetching completes
     }
   };
-  
+
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -502,20 +504,20 @@ const SchoolMaster = () => {
       const selectedIds = filteredRows
         .filter((row) => row.isSelected)
         .map((row) => row._id);
-      
+
       if (selectedIds.length === 0) {
         alert("No rows selected for deletion.");
         return;
       }
-      
+
       const userConfirmed = window.confirm(
         `Are you sure you want to delete ${selectedIds.length} record(s)?`
       );
       if (!userConfirmed) return;
-  
+
       const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-school`;
-      const token = localStorage.getItem('token');
-  
+      const token = localStorage.getItem("token");
+
       // Send DELETE requests
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
@@ -526,30 +528,32 @@ const SchoolMaster = () => {
           },
         }).then((response) => {
           if (!response.ok) {
-            throw new Error(`Error deleting record with ID ${id}: ${response.statusText}`);
+            throw new Error(
+              `Error deleting record with ID ${id}: ${response.statusText}`
+            );
           }
           return response.json();
         })
       );
-  
+
       // Wait for all deletions
       await Promise.all(deleteRequests);
-  
+
       // Filter out deleted rows from UI
       const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
       setFilteredRows(newFilteredRows);
       setSelectAll(false);
-      
+
       alert("Selected records deleted successfully.");
     } catch (error) {
       console.error("Error during deletion:", error);
       alert("Failed to delete selected records.");
     }
-  
+
     // Re-fetch data after deletion
     fetchData();
   };
-  
+
   const handleExport = () => {
     const dataToExport = filteredRows.map((row) => {
       const { isSelected, ...rowData } = row;
@@ -617,8 +621,7 @@ const SchoolMaster = () => {
     // Define the API URL and authentication token
 
     try {
-      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/edit-school/${selectedRow._id}`
-        
+      const apiUrl = `${process.env.REACT_APP_SUPER_ADMIN_API}/edit-school/${selectedRow._id}`;
 
       const token = localStorage.getItem("token");
       // Prepare the updated data
@@ -675,7 +678,7 @@ const SchoolMaster = () => {
         isSelected: false,
       };
 
-      let token = localStorage.getItem('token');
+      let token = localStorage.getItem("token");
 
       // POST request to the server
       const response = await fetch(
@@ -690,7 +693,6 @@ const SchoolMaster = () => {
         }
       );
 
-      
       alert("record created successfully");
 
       if (!response.ok) {
@@ -706,14 +708,13 @@ const SchoolMaster = () => {
     } catch (error) {
       console.error("Error during POST request:", error);
       alert("unable to create record");
-    
     }
   };
   // const handleAccessClick = async (id) => {
   //   const token = localStorage.getItem("token");
   //   try {
   //     const response = await axios.put(
-  //       `http://63.142.251.13:4000/superadmin/updateAccess/${id}`, // Pass row._id in the URL
+  //       `https://track.parentseye.in/superadmin/updateAccess/${id}`, // Pass row._id in the URL
   //       {
   //         fullAccess: false, // Payload
   //       },
@@ -734,7 +735,7 @@ const SchoolMaster = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.put(
-        `http://63.142.251.13:4000/superadmin/updateAccess/${id}`, // Pass row._id in the URL
+        `https://track.parentseye.in/superadmin/updateAccess/${id}`, // Pass row._id in the URL
         {
           fullAccess: !currentFullAccess, // Toggle fullAccess based on current value
         },
@@ -744,11 +745,19 @@ const SchoolMaster = () => {
           },
         }
       );
-      alert(currentFullAccess ? "Access revoked (Less Access)" : "Access granted (Full Access)");
+      alert(
+        currentFullAccess
+          ? "Access revoked (Less Access)"
+          : "Access granted (Full Access)"
+      );
       console.log("Access updated successfully", response.data);
     } catch (error) {
       console.error("Error updating access", error);
-      alert(currentFullAccess ? "Error revoking full access" : "Error granting full access");
+      alert(
+        currentFullAccess
+          ? "Error revoking full access"
+          : "Error granting full access"
+      );
     }
     fetchData();
   };
@@ -967,7 +976,7 @@ const SchoolMaster = () => {
                           ) : null}
                         </TableCell>
                       ))}
-                       <TableCell
+                    <TableCell
                       style={{
                         minWidth: 70, // Adjust width if needed
                         borderRight: "1px solid #e0e0e0",
@@ -998,7 +1007,7 @@ const SchoolMaster = () => {
                           // fontStyle: 'italic',
                         }}
                       >
-                         <img src="emptyicon.png" alt="" />
+                        <img src="emptyicon.png" alt="" />
                         <h4>No Data Available</h4>
                       </TableCell>
                     </TableRow>
@@ -1021,7 +1030,7 @@ const SchoolMaster = () => {
                           style={{
                             backgroundColor:
                               index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                            borderBottom: "none", 
+                            borderBottom: "none",
                           }}
                         >
                           <TableCell
@@ -1062,7 +1071,7 @@ const SchoolMaster = () => {
                                     borderBottom: "none",
                                     backgroundColor:
                                       index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                    fontSize: "smaller", 
+                                    fontSize: "smaller",
                                   }}
                                 >
                                   {column.format && typeof value === "number"
@@ -1071,36 +1080,42 @@ const SchoolMaster = () => {
                                 </TableCell>
                               );
                             })}
-                            <TableCell
-      style={{
-        minWidth: 70,
-        borderRight: "1px solid #e0e0e0",
-        paddingTop: "4px",
-        paddingBottom: "4px",
-        borderBottom: "none",
-        textAlign: "center",
-        fontSize: "smaller",
-        backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-      }}
-    >
-      {/* Pass row._id when calling handleAccessClick */}
-      <Button
-        onClick={() => handleAccessClick(row._id, row.fullAccess)}
-        variant="contained"
-        color={row.fullAccess ? "error" : "success"} // Change color based on access status
-        size="small"
-        style={{
-          width: "160px", // Set fixed width for button
-          height: "40px", // Set fixed height for button
-          textTransform: "none", // Prevent button text from being uppercase
-          fontWeight: "bold",
-          whiteSpace: "nowrap", // Prevent text from wrapping
-          overflow: "hidden", // Hide overflow text if it's too long
-          textOverflow: "ellipsis", // Show ellipsis if text overflows
-        }}
-      >
-        {row.fullAccess ? "Give Limited App access" : "Give full App access"}
-      </Button></TableCell>
+                          <TableCell
+                            style={{
+                              minWidth: 70,
+                              borderRight: "1px solid #e0e0e0",
+                              paddingTop: "4px",
+                              paddingBottom: "4px",
+                              borderBottom: "none",
+                              textAlign: "center",
+                              fontSize: "smaller",
+                              backgroundColor:
+                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                            }}
+                          >
+                            {/* Pass row._id when calling handleAccessClick */}
+                            <Button
+                              onClick={() =>
+                                handleAccessClick(row._id, row.fullAccess)
+                              }
+                              variant="contained"
+                              color={row.fullAccess ? "error" : "success"} // Change color based on access status
+                              size="small"
+                              style={{
+                                width: "160px", // Set fixed width for button
+                                height: "40px", // Set fixed height for button
+                                textTransform: "none", // Prevent button text from being uppercase
+                                fontWeight: "bold",
+                                whiteSpace: "nowrap", // Prevent text from wrapping
+                                overflow: "hidden", // Hide overflow text if it's too long
+                                textOverflow: "ellipsis", // Show ellipsis if text overflows
+                              }}
+                            >
+                              {row.fullAccess
+                                ? "Give Limited App access"
+                                : "Give full App access"}
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))
                   )}
@@ -1150,17 +1165,17 @@ const SchoolMaster = () => {
               </IconButton>
             </Box>
             {COLUMNS().map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
+              <TextField
+                key={col.accessor}
+                label={col.Header}
+                variant="outlined"
+                name={col.accessor}
+                value={formData[col.accessor] || ""}
+                onChange={handleInputChange}
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              />
+            ))}
             <Button
               variant="contained"
               color="primary"
@@ -1185,19 +1200,18 @@ const SchoolMaster = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
-            {COLUMNS()
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
+            {COLUMNS().map((col) => (
+              <TextField
+                key={col.accessor}
+                label={col.Header}
+                variant="outlined"
+                name={col.accessor}
+                value={formData[col.accessor] || ""}
+                onChange={handleInputChange}
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              />
+            ))}
             <Button
               variant="contained"
               color="primary"
