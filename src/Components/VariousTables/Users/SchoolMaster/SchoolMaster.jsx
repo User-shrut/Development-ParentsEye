@@ -714,7 +714,7 @@ const SchoolMaster = () => {
   //   const token = localStorage.getItem("token");
   //   try {
   //     const response = await axios.put(
-  //       `https://track.parentseye.in/superadmin/updateAccess/${id}`, // Pass row._id in the URL
+  //       `http://63.142.251.13:4000/superadmin/updateAccess/${id}`, // Pass row._id in the URL
   //       {
   //         fullAccess: false, // Payload
   //       },
@@ -735,7 +735,7 @@ const SchoolMaster = () => {
     const token = localStorage.getItem("token");
     try {
       const response = await axios.put(
-        `https://track.parentseye.in/superadmin/updateAccess/${id}`, // Pass row._id in the URL
+        `http://63.142.251.13:4000/superadmin/updateAccess/${id}`, // Pass row._id in the URL
         {
           fullAccess: !currentFullAccess, // Toggle fullAccess based on current value
         },

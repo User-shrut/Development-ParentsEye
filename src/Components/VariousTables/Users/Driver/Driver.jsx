@@ -1039,7 +1039,7 @@ export const Driver = () => {
 
         // Now make the POST request with parsedData
         axios
-          .post("https://track.parentseye.in/driver/import", parsedData)
+          .post("http://63.142.251.13:4000/driver/import", parsedData)
           .then((response) => {
             console.log("Data successfully posted:", response.data);
             alert("File imported and data posted successfully!");

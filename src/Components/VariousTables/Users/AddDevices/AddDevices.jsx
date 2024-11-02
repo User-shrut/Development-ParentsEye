@@ -96,7 +96,7 @@
 //     console.log('First API Data:', firstApiResponse.data);
 
 //     // Second API call to fetch school, branch, and device info
-//     const secondApiResponse = await axios.get("https://track.parentseye.in/superadmin/read-devices", {
+//     const secondApiResponse = await axios.get("http://63.142.251.13:4000/superadmin/read-devices", {
 //       headers: {
 //         Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`, // Replace with actual token if necessary
 //       },
@@ -367,7 +367,7 @@
 // const handleEditSubmit = async () => {
 //   try {
 //     const apiUrl1 = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
-//     const apiUrl2 = `https://track.parentseye.in/superadmin/add-device`;
+//     const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
 
 //     const username = "schoolmaster";
 //     const password = "123456";
@@ -593,7 +593,7 @@
 //   try {
 //     // Define the API endpoints and credentials
 //     const apiUrl1 = "https://rocketsalestracker.com/api/devices"; // First API endpoint
-//     const apiUrl2 = "https://track.parentseye.in/superadmin/add-device"; // Second API endpoint
+//     const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
 //     const username = "schoolmaster"; // Replace with your actual username
 //     const password = "123456"; // Replace with your actual password
 //     const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL
@@ -1355,7 +1355,7 @@ export const AddDevices = () => {
 
       // Second API call to fetch school, branch, and device info
       const secondApiResponse = await axios.get(
-        "https://track.parentseye.in/superadmin/read-devices",
+        "http://63.142.251.13:4000/superadmin/read-devices",
         {
           headers: {
             Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo`, // Replace with actual token if necessary
@@ -1683,7 +1683,7 @@ export const AddDevices = () => {
   const handleEditSubmit = async () => {
     try {
       const apiUrl1 = `https://rocketsalestracker.com/api/devices/${selectedRow.id}`;
-      const apiUrl2 = `https://track.parentseye.in/superadmin/add-device`;
+      const apiUrl2 = `http://63.142.251.13:4000/superadmin/add-device`;
 
       const username = "schoolmaster";
       const password = "123456";
@@ -1933,7 +1933,7 @@ export const AddDevices = () => {
     try {
       // Define the API endpoints and credentials
       const apiUrl1 = "https://rocketsalestracker.com/api/devices"; // First API endpoint
-      const apiUrl2 = "https://track.parentseye.in/superadmin/add-device"; // Second API endpoint
+      const apiUrl2 = "http://63.142.251.13:4000/superadmin/add-device"; // Second API endpoint
       const username = "schoolmaster"; // Replace with your actual username
       const password = "123456"; // Replace with your actual password
       const token1 = btoa(`${username}:${password}`); // Encode credentials in Base64 for first URL

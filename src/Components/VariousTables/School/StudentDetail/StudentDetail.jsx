@@ -434,7 +434,7 @@ export const StudentDetail = () => {
 
         // Now make the POST request with parsedData
         axios
-          .post("https://track.parentseye.in/parent/import", parsedData)
+          .post("http://63.142.251.13:4000/parent/import", parsedData)
           .then((response) => {
             console.log("Data successfully posted:", response.data);
             alert("File imported and data posted successfully!");

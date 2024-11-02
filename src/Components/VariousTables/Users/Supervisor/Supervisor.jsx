@@ -1051,7 +1051,7 @@ export const Supervisor = () => {
         // Now make the POST request with parsedData
         axios
           .post(
-            "https://track.parentseye.in/supervisor/importsupervisor",
+            "http://63.142.251.13:4000/supervisor/importsupervisor",
             parsedData
           )
           .then((response) => {
