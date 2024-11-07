@@ -49,6 +49,7 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 // Extend dayjs with the duration plugin
 import busY from "../../assets/school-bus-yellow.png";
 import { TotalResponsesContext } from "../../TotalResponsesContext.jsx";
+import { useNavigate } from "react-router-dom";
 dayjs.extend(duration);
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -928,6 +929,13 @@ const handleVehicle = (event, newValue) => {
       : data.filter((vehicle) => vehicle.name === newValue)
   );
 };
+
+
+const navigate = useNavigate()
+  const handleClickOnTrack = (vehicle) => {
+    console.log('trcak clicked')
+    navigate(`/salesman/${vehicle.deviceId}/${vehicle.category}/${vehicle.name}`)
+  }
 //till here
 
   return (
@@ -1694,7 +1702,7 @@ const handleVehicle = (event, newValue) => {
                       <CTableDataCell className="text-center status table-cell">
                         <button
                           className="btn btn-primary"
-                        // onClick={() => handleClickOnTrack(item)}
+                        onClick={() => handleClickOnTrack(item)}
                         >
                           Live Track
                         </button>
