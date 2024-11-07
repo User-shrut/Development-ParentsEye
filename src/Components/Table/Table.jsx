@@ -175,43 +175,30 @@ export const Tablee = ({ data }) => {
   }, [filteredRows]);
 
   useEffect(() => {
-    const running = data.filter((row) => row.speed > 0).length;
+    const running = data.filter((row) => row.speed >= 2 && row.speed <= 60 && row.attributes.ignition === true).length;
     setVehicleRunningCount(running);
 
-    const stopped = data.filter(
-      (row) => row.speed === 0 && row.status === "offline"
-    ).length;
+    const stopped = data.filter((row) => row.speed < 1 && row.attributes.ignition === false).length;
     setVehicleStoppedCount(stopped);
 
-    const overspeed = data.filter((row) => row.speed > 140).length;
+    const overspeed = data.filter((row) => row.speed > 60 && row.attributes.ignition === true).length;
     setVehicleOverspeedCount(overspeed);
 
-    const idle = data.filter(
-      (row) => row.speed === 0 && row.status === "online"
-    ).length;
+    const idle = data.filter((row) => row.speed < 2 && row.attributes.ignition === true).length;
     setVehicleIdleCount(idle);
 
     const currentTime = new Date();
-    const twelveHoursInMilliseconds = 12 * 60 * 60 * 1000;
+    const thirtyHoursInMilliseconds = 30 * 60 * 60 * 1000;
 
-    const unreachable = data.filter(
-      (row) =>
-        row.status === "offline" &&
-        currentTime - new Date(row.lastUpdate) > twelveHoursInMilliseconds
-    ).length;
+    const unreachable = data.filter((row) =>row.status === "offline" && currentTime - new Date(row.lastUpdate) > thirtyHoursInMilliseconds).length;
+      setVehicleUnreachableCount(unreachable);
 
-    setVehicleUnreachableCount(unreachable);
   }, [data]);
+
+
 
   useEffect(() => {
     const getAddressFromLatLng = async (lat, lng) => {
-      //  const apiKey = "AIzaSyDy9RYx3BOhbCg6ncwxmlMI3Sr86myIA88";
-      // const apiKey = "bf0498f6486fb8c911519e5e2dcbe8b0";
-      //  https://maps.googleapis.com/maps/api/geocode/json?latlng=21.128457777777776,79.10473777777777&key=YOUR_API_KEY
-
-      
-
-
       //working
       const apiKey = 'ca60f0512d2dc95a689dd38178bd0541';  // Replace with your Mappls API key
       const url = `https://apis.mappls.com/advancedmaps/v1/${apiKey}/rev_geocode?lat=${lat}&lng=${lng}`;
