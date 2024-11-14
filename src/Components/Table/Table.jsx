@@ -50,6 +50,8 @@ import { MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import busY from "../../assets/school-bus-yellow.png";
 import { TotalResponsesContext } from "../../TotalResponsesContext.jsx";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setNewAddress } from "./addressSlice.js";
 dayjs.extend(duration);
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -125,6 +127,8 @@ export const Tablee = ({ data }) => {
   const [currentPage, setCurrentPage] = useState(0); // State for the current page
   const [rowsPerPage, setRowsPerPage] = useState(13); // State for the number of rows per page
   const [selectedDriver, setSelectedDriver] = useState(""); // To manage selected value
+  
+  const dispatch = useDispatch()
 
   // Handle page change
   const handlePageClick = (data) => {
@@ -198,48 +202,7 @@ export const Tablee = ({ data }) => {
 
 
 
-  useEffect(() => {
-    const getAddressFromLatLng = async (lat, lng) => {
-      //working
-      const apiKey = 'ca60f0512d2dc95a689dd38178bd0541';  // Replace with your Mappls API key
-      const url = `https://apis.mappls.com/advancedmaps/v1/${apiKey}/rev_geocode?lat=${lat}&lng=${lng}`;
-      console.log("mera url",url);
 
-      
-      try {
-        const response = await axios.get(url);
-        if (response.data.results.length > 0) {
-          setAddressesValue(response.data.results[0].formatted_address);
-          console.log(response.data.results[0].formatted_address)
-        } else {
-          setAddressesValue("Address not found");
-        }
-      } catch (error) {
-        console.error("Error fetching address:", error);
-        setAddressesValue("Error fetching address");
-      }
-    };
-
-
-
-    const fetchAddresses = async () => {
-      const addresses = await Promise.all(
-        data.map(async (row) => {
-          const address = await getAddressFromLatLng(
-            row.latitude,
-            row.longitude
-          );
-          // console.log('lat long value',row.latitude, row.longitude)
-          return { ...row, address };
-        })
-      );
-      setAddressesValue(addresses);
-      console.log("my addresses",addresses)
-      // console.log(addresses);
-    };
-
-    fetchAddresses();
-  }, [data]);
 
   useEffect(() => {
     filterData(filterText);
@@ -889,6 +852,53 @@ const handleSearchChange = (event) => {
   setSearchTerm(event.target.value);
 };
 
+const { newAddress } = useSelector((state) => state.address)
+
+const fetchAddress = async (vehicleId, longitude, latitude) => {
+  try {
+    const apiKey = 'DG2zGt0KduHmgSi2kifd' // Replace with your actual MapTiler API key
+    const response = await axios.get(
+      `https://api.maptiler.com/geocoding/${longitude},${latitude}.json?key=${apiKey}`,
+    )
+    // console.log(response)
+    const address =
+      response.data.features.length <= 5
+        ? response.data.features[0].place_name_en
+        : response.data.features[1].place_name_en
+
+    setAddress((prevAddresses) => ({
+      ...prevAddresses,
+      [vehicleId]: address, // Update the specific vehicle's address
+    }))
+  } catch (error) {
+    console.error('Error fetching the address:', error)
+    setAddress((prevAddresses) => ({
+      ...prevAddresses,
+      [vehicleId]: 'Error fetching address',
+    }))
+  }
+}
+
+const setNewAddressForRedux = (address) => {
+  if (address) {
+    dispatch(setNewAddress(address))
+  }
+}
+
+useEffect(() => {
+  setNewAddressForRedux(address)
+}, [address])
+
+useEffect(() => {
+  console.log('filtered vehicle', currentRows)
+  currentRows.forEach((vehicle) => {
+    if (vehicle?.deviceId && vehicle.longitude && vehicle.latitude && !address[vehicle.id]) {
+      // Fetch address only if it's not already fetched for this vehicle
+      fetchAddress(vehicle.deviceId, vehicle.longitude, vehicle.latitude)
+    }
+  })
+  // console.log(address)
+}, [currentRows])
 
 
 //updated by sudesh
@@ -1546,7 +1556,7 @@ const navigate = useNavigate()
                         style={{ width: "20rem" }}
                       >
                         <div className="upperdata" style={{ fontSize: "1rem" }}>
-                          shiv kailasa, mihan, khapri, nagpur, maharshtra 111111
+                        {newAddress[item.deviceId] || 'Loading...'}
                         </div>
                       </CTableDataCell>
                      

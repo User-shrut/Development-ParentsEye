@@ -8,7 +8,10 @@ import { TotalResponsesProvider } from "./TotalResponsesContext";
 import Logoprac from "./Components/Logoprac";
 import Signupp from "./Components/Signupp";
 import IndividualTrack from "./Components/Table/livetrack/IndividualTrack";
+import store from "./store";
+import { Provider } from "react-redux";
 ReactDOM.createRoot(document.getElementById("root")).render(
+  <Provider store={store}>
     <TotalResponsesProvider>
       <BrowserRouter>
         <Routes>
@@ -21,4 +24,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </Routes>
       </BrowserRouter>
     </TotalResponsesProvider>
+    </Provider>
 );
