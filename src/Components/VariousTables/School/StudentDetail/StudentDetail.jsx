@@ -1676,7 +1676,7 @@ export const StudentDetail = () => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 460,
+                maxHeight: 470,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}
