@@ -2856,7 +2856,7 @@ const lastThirdColumn = columns[columns.length - 3];
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 550,
+                maxHeight: 450,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}

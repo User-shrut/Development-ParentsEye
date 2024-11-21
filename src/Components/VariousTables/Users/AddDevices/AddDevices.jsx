@@ -2171,7 +2171,7 @@ const handleFilterChange = (event) => {
            <TableContainer
         component={Paper}
         sx={{
-          maxHeight: 572,
+          maxHeight: 453,
           border: "1.5px solid black",
           borderRadius: "7px",
         }}

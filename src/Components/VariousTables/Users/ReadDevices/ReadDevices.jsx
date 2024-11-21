@@ -803,7 +803,7 @@ export const ReadDevices = () => {
           <TableContainer
   component={Paper}
   sx={{
-    maxHeight: 550,
+    maxHeight: 460,
     border: "1.5px solid black",
     borderRadius: "7px",
   }}

@@ -2561,7 +2561,7 @@ export const Geofence = () => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 585,
+                maxHeight: 460,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}
