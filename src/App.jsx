@@ -609,7 +609,7 @@ function App() {
           {component === "New2" && <New2 data={mergedData} />} */}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
           {/* {component === "School" && <AssetsType data={mergedData} />} */}
-          <BasicSpeedDial />
+          {/* <BasicSpeedDial /> */}
           {![
             
             "Dashboard",
