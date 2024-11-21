@@ -19,12 +19,12 @@ export const COLUMNS = () => [
     Header: 'Position ID',
     accessor: 'positionId',
   },
-  {
-    Header: 'Geofence ID',
-    accessor: 'geofenceId',
-  },
-  {
-    Header: 'Maintenance ID',
-    accessor: 'maintenanceId',
-  }
+  // {
+  //   Header: 'Geofence ID',
+  //   accessor: 'geofenceId',
+  // },
+  // {
+  //   Header: 'Maintenance ID',
+  //   accessor: 'maintenanceId',
+  // }
 ];

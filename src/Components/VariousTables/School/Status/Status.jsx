@@ -1658,6 +1658,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
 import { MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
+
 // import './TableStyles.css';
 //import { TextField } from '@mui/material';
 
@@ -1681,7 +1683,7 @@ export const Status = () => {
   const { setTotalResponses, role } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -1957,13 +1959,14 @@ export const Status = () => {
     fetchData(); // Fetch data when startDate or endDate changes
   }, [startDate, endDate]);
 
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+    setPage(0); // Reset to the first page
+  };
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
   const handleFilterChange = (event) => {
@@ -2157,6 +2160,7 @@ export const Status = () => {
   const handleModalClose = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
+    setModalOpen(false);
     setFormData({});
   };
 
@@ -2416,132 +2420,121 @@ export const Status = () => {
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>Status</h1>
       <div>
-        <div
+      <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    marginBottom: "10px",
+    flexWrap: "wrap", // Allow items to wrap on smaller screens
+  }}
+>
+  <TextField
+    label="Search"
+    variant="outlined"
+    value={filterText}
+    onChange={handleFilterChange}
+    sx={{
+      marginRight: "10px",
+      width: "200px", // Adjusted width for consistency
+      '& .MuiOutlinedInput-root': {
+        height: '36px', // Reduced height
+        padding: '0px', // Remove padding to compact it
+      },
+      '& .MuiInputLabel-root': {
+        top: '-6px', // Adjust label position for smaller size
+        fontSize: '14px', // Slightly smaller font
+      },
+    }}
+    InputProps={{
+      startAdornment: (
+        <SearchIcon
           style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "10px",
+            cursor: "pointer",
+            marginLeft: "10px",
+            marginRight: "5px",
           }}
-        >
-          <TextField
-            label="Search"
-            variant="outlined"
-            value={filterText}
-            onChange={handleFilterChange}
-            sx={{ marginRight: "10px", width: "300px" }}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon
-                  style={{
-                    cursor: "pointer",
-                    marginLeft: "10px",
-                    marginRight: "5px",
-                  }}
-                />
-              ),
-            }}
-          />
-          <Button
-            onClick={() => setModalOpen(true)}
-            sx={{
-              backgroundColor: "rgb(85, 85, 85)",
-              color: "white",
-              fontWeight: "bold",
-              marginRight: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <ImportExportIcon />
-            Column Visibility
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeleteSelected}
-            sx={{ marginRight: "10px" }}
-            startIcon={<DeleteIcon />}
-          >
-            Delete
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleEditButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<EditIcon />}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleAddButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<AddCircleIcon />}
-          >
-            Add
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setImportModalOpen(true)}
-            sx={{ backgroundColor: "rgb(255, 165, 0)", marginRight: "10px" }}
-            startIcon={<CloudUploadIcon />}
-          >
-            Import
-          </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <input
-            type="date"
-            id="startDate"
-            placeholder="DD-MM-YYYY"
-            style={{
-              width: "140px",
-              marginRight: "10px",
-              padding: "2px",
-              marginLeft: "3px",
-              border: " 0.1px solid black",
-              borderRadius: "3px",
-            }}
-          />
-          <input
-            type="date"
-            id="endDate"
-            placeholder="DD-MM-YYYY"
-            style={{
-              width: "140px",
-              marginRight: "10px",
-              padding: "2px",
-              marginLeft: "3px",
-              border: " 0.1px solid black",
-              borderRadius: "3px",
-            }}
-          />
-          <button
-            onClick={handleApplyDateRange}
-            style={{
-              backgroundColor: "#1976d2",
-              color: "white",
-              border: "none",
-              padding: "6px 10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            Apply Date Range
-          </button>
-        </div>
+        />
+      ),
+    }}
+  />
+
+  <Button
+    onClick={() => setModalOpen(true)}
+    sx={{
+      backgroundColor: "rgb(85, 85, 85)",
+      color: "white",
+      fontWeight: "bold",
+      marginRight: "10px",
+      display: "flex",
+      alignItems: "center",
+      gap: "5px", // Consistent gap
+      padding: "6px 12px", // Added padding for better click area
+      '&:hover': {
+        backgroundColor: "rgb(100, 100, 100)", // Lighter shade on hover
+      },
+    }}
+  >
+    <ImportExportIcon />
+    Column Visibility
+  </Button>
+
+  <Button
+    variant="contained"
+    color="success"
+    onClick={handleExport}
+    sx={{
+      padding: "6px 12px",
+      marginRight: "10px",
+    }}
+  >
+    Export
+  </Button>
+
+  <input
+    type="date"
+    id="startDate"
+    placeholder="DD-MM-YYYY"
+    style={{
+      width: "130px",
+      marginRight: "10px",
+      padding: "6px 10px", // Increased padding for better click area
+      marginLeft: "3px",
+      border: "0.1px solid black",
+      borderRadius: "3px",
+    }}
+  />
+
+  <input
+    type="date"
+    id="endDate"
+    placeholder="DD-MM-YYYY"
+    style={{
+      width: "130px",
+      marginRight: "10px",
+      padding: "6px 10px",
+      marginLeft: "3px",
+      border: "0.1px solid black",
+      borderRadius: "3px",
+    }}
+  />
+
+  <button
+    onClick={handleApplyDateRange}
+    style={{
+      backgroundColor: "#1976d2",
+      color: "white",
+      border: "none",
+      padding: "6px 12px", // Increased padding for better click area
+      borderRadius: "5px",
+      cursor: "pointer",
+      '&:hover': {
+        backgroundColor: "#115293", // Darker blue on hover
+      },
+    }}
+  >
+    Apply Date Range
+  </button>
+</div>
 
         {loading ? (
           <div
@@ -2558,7 +2551,7 @@ export const Status = () => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 440,
+                maxHeight: 550,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}
@@ -2976,21 +2969,41 @@ export const Status = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={sortedData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
             {/* //</></div> */}
           </>
         )}
-        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+     <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            <h2>Column Visibility</h2>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -3000,6 +3013,7 @@ export const Status = () => {
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

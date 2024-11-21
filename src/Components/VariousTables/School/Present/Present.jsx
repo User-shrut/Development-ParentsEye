@@ -29,6 +29,7 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
 //import { TextField } from '@mui/material';
 
@@ -53,7 +54,7 @@ export const Present = () => {
   const role = localStorage.getItem("role");
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -261,13 +262,14 @@ export const Present = () => {
     fetchData(); // Fetch data when startDate or endDate changes
   }, [startDate, endDate]);
 
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+    setPage(0); // Reset to the first page
+  };
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
   const handleFilterChange = (event) => {
@@ -381,6 +383,7 @@ export const Present = () => {
   const handleModalClose = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
+    setModalOpen(false);
     setFormData({});
   };
 
@@ -406,93 +409,7 @@ export const Present = () => {
         Present Student List
       </h1>
       <div>
-        {/* <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <TextField
-            label="Search"
-            variant="outlined"
-            value={filterText}
-            onChange={handleFilterChange}
-            sx={{ marginRight: "10px", width: "300px" }}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon
-                  style={{
-                    cursor: "pointer",
-                    marginLeft: "10px",
-                    marginRight: "5px",
-                  }}
-                />
-              ),
-            }}
-          />
-          <Button
-            onClick={() => setModalOpen(true)}
-            sx={{
-              backgroundColor: "rgb(85, 85, 85)",
-              color: "white",
-              fontWeight: "bold",
-              marginRight: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <ImportExportIcon />
-            Column Visibility
-          </Button>
-          
-          
-          
-          
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
-          <input
-            type="date"
-            id="startDate"
-            placeholder="DD-MM-YYYY"
-            style={{
-              width: "140px",
-              marginRight: "10px",
-              padding: "2px",
-              marginLeft: "3px",
-              border: " 0.1px solid black",
-              borderRadius: "3px",
-            }}
-          />
-          <input
-            type="date"
-            id="endDate"
-            placeholder="DD-MM-YYYY"
-            style={{
-              width: "140px",
-              marginRight: "10px",
-              padding: "2px",
-              marginLeft: "3px",
-              border: " 0.1px solid black",
-              borderRadius: "3px",
-            }}
-          />
-          <button
-            onClick={handleApplyDateRange}
-            style={{
-              backgroundColor: "#1976d2",
-              color: "white",
-              border: "none",
-              padding: "6px 10px",
-              borderRadius: "5px",
-              cursor: "pointer",
-            }}
-          >
-            Apply Date Range
-          </button>
-        </div> */}
+        
         <div
   style={{
     display: "flex",
@@ -553,7 +470,7 @@ export const Present = () => {
 
   <Button
     variant="contained"
-    color="primary"
+    color="success"
     onClick={handleExport}
     sx={{
       padding: "6px 12px",
@@ -801,21 +718,41 @@ export const Present = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={sortedData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
             {/* //</></div> */}
           </>
         )}
-        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+     <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            <h2>Column Visibility</h2>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -825,6 +762,7 @@ export const Present = () => {
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

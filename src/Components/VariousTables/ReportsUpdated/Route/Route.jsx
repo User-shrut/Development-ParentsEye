@@ -32,6 +32,7 @@ import { IconButton } from "@mui/material";
 import { saveAs } from 'file-saver'; // Save file to the user's machine
 // import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
 //import { TextField } from '@mui/material';
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
 const style = {
   position: "absolute",
@@ -53,7 +54,7 @@ export const Route = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -79,36 +80,7 @@ export const Route = () => {
 
   
  
-// const fetchData = async () => {
-//   console.log('Fetching data...');
-//   setLoading(true); // Set loading to true when starting fetch
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
 
-//     const response = await axios.get("https://rocketsalestracker.com/api/server", {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//     });
-
-//     console.log('fetch data', response.data);
-
-//     if (response.data && typeof response.data === 'object') {
-//       const wrappedData = [response.data];
-//       setFilteredRows(wrappedData.map(row => ({ ...row, isSelected: false })));
-//       setTotalResponses(wrappedData.length);
-//     } else {
-//       console.error('Expected an object but got:', response.data);
-//     }
-//   } catch (error) {
-//     console.error('Fetch data error:', error);
-//     alert('An error occurred while fetching data.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 
   
 
@@ -121,14 +93,14 @@ export const Route = () => {
   }, [filterText]);
 
  
-
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+    setPage(0); // Reset to the first page
+  };
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
   const handleFilterChange = (event) => {
@@ -335,112 +307,7 @@ export const Route = () => {
 
  
 
-// const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-//   const username = "school";
-//   const password = "123456";
-//   const token = btoa(`${username}:${password}`);
 
-//   // Ensure formData contains the full structure with nested attributes
-//   const updatedData = {
-//       ...formData, // formData should have the same structure as the object you are retrieving
-//       isSelected: false,
-//   };
-
-//   try {
-//       console.log("Sending request to:", apiUrl);
-//       console.log("Request payload:", updatedData);
-
-//       const response = await fetch(apiUrl, {
-//           method: "PUT", // PUT method to update the resource
-//           headers: {
-//               "Authorization": `Basic ${token}`,
-//               "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify(updatedData), // Convert updatedData to JSON
-//       });
-
-//       console.log("Response status:", response.status);
-//       console.log("Response headers:", response.headers);
-
-//       if (!response.ok) {
-//           const errorResult = await response.json();
-//           console.error("Error response:", errorResult);
-//           throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
-//       }
-
-//       const result = await response.json();
-//       console.log("Update successful:", result);
-//       alert("Updated successfully");
-
-//       // Update filteredRows in state
-//       const updatedRows = filteredRows.map((row) =>
-//           row.id === selectedRow.id
-//               ? { ...row, ...formData, isSelected: false } // Ensure the updated data includes nested fields
-//               : row
-//       );
-//       setFilteredRows(updatedRows);
-
-//       handleModalClose();
-//       fetchData(); // Refetch data to ensure the UI is up-to-date
-//   } catch (error) {
-//       console.error("Error updating row:", error.message, error.stack);
-//       alert("Error updating code");
-//   }
-// };
-// const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-//   const username = "school";
-//   const password = "123456";
-//   const token = btoa(`${username}:${password}`);
-
-//   // Ensure formData contains the full structure with nested attributes
-//   const updatedData = {
-//     ...formData, // formData should have the same structure as the object you are retrieving
-//     isSelected: false,
-//   };
-
-//   try {
-//     console.log("Sending request to:", apiUrl);
-//     console.log("Request payload:", JSON.stringify(updatedData, null, 2));
-
-//     const response = await fetch(apiUrl, {
-//       method: "PUT", // PUT method to update the resource
-//       headers: {
-//         "Authorization": `Basic ${token}`,
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(updatedData), // Convert updatedData to JSON
-//     });
-
-//     console.log("Response status:", response.status);
-//     console.log("Response headers:", response.headers);
-
-//     if (!response.ok) {
-//       const errorResult = await response.json();
-//       console.error("Error response:", errorResult);
-//       throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
-//     }
-
-//     const result = await response.json();
-//     console.log("Update successful:", result);
-//     alert("Updated successfully");
-
-//     // Update filteredRows in state
-//     const updatedRows = filteredRows.map((row) =>
-//       row.id === selectedRow.id
-//         ? { ...row, ...updatedData, isSelected: false } // Ensure the updated data includes nested fields
-//         : row
-//     );
-//     setFilteredRows(updatedRows);
-
-//     handleModalClose();
-//     fetchData(); // Refetch data to ensure the UI is up-to-date
-//   } catch (error) {
-//     console.error("Error updating row:", error.message, error.stack);
-//     alert("Error updating data");
-//   }
-// };
 const handleEditSubmit = async () => {
   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
   const username = "test";
@@ -552,7 +419,7 @@ const handleEditSubmit = async () => {
       try {
         const response = await fetch('https://rocketsalestracker.com/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('schoolmaster:123456'), // Replace with your username and password
           },
         });
 
@@ -581,7 +448,7 @@ const handleEditSubmit = async () => {
         const response = await fetch('https://rocketsalestracker.com/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
           }
         });
 
@@ -604,54 +471,7 @@ const handleEditSubmit = async () => {
   const [selectedDevice, setSelectedDevice] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('');
   const [apiUrl, setApiUrl] = useState('');
-  // const handleShowClick = async () => {
-  //   if (!startDate || !endDate || !selectedDevice || !selectedGroup) {
-  //     alert('Please fill all fields');
-  //     return;
-  //   }
-
-  //   // Construct the API URL
-  //   const url = `https://rocketsalestracker.com/api/reports/combined?from=${encodeURIComponent(startDate)}&to=${encodeURIComponent(endDate)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
-    
-  //   setApiUrl(url); // Update the state with the generated URL
-
-  //   console.log(url);
-    
-  // };
-  // const formatToUTC = (localDateTime) => {
-  //   if (!localDateTime) return '';
-
-  //   const localDate = new Date(localDateTime);
-  //   const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
-  //   const isoString = utcDate.toISOString();
-  //   return isoString;
-  // };
-  // const handleShowClick = async () => {
-  //   const formattedStartDate = formatToUTC(startDate);
-  //   const formattedEndDate = formatToUTC(endDate);
-
-  //   if (!formattedStartDate || !formattedEndDate || !selectedDevice || !selectedGroup) {
-  //     alert('Please fill all fields');
-  //     return;
-  //   }
-
-  //   // Construct the API URL
-  //   const url = `https://rocketsalestracker.com/api/reports/combined?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
-
-  //   setApiUrl(url); // Update the state with the generated URL
-
-  //   // try {
-  //   //   // Make the API request
-  //   //   const response = await fetch(url);
-  //   //   if (!response.ok) {
-  //   //     throw new Error('Network response was not ok');
-  //   //   }
-  //   //   const data = await response.json();
-  //   //   console.log('API response:', data); // Handle the API response data here
-  //   // } catch (error) {
-  //   //   console.error('There was a problem with the fetch operation:', error);
-  //   // }
-  // };
+  
   const handleShowClick = () => {
     const formattedStartDate = formatToUTC(startDate);
     const formattedEndDate = formatToUTC(endDate);
@@ -674,746 +494,13 @@ const handleEditSubmit = async () => {
     return utcDate.toISOString();
   };
   
-  // const fetchData = async (url) => {
-  //   console.log('Fetching data...');
-  //   setLoading(true); // Set loading to true when starting fetch
-  //   try {
-  //     const username = "school";
-  //     const password = "123456";
-  //     const token = btoa(`${username}:${password}`);
-
-  //     const response = await axios.get(url, {
-  //       headers: {
-  //         Authorization: `Basic ${token}`,
-  //       },
-  //     });
-
-  //     console.log('fetch data', response.data);
-
-  //     if (response.data && typeof response.data === 'object') {
-  //       const wrappedData = [response.data];
-  //       setFilteredRows(wrappedData.map(row => ({ ...row, isSelected: false })));
-  //       setTotalResponses(wrappedData.length);
-  //     } else {
-  //       console.error('Expected an object but got:', response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch data error:', error);
-  //     alert('An error occurred while fetching data.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // const fetchData = async (url) => {
-  //   console.log('Fetching data...');
-  //   setLoading(true); // Set loading to true when starting fetch
-    
-  //   try {
-  //     const username = "school";
-  //     const password = "123456";
-  //     const token = btoa(`${username}:${password}`);
   
-  //     const response = await axios.get(url, {
-  //       headers: {
-  //         Authorization: `Basic ${token}`,
-  //       },
-  //     });
-  
-  //     console.log('Fetched data:', response.data);
-  
-  //     // Check if response.data is an array
-  //     if (Array.isArray(response.data)) {
-  //       // Assuming you want to use the first object in the array
-  //       const data = response.data[0];
-  
-  //       // Wrap data if necessary
-  //       const wrappedData = [data];
-  
-  //       // Set the filtered rows
-  //       setFilteredRows(wrappedData.map(row => ({
-  //         ...row,
-  //         isSelected: false
-  //       })));
-  
-  //       // Set the total number of responses
-  //       setTotalResponses(wrappedData.length);
-  //     } else {
-  //       console.error('Expected an array but got:', response.data);
-  //       alert('Unexpected data format.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch data error:', error);
-  //     alert('An error occurred while fetching data.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // const fetchData = async (url) => {
-  //   console.log('Fetching data...');
-  //   setLoading(true); // Set loading to true when starting fetch
-    
-  //   try {
-  //     const username = "school";
-  //     const password = "123456";
-  //     const token = btoa(`${username}:${password}`);
-  
-  //     const response = await axios.get(url, {
-  //       headers: {
-  //         Authorization: `Basic ${token}`,
-  //       },
-  //     });
-  
-  //     console.log('Fetched data:', response.data);
-  
-  //     // Check if response.data is an array
-  //     if (Array.isArray(response.data) && response.data.length > 0) {
-  //       const data = response.data[0]; // Assuming you only need the first object
-  
-  //       // Safely process route
-  //       const processedRoute = (data.route || []).map(([lat, lon]) => ({
-  //         lat: lat !== undefined ? parseFloat(lat).toFixed(6) : 'N/A',
-  //         lon: lon !== undefined ? parseFloat(lon).toFixed(6) : 'N/A'
-  //       }));
-  
-  //       // Safely process positions
-  //       const processedPositions = (data.positions || []).map(position => ({
-  //         ...position,
-  //         latitude: position.latitude !== undefined ? parseFloat(position.latitude).toFixed(6) : 'N/A',
-  //         longitude: position.longitude !== undefined ? parseFloat(position.longitude).toFixed(6) : 'N/A'
-  //       }));
-  
-  //       // Assuming no additional processing needed for events
-  //       const processedEvents = data.events || [];
-  
-  //       // Set state with processed data
-  //       const wrappedData = [{
-  //         ...data,
-  //         route: processedRoute,
-  //         positions: processedPositions,
-  //         events: processedEvents
-  //       }];
-  
-  //       setFilteredRows(wrappedData.map(row => ({
-  //         ...row,
-  //         isSelected: false
-  //       })));
-  
-  //       setTotalResponses(wrappedData.length);
-  //     } else {
-  //       console.error('Expected an array but got:', response.data);
-  //       alert('Unexpected data format.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Fetch data error:', error);
-  //     alert('An error occurred while fetching data.');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-//   const fetchData = async (url) => {
-//     console.log('Fetching data...');
-//     setLoading(true); // Set loading to true when starting fetch
-
-//     try {
-//         const username = "school";
-//         const password = "123456";
-//         const token = btoa(`${username}:${password}`);
-
-//         const response = await axios.get(url, {
-//             headers: {
-//                 Authorization: `Basic ${token}`,
-//             },
-//         });
-
-//         console.log('Fetched data:', response.data);
-
-//         // Check if response.data is an array
-//         if (Array.isArray(response.data) && response.data.length > 0) {
-//             const data = response.data[0]; // Assuming you only need the first object
-
-//             // Safely process route
-//             const processedRoute = (data.route || []).map(([lat, lon]) => ({
-//                 lat: lat !== undefined ? parseFloat(lat).toFixed(6) : 'N/A',
-//                 lon: lon !== undefined ? parseFloat(lon).toFixed(6) : 'N/A'
-//             }));
-
-//             // Safely process positions
-//             const processedPositions = (data.positions || []).map(position => ({
-//                 ...position,
-//                 latitude: position.latitude !== undefined ? parseFloat(position.latitude).toFixed(6) : 'N/A',
-//                 longitude: position.longitude !== undefined ? parseFloat(position.longitude).toFixed(6) : 'N/A'
-//             }));
-
-//             // Process events
-//             const processedEvents = data.events || [];
-
-//             console.log('Processed Events:', processedEvents);
-
-//             // Set state with processed data
-//             const wrappedData = [{
-//                 ...data,
-//                 route: processedRoute,
-//                 positions: processedPositions,
-//                 events: processedEvents
-//             }];
-
-//             console.log('Wrapped Data:', wrappedData);
-
-//             setFilteredRows(wrappedData.map(row => ({
-//                 ...row,
-//                 isSelected: false
-//             })));
-
-//             setTotalResponses(wrappedData.length);
-//         } else {
-//             console.error('Expected an array but got:', response.data);
-//             alert('Unexpected data format.');
-//         }
-//     } catch (error) {
-//         console.error('Fetch data error:', error);
-//         alert('An error occurred while fetching data.');
-//     } finally {
-//         setLoading(false);
-//     }
-// };
-// const fetchData = async (url) => {
-//   console.log('Fetching data...');
-//   setLoading(true);
-
-//   try {
-//       const username = "school";
-//       const password = "123456";
-//       const token = btoa(`${username}:${password}`);
-
-//       const response = await axios.get(url, {
-//           headers: {
-//               Authorization: `Basic ${token}`,
-//           },
-//       });
-
-//       console.log('Fetched data:', response.data);
-
-//       if (Array.isArray(response.data) && response.data.length > 0) {
-//           const data = response.data[0];
-
-//           const processedEvents = (data.events || []).map(event => ({
-//               deviceId: data.deviceId,
-//               eventTime: new Date(event.eventTime).toLocaleString(),
-//               type: event.type.replace(/([A-Z])/g, ' $1').trim() // Optional: Format type
-//           }));
-
-//           console.log('Processed Events:', processedEvents);
-
-//           setFilteredRows(processedEvents.map(event => ({
-//               ...event,
-//               isSelected: false
-//           })));
-
-//           setTotalResponses(processedEvents.length);
-//       } else {
-//           console.error('Expected an array but got:', response.data);
-//           alert('Unexpected data format.');
-//       }
-//   } catch (error) {
-//       console.error('Fetch data error:', error);
-//       alert('An error occurred while fetching data.');
-//   } finally {
-//       setLoading(false);
-//   }
-// };
-// const fetchData = async (url) => {
-//   console.log('Fetching data...');
-//   setLoading(true);
-
-//   try {
-//     const username = "test";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//     });
-
-//     console.log('Fetched data:', response.data);
-
-//     if (Array.isArray(response.data) && response.data.length > 0) {
-//       const data = response.data[0];
-
-//       const processedEvents = (data.events || []).map(event => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(event.eventTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds.join(', '),
-//         satellites: data.attributes.sat || '',
-//         RSSI: '', // Assuming RSSI is not provided in the data
-//         eventType: event.type.replace(/([A-Z])/g, ' $1').trim(),
-//         status: '', // Assuming status is not provided in the data
-//         odometer: `${data.attributes.odometer} mi`,
-//         batteryLevel: '', // Assuming battery level is not provided in the data
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         hours: `${Math.floor(data.attributes.hours / 3600)} h ${Math.floor((data.attributes.hours % 3600) / 60)} m`,
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${data.attributes.distance.toFixed(2)} mi`,
-//         totalDistance: `${data.attributes.totalDistance.toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: '', // Assuming blocked is not provided in the data
-//         alarm1Status: '', // Assuming alarm1Status is not provided in the data
-//         otherStatus: '', // Assuming otherStatus is not provided in the data
-//         alarm2Status: '', // Assuming alarm2Status is not provided in the data
-//         engineStatus: '', // Assuming engineStatus is not provided in the data
-//         iccid: '', // Assuming iccid is not provided in the data
-//         alarm3Status: '', // Assuming alarm3Status is not provided in the data
-//         adc1: '' // Assuming adc1 is not provided in the data
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-//     } else {
-//       console.error('Expected an array but got:', response.data);
-//       alert('Unexpected data format.');
-//     }
-//   } catch (error) {
-//     console.error('Fetch data error:', error);
-//     alert('An error occurred while fetching data.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-
-
-// import axios from 'axios';
-// import { saveAs } from 'file-saver'; // Save file to the user's machine
-// import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
-
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
-
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     console.log('Report fetched successfully:', response);
-
-//     // Save the file locally (optional)
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//     // Now we process the file to extract the data
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target.result);
-//       const reportWorkbook = XLSX.read(data, { type: 'array' });  // Renamed 'workbook' to 'reportWorkbook'
-
-//       const firstSheetName = reportWorkbook.SheetNames[0];
-//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];  // Renamed 'worksheet' to 'reportWorksheet'
-      
-//       // Convert worksheet data to JSON
-//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//       console.log('Extracted JSON Data from Excel:', jsonData);
-
-//       // Now process this data (same as before)
-//       const processedEvents = jsonData.map(data => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(data.fixTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes.sat || '',
-//         RSSI: data.attributes.rssi || '',
-//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//         batteryLevel: data.attributes.batteryLevel || '',
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: data.attributes.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes.alarm1Status || '',
-//         otherStatus: data.attributes.otherStatus || '',
-//         alarm2Status: data.attributes.alarm2Status || '',
-//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-
-//       // Optionally export the processed data back to an Excel file
-//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);  // Renamed 'worksheet' to 'outputWorksheet'
-//       const outputWorkbook = XLSX.utils.book_new();  // Renamed 'workbook' to 'outputWorkbook'
-//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//       // Trigger file download
-//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//     };
-
-//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert('Failed to download or process report.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
-
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     console.log('Report fetched successfully:', response);
-
-//     // Save the file locally
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//     // Process the file to extract data
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target.result);
-//       const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-//       const firstSheetName = reportWorkbook.SheetNames[0];
-//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-      
-//       // Convert worksheet data to JSON
-//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//       console.log('Extracted JSON Data from Excel:', jsonData);
-
-//       // Process the data
-//       const processedEvents = jsonData.map(data => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(data.fixTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes.sat || '',
-//         RSSI: data.attributes.rssi || '',
-//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//         batteryLevel: data.attributes.batteryLevel || '',
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: data.attributes.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes.alarm1Status || '',
-//         otherStatus: data.attributes.otherStatus || '',
-//         alarm2Status: data.attributes.alarm2Status || '',
-//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-
-//       // Optionally export the processed data back to an Excel file
-//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-//       const outputWorkbook = XLSX.utils.book_new();
-//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//       // Trigger file download
-//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//     };
-
-//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert('Failed to download or process report.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
-
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     // Log the content type of the response
-//     console.log('Content-Type:', response.headers['content-type']);
-
-//     // Check if the content type matches the expected MIME type for Excel files
-//     if (response.headers['content-type'] !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
-//     }
-
-//     // Save the file locally
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//     // Process the file to extract data
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target.result);
-//       const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-//       const firstSheetName = reportWorkbook.SheetNames[0];
-//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-      
-//       // Convert worksheet data to JSON
-//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//       console.log('Extracted JSON Data from Excel:', jsonData);
-
-//       // Process the data
-//       const processedEvents = jsonData.map(data => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(data.fixTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes.sat || '',
-//         RSSI: data.attributes.rssi || '',
-//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//         batteryLevel: data.attributes.batteryLevel || '',
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: data.attributes.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes.alarm1Status || '',
-//         otherStatus: data.attributes.otherStatus || '',
-//         alarm2Status: data.attributes.alarm2Status || '',
-//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-
-//       // Optionally export the processed data back to an Excel file
-//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-//       const outputWorkbook = XLSX.utils.book_new();
-//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//       // Trigger file download
-//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//     };
-
-//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert('Failed to download or process report.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
-
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     // Log the content type of the response
-//     console.log('Content-Type:', response.headers['content-type']);
-
-//     // Check if the content type matches the expected MIME type for Excel files
-//     if (response.headers['content-type'] === 'application/json') {
-//       // Handle JSON response
-//       const text = await response.data.text(); // Convert Blob to text
-//       console.log('JSON Response:', text); // Log JSON response
-//       const jsonResponse = JSON.parse(text); // Parse JSON
-//       throw new Error('Received JSON response instead of Excel file. Details: ' + JSON.stringify(jsonResponse));
-//     } else if (response.headers['content-type'] !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
-//     }
-
-//     // Save the file locally
-//     const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//     saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//     // Process the file to extract data
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target.result);
-//       const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-//       const firstSheetName = reportWorkbook.SheetNames[0];
-//       const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-      
-//       // Convert worksheet data to JSON
-//       const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//       console.log('Extracted JSON Data from Excel:', jsonData);
-
-//       // Process the data
-//       const processedEvents = jsonData.map(data => ({
-//         deviceId: data.deviceId,
-//         eventTime: new Date(data.fixTime).toLocaleString(),
-//         latitude: `${data.latitude.toFixed(6)}°`,
-//         longitude: `${data.longitude.toFixed(6)}°`,
-//         speed: `${data.speed.toFixed(2)} mph`,
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: `${data.altitude.toFixed(2)} m`,
-//         accuracy: `${data.accuracy.toFixed(2)}`,
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol,
-//         deviceTime: new Date(data.deviceTime).toLocaleString(),
-//         serverTime: new Date(data.serverTime).toLocaleString(),
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes.sat || '',
-//         RSSI: data.attributes.rssi || '',
-//         odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//         batteryLevel: data.attributes.batteryLevel || '',
-//         ignition: data.attributes.ignition ? 'Yes' : 'No',
-//         charge: data.attributes.charge ? 'Yes' : 'No',
-//         archive: data.attributes.archive ? 'Yes' : 'No',
-//         distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//         totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//         motion: data.attributes.motion ? 'Yes' : 'No',
-//         blocked: data.attributes.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes.alarm1Status || '',
-//         otherStatus: data.attributes.otherStatus || '',
-//         alarm2Status: data.attributes.alarm2Status || '',
-//         engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//       }));
-
-//       console.log('Processed Events:', processedEvents);
-
-//       setFilteredRows(processedEvents.map(event => ({
-//         ...event,
-//         isSelected: false
-//       })));
-
-//       setTotalResponses(processedEvents.length);
-
-//       // Optionally export the processed data back to an Excel file
-//       const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-//       const outputWorkbook = XLSX.utils.book_new();
-//       XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//       // Trigger file download
-//       XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//     };
-
-//     reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert('Failed to download or process report.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 const fetchData = async (url) => {
   console.log('Fetching report...');
   setLoading(true);
 
   try {
-    const username = "school";
+    const username = "schoolmaster";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -1441,7 +528,8 @@ const fetchData = async (url) => {
         eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
         latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
         longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
-        speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
+        speed : data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
+
         address: data.address || 'Show Address',
         course: data.course > 0 ? '↑' : '↓',
         altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
@@ -1450,6 +538,7 @@ const fetchData = async (url) => {
         protocol: data.protocol || 'N/A',
         deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
         serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
+        fixTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
         satellites: data.attributes?.sat || 'N/A',
         RSSI: data.attributes?.rssi || 'N/A',
@@ -1548,7 +637,7 @@ const fetchData = async (url) => {
     }
   } catch (error) {
     console.error('Error fetching the report:', error);
-    alert('Failed to download or process report.');
+    alert("please select device and date");
   } finally {
     setLoading(false);
   }
@@ -1575,75 +664,59 @@ const fetchData = async (url) => {
             marginBottom: "10px",
           }}
         >
-          <TextField
-            label="Search"
-            variant="outlined"
-            value={filterText}
-            onChange={handleFilterChange}
-            sx={{ marginRight: "10px", width: "300px" }}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon
-                  style={{
-                    cursor: "pointer",
-                    marginLeft: "10px",
-                    marginRight: "5px",
-                  }}
-                />
-              ),
-            }}
-          />
-          <Button
-            onClick={() => setModalOpen(true)}
-            sx={{
-              backgroundColor: "rgb(85, 85, 85)",
-              color: "white",
-              fontWeight: "bold",
-              marginRight: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <ImportExportIcon />
-            Column Visibility
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeleteSelected}
-            sx={{ marginRight: "10px" }}
-            startIcon={<DeleteIcon />}
-          >
-            Delete
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleEditButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<EditIcon />}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleAddButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<AddCircleIcon />}
-          >
-            Add
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setImportModalOpen(true)}
-            sx={{ backgroundColor: "rgb(255, 165, 0)", marginRight: "10px" }}
-            startIcon={<CloudUploadIcon />}
-          >
-            Import
-          </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
+            <TextField
+    label="Search"
+    variant="outlined"
+    value={filterText}
+    onChange={handleFilterChange}
+    sx={{
+      marginRight: "10px",
+      width: "200px", // Smaller width
+      '& .MuiOutlinedInput-root': {
+        height: '36px', // Set a fixed height to reduce it
+        padding: '0px', // Reduce padding to shrink height
+      },
+      '& .MuiInputLabel-root': {
+        top: '-6px', // Adjust label position
+        fontSize: '14px', // Slightly smaller label font
+      }
+    }}
+    InputProps={{
+      startAdornment: (
+        <SearchIcon
+          style={{
+            cursor: "pointer",
+            marginLeft: "10px",
+            marginRight: "5px",
+          }}
+        />
+      ),
+    }}
+  />
+             <Button
+  onClick={() => setModalOpen(true)}
+  sx={{
+    backgroundColor: "rgb(85, 85, 85)",
+    color: "white",
+    fontWeight: "bold",
+    marginRight: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    "&:hover": {
+      fontWeight: "bolder", // Make text even bolder on hover
+      backgroundColor: "rgb(85, 85, 85)", // Maintain background color on hover
+    },
+  }}
+>
+  <ImportExportIcon />
+  Column Visibility
+</Button>
+         
+         
+         
+         
+<Button variant="contained" color="error" onClick={handleExport}>
             Export
           </Button>
         </div>
@@ -1708,7 +781,7 @@ const fetchData = async (url) => {
         Show
       </button>
 
-      {apiUrl && (
+      {/* {apiUrl && (
         <div style={{ marginTop: '10px' }}>
           <label htmlFor="api-url">Generated API URL:</label>
           <textarea
@@ -1719,7 +792,7 @@ const fetchData = async (url) => {
             style={{ width: '100%', padding: '5px' }}
           ></textarea>
         </div>
-      )}
+      )} */}
     </div>
 
        
@@ -1739,7 +812,7 @@ const fetchData = async (url) => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 440,
+                maxHeight: 545,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}
@@ -2019,21 +1092,41 @@ const fetchData = async (url) => {
       </TableBody>
     </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={sortedData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
             {/* //</></div> */}
           </>
         )}
-        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+              <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            <h2>Column Visibility</h2>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -2043,6 +1136,7 @@ const fetchData = async (url) => {
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

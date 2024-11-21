@@ -10,6 +10,9 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import HomeIcon from '@mui/icons-material/Home';
 import DriveEtaIcon from '@mui/icons-material/DriveEta';
+import SchoolIcon from '@mui/icons-material/School';
+import GroupIcon from '@mui/icons-material/Group';
+
 import BarChartIcon from '@mui/icons-material/BarChart';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -35,18 +38,99 @@ import { io } from 'socket.io-client';
 import notificationSound from '../../Google_Event.mp3';
 import NotificationDropdown from './header/NotificationDropdown.js'
 import { CHeaderNav } from '@coreui/react';
+import PersonIcon from '@mui/icons-material/Person'; 
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import NotInterestedIcon from '@mui/icons-material/NotInterested';
+
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import InfoIcon from '@mui/icons-material/Info';
+
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import DevicesIcon from '@mui/icons-material/Devices';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+
+
+import AltRouteIcon from '@mui/icons-material/AltRoute';
+import EventIcon from '@mui/icons-material/Event';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import SummarizeIcon from '@mui/icons-material/Summarize';
+import InsightsIcon from '@mui/icons-material/Insights';
 
 const pages = [
-  { title: 'Home', icon: <HomeIcon />, arr: ['Dashboard'] },
+  
+  {
+    title: 'Home',
+    icon: <HomeIcon />,
+    arr: [
+      { name: 'Dashboard', icon: <DashboardIcon /> }
+    ]
+  },
   // { title: 'Master', icon: <DriveEtaIcon />, arr: ['Server','Device','Groups','Assets','School', 'Assets Type','Assets Command','Assets Category','Assets Class','Assets Group','Users','Assets URL','User Profile','Users Assets Mapping','User Menu Master','Import Location','Assets Division','Assets Owner','Driver Master','Over speed setting','Device Settings','Geo Data', 'Landmark Group','Commands','Top Main Menu Master','Import Trip','Top Menu Master','Broker','Address Book','Main Menu Master','Address Book Group','User Display Settings','RFID','Telecom Master','Landmark Images','Landmark Waypoints','Emails'] },
   // { title: 'Masterupdated', icon: <DriveEtaIcon />, arr: ['Preferences', 'Notifications', 'Account', 'Devices', 'Geofences', 'Groups', 'Drivers', 'Calendars', 'Computed Attributes', 'Maintenance', 'Saved Commands', 'Server', 'Userrr'] },
 
-  { title: 'School', icon: <DriveEtaIcon />, arr: ['Student Detail', 'Geofence', 'Pickup And Drop List', 'Absent', 'Present', 'Leave', 'Status', 'Approved Request', 'Denied Request'] },
-  { title: 'Users', icon: <DriveEtaIcon />, arr: ["SchoolMaster", "BranchMaster", 'Driver', 'Parent', 'Supervisor', 'AddDevices', 'MyBranchDevices'] },
-  // { title: 'Geofencing', icon: <DriveEtaIcon />, arr: ['Create Landmark', 'Edit Landmarks','Create Route','Edit Routes','Create Area','Edit Areas','Create Zone','Edit Zones','Trips'] },
+  // { title: 'School', icon: <SchoolIcon />, arr: ['Student Detail', 'Geofence', 'Pickup And Drop List', 'Absent', 'Present', 'Leave', 'Status', 'Approved Request', 'Denied Request'] },
+  { 
+    title: 'School', 
+    icon: <SchoolIcon />, 
+    arr: [
+      { name: 'Student Detail', icon: <PersonIcon /> },
+      { name: 'Geofence', icon: <LocationOnIcon /> },
+      { name: 'Pickup And Drop List', icon: <DirectionsBusIcon /> },
+      { name: 'Absent', icon: <NotInterestedIcon /> },
+      { name: 'Present', icon: <CheckCircleIcon /> },
+      { name: 'Leave Request', icon: <EventAvailableIcon /> },
+      { name: 'Status', icon: <InfoIcon /> },
+      { name: 'Approved Request', icon: <ThumbUpIcon /> },
+      { name: 'Denied Request', icon: <ThumbDownIcon /> },
+    ]
+  },
+  // { title: 'Users', icon: <GroupIcon />, arr: ["SchoolMaster", "BranchMaster", 'Driver Approve', 'Parent Approve', 'Supervisor Approve', 'AddDevices', 'MyBranchDevices','Read Devices','User Access'] },
+  {
+    title: 'Users',
+    icon: <GroupIcon />,
+    arr: [
+      { name: 'School Master', icon: <SchoolIcon /> },
+      { name: 'Branch Master', icon: <AccountTreeIcon /> },
+      { name: 'Driver Approve', icon: <DriveEtaIcon /> },
+      { name: 'Parent Approve', icon: <EmojiPeopleIcon /> },
+      { name: 'Supervisor Approve', icon: <SupervisorAccountIcon /> },
+      { name: 'AddDevices', icon: <AddCircleIcon /> },
+      { name: 'My Branch Devices', icon: <DevicesIcon /> },
+      { name: 'Read Devices', icon: <VisibilityIcon /> },
+      { name: 'User Access', icon: <LockOpenIcon /> },
+     
+    ]
+  },
+  {
+    title: 'Reports',
+    icon: <BarChartIcon />,
+    arr: [
+      { name: 'Device Status', icon: <DevicesIcon /> },
+      { name: 'Route', icon: <AltRouteIcon /> },
+      { name: 'Event', icon: <EventIcon /> },
+      { name: 'Trips', icon: <DirectionsCarIcon /> },
+      { name: 'Stops', icon: <StopCircleIcon /> },
+      { name: 'Summary', icon: <SummarizeIcon /> },
+      { name: 'Statistics', icon: <InsightsIcon /> }
+    ]
+  },
+  
+  // // { title: 'Geofencing', icon: <DriveEtaIcon />, arr: ['Create Landmark', 'Edit Landmarks','Create Route','Edit Routes','Create Area','Edit Areas','Create Zone','Edit Zones','Trips'] },
   //  { title: 'Reports', icon: <BarChartIcon />, arr: ['Summary', 'Stop Report', 'Area In/Out Report', 'Area Report', 'Landmark Distance', 'Landmark Report', 'Location Wise Distance', 'Distance Report', 'Run Report', 'Distance Graph', 'Speed Graph', 'Trip Report', 'All Point Report','RFID','Distance Between Report','Vehicle Average','Alerts','Data Logs','AC Report', 'Petrolling Report','Bin Details Report','ETA details report','ETA details'] },
-  { title: 'ReportsUpdated', icon: <BarChartIcon />, arr: ['Combined', 'Route', 'Event', 'Trips', 'Stops', 'Summary', 'Statistics'] },
-  // {title: 'Institutestudent', icon: <BarChartIcon />, arr: ['Combined1','Route1','Events1','Trips1','Stops1','Summary1','Statistics1','Newdemo',"New2","Server2"]}
+  // { title: 'Reports', icon: <BarChartIcon />, arr: ['Device Status', 'Route', 'Event', 'Trips', 'Stops', 'Summary', 'Statistics'] },
+  // // {title: 'Institutestudent', icon: <BarChartIcon />, arr: ['Combined1','Route1','Events1','Trips1','Stops1','Summary1','Statistics1','Newdemo',"New2","Server2"]}
   // { title: 'Maintenance', icon: <SettingsIcon />, arr: ['Search','Add maintenance','Type of operation','Custom Profile'] },
 ];
 
@@ -81,7 +165,7 @@ export const Navbar = (props) => {
         "Home",
         "School",
         "Users",
-        "ReportsUpdated",
+        "Reports",
         "Maintenance",
       ];
       const filter = pages.filter((item) => pagesToFilter.includes(item.title));
@@ -91,27 +175,59 @@ export const Navbar = (props) => {
   }, []);
 
 
-  const handleNavClick = (arr, title) => {
-    if (role == 1) {
-      const updatedArr = arr.filter((item) => item !== "MyBranchDevices");
-      props.propFunc(updatedArr);
-      props.propBool(true);
-      setSelectedPage(title);
-    } else if (role == 2) {
-      const updatedArr = arr.filter((item) => item !== "SchoolMaster" && item !== "AddDevices" && item !== "MyBranchDevices");
-      props.propFunc(updatedArr);
-      props.propBool(true);
-      setSelectedPage(title);
-    } else if (role == 3) {
-      const updatedArr = arr.filter(
-        (item) => item !== "SchoolMaster" && item !== "BranchMaster" && item !== "AddDevices"
-      );
-      props.propFunc(updatedArr);
-      props.propBool(true);
-      setSelectedPage(title);
-    }
-  };
+  // const handleNavClick = (arr, title) => {
+  //   if (role == 1) {
+  //     const updatedArr = arr.filter((item) => item !== "My Branch Devices");
+  //     props.propFunc(updatedArr);
+  //     props.propBool(true);
+  //     setSelectedPage(title);
+  //   } else if (role == 2) {
+  //     const updatedArr = arr.filter((item) => item !== "School Master" && item !== "AddDevices" && item !== "My Branch Devices" && item !== "User Access");
+  //     props.propFunc(updatedArr);
+  //     props.propBool(true);
+  //     setSelectedPage(title);
+  //   } else if (role == 3) {
+  //     const updatedArr = arr.filter(
+  //       (item) => item !== "School Master" && item !== "Branch Master" && item !== "AddDevices" && item !== "User Access"
+  //     );
+  //     props.propFunc(updatedArr);
+  //     props.propBool(true);
+  //     setSelectedPage(title);
+  //   }
+  // };
 
+  const handleNavClick = (arr, title) => {
+    console.log("Role:", role);
+    console.log("Original Array:", arr);
+    console.log("Title:", title);
+  
+    let updatedArr = [];
+    if (role == 1) {
+      updatedArr = arr.filter((item) => item.name !== "My Branch Devices");
+    } else if (role == 2) {
+      updatedArr = arr.filter(
+        (item) =>
+          item.name !== "School Master" &&
+          item.name !== "AddDevices" &&
+          item.name !== "My Branch Devices" &&
+          item.name !== "User Access"
+      );
+    } else if (role == 3) {
+      updatedArr = arr.filter(
+        (item) =>
+          item.name !== "School Master" &&
+          item.name !== "Branch Master" &&
+          item.name !== "AddDevices" &&
+          item.name !== "My Branch Devices" &&
+          item.name !== "User Access"
+      );
+    }
+    console.log("Updated Array:", updatedArr);
+    props.propFunc(updatedArr);
+    props.propBool(true);
+    setSelectedPage(title);
+  };
+  
   const handleRedAlert = () => {
     setOpenModal(true);
   }

@@ -1324,6 +1324,7 @@ import { IconButton } from "@mui/material";
 import {Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { Category } from "@mui/icons-material";
 //import { TextField } from '@mui/material';
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
 const style = {
   position: "absolute",
@@ -1344,8 +1345,8 @@ const style = {
 export const AddDevices = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25); // Default to 10 initially
+const [page, setPage] = useState(0);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -1370,6 +1371,7 @@ export const AddDevices = () => {
   const [endDate, setEndDate] = useState("");
 
 
+  // Update rowsPerPage to sortedData.length once sortedData is initialized
 
 const fetchData = async () => {
   console.log('Fetching data...');
@@ -1431,7 +1433,11 @@ const fetchData = async () => {
       });
 
       // Set the state with the combined data
-      setFilteredRows(wrappedData);
+      // setFilteredRows(wrappedData);
+      setFilteredRows(
+        wrappedData.map((row) => ({ ...row, isSelected: false }))
+      );
+      setOriginalRows(wrappedData.map((row) => ({ ...row, isSelected: false })));
       setTotalResponses(wrappedData.length);
     } else {
       console.error('Expected an array from the first API, but got:', firstApiResponse.data);
@@ -1456,19 +1462,23 @@ const fetchData = async () => {
 
  
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage);
+  // };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  
+ 
 
-  const handleFilterChange = (event) => {
-    const text = event.target.value;
-    setFilterText(text);
-  };
+
+const handleChangeRowsPerPage = (event) => {
+  const newRowsPerPage = parseInt(event.target.value, 10);
+  setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+  setPage(0); // Reset to the first page
+};
+
+const handleChangePage = (event, newPage) => {
+  setPage(newPage);
+};
 
   // useEffect(() => {
   //   filterData(filterText);
@@ -1665,24 +1675,18 @@ const fetchData = async () => {
     }
   };
 
-  const sortedData = useMemo(() => {
-    if (!filteredRows) return [];
-  
-    return filteredRows.sort((a, b) => {
-      if (sortConfig.key) {
-        const aValue = a[sortConfig.key];
-        const bValue = b[sortConfig.key];
-        return sortConfig.direction === "ascending"
-          ? aValue > bValue
-            ? 1
-            : -1
-          : aValue < bValue
-          ? 1
-          : -1;
+  const sortedData = [...filteredRows];
+  if (sortConfig.key !== null) {
+    sortedData.sort((a, b) => {
+      if (a[sortConfig.key] < b[sortConfig.key]) {
+        return sortConfig.direction === "ascending" ? -1 : 1;
+      }
+      if (a[sortConfig.key] > b[sortConfig.key]) {
+        return sortConfig.direction === "ascending" ? 1 : -1;
       }
       return 0;
     });
-  }, [filteredRows, sortConfig]);
+  }
   
   // const sortedData = [...filteredRows];
   // if (sortConfig.key !== null) {
@@ -1700,11 +1704,13 @@ const fetchData = async () => {
   const handleAddButtonClick = () => {
     setFormData({});
     setAddModalOpen(true);
+
   };
 
   const handleModalClose = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
+    setModalOpen(false);
     setFormData({});
   };
 
@@ -1800,6 +1806,11 @@ const handleEditSubmit = async () => {
       console.error("Server responded with an error for the first API:", result1);
       alert(`Unable to update record in the first API: ${result1.message || response1.statusText}`);
     }
+       // Close the modal
+       handleModalClose();
+
+       // Fetch the latest data
+       fetchData();
   } catch (error) {
     console.error("Error during requests:", error);
     alert("Unable to update record");
@@ -2044,7 +2055,10 @@ const filteredData = sortedData.filter(row =>
   })
 );
 
-
+const handleFilterChange = (event) => {
+  const text = event.target.value;
+  setFilterText(text);
+};
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
@@ -2058,36 +2072,54 @@ const filteredData = sortedData.filter(row =>
           }}
         >
          
-         <div style={{ marginBottom: '16px' }}>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+         <TextField
+    label="Search"
+    variant="outlined"
+    value={filterText}
+    onChange={handleFilterChange}
+    sx={{
+      marginRight: "10px",
+      width: "200px", // Smaller width
+      '& .MuiOutlinedInput-root': {
+        height: '36px', // Set a fixed height to reduce it
+        padding: '0px', // Reduce padding to shrink height
+      },
+      '& .MuiInputLabel-root': {
+        top: '-6px', // Adjust label position
+        fontSize: '14px', // Slightly smaller label font
+      }
+    }}
+    InputProps={{
+      startAdornment: (
+        <SearchIcon
           style={{
-            padding: '8px',
-            borderRadius: '4px',
-            border: '1px solid #e0e0e0',
-            width: '100%',
-            maxWidth: '400px',
+            cursor: "pointer",
+            marginLeft: "10px",
+            marginRight: "5px",
           }}
         />
-      </div>
+      ),
+    }}
+  />
           <Button
-            onClick={() => setModalOpen(true)}
-            sx={{
-              backgroundColor: "rgb(85, 85, 85)",
-              color: "white",
-              fontWeight: "bold",
-              marginRight: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <ImportExportIcon />
-            Column Visibility
-          </Button>
+  onClick={() => setModalOpen(true)}
+  sx={{
+    backgroundColor: "rgb(85, 85, 85)",
+    color: "white",
+    fontWeight: "bold",
+    marginRight: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    "&:hover": {
+      fontWeight: "bolder", // Make text even bolder on hover
+      backgroundColor: "rgb(85, 85, 85)", // Maintain background color on hover
+    },
+  }}
+>
+  <ImportExportIcon />
+  Column Visibility
+</Button>
           <Button
             variant="contained"
             color="error"
@@ -2115,14 +2147,14 @@ const filteredData = sortedData.filter(row =>
           >
             Add
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
             onClick={() => setImportModalOpen(true)}
             sx={{ backgroundColor: "rgb(255, 165, 0)", marginRight: "10px" }}
             startIcon={<CloudUploadIcon />}
           >
             Import
-          </Button>
+          </Button> */}
           <Button variant="contained" color="primary" onClick={handleExport}>
             Export
           </Button>
@@ -2144,7 +2176,7 @@ const filteredData = sortedData.filter(row =>
            <TableContainer
         component={Paper}
         sx={{
-          maxHeight: 440,
+          maxHeight: 600,
           border: "1.5px solid black",
           borderRadius: "7px",
         }}
@@ -2216,7 +2248,7 @@ const filteredData = sortedData.filter(row =>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredData.length === 0 ? (
+            {sortedData.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
@@ -2231,7 +2263,7 @@ const filteredData = sortedData.filter(row =>
                 </TableCell>
               </TableRow>
             ) : (
-              filteredData
+              sortedData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => (
                   <TableRow
@@ -2296,7 +2328,8 @@ const filteredData = sortedData.filter(row =>
           </TableBody>
         </Table>
       </TableContainer>
-            <TablePagination
+            {/* <TablePagination
+             All={sortedData.length}
               rowsPerPageOptions={[10, 25, 100,1000,3000]}
               component="div"
               count={sortedData.length}
@@ -2304,13 +2337,53 @@ const filteredData = sortedData.filter(row =>
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            /> */}
+         
+{/* <TablePagination
+  rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+  component="div"
+  count={sortedData.length}
+  rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage} // Display "All" if all rows are selected
+  page={page}
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={handleChangeRowsPerPage}
+/> */}
+   <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
+
             {/* //</></div> */}
           </>
         )}
-        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            <h2>Column Visibility</h2>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -2320,6 +2393,7 @@ const filteredData = sortedData.filter(row =>
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

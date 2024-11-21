@@ -33,10 +33,7 @@ export const COLUMNS = () => [
     Header: 'Branch Name',
     accessor: 'branchName',
   },
-  {
-    Header: 'Driver License',
-    accessor: '',
-  },
+  
   {
     Header: 'Device Id',
     accessor: 'deviceId',

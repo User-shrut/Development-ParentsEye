@@ -30,6 +30,9 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
+
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
+
 // import excelfilestudentdetail from "../../../../../public/studentDetail.xlsx";
 import {
   FormControlLabel,
@@ -62,7 +65,7 @@ export const StudentDetail = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const role = localStorage.getItem("role");
@@ -236,13 +239,14 @@ export const StudentDetail = () => {
     fetchData(); // Fetch data when startDate or endDate changes
   }, [startDate, endDate]);
 
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+    setPage(0); // Reset to the first page
+  };
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
   const handleFilterChange = (event) => {
@@ -478,6 +482,7 @@ const handleFileUpload = (event) => {
     setEditModalOpen(false);
     setAddModalOpen(false);
     setImportModalOpen(false);
+    setModalOpen(false);
     setFormData({});
   };
 
@@ -1455,7 +1460,7 @@ const handleBusChange = (e) => {
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
         Student Detail{" "}
       </h1>
-      <div>
+      <div >
         <div
           style={{
             display: "flex",
@@ -1463,39 +1468,57 @@ const handleBusChange = (e) => {
             marginBottom: "10px",
           }}
         >
-          <TextField
-            label="Search"
-            variant="outlined"
-            value={filterText}
-            onChange={handleFilterChange}
-            sx={{ marginRight: "10px", width: "300px" }}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon
-                  style={{
-                    cursor: "pointer",
-                    marginLeft: "10px",
-                    marginRight: "5px",
-                  }}
-                />
-              ),
-            }}
-          />
+       
+           <TextField
+    label="Search"
+    variant="outlined"
+    value={filterText}
+    onChange={handleFilterChange}
+    sx={{
+      marginRight: "10px",
+      width: "200px", // Smaller width
+      '& .MuiOutlinedInput-root': {
+        height: '36px', // Set a fixed height to reduce it
+        padding: '0px', // Reduce padding to shrink height
+      },
+      '& .MuiInputLabel-root': {
+        top: '-6px', // Adjust label position
+        fontSize: '14px', // Slightly smaller label font
+      }
+    }}
+    InputProps={{
+      startAdornment: (
+        <SearchIcon
+          style={{
+            cursor: "pointer",
+            marginLeft: "10px",
+            marginRight: "5px",
+          }}
+        />
+      ),
+    }}
+  />
+        
           <Button
-            onClick={() => setModalOpen(true)}
-            sx={{
-              backgroundColor: "rgb(85, 85, 85)",
-              color: "white",
-              fontWeight: "bold",
-              marginRight: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <ImportExportIcon />
-            Column Visibility
-          </Button>
+  onClick={() => setModalOpen(true)}
+  sx={{
+    backgroundColor: "rgb(85, 85, 85)",
+    color: "white",
+    fontWeight: "bold",
+    marginRight: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    "&:hover": {
+      fontWeight: "bolder", // Make text even bolder on hover
+      backgroundColor: "rgb(85, 85, 85)", // Maintain background color on hover
+    },
+  }}
+>
+  <ImportExportIcon />
+  Column Visibility
+</Button>
+
           <Button
             variant="contained"
             color="error"
@@ -1598,7 +1621,7 @@ const handleBusChange = (e) => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 440,
+                maxHeight: 550,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}
@@ -1765,21 +1788,56 @@ const handleBusChange = (e) => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={sortedData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+           
+          
+ 
+  
+  {/* <StyledTablePagination>
+      <TablePagination
+        rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+        component="div"
+        count={sortedData.length}
+        rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+    </StyledTablePagination> */}
+    <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
             {/* //</></div> */}
           </>
         )}
         <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            <h2>Column Visibility</h2>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -1789,6 +1847,7 @@ const handleBusChange = (e) => {
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

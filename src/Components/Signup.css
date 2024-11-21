@@ -11,9 +11,8 @@
 
 body {
     /* background: linear-gradient(45deg, #ce1e53, #8f00c7); */
-    min-height: 100vh;
+    min-height: 90vh;
 }
-
 body::-webkit-scrollbar {
     display: none;
 }

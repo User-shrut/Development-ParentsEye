@@ -9,18 +9,18 @@
 //   }
 // ];
 export const COLUMNS = () => [
-  {
-    Header: 'ID',
-    accessor: 'id',
-  },
+  // {
+  //   Header: 'ID',
+  //   accessor: 'id',
+  // },
   {
     Header: 'Device ID',
     accessor: 'deviceId',
   },
-  {
-    Header: 'Protocol',
-    accessor: 'protocol',
-  },
+  // {
+  //   Header: 'Protocol',
+  //   accessor: 'protocol',
+  // },
   {
     Header: 'Server Time',
     accessor: 'serverTime',
@@ -33,10 +33,10 @@ export const COLUMNS = () => [
     Header: 'Fix Time',
     accessor: 'fixTime',
   },
-  {
-    Header: 'Outdated',
-    accessor: 'outdated',
-  },
+  // {
+  //   Header: 'Outdated',
+  //   accessor: 'outdated',
+  // },
   {
     Header: 'Valid',
     accessor: 'valid',
@@ -49,78 +49,79 @@ export const COLUMNS = () => [
     Header: 'Longitude',
     accessor: 'longitude',
   },
-  {
-    Header: 'Altitude',
-    accessor: 'altitude',
-  },
+  // 
+  // {{
+  //   Header: 'Altitude',
+  //   accessor: 'altitude',
+  // },
   {
     Header: 'Speed',
     accessor: 'speed',
   },
-  {
-    Header: 'Course',
-    accessor: 'course',
-  },
-  {
-    Header: 'Address',
-    accessor: 'address',
-  },
-  {
-    Header: 'Accuracy',
-    accessor: 'accuracy',
-  },
-  {
-    Header: 'Network Radio Type',
-    accessor: row => row.network.radioType,
-  },
-  {
-    Header: 'Network Consider IP',
-    accessor: row => row.network.considerIp,
-  },
-  {
-    Header: 'Geofence IDs',
-    accessor: row => row.geofenceIds.join(', '),
-  },
-  {
-    Header: 'Satellite',
-    accessor: 'attributes.sat',
-  },
-  {
-    Header: 'Ignition',
-    accessor: 'attributes.ignition',
-  },
-  {
-    Header: 'Event',
-    accessor: 'attributes.event',
-  },
-  {
-    Header: 'Archive',
-    accessor: 'attributes.archive',
-  },
-  {
-    Header: 'Odometer',
-    accessor: 'attributes.odometer',
-  },
-  {
-    Header: 'Distance',
-    accessor: 'attributes.distance',
-  },
-  {
-    Header: 'Total Distance',
-    accessor: 'attributes.totalDistance',
-  },
-  {
-    Header: 'Motion',
-    accessor: 'attributes.motion',
-  },
-  {
-    Header: 'Charge',
-    accessor: 'attributes.charge',
-  },
-  {
-    Header: 'Hours',
-    accessor: 'attributes.hours',
-  },
+  // {
+  //   Header: 'Course',
+  //   accessor: 'course',
+  // },
+  // {
+  //   Header: 'Address',
+  //   accessor: 'address',
+  // },
+  // {
+  //   Header: 'Accuracy',
+  //   accessor: 'accuracy',
+  // },
+  // {
+  //   Header: 'Network Radio Type',
+  //   accessor: row => row.network.radioType,
+  // },
+  // {
+  //   Header: 'Network Consider IP',
+  //   accessor: row => row.network.considerIp,
+  // },
+  // {
+  //   Header: 'Geofence IDs',
+  //   accessor: row => row.geofenceIds.join(', '),
+  // },
+  // {
+  //   Header: 'Satellite',
+  //   accessor: 'attributes.sat',
+  // },
+  // {
+  //   Header: 'Ignition',
+  //   accessor: 'attributes.ignition',
+  // },
+  // {
+  //   Header: 'Event',
+  //   accessor: 'attributes.event',
+  // },
+  // {
+  //   Header: 'Archive',
+  //   accessor: 'attributes.archive',
+  // },
+  // {
+  //   Header: 'Odometer',
+  //   accessor: 'attributes.odometer',
+  // },
+  // {
+  //   Header: 'Distance',
+  //   accessor: 'attributes.distance',
+  // },
+  // {
+  //   Header: 'Total Distance',
+  //   accessor: 'attributes.totalDistance',
+  // },
+  // {
+  //   Header: 'Motion',
+  //   accessor: 'attributes.motion',
+  // },
+  // {
+  //   Header: 'Charge',
+  //   accessor: 'attributes.charge',
+  // },
+  // {
+  //   Header: 'Hours',
+  //   accessor: 'attributes.hours',
+  // },
 ];
 
 

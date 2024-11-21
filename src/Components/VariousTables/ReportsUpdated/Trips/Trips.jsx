@@ -408,9 +408,9 @@ const handleEditSubmit = async () => {
   useEffect(() => {
     const fetchDevices = async () => {
       try {
-        const response = await fetch('http://104.251.212.84/api/devices', {
+        const response = await fetch('https://rocketsalestracker.com/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('jnmc:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('schoolmaster:123456'), // Replace with your username and password
           },
         });
 
@@ -435,10 +435,10 @@ const handleEditSubmit = async () => {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await fetch('http://104.251.212.84/api/groups', {
+        const response = await fetch('https://rocketsalestracker.com/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('jnmc:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
           }
         });
 
@@ -473,7 +473,7 @@ const handleEditSubmit = async () => {
 
     // Construct the API URL
     const url = `
-http://104.251.212.84/api/reports/trips?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}`;
+https://rocketsalestracker.com/api/reports/trips?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}`;
     
     setApiUrl(url); // Update the state with the generated URL
     fetchData(url); // Call fetchData with the generated URL
@@ -501,7 +501,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-    const username = "jnmc";
+    const username = "schoolmaster";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -610,7 +610,7 @@ const fetchData = async (url) => {
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Route 
+       Trips 
       </h1>
       <div>
         <div
@@ -620,75 +620,56 @@ const fetchData = async (url) => {
             marginBottom: "10px",
           }}
         >
-          <TextField
-            label="Search"
-            variant="outlined"
-            value={filterText}
-            onChange={handleFilterChange}
-            sx={{ marginRight: "10px", width: "300px" }}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon
-                  style={{
-                    cursor: "pointer",
-                    marginLeft: "10px",
-                    marginRight: "5px",
-                  }}
-                />
-              ),
-            }}
-          />
-          <Button
-            onClick={() => setModalOpen(true)}
-            sx={{
-              backgroundColor: "rgb(85, 85, 85)",
-              color: "white",
-              fontWeight: "bold",
-              marginRight: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <ImportExportIcon />
-            Column Visibility
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeleteSelected}
-            sx={{ marginRight: "10px" }}
-            startIcon={<DeleteIcon />}
-          >
-            Delete
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleEditButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<EditIcon />}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleAddButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<AddCircleIcon />}
-          >
-            Add
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setImportModalOpen(true)}
-            sx={{ backgroundColor: "rgb(255, 165, 0)", marginRight: "10px" }}
-            startIcon={<CloudUploadIcon />}
-          >
-            Import
-          </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
+         <TextField
+    label="Search"
+    variant="outlined"
+    value={filterText}
+    onChange={handleFilterChange}
+    sx={{
+      marginRight: "10px",
+      width: "200px", // Smaller width
+      '& .MuiOutlinedInput-root': {
+        height: '36px', // Set a fixed height to reduce it
+        padding: '0px', // Reduce padding to shrink height
+      },
+      '& .MuiInputLabel-root': {
+        top: '-6px', // Adjust label position
+        fontSize: '14px', // Slightly smaller label font
+      }
+    }}
+    InputProps={{
+      startAdornment: (
+        <SearchIcon
+          style={{
+            cursor: "pointer",
+            marginLeft: "10px",
+            marginRight: "5px",
+          }}
+        />
+      ),
+    }}
+  />
+              <Button
+  onClick={() => setModalOpen(true)}
+  sx={{
+    backgroundColor: "rgb(85, 85, 85)",
+    color: "white",
+    fontWeight: "bold",
+    marginRight: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    "&:hover": {
+      fontWeight: "bolder", // Make text even bolder on hover
+      backgroundColor: "rgb(85, 85, 85)", // Maintain background color on hover
+    },
+  }}
+>
+  <ImportExportIcon />
+  Column Visibility
+</Button>
+         
+<Button variant="contained" color="error" onClick={handleExport}>
             Export
           </Button>
         </div>

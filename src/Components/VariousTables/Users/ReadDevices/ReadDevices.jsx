@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useContext, Component } from "react";
 import axios from "axios";
 import Paper from "@mui/material/Paper";
@@ -51,11 +49,11 @@ const style = {
   padding: "1rem",
 };
 
-export const ApprovedRequest = () => {
+export const ReadDevices = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
-
+  const role = localStorage.getItem("role");
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -78,194 +76,183 @@ export const ApprovedRequest = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const role = localStorage.getItem("role");
 
   // const fetchData = async (startDate = "", endDate = "") => {
   //   setLoading(true);
   //   try {
   //     const token = localStorage.getItem("token");
-  //     let response;
-  //     if (role == 1) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/approved-requests`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
+  //     const apiUrl = `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+  
+  //     // Fetch data from the API
+  //     const response = await axios.get(apiUrl, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  
+  //     console.log("fetch data branch devices", response.data);
+  
+  //     // Ensure response.data is properly structured
+  //     if (response?.data && Array.isArray(response.data)) {
+  //       // Flatten the array of devices
+  //       const allData = response.data.flatMap((item) => {
+  //         if (Array.isArray(item.devices)) {
+  //           return item.devices.map((device) => ({
+  //             deviceId: device.deviceId,
+  //             deviceName: device.deviceName,
+  //             isSelected: false, // Default selection state
+  //           }));
   //         }
-  //       );
-  //     } else if (role == 2) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SCHOOL_API}/approved-requests`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_BRANCH_API}/approved-requests`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     }
-
-  //     console.log("fetch data", response.data); // Log the entire response data
-
-  //     if (response.data) {
-  //       const allData =
-  //         role == 1
-  //           ? response?.data.data.flatMap((school) =>
-  //               school.branches.flatMap((branch) =>
-  //                 Array.isArray(branch.requests) && branch.requests.length > 0
-  //                   ? branch.requests
-  //                   : []
-  //               )
-  //             )
-  //           : role == 2
-  //           ? response.data.branches.requests
-  //           : response.data.requests;
-
-  //       // Apply local date filtering if dates are provided
-  //       const filteredData =
-  //         startDate || endDate
-  //           ? allData.filter((row) => {
-  //               const registrationDate = parseDate(row.requestDate);
-  //               const start = parseDate(startDate);
-  //               const end = parseDate(endDate);
-
-  //               return (
-  //                 (!startDate || registrationDate >= start) &&
-  //                 (!endDate || registrationDate <= end)
-  //               );
-  //             })
-  //           : allData; // If no date range, use all data
-  //       const reversedData = filteredData.reverse();
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
+  //         return []; // Return empty array if item.devices is not an array
+  //       });
+  
+  //       // Filtering logic if startDate or endDate is provided
+  //       const filteredData = (startDate || endDate)
+  //         ? allData.filter((row) => {
+  //             const registrationDate = new Date(); // Placeholder for actual registration date logic
+  //             const start = parseDate(startDate);
+  //             const end = parseDate(endDate);
+  
+  //             return (
+  //               (!startDate || registrationDate >= start) &&
+  //               (!endDate || registrationDate <= end)
+  //             );
+  //           })
+  //         : allData;
+  
+  //       const reversedData = filteredData.reverse(); // Reverse for most recent first
+  
+  //       // Set filtered and original rows with isSelected as false by default
   //       setFilteredRows(
   //         reversedData.map((row) => ({ ...row, isSelected: false }))
   //       );
   //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  
+  //       // Set the total number of responses
   //       setTotalResponses(reversedData.length);
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-
-  //       // setFilteredRows(
-  //       //   filteredData.map((row) => ({ ...row, isSelected: false }))
-  //       // );
-  //       // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       // setTotalResponses(filteredData.length);
+  
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
   //     } else {
-  //       console.error("Expected an array but got:", response.data.requests);
+  //       console.error("Expected an array but got:", response.data);
   //     }
   //   } catch (error) {
-  //     console.error("Error:", error);
+  //     console.error("Error fetching data:", error);
   //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
+  //     setLoading(false);
   //   }
   // };
-
-
+  
+  
+  
+  // Helper function for parsing dates
+  // const parseDate = (dateStr) => {
+  //   if (!dateStr) return null;
+  //   const [month, day, year] = dateStr.split('/').map(Number); // Assuming MM/DD/YYYY format
+  //   return new Date(year, month - 1, day);
+  // };
+  
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
-      const token = localStorage.getItem("token");
       let response;
-  
       if (role == 1) {
+        const token = localStorage.getItem("token");
         response = await axios.get(
-          `${process.env.REACT_APP_SUPER_ADMIN_API}/approved-requests`,
+          `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-            }
+            },
           }
         );
       } else if (role == 2) {
+        const token = localStorage.getItem("token");
         response = await axios.get(
-          `${process.env.REACT_APP_SCHOOL_API}/approved-requests`,
+          `${process.env.REACT_APP_SCHOOL_API}/read-devices`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-            }
+            },
           }
         );
-      } else {
+      } else if (role == 3) {
+        const token = localStorage.getItem("token");
         response = await axios.get(
-          `${process.env.REACT_APP_BRANCH_API}/approved-requests`,
+          `${process.env.REACT_APP_BRANCH_API}/read-devices`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-            }
+            },
           }
         );
       }
-  
-      console.log("fetch data", response.data);
-  
-      let allData = [];
-  
-      if (role == 1) {
-        // For role 1, process data with schools and branches
-        allData = response?.data.data.flatMap((school) =>
-          school.branches.flatMap((branch) =>
-            Array.isArray(branch.requests) && branch.requests.length > 0
-              ? branch.requests
-              : []
-          )
+
+      console.log("fetch data", response.data); // Log the entire response data
+      // fetchgeofencepoint();
+      if (response?.data) {
+        const allData = role == 1
+          ? response.data.data.flatMap((school) =>
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.devices) && branch.devices.length > 0
+                  ? branch.devices.map((device) => ({
+                      ...device,
+                      schoolName: school.schoolName,
+                      branchName: branch.branchName,
+                    }))
+                  : []
+              )
+            )
+            : role ==2
+            ? response.data.branches.flatMap((branch) =>
+                Array.isArray(branch.devices) && branch.devices.length > 0
+                  ? branch.devices.map((device) => ({
+                      ...device,
+                      branchName: branch.branchName,
+                    }))
+                  : []
+              )
+              :role == 3
+              ? response.data.devices.map((device) => ({
+                  ...device,
+                  schoolName: response.data.schoolName,
+                  branchName: response.data.branchName,
+                }))
+              : [];
+
+        console.log(allData);
+
+        const filteredData =
+          startDate || endDate
+            ? allData.filter((row) => {
+                const registrationDate = parseDate(
+                  row.formattedRegistrationDate
+                );
+                const start = parseDate(startDate);
+                const end = parseDate(endDate);
+
+                return (
+                  (!startDate || registrationDate >= start) &&
+                  (!endDate || registrationDate <= end)
+                );
+              })
+            : allData; // If no date range, use all data
+        const reversedData = filteredData.reverse();
+        // Log the date range and filtered data
+        console.log(`Data fetched between ${startDate} and ${endDate}:`);
+        console.log(filteredData);
+        setFilteredRows(
+          reversedData.map((row) => ({ ...row, isSelected: false }))
         );
-      } else if (role == 2) {
-        // For role 2, process data from branches
-        allData = response?.data.branches.flatMap((branch) =>
-          Array.isArray(branch.requests) && branch.requests.length > 0
-            ? branch.requests.map((request) => ({
-                ...request,
-                branchId: branch.branchId._id, // Add branchId
-                branchName: branch.branchName, // Add branchName from the branch object
-                schoolName: response.data.schoolName, // Add schoolName from the main data object
-              }))
-            : []
-        );
+        setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+        setTotalResponses(reversedData.length);
+        // Log the date range and filtered data
+        console.log(`Data fetched between ${startDate} and ${endDate}:`);
+        console.log(filteredData);
+
+      
       } else {
-        // For role 3, data is directly in the requests array
-        allData = Array.isArray(response.data.requests) ? response.data.requests : [];
+        console.error("Expected an array but got:", response.data.children);
       }
-  
-      // Apply local date filtering if dates are provided
-      const filteredData =
-        startDate || endDate
-          ? allData.filter((row) => {
-              const registrationDate = parseDate(row.requestDate); // Adjust based on your date format
-              const start = parseDate(startDate);
-              const end = parseDate(endDate);
-  
-              return (
-                (!startDate || registrationDate >= start) &&
-                (!endDate || registrationDate <= end)
-              );
-            })
-          : allData; // If no date range, use all data
-  
-      const reversedData = filteredData.reverse();
-  
-      // Log the date range and filtered data
-      console.log(`Data fetched between ${startDate} and ${endDate}:`);
-      console.log(filteredData);
-  
-      setFilteredRows(
-        reversedData.map((row) => ({ ...row, isSelected: false }))
-      );
-      setOriginalRows(
-        allData.map((row) => ({ ...row, isSelected: false }))
-      );
-      setTotalResponses(reversedData.length);
     } catch (error) {
       console.error("Error:", error);
     } finally {
@@ -273,6 +260,10 @@ export const ApprovedRequest = () => {
     }
   };
   
+
+  
+  
+
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
     return new Date(year, month - 1, day); // Months are 0-indexed
@@ -320,6 +311,7 @@ export const ApprovedRequest = () => {
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
   const handleFilterChange = (event) => {
     const text = event.target.value;
     setFilterText(text);
@@ -398,13 +390,32 @@ export const ApprovedRequest = () => {
     console.log("Filtered rows:", filteredRows);
 
     // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
+    let selectedIds;
+    if (role == 1) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.actualDeviceId; // Ensure id exists and is not undefined
+        });
+    } else if (role == 2) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.actualDeviceId; // Ensure id exists and is not undefined
+        });
+    } else {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.actualDeviceId; // Ensure id exists and is not undefined
+        });
+    }
 
     console.log("Selected IDs:", selectedIds);
 
@@ -423,10 +434,13 @@ export const ApprovedRequest = () => {
     try {
       // Define the API endpoint and token
       const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
+        role == 1
+          ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-device`
+          : role == 2
+          ? `${process.env.REACT_APP_SCHOOL_API}/delete-device`
+          : `${process.env.REACT_APP_BRANCH_API}/delete-device`;
 
+      const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
         fetch(`${apiUrl}/${id}`, {
@@ -471,7 +485,7 @@ export const ApprovedRequest = () => {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "ApprovedRequest.xlsx");
+    XLSX.writeFile(workbook, "ReadDevices.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -529,7 +543,7 @@ export const ApprovedRequest = () => {
 
   const handleEditSubmit = async () => {
     // Define the API URL and authentication token
-    const apiUrl = `https://schoolmanagement-4-pzsf.onrender.com/school/update-child/${selectedRow._id}`; // Replace with your actual API URL
+    const apiUrl = `https://schoolmanagement-1-hurx.onrender.com/school/update-child/${selectedRow._id}`; // Replace with your actual API URL
     const token =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with your actual authentication token
 
@@ -588,7 +602,7 @@ export const ApprovedRequest = () => {
 
       // POST request to the server
       const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/parent/register",
+        "https://schoolmanagement-1-hurx.onrender.com/parent/register",
         {
           method: "POST",
           headers: {
@@ -619,37 +633,42 @@ export const ApprovedRequest = () => {
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
+  // const [sortedData, setSortedData] = useState([]);
 
+  // useEffect(() => {
+  //   // Assuming data.devices contains the array of devices
+  //   setSortedData(data.devices);
+  // }, [data]);
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-        Approved Request List
+       Assign devices List
       </h1>
       <div>
-      <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "10px",
-    flexWrap: "wrap", // Allow items to wrap on smaller screens
-  }}
->
-  <TextField
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "10px",
+            
+          }}
+        >
+          <TextField
     label="Search"
     variant="outlined"
     value={filterText}
     onChange={handleFilterChange}
     sx={{
       marginRight: "10px",
-      width: "200px", // Adjusted width for consistency
+      width: "200px", // Smaller width
       '& .MuiOutlinedInput-root': {
-        height: '36px', // Reduced height
-        padding: '0px', // Remove padding to compact it
+        height: '36px', // Set a fixed height to reduce it
+        padding: '0px', // Reduce padding to shrink height
       },
       '& .MuiInputLabel-root': {
-        top: '-6px', // Adjust label position for smaller size
-        fontSize: '14px', // Slightly smaller font
-      },
+        top: '-6px', // Adjust label position
+        fontSize: '14px', // Slightly smaller label font
+      }
     }}
     InputProps={{
       startAdornment: (
@@ -663,84 +682,111 @@ export const ApprovedRequest = () => {
       ),
     }}
   />
-
-  <Button
-    onClick={() => setModalOpen(true)}
-    sx={{
-      backgroundColor: "rgb(85, 85, 85)",
-      color: "white",
-      fontWeight: "bold",
-      marginRight: "10px",
-      display: "flex",
-      alignItems: "center",
-      gap: "5px", // Consistent gap
-      padding: "6px 12px", // Added padding for better click area
-      '&:hover': {
-        backgroundColor: "rgb(100, 100, 100)", // Lighter shade on hover
-      },
-    }}
-  >
-    <ImportExportIcon />
-    Column Visibility
-  </Button>
-
-  <Button
-    variant="contained"
-    color="success"
-    onClick={handleExport}
-    sx={{
-      padding: "6px 12px",
-      marginRight: "10px",
-    }}
-  >
-    Export
-  </Button>
-
-  <input
-    type="date"
-    id="startDate"
-    placeholder="DD-MM-YYYY"
-    style={{
-      width: "130px",
-      marginRight: "10px",
-      padding: "6px 10px", // Increased padding for better click area
-      marginLeft: "3px",
-      border: "0.1px solid black",
-      borderRadius: "3px",
-    }}
-  />
-
-  <input
-    type="date"
-    id="endDate"
-    placeholder="DD-MM-YYYY"
-    style={{
-      width: "130px",
-      marginRight: "10px",
-      padding: "6px 10px",
-      marginLeft: "3px",
-      border: "0.1px solid black",
-      borderRadius: "3px",
-    }}
-  />
-
-  <button
-    onClick={handleApplyDateRange}
-    style={{
-      backgroundColor: "#1976d2",
-      color: "white",
-      border: "none",
-      padding: "6px 12px", // Increased padding for better click area
-      borderRadius: "5px",
-      cursor: "pointer",
-      '&:hover': {
-        backgroundColor: "#115293", // Darker blue on hover
-      },
-    }}
-  >
-    Apply Date Range
-  </button>
-</div>
+          <Button
+  onClick={() => setModalOpen(true)}
+  sx={{
+    backgroundColor: "rgb(85, 85, 85)",
+    color: "white",
+    fontWeight: "bold",
+    marginRight: "10px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    "&:hover": {
+      fontWeight: "bolder", // Make text even bolder on hover
+      backgroundColor: "rgb(85, 85, 85)", // Maintain background color on hover
+    },
+  }}
+>
+  <ImportExportIcon />
+  Column Visibility
+</Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDeleteSelected}
+            sx={{ marginRight: "10px" }}
+            startIcon={<DeleteIcon />}
+          >
+            Delete
+          </Button>
+          {/* <Button
+            variant="contained"
+            color="primary"
+            onClick={handleEditButtonClick}
+            sx={{ marginRight: "10px" }}
+            startIcon={<EditIcon />}
+          >
+            Edit
+          </Button> */}
+          {/* <Button
+            variant="contained"
+            color="success"
+            onClick={handleAddButtonClick}
+            sx={{ marginRight: "10px" }}
+            startIcon={<AddCircleIcon />}
+          >
+            Add
+          </Button> */}
+          {/* <Button
+            variant="contained"
+            onClick={() => setImportModalOpen(true)}
+            sx={{ backgroundColor: "rgb(255, 165, 0)", marginRight: "10px" }}
+            startIcon={<CloudUploadIcon />}
+          >
+            Import
+          </Button> */}
+          <Button variant="contained" color="primary" onClick={handleExport}>
+            Export
+          </Button>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "10px",
+          }}
+        >
+          <input
+            type="date"
+            id="startDate"
+            placeholder="DD-MM-YYYY"
+            style={{
+              width: "140px",
+              marginRight: "10px",
+              padding: "2px",
+              marginLeft: "3px",
+              border: " 0.1px solid black",
+              borderRadius: "3px",
+            }}
+          />
+          <input
+            type="date"
+            id="endDate"
+            placeholder="DD-MM-YYYY"
+            style={{
+              width: "140px",
+              marginRight: "10px",
+              padding: "2px",
+              marginLeft: "3px",
+              border: " 0.1px solid black",
+              borderRadius: "3px",
+            }}
+          />
+          <button
+            onClick={handleApplyDateRange}
+            style={{
+              backgroundColor: "#1976d2",
+              color: "white",
+              border: "none",
+              padding: "6px 10px",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Apply Date Range
+          </button>
+        </div>
 
         {loading ? (
           <div
@@ -754,177 +800,123 @@ export const ApprovedRequest = () => {
           </div>
         ) : (
           <>
-            <TableContainer
-              component={Paper}
-              sx={{
-                maxHeight: 550,
-                border: "1.5px solid black",
-                borderRadius: "7px",
+          <TableContainer
+  component={Paper}
+  sx={{
+    maxHeight: 550,
+    border: "1.5px solid black",
+    borderRadius: "7px",
+  }}
+>
+  <Table stickyHeader aria-label="sticky table" style={{ border: "1px solid black" }}>
+    <TableHead>
+      <TableRow
+        style={{
+          borderBottom: "1px solid black",
+          borderTop: "1px solid black",
+        }}
+      >
+        <TableCell
+          padding="checkbox"
+          style={{
+            borderRight: "1px solid #e0e0e0",
+            borderBottom: "2px solid black",
+          }}
+        >
+          <Switch checked={selectAll} onChange={handleSelectAll} color="primary" />
+        </TableCell>
+        {COLUMNS().filter((col) => columnVisibility[col.accessor]).map((column) => (
+          <TableCell
+            key={column.accessor}
+            align={column.align}
+            style={{
+              minWidth: column.minWidth,
+              cursor: "pointer",
+              borderRight: "1px solid #e0e0e0",
+              borderBottom: "2px solid black",
+              padding: "4px 4px",
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+            onClick={() => requestSort(column.accessor)}
+          >
+            {column.Header}
+            {sortConfig.key === column.accessor ? (
+              sortConfig.direction === "ascending" ? (
+                <ArrowUpwardIcon fontSize="small" />
+              ) : (
+                <ArrowDownwardIcon fontSize="small" />
+              )
+            ) : null}
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {sortedData.length === 0 ? (
+        <TableRow>
+          <TableCell
+            colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
+            style={{
+              textAlign: "center",
+              padding: "16px",
+              fontSize: "16px",
+              color: "#757575",
+            }}
+          >
+            <h4>No Data Available</h4>
+          </TableCell>
+        </TableRow>
+      ) : (
+        sortedData
+          .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+          .map((row, index) => (
+            <TableRow
+              hover
+              role="checkbox"
+              tabIndex={-1}
+              key={row.deviceId}
+              onClick={() => handleRowSelect(page * rowsPerPage + index)}
+              selected={row.isSelected}
+              style={{
+                backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                borderBottom: "none", // White for even rows, light grey for odd rows
               }}
             >
-              <Table
-                stickyHeader
-                aria-label="sticky table"
-                style={{ border: "1px solid black" }}
+              <TableCell
+                padding="checkbox"
+                style={{ borderRight: "1px solid #e0e0e0" }}
               >
-                <TableHead>
-                  <TableRow
+                <Switch checked={row.isSelected} color="primary" />
+              </TableCell>
+              {COLUMNS().filter((col) => columnVisibility[col.accessor]).map((column) => {
+                const value = row[column.accessor];
+                return (
+                  <TableCell
+                    key={column.accessor}
+                    align={column.align}
                     style={{
-                      borderBottom: "1px solid black",
-                      borderTop: "1px solid black",
+                      borderRight: "1px solid #e0e0e0",
+                      paddingTop: "4px",
+                      paddingBottom: "4px",
+                      borderBottom: "none",
+                      backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                      fontSize: "smaller",
                     }}
                   >
-                    <TableCell
-                      padding="checkbox"
-                      style={{
-                        borderRight: "1px solid #e0e0e0",
-                        borderBottom: "2px solid black",
-                      }}
-                    >
-                      <Switch
-                        checked={selectAll}
-                        onChange={handleSelectAll}
-                        color="primary"
-                      />
-                    </TableCell>
-                    <TableCell
-                      style={{
-                        minWidth: 70, // Adjust width if needed
-                        borderRight: "1px solid #e0e0e0",
-                        borderBottom: "2px solid black",
-                        padding: "4px 4px",
-                        textAlign: "center",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      S.No.
-                    </TableCell>
-                    {COLUMNS()
-                      .filter((col) => columnVisibility[col.accessor])
-                      .map((column) => (
-                        <TableCell
-                          key={column.accessor}
-                          align={column.align}
-                          style={{
-                            minWidth: column.minWidth,
-                            cursor: "pointer",
-                            borderRight: "1px solid #e0e0e0",
-                            borderBottom: "2px solid black",
-                            padding: "4px 4px",
-                            textAlign: "center",
-                            fontWeight: "bold",
-                          }}
-                          onClick={() => requestSort(column.accessor)}
-                        >
-                          {column.Header}
-                          {sortConfig.key === column.accessor ? (
-                            sortConfig.direction === "ascending" ? (
-                              <ArrowUpwardIcon fontSize="small" />
-                            ) : (
-                              <ArrowDownwardIcon fontSize="small" />
-                            )
-                          ) : null}
-                        </TableCell>
-                      ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sortedData.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={
-                          COLUMNS().filter(
-                            (col) => columnVisibility[col.accessor]
-                          ).length
-                        }
-                        style={{
-                          textAlign: "center",
-                          padding: "16px",
-                          fontSize: "16px",
-                          color: "#757575",
-                          // fontStyle: 'italic',
-                        }}
-                      >
-                        {/* <img src="emptyicon.png" alt="" /> */}
-                        <h4>No Data Available</h4>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    sortedData
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((row, index) => (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          tabIndex={-1}
-                          key={row.id}
-                          onClick={() =>
-                            handleRowSelect(page * rowsPerPage + index)
-                          }
-                          selected={row.isSelected}
-                          style={{
-                            backgroundColor:
-                              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                            borderBottom: "none", // White for even rows, light grey for odd rows
-                          }}
-                        >
-                          <TableCell
-                            padding="checkbox"
-                            style={{ borderRight: "1px solid #e0e0e0" }}
-                          >
-                            <Switch checked={row.isSelected} color="primary" />
-                          </TableCell>
-                          <TableCell
-                            style={{
-                              minWidth: 70, // Adjust width if needed
-                              borderRight: "1px solid #e0e0e0",
-                              paddingTop: "4px",
-                              paddingBottom: "4px",
-                              borderBottom: "none",
-                              textAlign: "center",
-                              fontSize: "smaller",
-                              backgroundColor:
-                                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                              // borderBottom: "none",
-                            }}
-                          >
-                            {page * rowsPerPage + index + 1}{" "}
-                            {/* Serial number starts from 1 */}
-                          </TableCell>
-                          {COLUMNS()
-                            .filter((col) => columnVisibility[col.accessor])
-                            .map((column) => {
-                              const value = row[column.accessor];
-                              return (
-                                <TableCell
-                                  key={column.accessor}
-                                  align={column.align}
-                                  style={{
-                                    borderRight: "1px solid #e0e0e0",
-                                    paddingTop: "4px",
-                                    paddingBottom: "4px",
-                                    borderBottom: "none",
-                                    backgroundColor:
-                                      index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                    fontSize: "smaller", // White for even rows, light grey for odd rows
-                                  }}
-                                >
-                                  {column.format && typeof value === "number"
-                                    ? column.format(value)
-                                    : value}
-                                </TableCell>
-                              );
-                            })}
-                        </TableRow>
-                      ))
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <StyledTablePagination>
+                    {value || "N/A"}
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          ))
+      )}
+    </TableBody>
+  </Table>
+</TableContainer>
+
+
+<StyledTablePagination>
   <TablePagination
     rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
     component="div"

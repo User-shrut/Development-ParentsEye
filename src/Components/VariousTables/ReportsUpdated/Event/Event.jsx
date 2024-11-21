@@ -32,6 +32,7 @@ import { IconButton } from "@mui/material";
 import { saveAs } from 'file-saver'; // Save file to the user's machine
 // import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
 //import { TextField } from '@mui/material';
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
 const style = {
   position: "absolute",
@@ -53,7 +54,7 @@ export const Event = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -122,13 +123,14 @@ export const Event = () => {
 
  
 
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+    setPage(0); // Reset to the first page
+  };
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
   const handleFilterChange = (event) => {
@@ -319,6 +321,7 @@ export const Event = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
     setFormData({});
+    setModalOpen(false);
   };
 
   const handleSnackbarClose = () => {
@@ -552,7 +555,7 @@ const handleEditSubmit = async () => {
       try {
         const response = await fetch('https://rocketsalestracker.com/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('schoolmaster:123456'), // Replace with your username and password
           },
         });
 
@@ -581,7 +584,7 @@ const handleEditSubmit = async () => {
         const response = await fetch('https://rocketsalestracker.com/api/groups', {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
           }
         });
 
@@ -848,7 +851,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-    const username = "school";
+    const username = "schoolmaster";
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
@@ -937,7 +940,7 @@ const fetchData = async (url) => {
     }
   } catch (error) {
     console.error('Error fetching the report:', error);
-    alert('Failed to download or process report.');
+    alert("please select device,event and date");
   } finally {
     setLoading(false);
   }
@@ -974,7 +977,7 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Route 
+       Events 
       </h1>
       <div>
         <div
@@ -984,24 +987,35 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
             marginBottom: "10px",
           }}
         >
-          <TextField
-            label="Search"
-            variant="outlined"
-            value={filterText}
-            onChange={handleFilterChange}
-            sx={{ marginRight: "10px", width: "300px" }}
-            InputProps={{
-              startAdornment: (
-                <SearchIcon
-                  style={{
-                    cursor: "pointer",
-                    marginLeft: "10px",
-                    marginRight: "5px",
-                  }}
-                />
-              ),
-            }}
-          />
+            <TextField
+    label="Search"
+    variant="outlined"
+    value={filterText}
+    onChange={handleFilterChange}
+    sx={{
+      marginRight: "10px",
+      width: "200px", // Smaller width
+      '& .MuiOutlinedInput-root': {
+        height: '36px', // Set a fixed height to reduce it
+        padding: '0px', // Reduce padding to shrink height
+      },
+      '& .MuiInputLabel-root': {
+        top: '-6px', // Adjust label position
+        fontSize: '14px', // Slightly smaller label font
+      }
+    }}
+    InputProps={{
+      startAdornment: (
+        <SearchIcon
+          style={{
+            cursor: "pointer",
+            marginLeft: "10px",
+            marginRight: "5px",
+          }}
+        />
+      ),
+    }}
+  />
           <Button
             onClick={() => setModalOpen(true)}
             sx={{
@@ -1017,42 +1031,11 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
             <ImportExportIcon />
             Column Visibility
           </Button>
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeleteSelected}
-            sx={{ marginRight: "10px" }}
-            startIcon={<DeleteIcon />}
-          >
-            Delete
-          </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleEditButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<EditIcon />}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleAddButtonClick}
-            sx={{ marginRight: "10px" }}
-            startIcon={<AddCircleIcon />}
-          >
-            Add
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setImportModalOpen(true)}
-            sx={{ backgroundColor: "rgb(255, 165, 0)", marginRight: "10px" }}
-            startIcon={<CloudUploadIcon />}
-          >
-            Import
-          </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
+        
+        
+         
+         
+          <Button variant="contained" color="error" onClick={handleExport}>
             Export
           </Button>
         </div>
@@ -1143,7 +1126,7 @@ style={{ marginRight: '10px', padding: '5px' }}
         Show
       </button>
 
-      {apiUrl && (
+      {/* {apiUrl && (
         <div style={{ marginTop: '10px' }}>
           <label htmlFor="api-url">Generated API URL:</label>
           <textarea
@@ -1154,7 +1137,7 @@ style={{ marginRight: '10px', padding: '5px' }}
             style={{ width: '100%', padding: '5px' }}
           ></textarea>
         </div>
-      )}
+      )} */}
     </div>
 
        
@@ -1174,7 +1157,7 @@ style={{ marginRight: '10px', padding: '5px' }}
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 440,
+                maxHeight: 545,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}
@@ -1454,21 +1437,41 @@ style={{ marginRight: '10px', padding: '5px' }}
       </TableBody>
     </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={sortedData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
             {/* //</></div> */}
           </>
         )}
-        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+         <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            <h2>Column Visibility</h2>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -1478,6 +1481,7 @@ style={{ marginRight: '10px', padding: '5px' }}
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

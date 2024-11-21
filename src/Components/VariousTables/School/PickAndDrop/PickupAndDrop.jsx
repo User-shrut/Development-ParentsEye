@@ -30,6 +30,15 @@ import CircularProgress from "@mui/material/CircularProgress";
 //import { TextField } from '@mui/material';
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Green check icon
 import CancelIcon from "@mui/icons-material/Cancel"; // Red cross icon
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
+import {
+  FormControlLabel,
+  FormLabel,
+  IconButton,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 const style = {
   position: "absolute",
   top: "50%",
@@ -50,7 +59,7 @@ export const PickupAndDrop = () => {
   const { setTotalResponses, role } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -607,13 +616,14 @@ export const PickupAndDrop = () => {
     fetchData(); // Fetch data when startDate or endDate changes
   }, [startDate, endDate]);
 
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+    setPage(0); // Reset to the first page
+  };
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
   const handleFilterChange = (event) => {
@@ -722,6 +732,7 @@ export const PickupAndDrop = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
     setFormData({});
+    setModalOpen(false);
   };
 
   const handleSnackbarClose = () => {
@@ -1040,31 +1051,55 @@ export const PickupAndDrop = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {sortedData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={row.id}
-                        onClick={() =>
-                          handleRowSelect(page * rowsPerPage + index)
+                  {sortedData.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={
+                          COLUMNS().filter(
+                            (col) => columnVisibility[col.accessor]
+                          ).length
                         }
-                        selected={row.isSelected}
                         style={{
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          borderBottom: "none", // White for even rows, light grey for odd rows
+                          textAlign: "center",
+                          padding: "16px",
+                          fontSize: "16px",
+                          color: "#757575",
+                          // fontStyle: 'italic',
                         }}
                       >
-                        <TableCell
-                          padding="checkbox"
-                          style={{ borderRight: "1px solid #e0e0e0" }}
+                        {/* <img src="emptyicon.png" alt="" /> */}
+                        <h4>No Data Available</h4>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    sortedData
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((row, index) => (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={row.id}
+                          onClick={() =>
+                            handleRowSelect(page * rowsPerPage + index)
+                          }
+                          selected={row.isSelected}
+                          style={{
+                            backgroundColor:
+                              index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                            borderBottom: "none", // White for even rows, light grey for odd rows
+                          }}
                         >
-                          <Switch checked={row.isSelected} color="primary" />
-                        </TableCell>
-                        <TableCell
+                          <TableCell
+                            padding="checkbox"
+                            style={{ borderRight: "1px solid #e0e0e0" }}
+                          >
+                            <Switch checked={row.isSelected} color="primary" />
+                          </TableCell>
+                          <TableCell
                             style={{
                               minWidth: 70, // Adjust width if needed
                               borderRight: "1px solid #e0e0e0",
@@ -1081,40 +1116,37 @@ export const PickupAndDrop = () => {
                             {page * rowsPerPage + index + 1}{" "}
                             {/* Serial number starts from 1 */}
                           </TableCell>
-                        {COLUMNS()
-                          .filter((col) => columnVisibility[col.accessor])
-                          .map((column) => {
-                            const value = row[column.accessor];
-                            return (
-                              <TableCell
-                                key={column.accessor}
-                                align={column.align}
-                                style={{
-                                  borderRight: "1px solid #e0e0e0",
-                                  paddingTop: "4px",
-                                  paddingBottom: "4px",
-                                  borderBottom: "none",
-                                  backgroundColor:
-                                    index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                                  fontSize: "smaller", // White for even rows, light grey for odd rows
-                                }}
-                              >
-                                {/* {column.accessor === 'pickupStatus' || column.accessor === 'dropStatus'
-                          ? formatBoolean(value)
-                          : value}
-                                {column.format && typeof value === "number"
-                                  ? column.format(value)
-                                  : value} */}
-                                {formatValue(column, row[column.accessor])}
-                              </TableCell>
-                            );
-                          })}
-                      </TableRow>
-                    ))}
+                          {COLUMNS()
+                            .filter((col) => columnVisibility[col.accessor])
+                            .map((column) => {
+                              const value = row[column.accessor];
+                              return (
+                                <TableCell
+                                  key={column.accessor}
+                                  align={column.align}
+                                  style={{
+                                    borderRight: "1px solid #e0e0e0",
+                                    paddingTop: "4px",
+                                    paddingBottom: "4px",
+                                    borderBottom: "none",
+                                    backgroundColor:
+                                      index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                                    fontSize: "smaller", // White for even rows, light grey for odd rows
+                                  }}
+                                >
+                                  {column.format && typeof value === "number"
+                                    ? column.format(value)
+                                    : value}
+                                </TableCell>
+                              );
+                            })}
+                        </TableRow>
+                      ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
+            {/* <TablePagination
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
               count={sortedData.length}
@@ -1122,13 +1154,42 @@ export const PickupAndDrop = () => {
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            /> */}
+              <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
             {/* //</></div> */}
           </>
         )}
         <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            <h2>Column Visibility</h2>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -1138,6 +1199,7 @@ export const PickupAndDrop = () => {
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

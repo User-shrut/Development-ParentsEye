@@ -1908,6 +1908,7 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
 //import { TextField } from '@mui/material';
 
@@ -1931,7 +1932,7 @@ export const Geofence = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -2120,13 +2121,14 @@ export const Geofence = () => {
     fetchData(); // Fetch data when startDate or endDate changes
   }, [startDate, endDate]);
 
+  const handleChangeRowsPerPage = (event) => {
+    const newRowsPerPage = parseInt(event.target.value, 10);
+    setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+    setPage(0); // Reset to the first page
+  };
+  
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
   };
 
   const handleFilterChange = (event) => {
@@ -2255,6 +2257,7 @@ export const Geofence = () => {
     setEditModalOpen(false);
     // setAddModalOpen(false);
     setFormData({});
+    setModalOpen(false);
   };
 
   const handleEditSubmit = async () => {
@@ -2558,7 +2561,7 @@ export const Geofence = () => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 440,
+                maxHeight: 585,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}
@@ -2725,21 +2728,41 @@ export const Geofence = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={sortedData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
             {/* //</></div> */}
           </>
         )}
         <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-          <Box sx={style} style={{maxHeight:'300px'}}>
-            <h2>Column Visibility</h2>
+        <Box sx={style}>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -2749,6 +2772,7 @@ export const Geofence = () => {
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

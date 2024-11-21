@@ -7,7 +7,7 @@ import React, { useState, useEffect, useContext } from "react";
 // import { Cards } from './Components/Cards/Cards.jsx';
 import { Googlemap } from "./Components/googlemap/googlemap.jsx";
 import { BasicSpeedDial } from "./Components/basicSpeedDial/basicSpeedDial.jsx";
-import { DistanceReport } from "./Components/VariousTables/Reports/DistanceReport/DistanceReport.jsx";
+
 import { Assets } from "./Components/VariousTables/Master/Assets/Assets.jsx";
 // import { School } from "./Components/VariousTables/Master/Assets/School.jsx";
 import { AssetsCategory } from "./Components/VariousTables/Master/AssetsCategory/AssetsCategory.jsx";
@@ -16,7 +16,7 @@ import {Status} from "./Components/VariousTables/School/Status/Status.jsx"
 import {StudentDetail} from "./Components/VariousTables/School/StudentDetail/StudentDetail.jsx"
 import {Present} from "./Components/VariousTables/School/Present/Present.jsx"
 import {User} from "./Components/VariousTables/School/User/User.jsx"
-import { DriverAssignmentReport } from "./Components/VariousTables/Reports/DriverAssignmentReport/DriverAssignmentReport.jsx";
+
 import { AnalyticsDashboard } from "./Components/VariousTables/Home/Analytics.js";
 import {School}  from "./Components/VariousTables/Master/School/School.jsx";
 import { AssetsType } from "./Components/VariousTables/Master/AssetsType/AssetsType.jsx";
@@ -92,9 +92,10 @@ import { Stops } from "./Components/VariousTables/ReportsUpdated/Stops/Stops.jsx
 import { Summary } from "./Components/VariousTables/ReportsUpdated/Summary/Summary.jsx";
 import {Statistics} from "./Components/VariousTables/ReportsUpdated/Statistics/Statistics.jsx";
 import { MyBranchDevices } from "./Components/VariousTables/Users/MyBranchDevices/MyBranchDevices.jsx";
-
+import { ReadDevices } from "./Components/VariousTables/Users/ReadDevices/ReadDevices.jsx";
 import '@coreui/coreui/dist/css/coreui.min.css';
 import './scss/style.scss';
+import { UserAccess } from "./Components/VariousTables/Users/UserAccess/UserAccess.jsx";
 
 // import { Newdemo } from "./Components/VariousTables/Institutestudent/Newdemo/Newdemo.jsx";
 // import { New2 } from "./Components/VariousTables/Institutestudent/New2/New2.jsx";
@@ -420,20 +421,16 @@ function App() {
   };
 
   const handleSidebarItemClick = (item) => {
-    if (item === "Distance Report") {
-      setComponent("DistanceReport");
-    } else if (item === "Dashboard") {
+    if (item === "Dashboard") {
       setComponent("Dashboard");
     } else if (item === "Assets") {
       setComponent("Assets");
     } else if (item === "Assets Category") {
       setComponent("AssetsCategory");
-    }else if (item === "Leave") {
+    }else if (item === "Leave Request") {
       setComponent("Leave");
     }else if (item === "Status") {
       setComponent("Status");
-    } else if (item === "Driver Assignment Report") {
-      setComponent("DriverAssignmentReport");
     } else if (item === "Analytics Dashboard") {
       setComponent("AnalyticsDashboard");
     } else if (item === "Assets Type") {
@@ -516,15 +513,15 @@ function App() {
       setComponent("User");
     }else if (item === "Present") {
       setComponent("Present");
-    }else if (item === "Driver") {
+    }else if (item === "Driver Approve") {
       setComponent("Driver");
-    } else if (item === "SchoolMaster") {
+    } else if (item === "School Master") {
       setComponent("SchoolMaster");
-    } else if (item === "BranchMaster") {
+    } else if (item === "Branch Master") {
       setComponent("BranchMaster");
-    }else if (item === "Parent") {
+    }else if (item === "Parent Approve") {
       setComponent("Parent");
-    }else if (item === "Supervisor") {
+    }else if (item === "Supervisor Approve") {
       setComponent("Supervisor");
     }else if (item === "Approved Request") {
       setComponent("ApprovedRequest");
@@ -558,7 +555,7 @@ function App() {
       setComponent("SavedCommands");
     }else if (item === "Userrr") {
       setComponent("Userrr");
-    }else if (item === "Combined") {
+    }else if (item === "Device Status") {
       setComponent("Combined");
     }else if (item === "Route") {
       setComponent("Route");
@@ -574,8 +571,12 @@ function App() {
       setComponent("Summary");
     }else if (item === "Statistics") {
       setComponent("Statistics");
-    }else if (item === "MyBranchDevices") {
+    }else if (item === "My Branch Devices") {
       setComponent("MyBranchDevices");
+    }else if (item === "Read Devices") {
+      setComponent("ReadDevices");
+    }else if (item === "User Access") {
+      setComponent("UserAccess");
     }
    
    
@@ -615,9 +616,7 @@ function App() {
           />
 
           {component === "Dashboard" && <Tablee data={mergedData} />}
-          {component === "DistanceReport" && (
-            <DistanceReport data={mergedData} />
-          )}
+        
           {component === "Assets" && <Assets data={mergedData} />}
           {component === "School" && <School data={mergedData} />}
           {component === "AssetsCategory" && (
@@ -632,9 +631,7 @@ function App() {
            {component === "StudentDetail" && (
             <StudentDetail data={mergedData} />
           )}
-          {component === "DriverAssignmentReport" && (
-            <DriverAssignmentReport data={mergedData} />
-          )}
+         
           {component === "AnalyticsDashboard" && (
             <AnalyticsDashboard data={mergedData} />
           )}
@@ -738,6 +735,9 @@ function App() {
           {component === "Summary" && <Summary data={mergedData} />}
           {component === "Statistics" && <Statistics data={mergedData} />}
           {component === "MyBranchDevices" && <MyBranchDevices data={mergedData} />}
+          {component === "ReadDevices" && <ReadDevices data={mergedData} />}
+          {component === "UserAccess" && <UserAccess data={mergedData} />}
+         
           {/* {component === "Newdemo" && <Newdemo data={mergedData} />}
           {component === "New2" && <New2 data={mergedData} />} */}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
@@ -747,12 +747,12 @@ function App() {
             
             "Dashboard",
             "School",
-            "DistanceReport",
+          
             "Assets",
             "AssetsCategory",
             "Leave",
             "Status",
-            "DriverAssignmentReport",
+           
             "AnalyticsDashboard",
             "AssetsType",
             "AssetsCommand",
@@ -825,7 +825,9 @@ function App() {
            "Summary",
            "Statistics",
            "MyBranchDevices",
-          
+          "ReadDevices",
+          "UserAccess",
+         
           //  "Newdemo",
           //  "New2"
           ].includes(component) && <Tablee data={mergedData} />}
