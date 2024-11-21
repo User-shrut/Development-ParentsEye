@@ -30,6 +30,7 @@ export const FetchData = () => {
                     }
                 });
                 
+                
                 setPositionApiData(response2.data);
                 // console.log(positionApiData);
                 console.log(response2.data)

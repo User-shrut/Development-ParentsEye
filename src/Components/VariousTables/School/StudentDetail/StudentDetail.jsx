@@ -1,4 +1,3 @@
-
 //oct08
 import React, { useState, useEffect, useContext, Component } from "react";
 import axios from "axios";
@@ -189,8 +188,6 @@ export const StudentDetail = () => {
         // Log the date range and filtered data
         console.log(`Data fetched between ${startDate} and ${endDate}:`);
         console.log(filteredData);
-
-      
       } else {
         console.error("Expected an array but got:", response.data.children);
       }
@@ -425,40 +422,40 @@ export const StudentDetail = () => {
   //   alert("file imported successfully");
   // };
 
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheetNames = workbook.SheetNames;
+        const sheet = workbook.Sheets[sheetNames[0]];
+        const parsedData = XLSX.utils.sheet_to_json(sheet);
 
+        // Log the parsed data for verification
+        console.log("Uploaded file data:", parsedData);
 
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheetNames = workbook.SheetNames;
-      const sheet = workbook.Sheets[sheetNames[0]];
-      const parsedData = XLSX.utils.sheet_to_json(sheet);
+        // Now make the POST request with parsedData
+        axios
+          .post("http://63.142.251.13:4000/parent/import", parsedData)
+          .then((response) => {
+            console.log("Data successfully posted:", response.data);
+            alert("File imported and data posted successfully!");
+          })
+          .catch((error) => {
+            console.error("Error posting data:", error);
+            alert(
+              "Error posting data. Please fill data in valid form as shown in sample excel sheet."
+            );
+          });
+      };
+      reader.readAsArrayBuffer(file);
+    }
 
-      // Log the parsed data for verification
-      console.log("Uploaded file data:", parsedData);
-
-      // Now make the POST request with parsedData
-      axios.post('http://63.142.251.13:4000/parent/import', parsedData)
-        .then(response => {
-          console.log('Data successfully posted:', response.data);
-          alert('File imported and data posted successfully!');
-        })
-        .catch(error => {
-          console.error('Error posting data:', error);
-          alert('Error posting data. Please fill data in valid form as shown in sample excel sheet.');
-        });
-    };
-    reader.readAsArrayBuffer(file);
-
-  }
- 
-  fetchData();
-   setImportModalOpen(false);
-};
+    fetchData();
+    setImportModalOpen(false);
+  };
 
   const sortedData = [...filteredRows];
   if (sortConfig.key !== null) {
@@ -496,7 +493,9 @@ const handleFileUpload = (event) => {
     const apiUrl =
       role == 1
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child`
-        : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/update-child` : `${process.env.REACT_APP_BRANCH_API}/update-child`
+        : role == 2
+        ? `${process.env.REACT_APP_SCHOOL_API}/update-child`
+        : `${process.env.REACT_APP_BRANCH_API}/update-child`;
 
     // Prepare the updated data
     const updatedData = {
@@ -546,37 +545,34 @@ const handleFileUpload = (event) => {
 
   const handleAddSubmit = async () => {
     try {
-      const decoded = jwtDecode(localStorage.getItem('token'));
+      const decoded = jwtDecode(localStorage.getItem("token"));
       let newRow;
 
-      if(role == 1){
+      if (role == 1) {
         newRow = {
           ...formData,
           // id: filteredRows.length + 1,
           // isSelected: false,
         };
-      }
-      else if(role == 2){
+      } else if (role == 2) {
         newRow = {
           ...formData,
           schoolName: decoded.schoolName,
           // id: filteredRows.length + 1,
           // isSelected: false,
         };
-      }else{
+      } else {
         newRow = {
           ...formData,
           schoolName: decoded.schoolName,
           branchName: decoded.branchName,
         };
       }
-      
 
       console.log(newRow);
 
       // POST request to the server
       const response = await fetch(
-
         `${process.env.REACT_APP_API}/parent/register`,
 
         {
@@ -609,8 +605,6 @@ const handleFileUpload = (event) => {
       // Handle the error appropriately (e.g., show a notification to the user)
     }
   };
-
- 
 
   // useEffect(() => {
   //   const fetchGeofenceData = async () => {
@@ -679,11 +673,10 @@ const handleFileUpload = (event) => {
   //   fetchOtherData();
   // }, []);
 
- 
   // const handleInputChange = (e) => {
   //   const { name, value } = e.target;
   //   const decoded = jwtDecode(localStorage.getItem("token"));
-  
+
   //   if (role == 2 && name == "branchName") {
   //     setFormData({
   //       ...formData,
@@ -701,7 +694,7 @@ const handleFileUpload = (event) => {
   //     const selectedSchoolData = schools.find(
   //       (school) => school.schoolName == value
   //     );
-  
+
   //     if (selectedSchoolData) {
   //       const allBranches = [];
   //       if (selectedSchoolData.branchName) {
@@ -710,7 +703,7 @@ const handleFileUpload = (event) => {
   //           branchId: selectedSchoolData._id,
   //         });
   //       }
-  
+
   //       if (
   //         selectedSchoolData.branches &&
   //         selectedSchoolData.branches.length > 0
@@ -722,7 +715,7 @@ const handleFileUpload = (event) => {
   //           });
   //         });
   //       }
-  
+
   //       setBranches(allBranches);
   //       // Filter devices by selected school
   //       const filteredDevices = allDevices.filter(device => device.schoolName == value);
@@ -738,19 +731,18 @@ const handleFileUpload = (event) => {
   // const handleBusChange = (e) => {
   //   const { value } = e.target;
   //   const selectedBus = buses.find(bus => bus.deviceId === value);
-  
+
   //   setFormData({
   //     ...formData,
   //     deviceId: selectedBus?.deviceId,
   //     deviceName: selectedBus?.deviceName,
   //   });
   // };
- 
 
   // const handleBusChange = (e) => {
   //   const { value } = e.target;
   //   const selectedBus = buses.find(bus => bus.deviceId === value);
-    
+
   //   // Update formData with selected bus information
   //   setFormData((prevData) => ({
   //     ...prevData,
@@ -758,43 +750,43 @@ const handleFileUpload = (event) => {
   //     deviceName: selectedBus?.deviceName,
   //     pickupPoint: '', // Reset geofence selection
   //   }));
-  
+
   //   // Construct the key for pickupPointsData
   //   const geofenceKey = `deviceId: ${selectedBus?.deviceId}`;
-    
+
   //   // Get geofences for the selected device
   //   const geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
-    
+
   //   // Update filtered geofences state
   //   setFilteredGeofences(geofencesForSelectedDevice);
-    
+
   //   // Debugging log
   //   console.log("Filtered Geofences:", geofencesForSelectedDevice);
   // };
-  
+
   // const handleBusChange = (e) => {
   //   const { value } = e.target;
   //   const selectedBus = buses.find(bus => bus.deviceId === value);
-  
+
   //   if (!selectedBus) {
   //     console.error("Selected bus not found");
   //     return;
   //   }
-  
+
   //   setFormData((prevData) => ({
   //     ...prevData,
   //     deviceId: selectedBus.deviceId,
   //     deviceName: selectedBus.deviceName,
   //     pickupPoint: '', // Reset geofence selection
   //   }));
-  
+
   //   let geofencesForSelectedDevice = [];
-  
+
   //   if (role == 1) {
   //     // Access geofences using deviceId as the key
   //     const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
   //     geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
-  
+
   //     if (geofencesForSelectedDevice.length === 0) {
   //       console.error("No geofences found for this deviceId");
   //     }
@@ -802,7 +794,7 @@ const handleFileUpload = (event) => {
   //     const selectedBranch = branches.find(branch =>
   //       branch.geofences && Array.isArray(branch.geofences) && branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
   //     );
-  
+
   //     if (selectedBranch) {
   //       geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
   //     } else {
@@ -810,10 +802,10 @@ const handleFileUpload = (event) => {
   //     }
   //   } else if (role == 3) {
   //     const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
-      
+
   //     if (branchData) {
   //       const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
-        
+
   //       if (deviceData) {
   //         geofencesForSelectedDevice = deviceData.geofences || [];
   //       } else {
@@ -823,38 +815,38 @@ const handleFileUpload = (event) => {
   //       console.error("Branch data not found for selected bus");
   //     }
   //   }
-  
+
   //   setFilteredGeofences(geofencesForSelectedDevice);
   //   console.log("Filtered Geofences:", geofencesForSelectedDevice);
   // };
   // const handleBusChange = (e) => {
   //   const { value } = e.target;
-    
+
   //   if (!buses || !Array.isArray(buses)) {
   //     console.error("Buses data is not available or not an array");
   //     return;
   //   }
-    
+
   //   const selectedBus = buses.find(bus => bus.deviceId === value);
-    
+
   //   if (!selectedBus) {
   //     console.error("Selected bus not found");
   //     return;
   //   }
-    
+
   //   setFormData((prevData) => ({
   //     ...prevData,
   //     deviceId: selectedBus.deviceId,
   //     deviceName: selectedBus.deviceName,
   //     pickupPoint: '', // Reset geofence selection
   //   }));
-    
+
   //   let geofencesForSelectedDevice = [];
-    
+
   //   if (role == 1) {
   //     const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
   //     geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
-    
+
   //     if (geofencesForSelectedDevice.length === 0) {
   //       console.error("No geofences found for this deviceId");
   //     }
@@ -863,12 +855,12 @@ const handleFileUpload = (event) => {
   //         console.error("Branches data is not available or not an array");
   //         return;
   //     }
-  
-  //     const selectedBranch = branches.find(branch => 
+
+  //     const selectedBranch = branches.find(branch =>
   //         branch.geofences && Array.isArray(branch.geofences) &&
   //         branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
   //     );
-      
+
   //     if (selectedBranch) {
   //         geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
   //         if (geofencesForSelectedDevice.length === 0) {
@@ -897,234 +889,238 @@ const handleFileUpload = (event) => {
   //       console.error("Branch data not found for selected bus");
   //     }
   //   }
-    
+
   //   setFilteredGeofences(geofencesForSelectedDevice);
   //   console.log("Filtered Geofences:", geofencesForSelectedDevice);
   // };
-  
-//   const handleBusChange = (e) => {
-//     const { value } = e.target;
 
-//     if (!buses || !Array.isArray(buses)) {
-//         console.error("Buses data is not available or not an array");
-//         return;
-//     }
+  //   const handleBusChange = (e) => {
+  //     const { value } = e.target;
 
-//     const selectedBus = buses.find(bus => bus.deviceId === value);
+  //     if (!buses || !Array.isArray(buses)) {
+  //         console.error("Buses data is not available or not an array");
+  //         return;
+  //     }
 
-//     if (!selectedBus) {
-//         console.error("Selected bus not found");
-//         return;
-//     }
+  //     const selectedBus = buses.find(bus => bus.deviceId === value);
 
-//     setFormData((prevData) => ({
-//         ...prevData,
-//         deviceId: selectedBus.deviceId,
-//         deviceName: selectedBus.deviceName,
-//         pickupPoint: '', // Reset geofence selection
-//     }));
+  //     if (!selectedBus) {
+  //         console.error("Selected bus not found");
+  //         return;
+  //     }
 
-//     let geofencesForSelectedDevice = [];
+  //     setFormData((prevData) => ({
+  //         ...prevData,
+  //         deviceId: selectedBus.deviceId,
+  //         deviceName: selectedBus.deviceName,
+  //         pickupPoint: '', // Reset geofence selection
+  //     }));
 
-//     if (role == 1) {
-//         const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
-//         geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
+  //     let geofencesForSelectedDevice = [];
 
-//         if (geofencesForSelectedDevice.length === 0) {
-//             console.error("No geofences found for this deviceId");
-//         }
-//     } else if (role == 2) {
-//         if (!branches || !Array.isArray(branches)) {
-//             console.error("Branches data is not available or not an array");
-//             return;
-//         }
+  //     if (role == 1) {
+  //         const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
+  //         geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
 
-//         const selectedBranch = branches.find(branch =>
-//             branch.geofences && Array.isArray(branch.geofences) &&
-//             branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
-//         );
+  //         if (geofencesForSelectedDevice.length === 0) {
+  //             console.error("No geofences found for this deviceId");
+  //         }
+  //     } else if (role == 2) {
+  //         if (!branches || !Array.isArray(branches)) {
+  //             console.error("Branches data is not available or not an array");
+  //             return;
+  //         }
 
-//         if (selectedBranch) {
-//             geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
-//             if (geofencesForSelectedDevice.length === 0) {
-//                 console.error("No geofences found for this deviceId in the selected branch.");
-//             }
-//         } else {
-//             console.error("No valid geofences found for the selected branch.");
-//         }
-//     } else if (role === 3) {
-//         if (!branches || !Array.isArray(branches)) {
-//             console.error("Branches data is not available or not an array");
-//             return;
-//         }
+  //         const selectedBranch = branches.find(branch =>
+  //             branch.geofences && Array.isArray(branch.geofences) &&
+  //             branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
+  //         );
 
-//         const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
+  //         if (selectedBranch) {
+  //             geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
+  //             if (geofencesForSelectedDevice.length === 0) {
+  //                 console.error("No geofences found for this deviceId in the selected branch.");
+  //             }
+  //         } else {
+  //             console.error("No valid geofences found for the selected branch.");
+  //         }
+  //     } else if (role === 3) {
+  //         if (!branches || !Array.isArray(branches)) {
+  //             console.error("Branches data is not available or not an array");
+  //             return;
+  //         }
 
-//         if (branchData) {
-//             const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
+  //         const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
 
-//             if (deviceData) {
-//                 geofencesForSelectedDevice = deviceData.geofences || [];
-//             } else {
-//                 console.error("Device data not found for selected bus");
-//             }
-//         } else {
-//             console.error("Branch data not found for selected bus");
-//         }
-//     }
+  //         if (branchData) {
+  //             const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
 
-//     setFilteredGeofences(geofencesForSelectedDevice);
-//     console.log("Filtered Geofences:", geofencesForSelectedDevice);
-// };
-// const handleBusChange = (e) => {
-//   const { value } = e.target;
+  //             if (deviceData) {
+  //                 geofencesForSelectedDevice = deviceData.geofences || [];
+  //             } else {
+  //                 console.error("Device data not found for selected bus");
+  //             }
+  //         } else {
+  //             console.error("Branch data not found for selected bus");
+  //         }
+  //     }
 
-//   if (!buses || !Array.isArray(buses)) {
-//       console.error("Buses data is not available or not an array");
-//       return;
-//   }
+  //     setFilteredGeofences(geofencesForSelectedDevice);
+  //     console.log("Filtered Geofences:", geofencesForSelectedDevice);
+  // };
+  // const handleBusChange = (e) => {
+  //   const { value } = e.target;
 
-//   const selectedBus = buses.find(bus => bus.deviceId === value);
+  //   if (!buses || !Array.isArray(buses)) {
+  //       console.error("Buses data is not available or not an array");
+  //       return;
+  //   }
 
-//   if (!selectedBus) {
-//       console.error("Selected bus not found");
-//       return;
-//   }
+  //   const selectedBus = buses.find(bus => bus.deviceId === value);
 
-//   setFormData((prevData) => ({
-//       ...prevData,
-//       deviceId: selectedBus.deviceId,
-//       deviceName: selectedBus.deviceName,
-//       pickupPoint: '', // Reset geofence selection
-//   }));
+  //   if (!selectedBus) {
+  //       console.error("Selected bus not found");
+  //       return;
+  //   }
 
-//   let geofencesForSelectedDevice = [];
+  //   setFormData((prevData) => ({
+  //       ...prevData,
+  //       deviceId: selectedBus.deviceId,
+  //       deviceName: selectedBus.deviceName,
+  //       pickupPoint: '', // Reset geofence selection
+  //   }));
 
-//   if (role == 1) {
-//       const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
-//       geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
+  //   let geofencesForSelectedDevice = [];
 
-//       if (geofencesForSelectedDevice.length === 0) {
-//           console.error("No geofences found for this deviceId");
-//       }
-//   } else if (role == 2) {
-//       if (!branches || !Array.isArray(branches)) {
-//           console.error("Branches data is not available or not an array");
-//           return;
-//       }
+  //   if (role == 1) {
+  //       const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
+  //       geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
 
-//       const selectedBranch = branches.find(branch =>
-//           branch.geofences && Array.isArray(branch.geofences) &&
-//           branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
-//       );
+  //       if (geofencesForSelectedDevice.length === 0) {
+  //           console.error("No geofences found for this deviceId");
+  //       }
+  //   } else if (role == 2) {
+  //       if (!branches || !Array.isArray(branches)) {
+  //           console.error("Branches data is not available or not an array");
+  //           return;
+  //       }
 
-//       if (selectedBranch) {
-//           geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
-//           if (geofencesForSelectedDevice.length === 0) {
-//               console.error("No geofences found for this deviceId in the selected branch.");
-//           }
-//       } else {
-//           console.error("No valid geofences found for the selected branch.");
-//       }
-//   } else if (role === 3) {
-//       if (!branches || !Array.isArray(branches)) {
-//           console.error("Branches data is not available or not an array");
-//           return;
-//       }
+  //       const selectedBranch = branches.find(branch =>
+  //           branch.geofences && Array.isArray(branch.geofences) &&
+  //           branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
+  //       );
 
-//       const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
+  //       if (selectedBranch) {
+  //           geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
+  //           if (geofencesForSelectedDevice.length === 0) {
+  //               console.error("No geofences found for this deviceId in the selected branch.");
+  //           }
+  //       } else {
+  //           console.error("No valid geofences found for the selected branch.");
+  //       }
+  //   } else if (role === 3) {
+  //       if (!branches || !Array.isArray(branches)) {
+  //           console.error("Branches data is not available or not an array");
+  //           return;
+  //       }
 
-//       if (branchData) {
-//           const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
+  //       const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
 
-//           if (deviceData) {
-//               geofencesForSelectedDevice = deviceData.geofences || [];
-//           } else {
-//               console.error("Device data not found for selected bus");
-//           }
-//       } else {
-//           console.error("Branch data not found for selected bus");
-//       }
-//   }
+  //       if (branchData) {
+  //           const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
 
-//   setFilteredGeofences(geofencesForSelectedDevice);
-//   console.log("Filtered Geofences:", geofencesForSelectedDevice);
-// };
-const handleBusChange = (e) => {
-  const { value } = e.target;
+  //           if (deviceData) {
+  //               geofencesForSelectedDevice = deviceData.geofences || [];
+  //           } else {
+  //               console.error("Device data not found for selected bus");
+  //           }
+  //       } else {
+  //           console.error("Branch data not found for selected bus");
+  //       }
+  //   }
 
-  if (!buses || !Array.isArray(buses)) {
+  //   setFilteredGeofences(geofencesForSelectedDevice);
+  //   console.log("Filtered Geofences:", geofencesForSelectedDevice);
+  // };
+  const handleBusChange = (e) => {
+    const { value } = e.target;
+
+    if (!buses || !Array.isArray(buses)) {
       console.error("Buses data is not available or not an array");
       return;
-  }
+    }
 
-  // Find the selected bus by its deviceId
-  const selectedBus = buses.find(bus => bus.deviceId === value);
+    // Find the selected bus by its deviceId
+    const selectedBus = buses.find((bus) => bus.deviceId === value);
 
-  if (!selectedBus) {
+    if (!selectedBus) {
       console.error("Selected bus not found");
       return;
-  }
+    }
 
-  // Update the form data with the selected device details
-  setFormData((prevData) => ({
+    // Update the form data with the selected device details
+    setFormData((prevData) => ({
       ...prevData,
       deviceId: selectedBus.deviceId,
       deviceName: selectedBus.deviceName,
-      pickupPoint: '', // Reset geofence selection
-  }));
+      pickupPoint: "", // Reset geofence selection
+    }));
 
-  let geofencesForSelectedDevice = [];
+    let geofencesForSelectedDevice = [];
 
-  if (role == 2) {
+    if (role == 2) {
       // For role == 2, look up geofences in pickupPointsData by the selectedBus.deviceId
       geofencesForSelectedDevice = pickupPointsData[selectedBus.deviceId] || [];
 
       if (geofencesForSelectedDevice.length === 0) {
-          console.error("No geofences found for this deviceId");
+        console.error("No geofences found for this deviceId");
       }
-  } else if (role == 1) {
+    } else if (role == 1) {
       const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
       geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
 
       if (geofencesForSelectedDevice.length === 0) {
-          console.error("No geofences found for this deviceId");
+        console.error("No geofences found for this deviceId");
       }
-  } else if (role == 3) {
-    // Handling for role 3
-    geofencesForSelectedDevice = pickupPointsData[selectedBus.deviceId] || [];
+    } else if (role == 3) {
+      // Handling for role 3
+      geofencesForSelectedDevice = pickupPointsData[selectedBus.deviceId] || [];
 
       if (geofencesForSelectedDevice.length === 0) {
-          console.error("No geofences found for this deviceId");
+        console.error("No geofences found for this deviceId");
       }
-  }
+    }
 
-  // Update the filtered geofences state
-  setFilteredGeofences(geofencesForSelectedDevice);
-  console.log("Filtered Geofences:", geofencesForSelectedDevice);
-};
+    // Update the filtered geofences state
+    setFilteredGeofences(geofencesForSelectedDevice);
+    console.log("Filtered Geofences:", geofencesForSelectedDevice);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     if (name === "schoolName") {
       setFormData({
         ...formData,
         [name]: value,
         branchName: "", // Reset branch when school changes
       });
-      
+
       // Filter branches for the selected school
-      const selectedSchool = schools.find(school => school.schoolName === value);
+      const selectedSchool = schools.find(
+        (school) => school.schoolName === value
+      );
       if (selectedSchool) {
-        const branches = selectedSchool.branches.map(branch => ({
+        const branches = selectedSchool.branches.map((branch) => ({
           branchName: branch.branchName,
           branchId: branch.branchId,
         }));
         setBranches(branches);
-  
+
         // Filter devices for the selected school
-        const filteredDevices = allDevices.filter(device => device.schoolName === value);
+        const filteredDevices = allDevices.filter(
+          (device) => device.schoolName === value
+        );
         setBuses(filteredDevices); // Update buses based on selected school
       }
     } else if (name === "branchName") {
@@ -1132,17 +1128,20 @@ const handleBusChange = (e) => {
         ...formData,
         [name]: value,
       });
-  
+
       // Filter devices for the selected branch
-      const filteredDevices = allDevices.filter(device => device.branchName === value);
+      const filteredDevices = allDevices.filter(
+        (device) => device.branchName === value
+      );
       setBuses(filteredDevices); // Update buses based on selected branch
-    } if (name === "deviceId") {
+    }
+    if (name === "deviceId") {
       setSelectedDeviceId(value); // Set the selected device ID
       setFormData({
         ...formData,
         [name]: value,
       });
-  
+
       // Filter geofences based on the selected bus (deviceId)
       const selectedDeviceGeofences = pickupPointsData[value] || []; // Access geofences using the deviceId as the key
       setFilteredGeofences(selectedDeviceGeofences); // Update geofences in state
@@ -1153,9 +1152,6 @@ const handleBusChange = (e) => {
       });
     }
   };
- 
-  
-  
 
   const handleSelectChange = (event) => {
     setFormData({
@@ -1172,7 +1168,6 @@ const handleBusChange = (e) => {
     setOtherSelectedValue(event.target.value);
   };
 
- 
   const [allDevices, setAllDevices] = useState([]);
   const columns = COLUMNS();
   const lastSecondColumn = columns[columns.length - 2]; // Last second column
@@ -1181,7 +1176,7 @@ const handleBusChange = (e) => {
   // const lastthirdColumn = columns1[columns1.length - 3];
   const [pickupPointsData, setPickupPointsData] = useState([]); // Use descriptive state name
   const [selectedDeviceId, setSelectedDeviceId] = useState("");
-  const [filteredGeofences, setFilteredGeofences] = useState([]); 
+  const [filteredGeofences, setFilteredGeofences] = useState([]);
   useEffect(() => {
     const fetchSchool = async (startDate = "", endDate = "") => {
       setLoading(true);
@@ -1196,7 +1191,7 @@ const handleBusChange = (e) => {
               },
             }
           );
-          
+
           console.log("School data fetched:", response.data);
 
           if (Array.isArray(response.data.schools)) {
@@ -1236,13 +1231,13 @@ const handleBusChange = (e) => {
             : role == 2
             ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
             : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
-    
+
         const response = await axios.get(apiUrl, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-    
+
         let allData = [];
         if (role == 1) {
           allData = response?.data.data.flatMap((school) =>
@@ -1269,7 +1264,7 @@ const handleBusChange = (e) => {
         } else if (role == 3) {
           const branchName = response.data.branchName;
           const schoolName = response.data.schoolName;
-    
+
           allData = Array.isArray(response.data.devices)
             ? response.data.devices.map((device) => ({
                 ...device,
@@ -1278,21 +1273,21 @@ const handleBusChange = (e) => {
               }))
             : [];
         }
-    
+
         setAllDevices(allData); // Store all devices
         setBuses(allData); // Set initial buses as well
-        console.log("filter devices according to branch",allData)
+        console.log("filter devices according to branch", allData);
       } catch (error) {
         console.error("Error fetching buses:", error);
       }
     };
-   
+
     // const fetchGeofence = async (startDate = "", endDate = "") => {
     //   // setLoading(true);
     //   try {
     //     const token = localStorage.getItem("token");
     //     let response;
-    
+
     //     // Fetch data based on role
     //     if (role == 1) {
     //       response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
@@ -1307,10 +1302,10 @@ const handleBusChange = (e) => {
     //         headers: { Authorization: `Bearer ${token}` },
     //       });
     //     }
-    
+
     //     if (response?.data) {
     //       let fetchedData = {};
-    
+
     //       if (role == 1) {
     //         // Structure geofences by deviceId
     //         Object.entries(response.data).forEach(([deviceId, stops]) => {
@@ -1349,7 +1344,7 @@ const handleBusChange = (e) => {
     //           });
     //         });
     //       }
-    
+
     //       console.log("role is:", role);
     //       console.log("geofences are:", fetchedData);
     //       // Update the state with fetched data
@@ -1359,80 +1354,90 @@ const handleBusChange = (e) => {
     //     console.error("Error:", error);
     //   }
     // };
-    
+
     const fetchGeofence = async (startDate = "", endDate = "") => {
       // setLoading(true);
       try {
-          const token = localStorage.getItem("token");
-          let response;
-  
-          // Fetch data based on role
+        const token = localStorage.getItem("token");
+        let response;
+
+        // Fetch data based on role
+        if (role == 1) {
+          response = await axios.get(
+            `${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+        } else if (role == 2) {
+          response = await axios.get(
+            `${process.env.REACT_APP_SCHOOL_API}/geofences`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+        } else if (role == 3) {
+          response = await axios.get(
+            `${process.env.REACT_APP_BRANCH_API}/geofences`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+        }
+
+        if (response?.data) {
+          let fetchedData = {};
+
           if (role == 1) {
-              response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
-                  headers: { Authorization: `Bearer ${token}` },
-              });
+            // Structure geofences by deviceId
+            Object.entries(response.data).forEach(([deviceId, stops]) => {
+              fetchedData[deviceId] = stops.map((stop) => ({
+                ...stop,
+                deviceId, // Include deviceId in each stop
+              }));
+            });
           } else if (role == 2) {
-              response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/geofences`, {
-                  headers: { Authorization: `Bearer ${token}` },
-              });
-          } else if (role == 3) {
-              response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
-                  headers: { Authorization: `Bearer ${token}` },
-              });
-          }
-  
-          if (response?.data) {
-              let fetchedData = {};
-  
-              if (role == 1) {
-                  // Structure geofences by deviceId
-                  Object.entries(response.data).forEach(([deviceId, stops]) => {
-                      fetchedData[deviceId] = stops.map(stop => ({
-                          ...stop,
-                          deviceId, // Include deviceId in each stop
-                      }));
+            // For role 2, assuming response contains branches with geofences
+            response.data?.branches.forEach((branch) => {
+              if (branch.geofences) {
+                branch.geofences.forEach((geofence) => {
+                  if (!fetchedData[geofence.deviceId]) {
+                    // Use geofence.deviceId
+                    fetchedData[geofence.deviceId] = [];
+                  }
+                  fetchedData[geofence.deviceId].push({
+                    ...geofence,
+                    branchId: branch.branchId,
+                    branchName: branch.branchName,
                   });
-              } else if (role == 2) {
-                  // For role 2, assuming response contains branches with geofences
-                  response.data?.branches.forEach(branch => {
-                      if (branch.geofences) {
-                          branch.geofences.forEach(geofence => {
-                              if (!fetchedData[geofence.deviceId]) { // Use geofence.deviceId
-                                  fetchedData[geofence.deviceId] = [];
-                              }
-                              fetchedData[geofence.deviceId].push({
-                                  ...geofence,
-                                  branchId: branch.branchId,
-                                  branchName: branch.branchName,
-                              });
-                          });
-                      }
-                  });
-              } else if (role == 3) {
-                  // For role 3, handle geofences by device
-                  response.data.devices.forEach(device => {
-                      device.geofences.forEach(geofence => {
-                          if (!fetchedData[device.deviceId]) {
-                              fetchedData[device.deviceId] = [];
-                          }
-                          fetchedData[device.deviceId].push({
-                              ...geofence,
-                              deviceId: device.deviceId,
-                          });
-                      });
-                  });
+                });
               }
-  
-              console.log("role is:", role);
-              console.log("geofences are:", fetchedData);
-              // Update the state with fetched data
-              setPickupPointsData(fetchedData);
+            });
+          } else if (role == 3) {
+            // For role 3, handle geofences by device
+            response.data.devices.forEach((device) => {
+              device.geofences.forEach((geofence) => {
+                if (!fetchedData[device.deviceId]) {
+                  fetchedData[device.deviceId] = [];
+                }
+                fetchedData[device.deviceId].push({
+                  ...geofence,
+                  deviceId: device.deviceId,
+                });
+              });
+            });
           }
+
+          console.log("role is:", role);
+          console.log("geofences are:", fetchedData);
+          // Update the state with fetched data
+          setPickupPointsData(fetchedData);
+        }
       } catch (error) {
-          console.error("Error:", error);
+        console.error("Error:", error);
       }
-  };
-    
+    };
+
     fetchBuses();
     fetchSchool();
     fetchGeofence();
@@ -1443,16 +1448,66 @@ const handleBusChange = (e) => {
   //   ["Jane Doe", "10", "16", "A","Udemy","Branch6","11-03-2008","13","Vicky Doe","username","8989898989","5678"],
   // ];
   const sampleData = [
-    ["childName", "class", "rollno", "section", "schoolName", "branchName", "dateOfBirth", "childAge", "parentName", "email", "phone", "password","gender","pickupPoint","deviceName","deviceId"],
-    ["besap35", "10", "34", "A", "Podar", "Besa", "08-11-2009", "15", "parent1", "besap35", "8989898989", "123456","male","pickup1","MH5667777","2323"],
-    ["besap32", "9", "15", "B", "Podar", "Besa", "03-09-2008", "14", "parent2", "besap32", "8989898989", "123456","female","pickup2","UP787878","9090"],
-   
-];
+    [
+      "childName",
+      "class",
+      "rollno",
+      "section",
+      "schoolName",
+      "branchName",
+      "dateOfBirth",
+      "childAge",
+      "parentName",
+      "email",
+      "phone",
+      "password",
+      "gender",
+      "pickupPoint",
+      "deviceName",
+      "deviceId",
+    ],
+    [
+      "besap35",
+      "10",
+      "34",
+      "A",
+      "Podar",
+      "Besa",
+      "08-11-2009",
+      "15",
+      "parent1",
+      "besap35",
+      "8989898989",
+      "123456",
+      "male",
+      "pickup1",
+      "MH5667777",
+      "2323",
+    ],
+    [
+      "besap32",
+      "9",
+      "15",
+      "B",
+      "Podar",
+      "Besa",
+      "03-09-2008",
+      "14",
+      "parent2",
+      "besap32",
+      "8989898989",
+      "123456",
+      "female",
+      "pickup2",
+      "UP787878",
+      "9090",
+    ],
+  ];
 
   const handleDownloadSample = () => {
     const link = document.createElement("a");
-    link.href = "studentDetail.xlsx";  // Adjust the path here
-    link.download = "StudentDetail.xlsx";  // Specify the download filename
+    link.href = "studentDetail.xlsx"; // Adjust the path here
+    link.download = "StudentDetail.xlsx"; // Specify the download filename
     link.click();
   };
   return (
@@ -1931,7 +1986,7 @@ const handleBusChange = (e) => {
               Submit
             </Button>
           </Box> */}
-           <Box sx={style}>
+          <Box sx={style}>
             {/* <h2>Add Row</h2> */}
             <Box
               sx={{
@@ -2049,27 +2104,27 @@ const handleBusChange = (e) => {
                 <MenuItem value={10}>10</MenuItem>
               </Select>
             </FormControl> */}
-<FormControl fullWidth sx={{ marginBottom: "10px" }}>
-  <Autocomplete
-    id="searchable-select"
-    options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}  // Array of values to choose from
-    getOptionLabel={(option) => option.toString()}  // Convert numeric values to string for display
-    value={formData["class"] || null}
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "class", value: newValue },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Class"
-        variant="outlined"
-        name="class"
-      />
-    )}
-  />
-</FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+              <Autocomplete
+                id="searchable-select"
+                options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} // Array of values to choose from
+                getOptionLabel={(option) => option.toString()} // Convert numeric values to string for display
+                value={formData["class"] || null}
+                onChange={(event, newValue) => {
+                  handleInputChange({
+                    target: { name: "class", value: newValue },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Class"
+                    variant="outlined"
+                    name="class"
+                  />
+                )}
+              />
+            </FormControl>
             <TextField
               key={"roleno"}
               label={"Roll No"}
@@ -2112,27 +2167,41 @@ const handleBusChange = (e) => {
                     ))}
                   </Select>
                 </FormControl> */}
-                <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-school-select"
-    options={schools || []} // Ensure schools is an array
-    getOptionLabel={(option) => option.schoolName || ""} // Display school name
-    value={Array.isArray(schools) ? schools.find(school => school.schoolName === formData["schoolName"]) : null} // Safely find the selected school
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "schoolName", value: newValue?.schoolName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="School Name"
-        variant="outlined"
-        name="schoolName"
-      />
-    )}
-  />
-</FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <Autocomplete
+                    id="searchable-school-select"
+                    options={schools || []} // Ensure schools is an array
+                    getOptionLabel={(option) => option.schoolName || ""} // Display school name
+                    value={
+                      Array.isArray(schools)
+                        ? schools.find(
+                            (school) =>
+                              school.schoolName === formData["schoolName"]
+                          )
+                        : null
+                    } // Safely find the selected school
+                    onChange={(event, newValue) => {
+                      handleInputChange({
+                        target: {
+                          name: "schoolName",
+                          value: newValue?.schoolName || "",
+                        },
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="School Name"
+                        variant="outlined"
+                        name="schoolName"
+                      />
+                    )}
+                  />
+                </FormControl>
                 {/* <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -2153,27 +2222,41 @@ const handleBusChange = (e) => {
                     ))}
                   </Select>
                 </FormControl> */}
-                 <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) : null} // Safely find the selected branch
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "branchName", value: newValue?.branchName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-      />
-    )}
-  />
-</FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <Autocomplete
+                    id="searchable-branch-select"
+                    options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
+                    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                    value={
+                      Array.isArray(branches)
+                        ? branches.find(
+                            (branch) =>
+                              branch.branchName === formData["branchName"]
+                          )
+                        : null
+                    } // Safely find the selected branch
+                    onChange={(event, newValue) => {
+                      handleInputChange({
+                        target: {
+                          name: "branchName",
+                          value: newValue?.branchName || "",
+                        },
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Branch Name"
+                        variant="outlined"
+                        name="branchName"
+                      />
+                    )}
+                  />
+                </FormControl>
               </>
             ) : role == 2 ? (
               // <FormControl
@@ -2196,48 +2279,59 @@ const handleBusChange = (e) => {
               //     ))}
               //   </Select>
               // </FormControl>
-            //   <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-            //   <Autocomplete
-            //     id="searchable-branch-select"
-            //     options={branches || []} // List of branch objects
-            //     getOptionLabel={(option) => option.branchName || ""} // Display branch name
-            //     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
-            //     onChange={(event, newValue) => {
-            //       handleInputChange({
-            //         target: { name: "branchName", value: newValue?.branchName || "" },
-            //       });
-            //     }}
-            //     renderInput={(params) => (
-            //       <TextField
-            //         {...params}
-            //         label="Branch Name"
-            //         variant="outlined"
-            //         name="branchName"
-            //       />
-            //     )}
-            //   />
-            // </FormControl>
-            <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={branches || []} // Ensure branches is at least an empty array
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={(branches || []).find(branch => branch.branchName === formData["branchName"]) || null} // Ensure branches is an array
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "branchName", value: newValue?.branchName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-      />
-    )}
-  />
-</FormControl>
+              //   <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+              //   <Autocomplete
+              //     id="searchable-branch-select"
+              //     options={branches || []} // List of branch objects
+              //     getOptionLabel={(option) => option.branchName || ""} // Display branch name
+              //     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
+              //     onChange={(event, newValue) => {
+              //       handleInputChange({
+              //         target: { name: "branchName", value: newValue?.branchName || "" },
+              //       });
+              //     }}
+              //     renderInput={(params) => (
+              //       <TextField
+              //         {...params}
+              //         label="Branch Name"
+              //         variant="outlined"
+              //         name="branchName"
+              //       />
+              //     )}
+              //   />
+              // </FormControl>
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // Ensure branches is at least an empty array
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    (branches || []).find(
+                      (branch) => branch.branchName === formData["branchName"]
+                    ) || null
+                  } // Ensure branches is an array
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
             ) : null}
             {/* <FormControl
   variant="outlined"
@@ -2259,7 +2353,7 @@ const handleBusChange = (e) => {
     ))}
   </Select>
 </FormControl> */}
- {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <InputLabel>{"Bus Name"}</InputLabel>
   <Select
     value={formData["deviceId"] || ""}
@@ -2274,29 +2368,40 @@ const handleBusChange = (e) => {
     ))}
   </Select>
 </FormControl> */}
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-bus-select"
-    options={Array.isArray(buses) ? buses : []} // Ensure buses is an array
-    getOptionLabel={(option) => option.deviceName || ""} // Display bus name
-    value={Array.isArray(buses) ? buses.find(bus => bus.deviceId === formData["deviceId"]) : null} // Safely find the selected bus
-    onChange={(event, newValue) => {
-      handleBusChange({
-        target: { name: "deviceId", value: newValue?.deviceId || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Bus Name"
-        variant="outlined"
-        name="deviceId"
-      />
-    )}
-  />
-</FormControl>
-{/* Geofences display based on selected Bus */}
-{/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <Autocomplete
+                id="searchable-bus-select"
+                options={Array.isArray(buses) ? buses : []} // Ensure buses is an array
+                getOptionLabel={(option) => option.deviceName || ""} // Display bus name
+                value={
+                  Array.isArray(buses)
+                    ? buses.find((bus) => bus.deviceId === formData["deviceId"])
+                    : null
+                } // Safely find the selected bus
+                onChange={(event, newValue) => {
+                  handleBusChange({
+                    target: {
+                      name: "deviceId",
+                      value: newValue?.deviceId || "",
+                    },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Bus Name"
+                    variant="outlined"
+                    name="deviceId"
+                  />
+                )}
+              />
+            </FormControl>
+            {/* Geofences display based on selected Bus */}
+            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="geofence-id-label">Select Geofence</InputLabel>
   <Select
     labelId="geofence-id-label"
@@ -2315,29 +2420,34 @@ const handleBusChange = (e) => {
     )}
   </Select>
 </FormControl> */}
-<FormControl fullWidth sx={{ marginBottom: "10px" }}>
-  <Autocomplete
-    id="geofence-autocomplete"
-    options={filteredGeofences || []} // List of geofence objects
-    getOptionLabel={(option) => option.name || ""} // Display geofence name
-    value={filteredGeofences.find(geofence => geofence.name === formData["pickupPoint"]) || null} // Find the selected geofence
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "pickupPoint", value: newValue?.name || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Select Geofence"
-        variant="outlined"
-        name="pickupPoint"
-      />
-    )}
-  />
-</FormControl>
-
-
+            <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+              <Autocomplete
+                id="geofence-autocomplete"
+                options={filteredGeofences || []} // List of geofence objects
+                getOptionLabel={(option) => option.name || ""} // Display geofence name
+                value={
+                  filteredGeofences.find(
+                    (geofence) => geofence.name === formData["pickupPoint"]
+                  ) || null
+                } // Find the selected geofence
+                onChange={(event, newValue) => {
+                  handleInputChange({
+                    target: {
+                      name: "pickupPoint",
+                      value: newValue?.name || "",
+                    },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Geofence"
+                    variant="outlined"
+                    name="pickupPoint"
+                  />
+                )}
+              />
+            </FormControl>
 
             <TextField
               key={"parent"}
@@ -2379,7 +2489,7 @@ const handleBusChange = (e) => {
               sx={{ marginBottom: "10px" }}
               fullWidth
             />
-          {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="device-id-label">Select Device</InputLabel>
   <Select
     labelId="device-id-label"
@@ -2405,8 +2515,6 @@ const handleBusChange = (e) => {
   </div>
 )} */}
 
-
-
             <TextField
               key={"fcmToken"}
               label={"fcm Token"}
@@ -2426,7 +2534,6 @@ const handleBusChange = (e) => {
             </Button>
           </Box>
         </Modal>
-
 
         <Modal open={addModalOpen} onClose={handleModalClose}>
           <Box sx={style}>
@@ -2547,27 +2654,27 @@ const handleBusChange = (e) => {
                 <MenuItem value={10}>10</MenuItem>
               </Select>
             </FormControl> */}
-<FormControl fullWidth sx={{ marginBottom: "10px" }}>
-  <Autocomplete
-    id="searchable-select"
-    options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}  // Array of values to choose from
-    getOptionLabel={(option) => option.toString()}  // Convert numeric values to string for display
-    value={formData["class"] || null}
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "class", value: newValue },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Class"
-        variant="outlined"
-        name="class"
-      />
-    )}
-  />
-</FormControl>
+            <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+              <Autocomplete
+                id="searchable-select"
+                options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]} // Array of values to choose from
+                getOptionLabel={(option) => option.toString()} // Convert numeric values to string for display
+                value={formData["class"] || null}
+                onChange={(event, newValue) => {
+                  handleInputChange({
+                    target: { name: "class", value: newValue },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Class"
+                    variant="outlined"
+                    name="class"
+                  />
+                )}
+              />
+            </FormControl>
             <TextField
               key={"roleno"}
               label={"Roll No"}
@@ -2610,27 +2717,41 @@ const handleBusChange = (e) => {
                     ))}
                   </Select>
                 </FormControl> */}
-                <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-school-select"
-    options={schools || []} // Ensure schools is an array
-    getOptionLabel={(option) => option.schoolName || ""} // Display school name
-    value={Array.isArray(schools) ? schools.find(school => school.schoolName === formData["schoolName"]) : null} // Safely find the selected school
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "schoolName", value: newValue?.schoolName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="School Name"
-        variant="outlined"
-        name="schoolName"
-      />
-    )}
-  />
-</FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <Autocomplete
+                    id="searchable-school-select"
+                    options={schools || []} // Ensure schools is an array
+                    getOptionLabel={(option) => option.schoolName || ""} // Display school name
+                    value={
+                      Array.isArray(schools)
+                        ? schools.find(
+                            (school) =>
+                              school.schoolName === formData["schoolName"]
+                          )
+                        : null
+                    } // Safely find the selected school
+                    onChange={(event, newValue) => {
+                      handleInputChange({
+                        target: {
+                          name: "schoolName",
+                          value: newValue?.schoolName || "",
+                        },
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="School Name"
+                        variant="outlined"
+                        name="schoolName"
+                      />
+                    )}
+                  />
+                </FormControl>
                 {/* <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -2651,27 +2772,41 @@ const handleBusChange = (e) => {
                     ))}
                   </Select>
                 </FormControl> */}
-                <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) : null} // Safely find the selected branch
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "branchName", value: newValue?.branchName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-      />
-    )}
-  />
-</FormControl>
+                <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <Autocomplete
+                    id="searchable-branch-select"
+                    options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
+                    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                    value={
+                      Array.isArray(branches)
+                        ? branches.find(
+                            (branch) =>
+                              branch.branchName === formData["branchName"]
+                          )
+                        : null
+                    } // Safely find the selected branch
+                    onChange={(event, newValue) => {
+                      handleInputChange({
+                        target: {
+                          name: "branchName",
+                          value: newValue?.branchName || "",
+                        },
+                      });
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Branch Name"
+                        variant="outlined"
+                        name="branchName"
+                      />
+                    )}
+                  />
+                </FormControl>
               </>
             ) : role == 2 ? (
               // <FormControl
@@ -2694,49 +2829,62 @@ const handleBusChange = (e) => {
               //     ))}
               //   </Select>
               // </FormControl>
-            //   <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-            //   <Autocomplete
-            //     id="searchable-branch-select"
-            //     options={branches || []} // List of branch objects
-            //     getOptionLabel={(option) => option.branchName || ""} // Display branch name
-            //     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
-            //     onChange={(event, newValue) => {
-            //       handleInputChange({
-            //         target: { name: "branchName", value: newValue?.branchName || "" },
-            //       });
-            //     }}
-            //     renderInput={(params) => (
-            //       <TextField
-            //         {...params}
-            //         label="Branch Name"
-            //         variant="outlined"
-            //         name="branchName"
-            //       />
-            //     )}
-            //   />
-            // </FormControl>
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={branches || []} // Ensure branches is an array
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) || null : null} // Safeguard find method
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "branchName", value: newValue?.branchName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-      />
-    )}
-  />
-</FormControl>
-
+              //   <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+              //   <Autocomplete
+              //     id="searchable-branch-select"
+              //     options={branches || []} // List of branch objects
+              //     getOptionLabel={(option) => option.branchName || ""} // Display branch name
+              //     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
+              //     onChange={(event, newValue) => {
+              //       handleInputChange({
+              //         target: { name: "branchName", value: newValue?.branchName || "" },
+              //       });
+              //     }}
+              //     renderInput={(params) => (
+              //       <TextField
+              //         {...params}
+              //         label="Branch Name"
+              //         variant="outlined"
+              //         name="branchName"
+              //       />
+              //     )}
+              //   />
+              // </FormControl>
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // Ensure branches is an array
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    Array.isArray(branches)
+                      ? branches.find(
+                          (branch) =>
+                            branch.branchName === formData["branchName"]
+                        ) || null
+                      : null
+                  } // Safeguard find method
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
             ) : null}
             {/* <FormControl
   variant="outlined"
@@ -2758,7 +2906,7 @@ const handleBusChange = (e) => {
     ))}
   </Select>
 </FormControl> */}
- {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <InputLabel>{"Bus Name"}</InputLabel>
   <Select
     value={formData["deviceId"] || ""}
@@ -2773,29 +2921,40 @@ const handleBusChange = (e) => {
     ))}
   </Select>
 </FormControl> */}
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-bus-select"
-    options={Array.isArray(buses) ? buses : []} // Ensure buses is an array
-    getOptionLabel={(option) => option.deviceName || ""} // Display bus name
-    value={Array.isArray(buses) ? buses.find(bus => bus.deviceId === formData["deviceId"]) : null} // Safely find the selected bus
-    onChange={(event, newValue) => {
-      handleBusChange({
-        target: { name: "deviceId", value: newValue?.deviceId || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Bus Name"
-        variant="outlined"
-        name="deviceId"
-      />
-    )}
-  />
-</FormControl>
-{/* Geofences display based on selected Bus */}
-{/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+            <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <Autocomplete
+                id="searchable-bus-select"
+                options={Array.isArray(buses) ? buses : []} // Ensure buses is an array
+                getOptionLabel={(option) => option.deviceName || ""} // Display bus name
+                value={
+                  Array.isArray(buses)
+                    ? buses.find((bus) => bus.deviceId === formData["deviceId"])
+                    : null
+                } // Safely find the selected bus
+                onChange={(event, newValue) => {
+                  handleBusChange({
+                    target: {
+                      name: "deviceId",
+                      value: newValue?.deviceId || "",
+                    },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Bus Name"
+                    variant="outlined"
+                    name="deviceId"
+                  />
+                )}
+              />
+            </FormControl>
+            {/* Geofences display based on selected Bus */}
+            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="geofence-id-label">Select Geofence</InputLabel>
   <Select
     labelId="geofence-id-label"
@@ -2814,29 +2973,34 @@ const handleBusChange = (e) => {
     )}
   </Select>
 </FormControl> */}
-<FormControl fullWidth sx={{ marginBottom: "10px" }}>
-  <Autocomplete
-    id="geofence-autocomplete"
-    options={filteredGeofences || []} // List of geofence objects
-    getOptionLabel={(option) => option.name || ""} // Display geofence name
-    value={filteredGeofences.find(geofence => geofence.name === formData["pickupPoint"]) || null} // Find the selected geofence
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "pickupPoint", value: newValue?.name || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Select Geofence"
-        variant="outlined"
-        name="pickupPoint"
-      />
-    )}
-  />
-</FormControl>
-
-
+            <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+              <Autocomplete
+                id="geofence-autocomplete"
+                options={filteredGeofences || []} // List of geofence objects
+                getOptionLabel={(option) => option.name || ""} // Display geofence name
+                value={
+                  filteredGeofences.find(
+                    (geofence) => geofence.name === formData["pickupPoint"]
+                  ) || null
+                } // Find the selected geofence
+                onChange={(event, newValue) => {
+                  handleInputChange({
+                    target: {
+                      name: "pickupPoint",
+                      value: newValue?.name || "",
+                    },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Select Geofence"
+                    variant="outlined"
+                    name="pickupPoint"
+                  />
+                )}
+              />
+            </FormControl>
 
             <TextField
               key={"parent"}
@@ -2878,7 +3042,7 @@ const handleBusChange = (e) => {
               sx={{ marginBottom: "10px" }}
               fullWidth
             />
-          {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="device-id-label">Select Device</InputLabel>
   <Select
     labelId="device-id-label"
@@ -2903,8 +3067,6 @@ const handleBusChange = (e) => {
     </ul>
   </div>
 )} */}
-
-
 
             <TextField
               key={"fcmToken"}
@@ -2946,22 +3108,22 @@ const handleBusChange = (e) => {
             )}
           </Box>
         </Modal> */}
-          <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
-      <Box sx={style}>
-        <div style={{display:"flex",justifyContent:"space-between"}}>
-        <h2>Import Data</h2>
-        <IconButton onClick={handleModalClose}>
+        <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
+          <Box sx={style}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <h2>Import Data</h2>
+              <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
-        </div>
-        {/* <h2>Import Data</h2>
+            </div>
+            {/* <h2>Import Data</h2>
         <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton> */}
-        <p>Please upload the file in the following format:</p>
+            <p>Please upload the file in the following format:</p>
 
-        {/* Sample Excel Format Table */}
-        {/* <Table>
+            {/* Sample Excel Format Table */}
+            {/* <Table>
           <TableHead>
             <TableRow>
               {sampleData[0].map((header, index) => (
@@ -2979,59 +3141,78 @@ const handleBusChange = (e) => {
             ))}
           </TableBody>
         </Table> */}
-  <Box sx={{ overflowX: "auto" }}> {/* Makes table scrollable if needed */}
-      <Table size="small" sx={{ minWidth: 650 }}>
-        <TableHead>
-          <TableRow>
-            {sampleData[0].map((header, index) => (
-              <TableCell key={index} sx={{ padding: "4px", fontSize: "0.85rem" }}>{header}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sampleData.slice(1).map((row, rowIndex) => (
-            <TableRow key={rowIndex}>
-              {row.map((cell, cellIndex) => (
-                <TableCell key={cellIndex} sx={{ padding: "4px", fontSize: "0.8rem" }}>{cell}</TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </Box>
-        {/* Button to Download Sample Excel */}
-        <Button variant="contained" color="primary" onClick={handleDownloadSample} sx={{ marginTop: "10px" }}>
-          Download Sample Excel
-        </Button>
-<p>
+            <Box sx={{ overflowX: "auto" }}>
+              {" "}
+              {/* Makes table scrollable if needed */}
+              <Table size="small" sx={{ minWidth: 650 }}>
+                <TableHead>
+                  <TableRow>
+                    {sampleData[0].map((header, index) => (
+                      <TableCell
+                        key={index}
+                        sx={{ padding: "4px", fontSize: "0.85rem" }}
+                      >
+                        {header}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {sampleData.slice(1).map((row, rowIndex) => (
+                    <TableRow key={rowIndex}>
+                      {row.map((cell, cellIndex) => (
+                        <TableCell
+                          key={cellIndex}
+                          sx={{ padding: "4px", fontSize: "0.8rem" }}
+                        >
+                          {cell}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Box>
+            {/* Button to Download Sample Excel */}
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleDownloadSample}
+              sx={{ marginTop: "10px" }}
+            >
+              Download Sample Excel
+            </Button>
+            <p>
+              Note: Please do not make changes to the column headers. Follow the
+              sample Excel sheet's headings and fill in your data according to
+              our format. The required fields are: Email (must be unique),
+              Parent Name, Password{" "}
+            </p>
+            {/* File Upload Input */}
+            <input
+              type="file"
+              onChange={handleFileUpload}
+              style={{ marginTop: "10px" }}
+            />
 
-
-Note: Please do not make changes to the column headers. Follow the sample Excel sheet's headings and fill in your data according to our format. The required fields are:
-
-Email (must be unique),
-Parent Name,
-Password </p>
-        {/* File Upload Input */}
-        <input type="file" onChange={handleFileUpload} style={{ marginTop: "10px" }} />
-
-        {/* Import Button */}
-        {importData.length > 0 && (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() =>
-              setFilteredRows([
-                ...filteredRows,
-                ...importData.map((row) => ({ ...row, isSelected: false })),
-              ])
-            }
-            sx={{ marginTop: "10px" }}
-          >
-            Import
-          </Button>
-        )}
-      </Box>
-    </Modal>
+            {/* Import Button */}
+            {importData.length > 0 && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() =>
+                  setFilteredRows([
+                    ...filteredRows,
+                    ...importData.map((row) => ({ ...row, isSelected: false })),
+                  ])
+                }
+                sx={{ marginTop: "10px" }}
+              >
+                Import
+              </Button>
+            )}
+          </Box>
+        </Modal>
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={3000}

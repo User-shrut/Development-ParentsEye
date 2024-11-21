@@ -1324,7 +1324,6 @@ import { IconButton } from "@mui/material";
 import {Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { Category } from "@mui/icons-material";
 //import { TextField } from '@mui/material';
-import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
 const style = {
   position: "absolute",
@@ -1345,7 +1344,7 @@ const style = {
 export const AddDevices = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
-  const [rowsPerPage, setRowsPerPage] = useState(25); // Default to 10 initially
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Default to 10 initially
 const [page, setPage] = useState(0);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
@@ -1710,7 +1709,7 @@ const handleChangePage = (event, newPage) => {
   const handleModalClose = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
-    setModalOpen(false);
+
     setFormData({});
   };
 
@@ -2102,24 +2101,20 @@ const handleFilterChange = (event) => {
     }}
   />
           <Button
-  onClick={() => setModalOpen(true)}
-  sx={{
-    backgroundColor: "rgb(85, 85, 85)",
-    color: "white",
-    fontWeight: "bold",
-    marginRight: "10px",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    "&:hover": {
-      fontWeight: "bolder", // Make text even bolder on hover
-      backgroundColor: "rgb(85, 85, 85)", // Maintain background color on hover
-    },
-  }}
->
-  <ImportExportIcon />
-  Column Visibility
-</Button>
+            onClick={() => setModalOpen(true)}
+            sx={{
+              backgroundColor: "rgb(85, 85, 85)",
+              color: "white",
+              fontWeight: "bold",
+              marginRight: "10px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <ImportExportIcon />
+            Column Visibility
+          </Button>
           <Button
             variant="contained"
             color="error"
@@ -2147,14 +2142,14 @@ const handleFilterChange = (event) => {
           >
             Add
           </Button>
-          {/* <Button
+          <Button
             variant="contained"
             onClick={() => setImportModalOpen(true)}
             sx={{ backgroundColor: "rgb(255, 165, 0)", marginRight: "10px" }}
             startIcon={<CloudUploadIcon />}
           >
             Import
-          </Button> */}
+          </Button>
           <Button variant="contained" color="primary" onClick={handleExport}>
             Export
           </Button>
@@ -2176,7 +2171,7 @@ const handleFilterChange = (event) => {
            <TableContainer
         component={Paper}
         sx={{
-          maxHeight: 600,
+          maxHeight: 572,
           border: "1.5px solid black",
           borderRadius: "7px",
         }}
@@ -2348,42 +2343,22 @@ const handleFilterChange = (event) => {
   onPageChange={handleChangePage}
   onRowsPerPageChange={handleChangeRowsPerPage}
 /> */}
-   <StyledTablePagination>
-  <TablePagination
-    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
-    component="div"
-    count={sortedData.length}
-    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
-    page={page}
-    onPageChange={(event, newPage) => {
-      console.log("Page changed:", newPage);
-      handleChangePage(event, newPage);
-    }}
-    onRowsPerPageChange={(event) => {
-      console.log("Rows per page changed:", event.target.value);
-      handleChangeRowsPerPage(event);
-    }}
-  />
-</StyledTablePagination>
+<TablePagination
+  rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+  component="div"
+  count={sortedData.length}
+  rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage} // Display "All" if all rows are selected
+  page={page}
+  onPageChange={handleChangePage}
+  onRowsPerPageChange={handleChangeRowsPerPage}
+/>
 
             {/* //</></div> */}
           </>
         )}
-       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            {/* <h2></h2> */}
-            <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-        marginBottom: '20px',
-      }}
-    >
-      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
-      <IconButton onClick={handleModalClose}>
-        <CloseIcon />
-      </IconButton>
-    </Box>
+            <h2>Column Visibility</h2>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -2393,7 +2368,6 @@ const handleFilterChange = (event) => {
                 />
                 {col.Header}
               </div>
-              
             ))}
           </Box>
         </Modal>

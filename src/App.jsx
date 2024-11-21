@@ -97,10 +97,6 @@ import '@coreui/coreui/dist/css/coreui.min.css';
 import './scss/style.scss';
 import { UserAccess } from "./Components/VariousTables/Users/UserAccess/UserAccess.jsx";
 
-// import { Newdemo } from "./Components/VariousTables/Institutestudent/Newdemo/Newdemo.jsx";
-// import { New2 } from "./Components/VariousTables/Institutestudent/New2/New2.jsx";
-// import { ComputedAttributes } from "./Components/VariousTables/MASTERUPDATED/ComputedAttributes/ComputedAttributes.jsx";
-//import { TotalResponsesProvider } from './TotalResponsesContext';
 function App() {
   const [state, setState] = useState(0);
   const [sideBarItems, setSideBarItems] = useState([]);
@@ -111,21 +107,7 @@ function App() {
   const [apiData, setApiData] = useState([]);
   
 
-  // const handleClick = async () => {
-  //   try {
-  //     const response = await axios.get('https://rocketsalestracker.com/api/devices', {
-  //       params: { id: "42" }
-  //     });
-  //     console.log(response.data.message);
-  //     setApiData(response.data.message);
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //   }
-  // };
-
-  // const handleDrivername = () => {};
-  // const handleMobileNo = () => {};
-  //API FETCHING
+  
   const role = localStorage.getItem("role");
   const [deviceApiData, setDeviceApiData] = useState([]); // State variable to store device API data
   const [positionApiData, setPositionApiData] = useState([]); // State variable to store position API data
@@ -133,122 +115,7 @@ function App() {
   const [mergedData, setMergedData] = useState([]);
   const username = "schoolmaster";
   const password = "123456";
-  // useEffect(() => {
-  //   const fetchBuses = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       const apiUrl =
-  //         role == 1
-  //           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
-  //           : role == 2
-  //           ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
-  //           : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
-    
-  //       const response = await axios.get(apiUrl, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-    
-  //       let allData = [];
-  //       if (role == 1) {
-  //         // Loop through each school
-  //         response.data.data.forEach((school) => {
-  //           const schoolName = school.schoolName;
-            
-  //           // Loop through each branch of the school
-  //           school.branches.forEach((branch) => {
-  //             const branchName = branch.branchName;
-              
-  //             // Loop through each device in the branch and store relevant data
-  //             branch.devices.forEach((device) => {
-  //               allData.push({
-  //                 schoolId: school.schoolId,
-  //                 schoolName: schoolName,
-  //                 branchId: branch.branchId,
-  //                 branchName: branchName,
-  //                 actualDeviceId: device.actualDeviceId,
-  //                 deviceId: device.deviceId,
-  //                 deviceName: device.deviceName,
-  //               });
-  //             });
-  //           });
-  //         });
-  //       } else if (role == 2) {
-         
-  //       } else if (role == 3) {
-          
-  //       }
-    
-  //      sethierarchydeviceData(allData);
-  //        console.log("My data:",allData)
-  //     } catch (error) {
-  //       console.error("Error fetching buses:", error);
-  //     }
-  //   };
-
-  //   const fetchDeviceData = async () => {
-  //     try {
-
-
-  //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-  //       const response1 = await axios.get(
-  //           "https://rocketsalestracker.com/api/devices",
-  //         {
-  //           headers: {
-  //             Authorization: `Basic ${token}`, // Replace with your actual token
-  //           },
-  //         }
-  //       );
-
-  //       setDeviceApiData(response1.data); // Update state variable with device API data
-  //     } catch (error) {
-  //       console.error("Error fetching device data:", error);
-  //     }
-  //   };
-
-  //   const fetchPositionData = async () => {
-  //     try {
-
-  //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-
-  //       const response2 = await axios.get(
-  //            "https://rocketsalestracker.com/api/positions",
-  //         {
-  //           headers: {
-  //             Authorization: `Basic ${token}`,
-  //           },
-  //         }
-  //       );
-
-  //       setPositionApiData(response2.data); // Update state variable with position API data
-  //     } catch (error) {
-  //       console.error("Error fetching position data:", error);
-  //     }
-  //   };
-  //   fetchBuses();
-  //   fetchDeviceData();
-  //   fetchPositionData();
-  // },[]); // Empty dependency array ensures this effect runs only once on component mount
-
- 
-
-  // useEffect(() => {
-  //   if (deviceApiData?.length > 0 && positionApiData?.length > 0) {
-  //     // Assuming both APIs have a common key to merge data, e.g., 'deviceId'
-  //     const merged = deviceApiData.map((device) => {
-  //       const position = positionApiData.find(
-  //         (pos) => pos.deviceId == device.id
-  //       );
-  //       return { ...device, ...position };
-  //     });
-  //     setMergedData(merged);
-  //     console.log(merged)
-  //     console.log(deviceApiData)
-  //     console.log(positionApiData)
-  //     // setFilteredRows(merged.map(row => ({ ...row, isSelected: false })));
-  //   }
-  // }, [deviceApiData, positionApiData]);
+  
 
   useEffect(() => {
     const fetchBuses = async () => {
@@ -831,6 +698,7 @@ function App() {
           //  "Newdemo",
           //  "New2"
           ].includes(component) && <Tablee data={mergedData} />}
+          
         </div>
       </div>
       
