@@ -32,6 +32,8 @@ import { IconButton } from "@mui/material";
 import { saveAs } from 'file-saver'; // Save file to the user's machine
 // import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
 //import { TextField } from '@mui/material';
+import Select from "react-select";
+import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
 const style = {
   position: "absolute",
@@ -53,7 +55,7 @@ export const Trips = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [filterText, setFilterText] = useState("");
   const [filteredRows, setFilteredRows] = useState([]);
   const [sortConfig, setSortConfig] = useState({
@@ -284,6 +286,7 @@ export const Trips = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
     setFormData({});
+    setModalOpen(false);
   };
 
   const handleSnackbarClose = () => {
@@ -605,7 +608,14 @@ const fetchData = async (url) => {
     setLoading(false);
   }
 };
+const options = devices.map((device) => ({
+  value: device.id,
+  label: device.name,
+}));
 
+const handleChange = (selectedOption) => {
+  setSelectedDevice(selectedOption ? selectedOption.value : null);
+};
 
   return (
     <>
@@ -681,18 +691,38 @@ const fetchData = async (url) => {
         marginBottom: "10px",
       }}
     >
-      <select
-        value={selectedDevice}
-        onChange={(e) => setSelectedDevice(e.target.value)}
-        style={{ marginRight: '10px', padding: '5px' }}
-      >
-        <option value="">Select Device</option>
-        {devices.map((device) => (
-          <option key={device.id} value={device.id}>
-            {device.name}
-          </option>
-        ))}
-      </select>
+    <div
+  style={{
+    width: "250px",
+    position: "relative",
+    zIndex: "10",
+    border: "1px solid #000", // Add a black border
+    
+  }}
+>
+  <Select
+    options={options}
+    value={options.find((option) => option.value === selectedDevice) || null}
+    onChange={handleChange}
+    placeholder="Select Device"
+    isClearable
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        border: "none", // Remove react-select's default border if necessary
+        boxShadow: "none", // Remove default focus outline
+      }),
+      dropdownIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the dropdown arrow to black
+      }),
+      clearIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the clear icon to black
+      }),
+    }}
+  />
+</div>
 
       
 
@@ -725,7 +755,7 @@ const fetchData = async (url) => {
         Show
       </button>
 
-      {apiUrl && (
+      {/* {apiUrl && (
         <div style={{ marginTop: '10px' }}>
           <label htmlFor="api-url">Generated API URL:</label>
           <textarea
@@ -736,7 +766,7 @@ const fetchData = async (url) => {
             style={{ width: '100%', padding: '5px' }}
           ></textarea>
         </div>
-      )}
+      )} */}
     </div>
 
        
@@ -756,7 +786,7 @@ const fetchData = async (url) => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 440,
+                maxHeight: 520,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}
@@ -889,21 +919,41 @@ const fetchData = async (url) => {
       </TableBody>
     </Table>
             </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={sortedData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            <StyledTablePagination>
+  <TablePagination
+    rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+    component="div"
+    count={sortedData.length}
+    rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
+    page={page}
+    onPageChange={(event, newPage) => {
+      console.log("Page changed:", newPage);
+      handleChangePage(event, newPage);
+    }}
+    onRowsPerPageChange={(event) => {
+      console.log("Rows per page changed:", event.target.value);
+      handleChangeRowsPerPage(event);
+    }}
+  />
+</StyledTablePagination>
             {/* //</></div> */}
           </>
         )}
-        <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+     <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
-            <h2>Column Visibility</h2>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
             {COLUMNS().map((col) => (
               <div key={col.accessor}>
                 <Switch
@@ -913,6 +963,7 @@ const fetchData = async (url) => {
                 />
                 {col.Header}
               </div>
+              
             ))}
           </Box>
         </Modal>

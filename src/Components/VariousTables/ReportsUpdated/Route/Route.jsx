@@ -33,7 +33,7 @@ import { saveAs } from 'file-saver'; // Save file to the user's machine
 // import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
 //import { TextField } from '@mui/material';
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
-
+import Select from "react-select";
 const style = {
   position: "absolute",
   top: "50%",
@@ -110,13 +110,21 @@ export const Route = () => {
 
  
   const filterData = (text) => {
-    // Apply text-based filtering
+    let dataToFilter = originalRows;
+  
+    // Apply date filter
+    if (startDate && endDate) {
+      dataToFilter = dataToFilter.filter((row) => {
+        const rowDate = new Date(row.dateOfBirth); // Adjust based on your date field
+        return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
+      });
+    }
+  
+    // Apply text filter
     if (text === "") {
-      // If no text is provided, reset to original rows
-      setFilteredRows(originalRows.map(row => ({ ...row, isSelected: false })));
+      setFilteredRows(dataToFilter); // Reset to full filtered data
     } else {
-      // Filter based on text
-      const filteredData = originalRows
+      const filteredData = dataToFilter
         .filter((row) =>
           Object.values(row).some(
             (val) =>
@@ -125,8 +133,8 @@ export const Route = () => {
           )
         )
         .map((row) => ({ ...row, isSelected: false }));
-  
-      setFilteredRows(filteredData);
+      
+      setFilteredRows(filteredData); // Update filtered rows
     }
   };
   
@@ -291,6 +299,7 @@ export const Route = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
     setFormData({});
+    setModalOpen(false);
   };
 
   const handleSnackbarClose = () => {
@@ -495,6 +504,163 @@ const handleEditSubmit = async () => {
   };
   
   
+// const fetchData = async (url) => {
+//   console.log('Fetching report...');
+//   setLoading(true);
+
+//   try {
+//     const username = "schoolmaster";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//       responseType: 'blob', // Downloading as binary data
+//     });
+
+//     // Log the content type of the response
+//     console.log('Content-Type:', response.headers['content-type']);
+//     const deviceIdToNameMap = devices.reduce((acc, device) => {
+//       acc[device.id] = device.name; // Use device.id and device.name as key-value pair
+//       return acc;
+//     }, {});
+//     // Handle JSON response
+//     if (response.headers['content-type'] === 'application/json') {
+//       const text = await response.data.text(); // Convert Blob to text
+//       console.log('JSON Response:', text); // Log JSON response
+//       const jsonResponse = JSON.parse(text); // Parse JSON
+//       // Process the JSON response
+//       console.log('Processed JSON Data:', jsonResponse);
+
+//       // Example: Set filtered rows and total responses from JSON data
+//       setFilteredRows(jsonResponse.map(data => ({
+//         deviceId: data.deviceId || 'N/A',
+//         eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+//         latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
+//         longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
+//         speed : data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
+
+//         address: data.address || 'Show Address',
+//         course: data.course > 0 ? '↑' : '↓',
+//         altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
+//         accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
+//         valid: data.valid ? 'Yes' : 'No',
+//         protocol: data.protocol || 'N/A',
+//         deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
+//         serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
+//         fixTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//         satellites: data.attributes?.sat || 'N/A',
+//         RSSI: data.attributes?.rssi || 'N/A',
+//         odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
+//         batteryLevel: data.attributes?.batteryLevel || 'N/A',
+//         ignition: data.attributes?.ignition ? 'Yes' : 'No',
+//         charge: data.attributes?.charge ? 'Yes' : 'No',
+//         archive: data.attributes?.archive ? 'Yes' : 'No',
+//         distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
+//         totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+//         motion: data.attributes?.motion ? 'Yes' : 'No',
+//         blocked: data.attributes?.blocked ? 'Yes' : 'No',
+//         alarm1Status: data.attributes?.alarm1Status || 'N/A',
+//         otherStatus: data.attributes?.otherStatus || 'N/A',
+//         alarm2Status: data.attributes?.alarm2Status || 'N/A',
+//         engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
+//         adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
+        
+//       })));
+
+//       setTotalResponses(jsonResponse.length);
+
+//     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+//       // Handle Excel response
+//       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+//       saveAs(blob, 'report.xlsx'); // Save the file to the user's system
+
+//       // Process the file to extract data
+//       const reader = new FileReader();
+//       reader.onload = (e) => {
+//         const data = new Uint8Array(e.target.result);
+//         const reportWorkbook = XLSX.read(data, { type: 'array' });
+
+//         const firstSheetName = reportWorkbook.SheetNames[0];
+//         const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
+        
+//         // Convert worksheet data to JSON
+//         const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+//         console.log('Extracted JSON Data from Excel:', jsonData);
+
+//         // Process the data
+//         const processedEvents = jsonData.map(data => ({
+//           deviceId: data.deviceId,
+//           eventTime: new Date(data.fixTime).toLocaleString(),
+//           latitude: `${data.latitude.toFixed(6)}°`,
+//           longitude: `${data.longitude.toFixed(6)}°`,
+//           speed: `${data.speed.toFixed(2)} mph`,
+//           address: data.address || 'Show Address',
+//           course: data.course > 0 ? '↑' : '↓',
+//           altitude: `${data.altitude.toFixed(2)} m`,
+//           accuracy: `${data.accuracy.toFixed(2)}`,
+//           valid: data.valid ? 'Yes' : 'No',
+//           protocol: data.protocol,
+//           deviceTime: new Date(data.deviceTime).toLocaleString(),
+//           serverTime: new Date(data.serverTime).toLocaleString(),
+//           geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//           satellites: data.attributes.sat || '',
+//           RSSI: data.attributes.rssi || '',
+//           odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
+//           batteryLevel: data.attributes.batteryLevel || '',
+//           ignition: data.attributes.ignition ? 'Yes' : 'No',
+//           charge: data.attributes.charge ? 'Yes' : 'No',
+//           archive: data.attributes.archive ? 'Yes' : 'No',
+//           distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
+//           totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
+//           motion: data.attributes.motion ? 'Yes' : 'No',
+//           blocked: data.attributes.blocked ? 'Yes' : 'No',
+//           alarm1Status: data.attributes.alarm1Status || '',
+//           otherStatus: data.attributes.otherStatus || '',
+//           alarm2Status: data.attributes.alarm2Status || '',
+//           engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
+//           adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+//         }));
+
+//         console.log('Processed Events:', processedEvents);
+
+//         // setFilteredRows(processedEvents.map(event => ({
+//         //   ...event,
+//         //   isSelected: false
+//         // })));
+//         // setOriginalRows(processedEvents.map((row) => ({ ...row, isSelected: false })));
+//         setFilteredRows(
+//           processedEvents.map((row) => ({ ...row, isSelected: false }))
+//         );
+//         setOriginalRows(processedEvents.map((row) => ({ ...row, isSelected: false })));
+        
+//         setTotalResponses(processedEvents.length);
+
+//         // Optionally export the processed data back to an Excel file
+//         const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
+//         const outputWorkbook = XLSX.utils.book_new();
+//         XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
+
+//         // Trigger file download
+//         XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
+//       };
+
+//       reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+//     } else {
+//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
+//     }
+//   } catch (error) {
+//     console.error('Error fetching the report:', error);
+//     alert("please select device and date");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
 const fetchData = async (url) => {
   console.log('Fetching report...');
   setLoading(true);
@@ -514,22 +680,28 @@ const fetchData = async (url) => {
     // Log the content type of the response
     console.log('Content-Type:', response.headers['content-type']);
 
+    const deviceIdToNameMap = devices.reduce((acc, device) => {
+      acc[device.id] = device.name; // Use device.id and device.name as key-value pair
+      return acc;
+    }, {});
+
     // Handle JSON response
     if (response.headers['content-type'] === 'application/json') {
       const text = await response.data.text(); // Convert Blob to text
       console.log('JSON Response:', text); // Log JSON response
       const jsonResponse = JSON.parse(text); // Parse JSON
+
       // Process the JSON response
       console.log('Processed JSON Data:', jsonResponse);
 
       // Example: Set filtered rows and total responses from JSON data
       setFilteredRows(jsonResponse.map(data => ({
         deviceId: data.deviceId || 'N/A',
+        deviceName: deviceIdToNameMap[data.deviceId] || 'Unknown Device', // Fetch device name based on deviceId
         eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
         latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
         longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
-        speed : data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
-
+        speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
         address: data.address || 'Show Address',
         course: data.course > 0 ? '↑' : '↓',
         altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
@@ -582,6 +754,7 @@ const fetchData = async (url) => {
         // Process the data
         const processedEvents = jsonData.map(data => ({
           deviceId: data.deviceId,
+          deviceName: deviceIdToNameMap[data.deviceId] || 'Unknown Device', // Fetch device name based on deviceId
           eventTime: new Date(data.fixTime).toLocaleString(),
           latitude: `${data.latitude.toFixed(6)}°`,
           longitude: `${data.longitude.toFixed(6)}°`,
@@ -615,11 +788,11 @@ const fetchData = async (url) => {
 
         console.log('Processed Events:', processedEvents);
 
-        setFilteredRows(processedEvents.map(event => ({
-          ...event,
-          isSelected: false
-        })));
-
+        setFilteredRows(
+          processedEvents.map((row) => ({ ...row, isSelected: false }))
+        );
+        setOriginalRows(processedEvents.map((row) => ({ ...row, isSelected: false })));
+        
         setTotalResponses(processedEvents.length);
 
         // Optionally export the processed data back to an Excel file
@@ -643,6 +816,20 @@ const fetchData = async (url) => {
   }
 };
 
+const options = devices.map((device) => ({
+  value: device.id,
+  label: device.name,
+}));
+
+const handleChange = (selectedOption) => {
+  setSelectedDevice(selectedOption ? selectedOption.value : null);
+};
+const [searchText, setSearchText] = useState("");
+const filteredDevices = Array.isArray(devices)
+  ? devices.filter((device) =>
+      device.name.toLowerCase().includes(searchText.toLowerCase())
+    )
+  : [];
 // const sortedData = React.useMemo(() => {
 //   if (!sortConfig.key) return data;
 //   return [...data].sort((a, b) => {
@@ -664,7 +851,7 @@ const fetchData = async (url) => {
             marginBottom: "10px",
           }}
         >
-            <TextField
+       <TextField
     label="Search"
     variant="outlined"
     value={filterText}
@@ -728,18 +915,38 @@ const fetchData = async (url) => {
         marginBottom: "10px",
       }}
     >
-      <select
-        value={selectedDevice}
-        onChange={(e) => setSelectedDevice(e.target.value)}
-        style={{ marginRight: '10px', padding: '5px' }}
-      >
-        <option value="">Select Device</option>
-        {devices.map((device) => (
-          <option key={device.id} value={device.id}>
-            {device.name}
-          </option>
-        ))}
-      </select>
+      <div
+  style={{
+    width: "250px",
+    position: "relative",
+    zIndex: "10",
+    border: "1px solid #000", // Add a black border
+    
+  }}
+>
+  <Select
+    options={options}
+    value={options.find((option) => option.value === selectedDevice) || null}
+    onChange={handleChange}
+    placeholder="Select Device"
+    isClearable
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        border: "none", // Remove react-select's default border if necessary
+        boxShadow: "none", // Remove default focus outline
+      }),
+      dropdownIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the dropdown arrow to black
+      }),
+      clearIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the clear icon to black
+      }),
+    }}
+  />
+</div>
 
       {/* <select
         value={selectedGroup}
@@ -812,7 +1019,7 @@ const fetchData = async (url) => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 545,
+                maxHeight: 500,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}

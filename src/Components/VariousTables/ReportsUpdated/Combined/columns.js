@@ -14,9 +14,13 @@ export const COLUMNS = () => [
     accessor: 'deviceId',  // Adjust if you need a different format
   },
   {
-    Header: 'device Name',
+    Header: 'Device Name',
     accessor: 'deviceName',
   },
+  // {
+  //   Header: 'Server Time',
+  //   accessor: 'serverTime',
+  // },
   {
     Header: 'Fix Time',
     accessor: 'eventTime',

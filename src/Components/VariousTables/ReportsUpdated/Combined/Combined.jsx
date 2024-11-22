@@ -30,7 +30,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
-
+import Select from "react-select";
 //import { TextField } from '@mui/material';
 
 const style = {
@@ -264,11 +264,29 @@ const [devices, setDevices] = useState([]); // Ensure devices is initialized as 
     fetchDevices();
   }, []); // Make sure this runs only once on component mount
   
+  
+  // Transform devices into options for React-Select
+  const options = devices.map((device) => ({
+    value: device.id,
+    label: device.name,
+  }));
 
+  const handleChange = (selectedOption) => {
+    setSelectedDevice(selectedOption ? selectedOption.value : null);
+  };
 
   const [groups, setGroups] = useState([]);
   
+ // Convert groups into options for react-select
+ const groupOptions = groups.map((group) => ({
+  value: group.id,
+  label: group.name,
+}));
 
+// Handle change for groups
+const handleGroupChange = (selectedOption) => {
+  setSelectedGroup(selectedOption ? selectedOption.value : null);
+};
   useEffect(() => {
     const fetchGroups = async () => {
       try {
@@ -357,13 +375,21 @@ const fetchData = async (url) => {
           deviceId: item.deviceId,
           deviceName: deviceName, // Add deviceName from mapping
           eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
+          // serverTime: new Date(event.serverTime).toLocaleString(), // Convert event time to local time
           type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
         }));
-
+        const processed = (item.positionS || []).map((event) => ({
+          // deviceId: item.deviceId,
+          // deviceName: deviceName, // Add deviceName from mapping
+          // eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
+           serverTime: new Date(event.serverTime).toLocaleString(), // Convert event time to local time
+          // type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
+        }));
         return {
           deviceId: item.deviceId,
           deviceName: deviceName, // Add deviceName from mapping
           processedEvents,
+          processed
         };
       });
 
@@ -499,107 +525,72 @@ React.useEffect(() => {
       }}
     >
     
-{/* <select
-  value={selectedDevice}
-  onChange={(e) => setSelectedDevice(e.target.value)}
-  style={{ marginRight: '10px', padding: '5px' }}
+    <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
+  <div
+  style={{
+    width: "250px",
+    position: "relative",
+    zIndex: "10",
+    border: "1px solid #000", // Add a black border
+    
+  }}
 >
-  <option value="">Select Device</option>
-  
-  {Array.isArray(devices) && devices.length > 0 ? (
-    devices.map((device) => (
-      <option key={device.id} value={device.id}>
-        {device.name}
-      </option>
-    ))
-  ) : (
-    <option disabled>No devices available</option> // Show a fallback if devices are not available
-  )}
-</select> */}
-   <div ref={dropdownRef} style={{ position: "relative", width: "300px" }}>
-      <div
-        style={{
-          border: "1px solid #ccc",
-          padding: "8px",
-          cursor: "pointer",
-          borderRadius: "4px",
-          backgroundColor: "#fff",
+  <Select
+    options={options}
+    value={options.find((option) => option.value === selectedDevice) || null}
+    onChange={handleChange}
+    placeholder="Select Device"
+    isClearable
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        border: "none", // Remove react-select's default border if necessary
+        boxShadow: "none", // Remove default focus outline
+      }),
+      dropdownIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the dropdown arrow to black
+      }),
+      clearIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the clear icon to black
+      }),
+    }}
+  />
+</div>
+ <div
+      style={{
+        width: "250px",
+        position: "relative",
+        zIndex: "10",
+        border: "1px solid #000",
+        // borderRadius: "4px", // Optional rounded corners
+      }}
+    >
+      <Select
+        options={groupOptions}
+        value={groupOptions.find((option) => option.value === selectedGroup) || null}
+        onChange={handleGroupChange}
+        placeholder="Select Group"
+        isClearable
+        styles={{
+          control: (provided) => ({
+            ...provided,
+            border: "none", // Remove react-select's default border
+            boxShadow: "none", // Remove focus outline
+          }),
+          dropdownIndicator: (provided) => ({
+            ...provided,
+            color: "#000", // Black dropdown arrow
+          }),
+          clearIndicator: (provided) => ({
+            ...provided,
+            color: "#000", // Black clear icon
+          }),
         }}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {devices.find((device) => device.id === selectedDevice)?.name ||
-          "Select Device"}
-      </div>
-
-      {isOpen && (
-        <div
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            border: "1px solid #ccc",
-            backgroundColor: "#fff",
-            zIndex: 10,
-            borderRadius: "4px",
-            maxHeight: "200px",
-            overflowY: "auto",
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "8px",
-              boxSizing: "border-box",
-              borderBottom: "1px solid #ccc",
-            }}
-          />
-          <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-            {filteredDevices.map((device) => (
-              <li
-                key={device.id}
-                onClick={() => handleSelect(device.id)}
-                style={{
-                  padding: "8px",
-                  cursor: "pointer",
-                  backgroundColor:
-                    selectedDevice === device.id ? "#f0f0f0" : "#fff",
-                  borderBottom: "1px solid #eee",
-                }}
-              >
-                {device.name}
-              </li>
-            ))}
-            {filteredDevices.length === 0 && (
-              <li
-                style={{
-                  padding: "8px",
-                  color: "#999",
-                  textAlign: "center",
-                }}
-              >
-                No devices found
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
+      />
     </div>
-      <select
-        value={selectedGroup}
-        onChange={(e) => setSelectedGroup(e.target.value)}
-        style={{ marginRight: "10px", padding: "5px" }}
-      >
-        <option value="">Select Group</option>
-        {groups.map(group => (
-          <option key={group.id} value={group.id}>{group.name}</option>
-        ))}
-      </select>
-
+    </div>
       <div style={{ marginRight: "10px", padding: "5px" }}>
         <label htmlFor="start-date">Start Date & Time:</label>
         <input
@@ -629,7 +620,7 @@ React.useEffect(() => {
         Show
       </button>
 
-       {/* {apiUrl && (
+        {/* {apiUrl && (
         <div style={{ marginTop: '10px' }}>
           <label htmlFor="api-url">Generated API URL:</label>
           <textarea
@@ -640,7 +631,7 @@ React.useEffect(() => {
             style={{ width: '100%', padding: '5px' }}
           ></textarea>
         </div>
-      )}  */}
+      )}   */}
     </div>
 
        
@@ -660,7 +651,7 @@ React.useEffect(() => {
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 545,
+                maxHeight: 500,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}

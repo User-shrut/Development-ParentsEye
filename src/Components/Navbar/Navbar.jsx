@@ -104,7 +104,7 @@ const pages = [
       { name: 'School Master', icon: <SchoolIcon /> },
       { name: 'Branch Master', icon: <AccountTreeIcon /> },
       { name: 'Driver Approve', icon: <DriveEtaIcon /> },
-      { name: 'Parent Approve', icon: <EmojiPeopleIcon /> },
+      { name: 'Student Approve', icon: <EmojiPeopleIcon /> },
       { name: 'Supervisor Approve', icon: <SupervisorAccountIcon /> },
       { name: 'AddDevices', icon: <AddCircleIcon /> },
       { name: 'My Branch Devices', icon: <DevicesIcon /> },

@@ -74,7 +74,7 @@ export const COLUMNS = () => [
         return "Invalid Date"; // Return a fallback if the date is invalid
       }
   
-      date.setMinutes(date.getMinutes()-330); // Add 5 hours and 30 minutes (330 minutes)
+      date.setMinutes(date.getMinutes()); // Add 5 hours and 30 minutes (330 minutes)
       return date.toLocaleString('en-IN', { hour12: true }); // Format the date for Indian locale (12-hour format)
     },
   },
@@ -116,9 +116,14 @@ export const COLUMNS = () => [
   //   accessor: 'endOdometer',
   // },
  
+  // {
+  //   Header: 'Engine Hours',
+  //   accessor: 'engineHours',
+  //   Cell: ({ value }) => (value / 1000).toFixed(2), 
+  // },
   {
-    Header: 'Engine Hours',
+    Header: 'Engine Hours (Minutes)',
     accessor: 'engineHours',
-    Cell: ({ value }) => (value / 1000).toFixed(2), 
-  }
+    Cell: ({ value }) => (value / (1000 * 60)).toFixed(2), // Convert to minutes
+  },
 ];

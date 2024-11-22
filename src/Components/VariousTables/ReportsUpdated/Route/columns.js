@@ -17,6 +17,10 @@ export const COLUMNS = () => [
     Header: 'Device ID',
     accessor: 'deviceId',
   },
+  {
+    Header: 'device Name',
+    accessor: 'deviceName',
+  },
   // {
   //   Header: 'Protocol',
   //   accessor: 'protocol',

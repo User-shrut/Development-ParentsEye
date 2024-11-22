@@ -33,7 +33,7 @@ import { saveAs } from 'file-saver'; // Save file to the user's machine
 // import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
 //import { TextField } from '@mui/material';
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
-
+import Select from "react-select";
 const style = {
   position: "absolute",
   top: "50%",
@@ -864,7 +864,10 @@ const fetchData = async (url) => {
 
     // Log the content type of the response
     console.log('Content-Type:', response.headers['content-type']);
-
+    const deviceIdToNameMap = devices.reduce((acc, device) => {
+      acc[device.id] = device.name; // Use device.id and device.name as key-value pair
+      return acc;
+    }, {});
     // Handle JSON response
     if (response.headers['content-type'] === 'application/json') {
       const text = await response.data.text(); // Convert Blob to text
@@ -874,6 +877,7 @@ const fetchData = async (url) => {
       // Process the JSON data for events
       const processedEvents = jsonResponse.map(event => ({
         id: event.id,
+        deviceName: deviceIdToNameMap[event.deviceId] || 'Unknown Device', // Fetch device name based on deviceId
         deviceId: event.deviceId || 'N/A',
         type: event.type || 'Unknown', // Process the 'type' field
         eventTime: event.eventTime ? new Date(event.eventTime).toLocaleString() : 'N/A', // Format the date
@@ -912,6 +916,7 @@ const fetchData = async (url) => {
         const processedEvents = jsonData.map(event => ({
           id: event.id,
           deviceId: event.deviceId || 'N/A',
+          deviceName: deviceIdToNameMap[event.deviceId] || 'Unknown Device', // Fetch device name based on deviceId
           eventType: event.type || 'Unknown',
           eventTime: event.eventTime ? new Date(event.eventTime).toLocaleString() : 'N/A',
           geofenceId: event.geofenceId || 'None',
@@ -973,7 +978,23 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
 
     fetchNotificationTypes();
   }, []);
-
+  const options = devices.map((device) => ({
+    value: device.id,
+    label: device.name,
+  }));
+  
+  const handleChange = (selectedOption) => {
+    setSelectedDevice(selectedOption ? selectedOption.value : null);
+  };
+  const notificationOptions = notificationTypes.map((notification) => ({
+    value: notification.type,
+    label: notification.type,
+  }));
+  
+  // Handle notification selection change
+  const handleNotificationChange = (selectedOption) => {
+    setSelectedNotification(selectedOption ? selectedOption.value : null);
+  };
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
@@ -1047,44 +1068,73 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
         marginBottom: "10px",
       }}
     >
-      <select
-        value={selectedDevice}
-        onChange={(e) => setSelectedDevice(e.target.value)}
-        style={{ marginRight: '10px', padding: '5px' }}
-      >
-        <option value="">Select Device</option>
-        {devices.map((device) => (
-          <option key={device.id} value={device.id}>
-            {device.name}
-          </option>
-        ))}
-      </select>
-{/* <select
-value={selectedNotification}
-onChange={(e) => setSelectedNotification(e.target.value)}
-style={{ marginRight: '10px', padding: '5px' }}
+      <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
+       <div
+  style={{
+    width: "250px",
+    position: "relative",
+    zIndex: "10",
+    border: "1px solid #000", // Add a black border
+    
+  }}
 >
-<option value="">Select Notification Type</option>
-{notificationTypes.map((notification) => (
-  <option key={notification.type} value={notification.type}>
-    {notification.type}
-  </option>
-))}
-</select> */}
+  <Select
+    options={options}
+    value={options.find((option) => option.value === selectedDevice) || null}
+    onChange={handleChange}
+    placeholder="Select Device"
+    isClearable
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        border: "none", // Remove react-select's default border if necessary
+        boxShadow: "none", // Remove default focus outline
+      }),
+      dropdownIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the dropdown arrow to black
+      }),
+      clearIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the clear icon to black
+      }),
+    }}
+  />
+</div>
 
-
-<select
-  value={selectedNotification}
-  onChange={(e) => setSelectedNotification(e.target.value)}
-  style={{ marginRight: '10px', padding: '5px' }}
+<div
+  style={{
+    width: "250px",
+    position: "relative",
+    zIndex: "10",
+    border: "1px solid #000", // Add a black border
+  }}
 >
-  <option value="allEvents">All Events</option>
-  {notificationTypes.map((notification) => (
-    <option key={notification.type} value={notification.type}>
-      {notification.type}
-    </option>
-  ))}
-</select>
+  <Select
+    options={notificationOptions}  // Use the 'notificationOptions' variable instead of 'options'
+    value={notificationOptions.find((option) => option.value === selectedNotification) || null}  // Use 'selectedNotification' instead of 'selectedDevice'
+    onChange={handleNotificationChange}  // Use 'handleNotificationChange' instead of 'handleChange'
+    placeholder="Select Notification Type"  // Customize placeholder as needed
+    isClearable
+    styles={{
+      control: (provided) => ({
+        ...provided,
+        border: "none", // Remove react-select's default border if necessary
+        boxShadow: "none", // Remove default focus outline
+      }),
+      dropdownIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the dropdown arrow to black
+      }),
+      clearIndicator: (provided) => ({
+        ...provided,
+        color: "#000", // Set the clear icon to black
+      }),
+    }}
+  />
+</div>
+</div>
+
 
       {/* <select
         value={selectedGroup}
@@ -1157,7 +1207,7 @@ style={{ marginRight: '10px', padding: '5px' }}
             <TableContainer
               component={Paper}
               sx={{
-                maxHeight: 545,
+                maxHeight: 500,
                 border: "1.5px solid black",
                 borderRadius: "7px",
               }}

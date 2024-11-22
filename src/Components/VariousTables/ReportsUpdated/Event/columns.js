@@ -8,6 +8,10 @@ export const COLUMNS = () => [
     accessor: 'deviceId',
   },
   {
+    Header: 'device Name',
+    accessor: 'deviceName',
+  },
+  {
     Header: 'Type',
     accessor: 'type',
   },

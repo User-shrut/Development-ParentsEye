@@ -386,7 +386,7 @@ function App() {
       setComponent("SchoolMaster");
     } else if (item === "Branch Master") {
       setComponent("BranchMaster");
-    }else if (item === "Parent Approve") {
+    }else if (item === "Student Approve") {
       setComponent("Parent");
     }else if (item === "Supervisor Approve") {
       setComponent("Supervisor");

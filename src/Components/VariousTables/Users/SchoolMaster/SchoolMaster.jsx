@@ -1117,7 +1117,7 @@ const SchoolMaster = () => {
                                 handleAccessClick(row._id, row.fullAccess)
                               }
                               variant="contained"
-                              color={row.fullAccess ? "error" : "success"} // Change color based on access status
+                              color={row.fullAccess ? "success" : "error"} // Change color based on access status
                               size="small"
                               style={{
                                 width: "160px", // Set fixed width for button
