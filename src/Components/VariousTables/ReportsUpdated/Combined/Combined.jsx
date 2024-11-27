@@ -366,33 +366,65 @@ const fetchData = async (url) => {
 
     // Check if the data is an array and process it
     if (Array.isArray(responseData) && responseData.length > 0) {
+      // const processedData = responseData.map((item) => {
+      //   // Find the deviceName using the deviceId
+      //   const deviceName = deviceIdToNameMap[item.deviceId];
+
+      //   // Process each device's events
+      //   const processedEvents = (item.events || []).map((event) => ({
+      //     deviceId: item.deviceId,
+      //     deviceName: deviceName, // Add deviceName from mapping
+      //     eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
+      //     // serverTime: new Date(event.serverTime).toLocaleString(), // Convert event time to local time
+      //     type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
+      //   }));
+      //   const processed = (item.positionS || []).map((event) => ({
+      //     serverTime: new Date(event.serverTime).toLocaleString(),
+      //   }));
+      //   return {
+      //     deviceId: item.deviceId,
+      //     deviceName: deviceName, // Add deviceName from mapping
+      //     processedEvents,
+      //     processed
+      //   };
+      // });
       const processedData = responseData.map((item) => {
         // Find the deviceName using the deviceId
         const deviceName = deviceIdToNameMap[item.deviceId];
-
+      
         // Process each device's events
         const processedEvents = (item.events || []).map((event) => ({
           deviceId: item.deviceId,
           deviceName: deviceName, // Add deviceName from mapping
           eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
-          // serverTime: new Date(event.serverTime).toLocaleString(), // Convert event time to local time
           type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
         }));
-        const processed = (item.positionS || []).map((event) => ({
-          // deviceId: item.deviceId,
-          // deviceName: deviceName, // Add deviceName from mapping
-          // eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
-           serverTime: new Date(event.serverTime).toLocaleString(), // Convert event time to local time
-          // type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
-        }));
+      
+        // Process positions with serverTime
+        const processedPositions = Array.isArray(item.positions)
+        ? item.positions.map((position) => ({
+            id: position.id,
+            deviceId: item.deviceId,
+            deviceName: deviceName,
+            serverTime: position.serverTime ? new Date(position.serverTime).toLocaleString() : 'N/A',
+            deviceTime: position.deviceTime ? new Date(position.deviceTime).toLocaleString() : 'N/A',
+            fixTime: position.fixTime ? new Date(position.fixTime).toLocaleString() : 'N/A',
+            latitude: position.latitude,
+            longitude: position.longitude,
+            speed: position.speed ? position.speed.toFixed(2) : '0.00',
+            valid: position.valid,
+            attributes: position.attributes,
+          }))
+        : [];
+      
         return {
           deviceId: item.deviceId,
           deviceName: deviceName, // Add deviceName from mapping
           processedEvents,
-          processed
+          processedPositions,
         };
       });
-
+      
       console.log("Processed Data:", processedData);
 
       // Update state with processed events

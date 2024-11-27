@@ -84,8 +84,10 @@ export const COLUMNS = () => [
     accessor: 'distance',
     Cell: ({ value }) => {
       const distanceInKm = value / 1000;
-      // return distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
-      return distanceInKm.toFixed(2);
+      //  return distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
+      return distanceInKm < 0 || distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
+
+      // return distanceInKm.toFixed(2);
     },
   },
   // {
@@ -121,9 +123,18 @@ export const COLUMNS = () => [
   //   accessor: 'engineHours',
   //   Cell: ({ value }) => (value / 1000).toFixed(2), 
   // },
+  // {
+  //   Header: 'Engine Hours (Minutes)',
+  //   accessor: 'engineHours',
+  //   Cell: ({ value }) => (value / (1000 * 60)).toFixed(2), // Convert to minutes
+  // },
   {
     Header: 'Engine Hours (Minutes)',
     accessor: 'engineHours',
-    Cell: ({ value }) => (value / (1000 * 60)).toFixed(2), // Convert to minutes
-  },
+    Cell: ({ value }) => {
+      if (value < 0) return 0; // Skip rendering for values less than 0
+      return (value / (1000 * 60)).toFixed(2); // Convert to minutes
+    },
+  }
+  
 ];

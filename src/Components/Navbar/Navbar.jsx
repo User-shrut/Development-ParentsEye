@@ -121,6 +121,7 @@ const pages = [
       { name: 'Route', icon: <AltRouteIcon /> },
       { name: 'Event', icon: <EventIcon /> },
       { name: 'Trips', icon: <DirectionsCarIcon /> },
+      { name: 'Distance Report', icon: <DirectionsCarIcon /> },
       { name: 'Stops', icon: <StopCircleIcon /> },
       { name: 'Summary', icon: <SummarizeIcon /> },
       { name: 'Statistics', icon: <InsightsIcon /> }

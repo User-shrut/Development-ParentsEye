@@ -26,6 +26,10 @@ export const COLUMNS = () => [
     accessor: 'eventTime',
   },
   {
+    Header: 'server Time',
+    accessor: 'serverTime',
+  },
+  {
     Header: 'Type',
     accessor: 'type',
   },

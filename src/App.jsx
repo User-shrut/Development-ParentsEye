@@ -96,7 +96,7 @@ import { ReadDevices } from "./Components/VariousTables/Users/ReadDevices/ReadDe
 import '@coreui/coreui/dist/css/coreui.min.css';
 import './scss/style.scss';
 import { UserAccess } from "./Components/VariousTables/Users/UserAccess/UserAccess.jsx";
-
+import { DistanceReport } from "./Components/VariousTables/ReportsUpdated/DistanceReport/DistanceReport.jsx";
 function App() {
   const [state, setState] = useState(0);
   const [sideBarItems, setSideBarItems] = useState([]);
@@ -444,6 +444,8 @@ function App() {
       setComponent("ReadDevices");
     }else if (item === "User Access") {
       setComponent("UserAccess");
+    }else if (item === "Distance Report") {
+      setComponent("DistanceReport");
     }
    
    
@@ -604,7 +606,7 @@ function App() {
           {component === "MyBranchDevices" && <MyBranchDevices data={mergedData} />}
           {component === "ReadDevices" && <ReadDevices data={mergedData} />}
           {component === "UserAccess" && <UserAccess data={mergedData} />}
-         
+          {component === "DistanceReport" && <DistanceReport data={mergedData} />}
           {/* {component === "Newdemo" && <Newdemo data={mergedData} />}
           {component === "New2" && <New2 data={mergedData} />} */}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
@@ -694,7 +696,7 @@ function App() {
            "MyBranchDevices",
           "ReadDevices",
           "UserAccess",
-         
+         "DistanceReport",
           //  "Newdemo",
           //  "New2"
           ].includes(component) && <Tablee data={mergedData} />}

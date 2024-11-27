@@ -50,7 +50,7 @@ const style = {
   padding: "1rem",
 };
 
-export const Route = () => {
+export const DistanceReport = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
@@ -258,7 +258,7 @@ export const Route = () => {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Route.xlsx");
+    XLSX.writeFile(workbook, "DistanceReport.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -480,22 +480,57 @@ const handleEditSubmit = async () => {
   const [selectedDevice, setSelectedDevice] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('');
   const [apiUrl, setApiUrl] = useState('');
+  const generateDateRange = (startDate, endDate) => {
+    const dateArray = [];
+    let currentDate = new Date(startDate);
   
-  const handleShowClick = () => {
-    const formattedStartDate = formatToUTC(startDate);
-    const formattedEndDate = formatToUTC(endDate);
+    // Iterate over the range and add each date to the array
+    while (currentDate <= endDate) {
+      dateArray.push(new Date(currentDate)); // Add current date to the array
+      currentDate.setDate(currentDate.getDate() + 1); // Increment by 1 day
+    }
+  
+    return dateArray;
+  };
+  
+  // const handleShowClick = () => {
+  //   const formattedStartDate = formatToUTC(startDate);
+  //   const formattedEndDate = formatToUTC(endDate);
 
+  //   if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
+  //     alert('Please fill all fields');
+  //     return;
+  //   }
+
+  //   // Construct the API URL
+  //   const url = `https://rocketsalestracker.com/api/reports/route?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}`;
+    
+  //   setApiUrl(url); // Update the state with the generated URL
+  //   fetchData(url); // Call fetchData with the generated URL
+  // };
+  const handleShowClick = () => {
+    const formattedStartDate = formatToUTC(startDate); // Ensure formatToUTC converts to a valid date string
+    const formattedEndDate = formatToUTC(endDate);
+  
     if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
       alert('Please fill all fields');
       return;
     }
-
-    // Construct the API URL
+  
+    // Convert the string dates back to Date objects for date range generation
+    const startDateObj = new Date(formattedStartDate);
+    const endDateObj = new Date(formattedEndDate);
+  
+    // Generate date range
+    const dateRange = generateDateRange(startDateObj, endDateObj);
+  
+    // Update state with the URL for API request
     const url = `https://rocketsalestracker.com/api/reports/route?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}`;
-    
     setApiUrl(url); // Update the state with the generated URL
-    fetchData(url); // Call fetchData with the generated URL
+    fetchData(url, dateRange); // Pass the dateRange to fetchData to filter or display data for each date
   };
+  
+  
   const formatToUTC = (localDateTime) => {
     if (!localDateTime) return '';
     const localDate = new Date(localDateTime);
@@ -830,18 +865,11 @@ const filteredDevices = Array.isArray(devices)
       device.name.toLowerCase().includes(searchText.toLowerCase())
     )
   : [];
-// const sortedData = React.useMemo(() => {
-//   if (!sortConfig.key) return data;
-//   return [...data].sort((a, b) => {
-//     if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
-//     if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
-//     return 0;
-//   });
-// }, [data, sortConfig]);
+
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Route 
+       Distance Report 
       </h1>
       <div>
         <div
@@ -1025,133 +1053,8 @@ const filteredDevices = Array.isArray(devices)
               }}
             >
             
-              {/* <Table
-  stickyHeader
-  aria-label="sticky table"
-  style={{ border: "1px solid black" }}
->
-  <TableHead>
-    <TableRow
-      style={{
-        borderBottom: "1px solid black",
-        borderTop: "1px solid black",
-      }}
-    >
-      <TableCell
-        padding="checkbox"
-        style={{
-          borderRight: "1px solid #e0e0e0",
-          borderBottom: "2px solid black",
-        }}
-      >
-        <Switch
-          checked={selectAll}
-          onChange={handleSelectAll}
-          color="primary"
-        />
-      </TableCell>
-      {COLUMNS()
-        .filter((col) => columnVisibility[col.accessor])
-        .map((column) => (
-          <TableCell
-            key={column.accessor}
-            align={column.align}
-            style={{
-              minWidth: column.minWidth,
-              cursor: "pointer",
-              borderRight: "1px solid #e0e0e0",
-              borderBottom: "2px solid black",
-              padding: "4px 4px",
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-            onClick={() => requestSort(column.accessor)}
-          >
-            {column.Header}
-            {sortConfig.key === column.accessor ? (
-              sortConfig.direction === "ascending" ? (
-                <ArrowUpwardIcon fontSize="small" />
-              ) : (
-                <ArrowDownwardIcon fontSize="small" />
-              )
-            ) : null}
-          </TableCell>
-        ))}
-    </TableRow>
-  </TableHead>
-  <TableBody>
-    {sortedData.length === 0 ? (
-      <TableRow>
-        <TableCell
-          colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
-          style={{
-            textAlign: 'center',
-            padding: '16px',
-            fontSize: '16px',
-            color: '#757575',
-          }}
-        >
-          <h4>No Data Available</h4>
-        </TableCell>
-      </TableRow>
-    ) : (
-      sortedData
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .map((row, index) => (
-          <TableRow
-            hover
-            role="checkbox"
-            tabIndex={-1}
-            key={row.id}
-            onClick={() =>
-              handleRowSelect(page * rowsPerPage + index)
-            }
-            selected={row.isSelected}
-            style={{
-              backgroundColor:
-                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-              borderBottom: "none",
-            }}
-          >
-            <TableCell
-              padding="checkbox"
-              style={{ borderRight: "1px solid #e0e0e0" }}
-            >
-              <Switch checked={row.isSelected} color="primary" />
-            </TableCell>
-            {COLUMNS()
-              .filter((col) => columnVisibility[col.accessor])
-              .map((column) => {
-                // Debug output
-                // console.log(`Row data: ${JSON.stringify(row)}, Column accessor: ${column.accessor}`);
-
-                // Access the correct value from the row
-                const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-                return (
-                  <TableCell
-                    key={column.accessor}
-                    align={column.align}
-                    style={{
-                      borderRight: "1px solid #e0e0e0",
-                      paddingTop: "4px",
-                      paddingBottom: "4px",
-                      borderBottom: "none",
-                      backgroundColor:
-                        index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                      fontSize: "smaller",
-                    }}
-                  >
-                    {column.Cell ? column.Cell({ value }) : value}
-                  </TableCell>
-                );
-              })}
-          </TableRow>
-        ))
-    )}
-  </TableBody>
-</Table> */}
- <Table
+              
+ {/* <Table
       stickyHeader
       aria-label="sticky table"
       style={{ border: "1px solid black" }}
@@ -1245,29 +1148,7 @@ const filteredDevices = Array.isArray(devices)
                 >
                   <Switch checked={row.isSelected} color="primary" />
                 </TableCell>
-                {/* {COLUMNS()
-                  .filter((col) => columnVisibility[col.accessor])
-                  .map((column) => {
-                    const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-                    return (
-                      <TableCell
-                        key={column.accessor}
-                        align={column.align || 'left'}
-                        style={{
-                          borderRight: "1px solid #e0e0e0",
-                          paddingTop: "4px",
-                          paddingBottom: "4px",
-                          borderBottom: "none",
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          fontSize: "smaller",
-                        }}
-                      >
-                        {column.Cell ? column.Cell({ value }) : value}
-                      </TableCell>
-                    );
-                  })} */}
+               
                   {COLUMNS()
   .filter((col) => columnVisibility[col.accessor])
   .map((column) => {
@@ -1297,7 +1178,164 @@ const filteredDevices = Array.isArray(devices)
             ))
         )}
       </TableBody>
-    </Table>
+    </Table> */}
+   <Table stickyHeader aria-label="sticky table" style={{ border: "1px solid black" }}>
+  <TableHead>
+    <TableRow
+      style={{
+        borderBottom: "1px solid black",
+        borderTop: "1px solid black",
+      }}
+    >
+      <TableCell
+        padding="checkbox"
+        style={{
+          borderRight: "1px solid #e0e0e0",
+          borderBottom: "2px solid black",
+        }}
+      >
+        <Switch
+          checked={selectAll}
+          onChange={handleSelectAll}
+          color="primary"
+        />
+      </TableCell>
+
+      {/* Static Columns (like the ones in COLUMNS) */}
+      {COLUMNS()
+        .filter((col) => columnVisibility[col.accessor])
+        .map((column) => (
+          <TableCell
+            key={column.accessor}
+            align={column.align || 'left'}
+            style={{
+              minWidth: column.minWidth || '100px',
+              cursor: "pointer",
+              borderRight: "1px solid #e0e0e0",
+              borderBottom: "2px solid black",
+              padding: "4px 4px",
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+            onClick={() => requestSort(column.accessor)}
+          >
+            {column.Header}
+            {sortConfig.key === column.accessor ? (
+              sortConfig.direction === "ascending" ? (
+                <ArrowUpwardIcon fontSize="small" />
+              ) : (
+                <ArrowDownwardIcon fontSize="small" />
+              )
+            ) : null}
+          </TableCell>
+        ))}
+
+      {/* Dynamic Date Columns (from date range) */}
+      {generateDateRange(startDate, endDate).map((date) => {
+        const formattedDate = date.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+        return (
+          <TableCell
+            key={formattedDate}
+            align="center"
+            style={{
+              borderRight: "1px solid #e0e0e0",
+              borderBottom: "2px solid black",
+              padding: "4px 4px",
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            {formattedDate}
+          </TableCell>
+        );
+      })}
+    </TableRow>
+  </TableHead>
+  <TableBody>
+    {sortedData.length === 0 ? (
+      <TableRow>
+        <TableCell
+          colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length + generateDateRange(startDate, endDate).length}
+          style={{
+            textAlign: 'center',
+            padding: '16px',
+            fontSize: '16px',
+            color: '#757575',
+          }}
+        >
+          <h4>No Data Available</h4>
+        </TableCell>
+      </TableRow>
+    ) : (
+      sortedData
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .map((row, index) => (
+          <TableRow
+            hover
+            role="checkbox"
+            tabIndex={-1}
+            key={row.deviceId + index} // Ensure uniqueness for the key
+            onClick={() => handleRowSelect(page * rowsPerPage + index)}
+            selected={row.isSelected}
+            style={{
+              backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+              borderBottom: "none",
+            }}
+          >
+            <TableCell padding="checkbox" style={{ borderRight: "1px solid #e0e0e0" }}>
+              <Switch checked={row.isSelected} color="primary" />
+            </TableCell>
+
+            {/* Static Columns (like the ones in COLUMNS) */}
+            {COLUMNS()
+              .filter((col) => columnVisibility[col.accessor])
+              .map((column) => {
+                const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
+                return (
+                  <TableCell
+                    key={column.accessor}
+                    align={column.align || 'left'}
+                    style={{
+                      borderRight: "1px solid #e0e0e0",
+                      paddingTop: "4px",
+                      paddingBottom: "4px",
+                      backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                      fontSize: "smaller",
+                    }}
+                  >
+                    {column.Cell ? column.Cell({ value }) : value}
+                  </TableCell>
+                );
+              })}
+
+            {/* Dynamic Date Columns */}
+            {generateDateRange(startDate, endDate).map((date) => {
+              const formattedDate = date.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+              const value = row[formattedDate] || 'No Data'; // Get the value for this date
+
+              return (
+                <TableCell
+                  key={formattedDate}
+                  align="center"
+                  style={{
+                    borderRight: "1px solid #e0e0e0",
+                    paddingTop: "4px",
+                    paddingBottom: "4px",
+                    backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                    fontSize: "smaller",
+                  }}
+                >
+                  {value}
+                </TableCell>
+              );
+            })}
+          </TableRow>
+        ))
+    )}
+  </TableBody>
+</Table>
+
+
             </TableContainer>
             <StyledTablePagination>
   <TablePagination
