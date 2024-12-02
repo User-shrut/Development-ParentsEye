@@ -2621,7 +2621,7 @@ const fetchData = async (url) => {
 
         // Create the summarized object
         const summary = {
-          deviceName: startObject.deviceName, // Add deviceName from the first object
+          deviceName: startObject.deviceName ||'N/A', // Add deviceName from the first object
           startTime: startObject.serverTime,
           startLatitude: startObject.latitude,
           startLongitude: startObject.longitude,
