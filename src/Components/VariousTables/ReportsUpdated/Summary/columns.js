@@ -44,6 +44,21 @@ export const COLUMNS = () => [
       return date.toLocaleString('en-IN', { hour12: true }); // Format the date for Indian locale (12-hour format)
     },
   },
+  {
+    Header: 'Latitude',
+    // accessor: row => row.latitude.toFixed(6),
+    accessor:'startLatitude',
+  },
+  {
+    Header: 'Longitude',
+    // accessor: row => row.longitude.toFixed(6),
+    accessor:'startLongitude',
+  },
+  {
+    Header: 'Start Odometer',
+    // accessor: row => row.longitude.toFixed(6),
+    accessor:'startOdometer',
+  },
   
   // {
   //   Header: 'Start Time',
@@ -78,37 +93,51 @@ export const COLUMNS = () => [
       return date.toLocaleString('en-IN', { hour12: true }); // Format the date for Indian locale (12-hour format)
     },
   },
-  
+  {
+    Header: "End Latitude",
+    accessor: "endLatitude",
+   
+  },
+  {
+    Header: "End Longitude",
+    accessor: "endLongitude",
+   
+  },
+  {
+    Header: 'End Odometer',
+    // accessor: row => row.longitude.toFixed(6),
+    accessor:'endOdometer',
+  },
   {
     Header: 'Distance (km)',
-    accessor: 'distance',
-    Cell: ({ value }) => {
-      const distanceInKm = value / 1000;
-      //  return distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
-      return distanceInKm < 0 || distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
+    accessor: 'distance1',
+    // Cell: ({ value }) => {
+    //   const distanceInKm = value / 1000;
+    //   //  return distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
+    //   return distanceInKm < 0 || distanceInKm > 500 ? 0 : distanceInKm.toFixed(2);
 
-      // return distanceInKm.toFixed(2);
-    },
+    //   // return distanceInKm.toFixed(2);
+    // },
   },
   // {
   //   Header: 'Average Speed',
   //   accessor: 'averageSpeed',
   // },
-  {
-    Header: 'Average Speed',
-    accessor: 'averageSpeed',
-    Cell: ({ value }) => {
-      return value.toFixed(2); // Round the value to 2 decimal places
-    },
-  },
-  {
-    Header: 'Max Speed',
-    accessor: 'maxSpeed',
-  },
-  {
-    Header: 'Spent Fuel',
-    accessor: 'spentFuel',
-  },
+  // {
+  //   Header: 'Average Speed',
+  //   accessor: 'averageSpeed',
+  //   // Cell: ({ value }) => {
+  //   //   return value.toFixed(2); // Round the value to 2 decimal places
+  //   // },
+  // },
+  // {
+  //   Header: 'Max Speed',
+  //   accessor: 'maxSpeed',
+  // },
+  // {
+  //   Header: 'Spent Fuel',
+  //   accessor: 'spentFuel',
+  // },
   // {
   //   Header: 'Start Odometer',
   //   accessor: 'startOdometer',
@@ -128,13 +157,13 @@ export const COLUMNS = () => [
   //   accessor: 'engineHours',
   //   Cell: ({ value }) => (value / (1000 * 60)).toFixed(2), // Convert to minutes
   // },
-  {
-    Header: 'Engine Hours (Minutes)',
-    accessor: 'engineHours',
-    Cell: ({ value }) => {
-      if (value < 0) return 0; // Skip rendering for values less than 0
-      return (value / (1000 * 60)).toFixed(2); // Convert to minutes
-    },
-  }
+  // {
+  //   Header: 'Engine Hours (Minutes)',
+  //   accessor: 'engineHours',
+  //   // Cell: ({ value }) => {
+  //   //   if (value < 0) return 0; // Skip rendering for values less than 0
+  //   //   return (value / (1000 * 60)).toFixed(2); // Convert to minutes
+  //   // },
+  // }
   
 ];

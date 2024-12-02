@@ -2,38 +2,18 @@
 
 
 export const COLUMNS = () => [
-  {
-    Header: 'Device ID',
-    accessor: 'deviceId',
-  },
+  
   {
     Header: 'Device Name',
     accessor: 'deviceName',
   },
-  // {
-  //   Header: 'Distance (mi)',
-  //   accessor: 'distance',
-  // },
-//   {
-//     Header: 'Average Speed (mph)',
-//     // accessor: row => `${row.averageSpeed.toFixed(2)} mph`,
-// accessor:'averageSpeed',
-//   },
-  // {
-  //   Header: 'Max Speed (mph)',
-  //   accessor:'averageSpeed',
-  //   // accessor: row => `${row.maxSpeed.toFixed(2)} mph`,
-  // },
+ 
   {
-    Header: 'Spent Fuel (liters)',
-    accessor: 'spentFuel',
-  },
-  {
-    Header: 'Start Odometer (mi)',
+    Header: 'Start Odometer',
     accessor: 'startOdometer',
   },
   {
-    Header: 'End Odometer (mi)',
+    Header: 'End Odometer',
     accessor: 'endOdometer',
   },
   {
@@ -85,19 +65,16 @@ export const COLUMNS = () => [
       return date.toLocaleString('en-IN', { hour12: true }); // Format the date for Indian locale (12-hour format)
     },
   },
-  // {
-  //   Header: 'Position ID',
-  //   accessor: 'positionId',
-  // },
+  
   {
     Header: 'Latitude',
     // accessor: row => row.latitude.toFixed(6),
-    accessor:'latitude',
+    accessor:'startLatitude',
   },
   {
     Header: 'Longitude',
     // accessor: row => row.longitude.toFixed(6),
-    accessor:'longitude',
+    accessor:'startLongitude',
   },
   // {
   //   Header: 'Address',
@@ -105,15 +82,11 @@ export const COLUMNS = () => [
   // },
   {
     Header: 'Duration (ms)',
-    accessor: 'duration',
+    accessor: 'stopDuration',
   },
   // {
   //   Header: 'Engine Hours',
   //   accessor: 'engineHours',
   // },
-  {
-    Header: 'Engine Hours (Minutes)',
-    accessor: 'engineHours',
-    Cell: ({ value }) => (value / (1000 * 60)).toFixed(2), // Convert to minutes
-  },
+  
 ];

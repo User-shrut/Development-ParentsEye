@@ -21,6 +21,10 @@ export const COLUMNS = () => [
     Header: 'device Name',
     accessor: 'deviceName',
   },
+  {
+    Header: 'ignition',
+    accessor: 'ignition',
+  },
   // {
   //   Header: 'Protocol',
   //   accessor: 'protocol',
@@ -61,6 +65,10 @@ export const COLUMNS = () => [
   {
     Header: 'Speed',
     accessor: 'speed',
+  },
+  {
+    Header: 'distance',
+    accessor: 'distance',
   },
   // {
   //   Header: 'Course',

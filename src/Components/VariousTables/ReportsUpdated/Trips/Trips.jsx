@@ -2622,7 +2622,7 @@ const handleEditSubmit = async () => {
 // };
 // const fetchData = async (url) => {
 //   console.log('Fetching report...');
-//   setLoading(true);
+//   // setLoading(true);
 
 //   try {
 //     const username = "schoolmaster";
@@ -2638,152 +2638,202 @@ const handleEditSubmit = async () => {
 
 //     // Log the content type of the response
 //     console.log('Content-Type:', response.headers['content-type']);
+
 //     const deviceIdToNameMap = devices.reduce((acc, device) => {
 //       acc[device.id] = device.name; // Use device.id and device.name as key-value pair
 //       return acc;
 //     }, {});
-
-//     // Variable to track if we have encountered ignition = true
-//     let ignitionFound = false;
-//     let currentGroup = [];  // To store the current group of data
-//     let lastValidRecord = {};  // Store the last valid (ignition = true) record
-//     const processedData = [];
 
 //     // Handle JSON response
 //     if (response.headers['content-type'] === 'application/json') {
 //       const text = await response.data.text(); // Convert Blob to text
 //       console.log('JSON Response:', text); // Log JSON response
 //       const jsonResponse = JSON.parse(text); // Parse JSON
+
+//       // Process the JSON response
 //       console.log('Processed JSON Data:', jsonResponse);
 
-//       // Loop through the JSON data
-//       for (let data of jsonResponse) {
-//         // Check if ignition is true for this record
-//         if (data.attributes?.ignition === true) {
-//           ignitionFound = true; // Start processing once ignition is true
-//           currentGroup = []; // Start a new group
-//           lastValidRecord = { ...data }; // Store the current valid record for later use
+//       // Filter the JSON data (skip until ignition=true, and filter speed and distance)
+//       let ignitionStarted = false;
+//       let filteredJsonData = [];
+//       let group = [];
+//       let groupedData = [];
+//       let previousSpeed = null; // Track the previous speed
+//       let skipNext = false; // Flag to skip the next record
+
+//       jsonResponse.forEach((data, index) => {
+//         if (!ignitionStarted && data.attributes?.ignition === true) {
+//           ignitionStarted = true;
+//           group.push(data); // Start the first group with ignition = true
+//           previousSpeed = data.speed; // Initialize previous speed
+//         } else if (ignitionStarted) {
+//           // Skip records where speed < 1 or distance < 1
+//           if (data.speed < 1 || data.attributes?.distance < 1) {
+//             return; // Skip the record if speed or distance is less than 1
+//           }
+
+//           if (data.attributes?.distance >= 1) {
+            
+//             group.push(data);
+//             previousSpeed = data.speed; // Update previous speed
+//           }
+//           if (data.attributes?.ignition === false) {
+//             // End the current group when ignition is false
+//             groupedData.push(group);
+//             group = []; // Reset group for the next segment
+//             ignitionStarted = false; // Stop grouping until ignition = true
+//           }
 //         }
+//       });
 
-//         // Skip records where speed < 1 or distance < 1
-//         if (data.speed < 1 || data.attributes?.distance < 1) {
-//           continue;
-//         }
-
-//         // If ignition is false and there was no previous ignition, continue to next
-//         if (data.attributes?.ignition === false && !ignitionFound) {
-//           continue;
-//         }
-
-//         // If ignition is true, add the record to the current group
-//         if (ignitionFound) {
-//           currentGroup.push(data);
-//           console.log('Current Group (Ignition True):', currentGroup); // Log the group as it's being built
-//         }
-
-//         // If ignition is false, add the false record with all parameters to close the group
-//         if (data.attributes?.ignition === false && ignitionFound) {
-//           // Calculate sum distance and average speed for the group
-//           const sumDistance = currentGroup.reduce((sum, record) => sum + (record.attributes?.distance || 0), 0);
-//           const avgSpeed = currentGroup.reduce((sum, record) => sum + (record.speed || 0), 0) / currentGroup.length;
-
-//           // Extract start and end latitude/longitude
-//           const startLatitude = currentGroup[0].latitude || 'N/A';
-//           const startLongitude = currentGroup[0].longitude || 'N/A';
-//           const endLatitude = currentGroup[currentGroup.length - 1].latitude || 'N/A';
-//           const endLongitude = currentGroup[currentGroup.length - 1].longitude || 'N/A';
-
-//           // Extract start and end serverTime
-//           const startTime = currentGroup[1].serverTime ? new Date(currentGroup[0].serverTime).toLocaleString() : 'N/A';
-//           const endTime = currentGroup[currentGroup.length - 1].serverTime ? new Date(currentGroup[currentGroup.length - 1].serverTime).toLocaleString() : 'N/A';
-
-//           // Create an aggregated object for the group
-//           processedData.push({
-//             deviceId: lastValidRecord.deviceId || 'N/A',
-//             deviceName: deviceIdToNameMap[lastValidRecord.deviceId] || 'Unknown Device',
-//             startLatitude: startLatitude,
-//             startLongitude: startLongitude,
-//             endLatitude: endLatitude,
-//             endLongitude: endLongitude,
-//             sumDistance: `${sumDistance.toFixed(2)} mi`,
-//             avgSpeed: `${avgSpeed.toFixed(2)} mph`,
-//             startTime: startTime,
-//             endTime: endTime,
-//             ignition: 'No', // Ignition is false here to close the group
-//             charge: lastValidRecord.attributes?.charge ? 'Yes' : 'No',
-//             archive: lastValidRecord.attributes?.archive ? 'Yes' : 'No',
-//             totalDistance: `${lastValidRecord.attributes?.totalDistance.toFixed(2)} mi` || 'N/A',
-//             motion: lastValidRecord.attributes?.motion ? 'Yes' : 'No',
-//             blocked: lastValidRecord.attributes?.blocked ? 'Yes' : 'No',
-//             alarm1Status: lastValidRecord.attributes?.alarm1Status || 'N/A',
-//             otherStatus: lastValidRecord.attributes?.otherStatus || 'N/A',
-//             alarm2Status: lastValidRecord.attributes?.alarm2Status || 'N/A',
-//             engineStatus: 'Off',
-//             adc1: lastValidRecord.attributes?.adc1 ? `${lastValidRecord.attributes.adc1.toFixed(2)} V` : 'N/A'
-//           });
-
-//           console.log('Group Closed (Ignition False):', currentGroup); // Log the group before it is cleared
-//           currentGroup = []; // Reset the group after pushing the aggregated record
-//           ignitionFound = false; // Reset ignitionFound flag
-//         }
+//       // If the last group was still open, add it
+//       if (group.length > 0) {
+//         groupedData.push(group);
 //       }
 
-//       // If there is any remaining group (i.e., the data ends with ignition true), process it
-//       if (currentGroup.length > 0) {
-//         // Calculate sum distance and average speed for the remaining group
-//         const sumDistance = currentGroup.reduce((sum, record) => sum + (record.attributes?.distance || 0), 0);
-//         const avgSpeed = currentGroup.reduce((sum, record) => sum + (record.speed || 0), 0) / currentGroup.length;
+//       console.log('Grouped Data:', groupedData);
 
-//         // Extract start and end latitude/longitude
-//         const startLatitude = currentGroup[0].latitude || 'N/A';
-//         const startLongitude = currentGroup[0].longitude || 'N/A';
-//         const endLatitude = currentGroup[currentGroup.length - 1].latitude || 'N/A';
-//         const endLongitude = currentGroup[currentGroup.length - 1].longitude || 'N/A';
+//       // Process the grouped data for display
+//       const processedData = groupedData.map((group, index) => {
+//         return group.map((data) => ({
+//           deviceId: data.deviceId || 'N/A',
+//           deviceName: deviceIdToNameMap[data.deviceId] || 'Unknown Device',
+//           eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+//           latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
+//           longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
+//           speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
+//           address: data.address || 'Show Address',
+//           course: data.course > 0 ? '↑' : '↓',
+//           altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
+//           accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
+//           valid: data.valid ? 'Yes' : 'No',
+//           protocol: data.protocol || 'N/A',
+//           deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
+//           serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
+//           fixTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+//           geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//           satellites: data.attributes?.sat || 'N/A',
+//           RSSI: data.attributes?.rssi || 'N/A',
+//           odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
+//           batteryLevel: data.attributes?.batteryLevel || 'N/A',
+//           ignition: data.attributes?.ignition ? 'Yes' : 'No',
+//           charge: data.attributes?.charge ? 'Yes' : 'No',
+//           archive: data.attributes?.archive ? 'Yes' : 'No',
+//           distance: data.attributes?.distance || 'N/A',
 
-//         // Extract start and end serverTime
-//         const startTime = currentGroup[1].serverTime ? new Date(currentGroup[0].serverTime).toLocaleString() : 'N/A';
-//         const endTime = currentGroup[currentGroup.length - 1].serverTime ? new Date(currentGroup[currentGroup.length - 1].serverTime).toLocaleString() : 'N/A';
+//           // distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
+//           totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+//           motion: data.attributes?.motion ? 'Yes' : 'No',
+//           blocked: data.attributes?.blocked ? 'Yes' : 'No',
+//           alarm1Status: data.attributes?.alarm1Status || 'N/A',
+//           otherStatus: data.attributes?.otherStatus || 'N/A',
+//           alarm2Status: data.attributes?.alarm2Status || 'N/A',
+//           engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
+//           adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
+//         }));
+//       });
 
-//         // Create an aggregated object for the remaining group
-//         processedData.push({
-//           deviceId: lastValidRecord.deviceId || 'N/A',
-//           deviceName: deviceIdToNameMap[lastValidRecord.deviceId] || 'Unknown Device',
-//           startLatitude: startLatitude,
-//           startLongitude: startLongitude,
-//           endLatitude: endLatitude,
-//           endLongitude: endLongitude,
-//           sumDistance: `${sumDistance.toFixed(2)} mi`,
-//           avgSpeed: `${avgSpeed.toFixed(2)} mph`,
-//           startTime: startTime,
-//           endTime: endTime,
-//           ignition: 'No',
-//           charge: lastValidRecord.attributes?.charge ? 'Yes' : 'No',
-//           archive: lastValidRecord.attributes?.archive ? 'Yes' : 'No',
-//           totalDistance: `${lastValidRecord.attributes?.totalDistance.toFixed(2)} mi` || 'N/A',
-//           motion: lastValidRecord.attributes?.motion ? 'Yes' : 'No',
-//           blocked: lastValidRecord.attributes?.blocked ? 'Yes' : 'No',
-//           alarm1Status: lastValidRecord.attributes?.alarm1Status || 'N/A',
-//           otherStatus: lastValidRecord.attributes?.otherStatus || 'N/A',
-//           alarm2Status: lastValidRecord.attributes?.alarm2Status || 'N/A',
-//           engineStatus: 'Off',
-//           adc1: lastValidRecord.attributes?.adc1 ? `${lastValidRecord.attributes.adc1.toFixed(2)} V` : 'N/A'
+//       // Flatten the grouped data and set it for display
+//       setFilteredRows(processedData.flat());
+//       setTotalResponses(filteredJsonData.length);
+
+//     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+//       // Handle Excel response
+//       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+//       saveAs(blob, 'report.xlsx'); // Save the file to the user's system
+
+//       // Process the file to extract data
+//       const reader = new FileReader();
+//       reader.onload = (e) => {
+//         const data = new Uint8Array(e.target.result);
+//         const reportWorkbook = XLSX.read(data, { type: 'array' });
+
+//         const firstSheetName = reportWorkbook.SheetNames[0];
+//         const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
+        
+//         // Convert worksheet data to JSON
+//         const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+//         console.log('Extracted JSON Data from Excel:', jsonData);
+
+//         // Apply the same grouping logic to Excel data
+//         let ignitionStarted = false;
+//         let filteredJsonData = [];
+//         let group = [];
+//         let groupedData = [];
+//         let previousSpeed = null; // Track the previous speed
+//         let skipNext = false; // Flag to skip the next record
+
+//         jsonData.forEach((data, index) => {
+//           if (!ignitionStarted && data.attributes?.ignition === true) {
+//             ignitionStarted = true;
+//             group.push(data); // Start the first group with ignition = true
+//             previousSpeed = data.speed; // Initialize previous speed
+//           } else if (ignitionStarted) {
+//             // Skip records where speed < 1 or distance < 1
+//             if (data.speed < 1 || data.attributes?.distance < 1) {
+//               return; // Skip the record if speed or distance is less than 1
+//             }
+
+//             if (data.attributes?.distance >= 1) {
+//               // Skip if current speed is the same as the previous speed
+//               // if (data.speed === previousSpeed) {
+//               //   // Skip this record and the next one
+//               //   skipNext = true;
+//               //   return; // Skip the current record
+//               // }
+
+//               // // If the previous record was skipped, we should skip the current one too
+//               // if (skipNext) {
+//               //   skipNext = false; // Reset skip flag
+//               //   return; // Skip this record
+//               // }
+
+//               // Add the current record to the group
+//               group.push(data);
+//               previousSpeed = data.speed; // Update previous speed
+//             }
+//           }
 //         });
-//       }
 
-//       console.log("Aggregated Data:", processedData);
-//       // After processing all records, update the filtered rows
-//       setFilteredRows(processedData);
-//       setTotalResponses(processedData.length);
+//         // If the last group was still open, add it
+//         if (group.length > 0) {
+//           groupedData.push(group);
+//         }
+
+//         console.log('Grouped Data from Excel:', groupedData);
+
+//         // Process the grouped data for display
+//         const processedEvents = groupedData.map((group, index) => {
+//           return group.map(data => ({
+//             deviceId: data.deviceId,
+//             deviceName: deviceIdToNameMap[data.deviceId] || 'Unknown Device',
+//             eventTime: new Date(data.fixTime).toLocaleString(),
+//             latitude: `${data.latitude.toFixed(6)}°`,
+//             longitude: `${data.longitude.toFixed(6)}°`,
+//             speed: `${data.speed.toFixed(2)} mph`,
+//             address: data.address,
+//             course: data.course > 0 ? '↑' : '↓',
+//             altitude: `${data.altitude.toFixed(2)} m`,
+//             accuracy: `${data.accuracy.toFixed(2)}`,
+//             valid: data.valid ? 'Yes' : 'No'
+//           }));
+//         });
+
+//          setFilteredRows(processedEvents.flat());
+//       };
+
+//       reader.readAsArrayBuffer(blob); // Read the blob data
 //     }
+
 //   } catch (error) {
 //     console.error('Error fetching data:', error);
-//   } finally {
-//     setLoading(false);  // Always stop loading after the operation
+//     setLoading(false);
 //   }
 // };
 const fetchData = async (url) => {
   console.log('Fetching report...');
-  setLoading(true);
+   setLoading(true);
 
   try {
     const username = "schoolmaster";
@@ -2799,153 +2849,250 @@ const fetchData = async (url) => {
 
     // Log the content type of the response
     console.log('Content-Type:', response.headers['content-type']);
+
     const deviceIdToNameMap = devices.reduce((acc, device) => {
       acc[device.id] = device.name; // Use device.id and device.name as key-value pair
       return acc;
     }, {});
-
-    // Variable to track if we have encountered ignition = true
-    let ignitionFound = false;
-    let currentGroup = [];  // To store the current group of data
-    let lastValidRecord = {};  // Store the last valid (ignition = true) record
-    const processedData = [];
 
     // Handle JSON response
     if (response.headers['content-type'] === 'application/json') {
       const text = await response.data.text(); // Convert Blob to text
       console.log('JSON Response:', text); // Log JSON response
       const jsonResponse = JSON.parse(text); // Parse JSON
+
+      // Process the JSON response
       console.log('Processed JSON Data:', jsonResponse);
 
-      // Loop through the JSON data
-      for (let data of jsonResponse) {
-        // Check if ignition is true for this record
-        if (data.attributes?.ignition === true) {
-          ignitionFound = true; // Start processing once ignition is true
-          currentGroup = []; // Start a new group
-          lastValidRecord = { ...data }; // Store the current valid record for later use
-          console.log('Started New Group (Ignition True):', currentGroup); // Log when a new group starts
+      let ignitionStarted = false;
+      let group = [];
+      let groupedData = [];
+
+      jsonResponse.forEach((data) => {
+        if (!ignitionStarted && data.attributes?.ignition === true) {
+          // Start a new group when ignition is true
+          ignitionStarted = true;
+          group.push(data); // Add first record to the group
+        } else if (ignitionStarted) {
+          // Keep adding records to the group while ignition is true
+          if (data.attributes?.ignition === false) {
+            // End current group when ignition is false
+            groupedData.push(group);
+            group = []; // Reset the group for the next segment
+            ignitionStarted = false; // Stop grouping until ignition is true
+          } else {
+            // If ignition is still true, keep adding data to the current group
+            group.push(data);
+          }
         }
+      });
 
-        // Skip records where speed < 1 or distance < 1
-        if (data.speed < 1 || data.attributes?.distance < 1) {
-          continue;
-        }
-
-        // If ignition is false and there was no previous ignition, continue to next
-        if (data.attributes?.ignition === false && !ignitionFound) {
-          continue;
-        }
-
-        // If ignition is true, add the record to the current group
-        if (ignitionFound) {
-          currentGroup.push(data);
-          console.log('Current Group (Ignition True) - Added Record:', data); // Log each record added to the current group
-        }
-
-        // If ignition is false, add the false record with all parameters to close the group
-        if (data.attributes?.ignition === false && ignitionFound) {
-          // Calculate sum distance and average speed for the group
-          const sumDistance = currentGroup.reduce((sum, record) => sum + (record.attributes?.distance || 0), 0);
-          const avgSpeed = currentGroup.reduce((sum, record) => sum + (record.speed || 0), 0) / currentGroup.length;
-
-          // Extract start and end latitude/longitude
-          const startLatitude = currentGroup[0].latitude || 'N/A';
-          const startLongitude = currentGroup[0].longitude || 'N/A';
-          const endLatitude = currentGroup[currentGroup.length - 1].latitude || 'N/A';
-          const endLongitude = currentGroup[currentGroup.length - 1].longitude || 'N/A';
-
-          // Extract start and end serverTime
-          const startTime = currentGroup[1].serverTime ? new Date(currentGroup[0].serverTime).toLocaleString() : 'N/A';
-          const endTime = currentGroup[currentGroup.length - 1].serverTime ? new Date(currentGroup[currentGroup.length - 1].serverTime).toLocaleString() : 'N/A';
-
-          // Create an aggregated object for the group
-          processedData.push({
-            deviceId: lastValidRecord.deviceId || 'N/A',
-            deviceName: deviceIdToNameMap[lastValidRecord.deviceId] || 'Unknown Device',
-            startLatitude: startLatitude,
-            startLongitude: startLongitude,
-            endLatitude: endLatitude,
-            endLongitude: endLongitude,
-            sumDistance: `${sumDistance.toFixed(2)} mi`,
-            avgSpeed: `${avgSpeed.toFixed(2)} mph`,
-            startTime: startTime,
-            endTime: endTime,
-            ignition: 'No', // Ignition is false here to close the group
-            charge: lastValidRecord.attributes?.charge ? 'Yes' : 'No',
-            archive: lastValidRecord.attributes?.archive ? 'Yes' : 'No',
-            totalDistance: `${lastValidRecord.attributes?.totalDistance.toFixed(2)} mi` || 'N/A',
-            motion: lastValidRecord.attributes?.motion ? 'Yes' : 'No',
-            blocked: lastValidRecord.attributes?.blocked ? 'Yes' : 'No',
-            alarm1Status: lastValidRecord.attributes?.alarm1Status || 'N/A',
-            otherStatus: lastValidRecord.attributes?.otherStatus || 'N/A',
-            alarm2Status: lastValidRecord.attributes?.alarm2Status || 'N/A',
-            engineStatus: 'Off',
-            adc1: lastValidRecord.attributes?.adc1 ? `${lastValidRecord.attributes.adc1.toFixed(2)} V` : 'N/A'
-          });
-
-          console.log('Group Closed (Ignition False):', currentGroup); // Log the group before it is cleared
-          currentGroup = []; // Reset the group after pushing the aggregated record
-          ignitionFound = false; // Reset ignitionFound flag
-        }
+      // If the last group was still open, push it to the groupedData
+      if (group.length > 0) {
+        groupedData.push(group);
       }
 
-      // If there is any remaining group (i.e., the data ends with ignition true), process it
-      if (currentGroup.length > 0) {
-        // Calculate sum distance and average speed for the remaining group
-        const sumDistance = currentGroup.reduce((sum, record) => sum + (record.attributes?.distance || 0), 0);
-        const avgSpeed = currentGroup.reduce((sum, record) => sum + (record.speed || 0), 0) / currentGroup.length;
+      console.log('Grouped Data:', groupedData);
 
-        // Extract start and end latitude/longitude
-        const startLatitude = currentGroup[0].latitude || 'N/A';
-        const startLongitude = currentGroup[0].longitude || 'N/A';
-        const endLatitude = currentGroup[currentGroup.length - 1].latitude || 'N/A';
-        const endLongitude = currentGroup[currentGroup.length - 1].longitude || 'N/A';
+      // Process the grouped data for display
+      // const processedData = groupedData.map((group) => {
+      //   // Take the first and last object from the group
+      //   const startData = group[0]; // First data object in the group
+      //   const endData = group[group.length - 1]; // Last data object in the group
 
-        // Extract start and end serverTime
-        const startTime = currentGroup[1].serverTime ? new Date(currentGroup[0].serverTime).toLocaleString() : 'N/A';
-        const endTime = currentGroup[currentGroup.length - 1].serverTime ? new Date(currentGroup[currentGroup.length - 1].serverTime).toLocaleString() : 'N/A';
+      //   // Map the processed data for this group into a single row
+      //   return {
+      //     deviceId: startData.deviceId || 'N/A',
+      //     deviceName: deviceIdToNameMap[startData.deviceId] || 'Unknown Device',
+      //     startTime: startData.serverTime ? new Date(startData.serverTime).toLocaleString() : 'N/A',
+      //     endTime: endData.serverTime ? new Date(endData.serverTime).toLocaleString() : 'N/A',
 
-        // Create an aggregated object for the remaining group
-        processedData.push({
-          deviceId: lastValidRecord.deviceId || 'N/A',
-          deviceName: deviceIdToNameMap[lastValidRecord.deviceId] || 'Unknown Device',
-          startLatitude: startLatitude,
-          startLongitude: startLongitude,
-          endLatitude: endLatitude,
-          endLongitude: endLongitude,
-          sumDistance: `${sumDistance.toFixed(2)} mi`,
-          avgSpeed: `${avgSpeed.toFixed(2)} mph`,
-          startTime: startTime,
-          endTime: endTime,
-          ignition: 'No',
-          charge: lastValidRecord.attributes?.charge ? 'Yes' : 'No',
-          archive: lastValidRecord.attributes?.archive ? 'Yes' : 'No',
-          totalDistance: `${lastValidRecord.attributes?.totalDistance.toFixed(2)} mi` || 'N/A',
-          motion: lastValidRecord.attributes?.motion ? 'Yes' : 'No',
-          blocked: lastValidRecord.attributes?.blocked ? 'Yes' : 'No',
-          alarm1Status: lastValidRecord.attributes?.alarm1Status || 'N/A',
-          otherStatus: lastValidRecord.attributes?.otherStatus || 'N/A',
-          alarm2Status: lastValidRecord.attributes?.alarm2Status || 'N/A',
-          engineStatus: 'Off',
-          adc1: lastValidRecord.attributes?.adc1 ? `${lastValidRecord.attributes.adc1.toFixed(2)} V` : 'N/A'
+      //     // Latitude and Longitude from first and last objects in the group
+      //     startLatitude: startData.latitude?.toFixed(6) || 'N/A',
+      //     startLongitude: startData.longitude?.toFixed(6) || 'N/A',
+      //     endLatitude: endData.latitude?.toFixed(6) || 'N/A',
+      //     endLongitude: endData.longitude?.toFixed(6) || 'N/A',
+
+      //     startSpeed: startData.speed ? `${startData.speed.toFixed(2)} mph` : 'N/A',
+      //     endSpeed: endData.speed ? `${endData.speed.toFixed(2)} mph` : 'N/A',
+      //     address: endData.address || 'Show Address',
+      //     course: endData.course > 0 ? '↑' : '↓',
+      //     altitude: `${endData.altitude?.toFixed(2)} m` || 'N/A',
+      //     accuracy: `${endData.accuracy?.toFixed(2)}` || 'N/A',
+      //     valid: endData.valid ? 'Yes' : 'No',
+      //     protocol: endData.protocol || 'N/A',
+      //     totalDistance: endData.attributes?.totalDistance ? `${endData.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+      //     motion: endData.attributes?.motion ? 'Yes' : 'No',
+      //     blocked: endData.attributes?.blocked ? 'Yes' : 'No',
+      //     ignition: endData.attributes?.ignition ? 'Yes' : 'No',
+      //     batteryLevel: endData.attributes?.batteryLevel || 'N/A',
+      //     odometer: endData.attributes?.odometer ? `${endData.attributes.odometer.toFixed(2)} mi` : 'N/A',
+      //     engineStatus: endData.attributes?.engineStatus ? 'On' : 'Off',
+      //     charge: endData.attributes?.charge ? 'Yes' : 'No',
+      //     alarm1Status: endData.attributes?.alarm1Status || 'N/A',
+      //     alarm2Status: endData.attributes?.alarm2Status || 'N/A',
+      //     geofences: endData.geofenceIds ? endData.geofenceIds.join(', ') : 'None',
+      //   };
+      // });
+
+      // // Flatten the grouped data and set it for display
+      // setFilteredRows(processedData);
+      const processedData = groupedData.map((group) => {
+        // Calculate the total distance for the current group
+        const totalDistanceInGroup = group.reduce((sum, data) => {
+          return sum + (data.attributes?.distance || 0);
+        }, 0);
+      
+        // Take the first and last object from the group
+        const startData = group[0]; // First data object in the group
+        const endData = group[group.length - 1]; // Last data object in the group
+      
+        // Map the processed data for this group into a single row
+        return {
+          deviceId: startData.deviceId || 'N/A',
+          deviceName: deviceIdToNameMap[startData.deviceId] || 'Unknown Device',
+          startTime: startData.serverTime ? new Date(startData.serverTime).toLocaleString() : 'N/A',
+          endTime: endData.serverTime ? new Date(endData.serverTime).toLocaleString() : 'N/A',
+      
+          // Latitude and Longitude from first and last objects in the group
+          startLatitude: startData.latitude?.toFixed(6) || 'N/A',
+          startLongitude: startData.longitude?.toFixed(6) || 'N/A',
+          endLatitude: endData.latitude?.toFixed(6) || 'N/A',
+          endLongitude: endData.longitude?.toFixed(6) || 'N/A',
+      
+          startSpeed: startData.speed ? `${startData.speed.toFixed(2)} mph` : 'N/A',
+          endSpeed: endData.speed ? `${endData.speed.toFixed(2)} mph` : 'N/A',
+          address: endData.address || 'Show Address',
+          course: endData.course > 0 ? '↑' : '↓',
+          altitude: `${endData.altitude?.toFixed(2)} m` || 'N/A',
+          accuracy: `${endData.accuracy?.toFixed(2)}` || 'N/A',
+          valid: endData.valid ? 'Yes' : 'No',
+          protocol: endData.protocol || 'N/A',
+          totalDistance: endData.attributes?.totalDistance ? `${endData.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+          motion: endData.attributes?.motion ? 'Yes' : 'No',
+          blocked: endData.attributes?.blocked ? 'Yes' : 'No',
+          ignition: endData.attributes?.ignition ? 'Yes' : 'No',
+          batteryLevel: endData.attributes?.batteryLevel || 'N/A',
+          odometer: endData.attributes?.odometer ? `${endData.attributes.odometer.toFixed(2)} mi` : 'N/A',
+          engineStatus: endData.attributes?.engineStatus ? 'On' : 'Off',
+          charge: endData.attributes?.charge ? 'Yes' : 'No',
+          alarm1Status: endData.attributes?.alarm1Status || 'N/A',
+          alarm2Status: endData.attributes?.alarm2Status || 'N/A',
+          geofences: endData.geofenceIds ? endData.geofenceIds.join(', ') : 'None',
+      
+          // Add the total distance for the group
+          distance1: totalDistanceInGroup
+        };
+      });
+      
+      // Flatten the grouped data and set it for display
+      setFilteredRows(processedData);
+      
+      setTotalResponses(jsonResponse.length);
+
+    } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      // Handle Excel response
+      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, 'report.xlsx'); // Save the file to the user's system
+
+      // Process the file to extract data
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const reportWorkbook = XLSX.read(data, { type: 'array' });
+
+        const firstSheetName = reportWorkbook.SheetNames[0];
+        const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
+        
+        // Convert worksheet data to JSON
+        const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
+
+        console.log('Extracted JSON Data from Excel:', jsonData);
+
+        // Apply the same grouping logic to Excel data
+        let ignitionStarted = false;
+        let group = [];
+        let groupedData = [];
+
+        jsonData.forEach((data) => {
+          if (!ignitionStarted && data.attributes?.ignition === true) {
+            // Start a new group when ignition is true
+            ignitionStarted = true;
+            group.push(data); // Add first record to the group
+          } else if (ignitionStarted) {
+            // Keep adding records to the group while ignition is true
+            if (data.attributes?.ignition === false) {
+              // End current group when ignition is false
+              groupedData.push(group);
+              group = []; // Reset the group for the next segment
+              ignitionStarted = false; // Stop grouping until ignition is true
+            } else {
+              // If ignition is still true, keep adding data to the current group
+              group.push(data);
+            }
+          }
         });
 
-        console.log('Remaining Group:', currentGroup); // Log the remaining group if it wasn't closed
-      }
+        // If the last group was still open, push it to the groupedData
+        if (group.length > 0) {
+          groupedData.push(group);
+        }
 
-      console.log("Aggregated Data:", processedData);
-      // After processing all records, update the filtered rows
-      setFilteredRows(processedData);
-      setTotalResponses(processedData.length);
+        console.log('Grouped Data from Excel:', groupedData);
+
+        // Process the grouped data for display
+        const processedEvents = groupedData.map((group) => {
+          // Take the first and last object from the group
+          const startData = group[0]; // First data object in the group
+          const endData = group[group.length - 1]; // Last data object in the group
+
+          // Map the processed data for this group into a single row
+          return {
+            deviceId: startData.deviceId,
+            deviceName: deviceIdToNameMap[startData.deviceId] || 'Unknown Device',
+            startTime: new Date(startData.serverTime).toLocaleString(),
+            endTime: new Date(endData.serverTime).toLocaleString(),
+
+            // Latitude and Longitude from first and last objects in the group
+            startLatitude: startData.latitude?.toFixed(6) || 'N/A',
+            startLongitude: startData.longitude?.toFixed(6) || 'N/A',
+            endLatitude: endData.latitude?.toFixed(6) || 'N/A',
+            endLongitude: endData.longitude?.toFixed(6) || 'N/A',
+
+            startSpeed: `${startData.speed?.toFixed(2)} mph` || 'N/A',
+            endSpeed: `${endData.speed?.toFixed(2)} mph` || 'N/A',
+            address: endData.address,
+            course: endData.course > 0 ? '↑' : '↓',
+            altitude: `${endData.altitude?.toFixed(2)} m`,
+            accuracy: `${endData.accuracy?.toFixed(2)}`,
+            valid: endData.valid ? 'Yes' : 'No',
+            totalDistance: endData.attributes?.totalDistance ? `${endData.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+            motion: endData.attributes?.motion ? 'Yes' : 'No',
+            blocked: endData.attributes?.blocked ? 'Yes' : 'No',
+            ignition: endData.attributes?.ignition ? 'Yes' : 'No',
+            batteryLevel: endData.attributes?.batteryLevel || 'N/A',
+            engineStatus: endData.attributes?.engineStatus ? 'On' : 'Off',
+            
+          };
+        });
+console.log("mygroupp",group);
+        setFilteredRows(processedEvents);
+      };
+
+      reader.readAsArrayBuffer(blob); // Read the blob data
     }
+
   } catch (error) {
     console.error('Error fetching data:', error);
-  } finally {
-    setLoading(false);  // Always stop loading after the operation
+    setLoading(false);
   }
+  setLoading(false);
 };
-                                                                                                                    
+
+
+
+
+
 
 const options = devices.map((device) => ({
   value: device.id,
@@ -2961,59 +3108,7 @@ const filteredDevices = Array.isArray(devices)
       device.name.toLowerCase().includes(searchText.toLowerCase())
     )
   : [];
-// const sortedData = React.useMemo(() => {
-//   if (!sortConfig.key) return data;
-//   return [...data].sort((a, b) => {
-//     if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
-//     if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
-//     return 0;
-//   });
-// }, [data, sortConfig]);
-// const groupDataByIgnition = (data) => {
-//   const groupedData = [];
-//   let currentGroup = [];
 
-//   console.log('Starting to group data by ignition...');
-
-//   for (let i = 0; i < data.length; i++) {
-//     const row = data[i];
-//     console.log(`Processing row ${i}:`, row);
-
-//     // If the ignition is "Yes", we start a new group or continue with the current group
-//     if (row.ignition === 'Yes') {
-//       console.log(`Row ${i} has ignition "Yes".`);
-
-//       if (currentGroup.length > 0 && currentGroup[currentGroup.length - 1].ignition === 'No') {
-//         // If the previous group ended with ignition "No", finalize the previous group
-//         console.log('Finalizing the current group as it ends with ignition "No".');
-//         groupedData.push(currentGroup);
-//         currentGroup = []; // Start a new group
-//       }
-      
-//       currentGroup.push(row); // Add row to the current group
-//       console.log('Adding to current group:', row);
-//     } else if (row.ignition === 'No') {
-//       console.log(`Row ${i} has ignition "No".`);
-
-//       if (currentGroup.length > 0) {
-//         // If the current group ends with ignition "No", finalize the group
-//         console.log('Finalizing the current group with ignition "No".');
-//         groupedData.push(currentGroup);
-//         currentGroup = []; // Reset for the next group
-//       }
-//     }
-//   }
-
-//   // If the last group is still active, push it to the result
-//   if (currentGroup.length > 0) {
-//     console.log('Finalizing the last group (if any).');
-//     groupedData.push(currentGroup);
-//   }
-
-//   console.log('Grouped data:', groupedData);
-
-//   return groupedData;
-// };
 const groupRowsByIgnition = (rows) => {
   let groupedRows = [];
   let currentGroup = [];
@@ -3032,21 +3127,64 @@ const groupRowsByIgnition = (rows) => {
         currentGroup.push(row);
       } else {
         // When ignition changes, push the current group and start a new one
-        groupedRows.push(currentGroup);
+        if (currentGroup.length > 1) { // Skip the group if it contains only one object
+          groupedRows.push(currentGroup);
+        }
         currentGroup = [row];
       }
     }
 
-    // If it's the last row, push the current group
-    if (index === rows.length - 1) {
+    // If it's the last row, push the current group (after checking its length)
+    if (index === rows.length - 1 && currentGroup.length > 1) {
       groupedRows.push(currentGroup);
     }
   });
 
+  // Create a new array with objects containing starttime, endtime, and summed distance
+  const result = groupedRows.map(group => {
+    if (group.length > 1) {
+      const startObj = group[0];  // First object in the group
+      const endObj = group[group.length - 1];  // Last object in the group
+
+      // Log to debug and check the structure of each object in the group
+      console.log('mineGroup:', group);
+      
+      // Sum all distances from first object to the last object in the group
+      const totalDistance = group.reduce((sum, obj) => {
+        // Check if the object has the expected structure
+        if (obj  && obj.distance !== undefined) {
+          const distance = obj.distance; // Access the distance
+          console.log(`Summing distance: ${distance} from object with id: ${obj.id}`);
+          return sum + distance;  // Sum the distances from each object
+        } else {
+          console.log('Invalid object structure or missing distance for object with id:', obj.id);
+          return sum;  // If no valid distance, don't add anything
+        }
+      }, 0);
+      // Create a new object for the group with the required details
+      return {
+        deviceName: startObj.deviceName || 'Unknown',  // From the first object
+        startTime: startObj.serverTime,  // From the first object
+        startLatitude: startObj.latitude,  // From the first object
+        startLongitude: startObj.longitude,  // From the first object
+        endTime: endObj.serverTime,  // From the last object
+        endLatitude: endObj.latitude,  // From the last object
+        endLongitude: endObj.longitude,  // From the last object
+        totalDistance,  // Sum of all distances in the group
+      };
+    }
+    return null;  // Skip groups with only one object
+  }).filter(item => item !== null);  // Remove null values (groups with only one object)
+
   return groupedRows;
 };
+
+// Example usage with some test data
+
+
+// Run the function
 const groupedData = groupRowsByIgnition(sortedData);
-console.log(groupedData);
+console.log("Grouped Data11:", groupedData);
 
 // Log the final result
 // console.log(groupedRows);
@@ -3237,7 +3375,8 @@ console.log(groupedData);
               }}
             >
             
-              {/* <Table
+            
+            <Table
   stickyHeader
   aria-label="sticky table"
   style={{ border: "1px solid black" }}
@@ -3267,9 +3406,9 @@ console.log(groupedData);
         .map((column) => (
           <TableCell
             key={column.accessor}
-            align={column.align}
+            align={column.align || 'left'}
             style={{
-              minWidth: column.minWidth,
+              minWidth: column.minWidth || '100px',
               cursor: "pointer",
               borderRight: "1px solid #e0e0e0",
               borderBottom: "2px solid black",
@@ -3291,8 +3430,9 @@ console.log(groupedData);
         ))}
     </TableRow>
   </TableHead>
+
   <TableBody>
-    {sortedData.length === 0 ? (
+    {groupedData.length === 0 ? (
       <TableRow>
         <TableCell
           colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
@@ -3307,312 +3447,16 @@ console.log(groupedData);
         </TableCell>
       </TableRow>
     ) : (
-      sortedData
+      groupedData
         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .map((row, index) => (
-          <TableRow
-            hover
-            role="checkbox"
-            tabIndex={-1}
-            key={row.id}
-            onClick={() =>
-              handleRowSelect(page * rowsPerPage + index)
-            }
-            selected={row.isSelected}
-            style={{
-              backgroundColor:
-                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-              borderBottom: "none",
-            }}
-          >
-            <TableCell
-              padding="checkbox"
-              style={{ borderRight: "1px solid #e0e0e0" }}
-            >
-              <Switch checked={row.isSelected} color="primary" />
-            </TableCell>
-            {COLUMNS()
-              .filter((col) => columnVisibility[col.accessor])
-              .map((column) => {
-                // Debug output
-                // console.log(`Row data: ${JSON.stringify(row)}, Column accessor: ${column.accessor}`);
-
-                // Access the correct value from the row
-                const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-                return (
-                  <TableCell
-                    key={column.accessor}
-                    align={column.align}
-                    style={{
-                      borderRight: "1px solid #e0e0e0",
-                      paddingTop: "4px",
-                      paddingBottom: "4px",
-                      borderBottom: "none",
-                      backgroundColor:
-                        index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                      fontSize: "smaller",
-                    }}
-                  >
-                    {column.Cell ? column.Cell({ value }) : value}
-                  </TableCell>
-                );
-              })}
-          </TableRow>
-        ))
-    )}
-  </TableBody>
-</Table> */}
- <Table
-      stickyHeader
-      aria-label="sticky table"
-      style={{ border: "1px solid black" }}
-    >
-      <TableHead>
-        <TableRow
-          style={{
-            borderBottom: "1px solid black",
-            borderTop: "1px solid black",
-          }}
-        >
-          <TableCell
-            padding="checkbox"
-            style={{
-              borderRight: "1px solid #e0e0e0",
-              borderBottom: "2px solid black",
-            }}
-          >
-            <Switch
-              checked={selectAll}
-              onChange={handleSelectAll}
-              color="primary"
-            />
-          </TableCell>
-          {COLUMNS()
-            .filter((col) => columnVisibility[col.accessor])
-            .map((column) => (
-              <TableCell
-                key={column.accessor}
-                align={column.align || 'left'}
-                style={{
-                  minWidth: column.minWidth || '100px',
-                  cursor: "pointer",
-                  borderRight: "1px solid #e0e0e0",
-                  borderBottom: "2px solid black",
-                  padding: "4px 4px",
-                  textAlign: "center",
-                  fontWeight: "bold",
-                }}
-                onClick={() => requestSort(column.accessor)}
-              >
-                {column.Header}
-                {sortConfig.key === column.accessor ? (
-                  sortConfig.direction === "ascending" ? (
-                    <ArrowUpwardIcon fontSize="small" />
-                  ) : (
-                    <ArrowDownwardIcon fontSize="small" />
-                  )
-                ) : null}
-              </TableCell>
-            ))}
-        </TableRow>
-      </TableHead>
-     
-{/* <TableBody>
-  {sortedData
-    .filter((row) => row.distance !== 'N/A' && row.speed !== 'N/A' && parseFloat(row.speed) >= 1) // Filter out rows with distance === 'N/A'
-    .find((row) => row.ignition === 'Yes') // Find first row with ignition "Yes"
-    ? ( // If we find a row with ignition === "Yes", proceed to render the table
-      sortedData
-        .filter(row => row.distance !== 'N/A' && row.speed !== 'N/A' && parseFloat(row.speed) >= 1) // Apply the filter again
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .filter((row, index, array) => {
-          // Find the first row with ignition === "Yes" and filter out rows with ignition === "No" before that
-          const firstIgnitionIndex = array.findIndex((r) => r.ignition === 'Yes');
-          return index >= firstIgnitionIndex; // Only include rows from the first row with ignition === "Yes" onwards
-        })
-        .map((row, index) => (
-          <TableRow
-            hover
-            role="checkbox"
-            tabIndex={-1}
-            key={row.deviceId + index} // Ensure uniqueness for the key
-            onClick={() =>
-              handleRowSelect(page * rowsPerPage + index)
-            }
-            selected={row.isSelected}
-            style={{
-              backgroundColor:
-                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-              borderBottom: "none",
-            }}
-          >
-            <TableCell
-              padding="checkbox"
-              style={{ borderRight: "1px solid #e0e0e0" }}
-            >
-              <Switch checked={row.isSelected} color="primary" />
-            </TableCell>
-            {COLUMNS()
-              .filter((col) => columnVisibility[col.accessor])
-              .map((column) => {
-                const accessor = typeof column.accessor === 'string' ? column.accessor : '';
-                const value = accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-                return (
-                  <TableCell
-                    key={accessor}
-                    align={column.align || 'left'}
-                    style={{
-                      borderRight: "1px solid #e0e0e0",
-                      paddingTop: "4px",
-                      paddingBottom: "4px",
-                      borderBottom: "none",
-                      backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                      fontSize: "smaller",
-                    }}
-                  >
-                    {column.Cell ? column.Cell({ value }) : value}
-                  </TableCell>
-                );
-              })}
-          </TableRow>
-        ))
-    ) : (
-      <TableRow>
-        <TableCell
-          colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
-          style={{
-            textAlign: 'center',
-            padding: '16px',
-            fontSize: '16px',
-            color: '#757575',
-          }}
-        >
-          <h4>No Data Available</h4>
-        </TableCell>
-      </TableRow>
-    )}
-</TableBody> */}
-{/* <TableBody>
-  {sortedData
-    .filter((row) => row.distance !== 'N/A' && row.speed !== 'N/A' && parseFloat(row.speed) >= 1)
-    .find((row) => row.ignition === 'Yes') // Find first row with ignition "Yes"
-    ? (
-      // Filter and group rows by ignition state
-      groupDataByIgnition(sortedData
-        .filter(row => row.distance !== 'N/A' && row.speed !== 'N/A' && parseFloat(row.speed) >= 1)
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage))
-        .map((group, groupIndex) => {
-          console.log(`Rendering group ${groupIndex + 1}:`, group);
-          return group.map((row, index) => {
-            console.log(`Rendering row ${index + 1} in group ${groupIndex + 1}:`, row);
-
-            return (
-              <TableRow
-                hover
-                role="checkbox"
-                tabIndex={-1}
-                key={row.deviceId + groupIndex + index}
-                onClick={() =>
-                  handleRowSelect(page * rowsPerPage + index)
-                }
-                selected={row.isSelected}
-                style={{
-                  backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                  borderBottom: "none",
-                }}
-              >
-                <TableCell
-                  padding="checkbox"
-                  style={{ borderRight: "1px solid #e0e0e0" }}
-                >
-                  <Switch checked={row.isSelected} color="primary" />
-                </TableCell>
-                {COLUMNS()
-                  .filter((col) => columnVisibility[col.accessor])
-                  .map((column) => {
-                    const accessor = typeof column.accessor === 'string' ? column.accessor : '';
-                    const value = accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-                    return (
-                      <TableCell
-                        key={accessor}
-                        align={column.align || 'left'}
-                        style={{
-                          borderRight: "1px solid #e0e0e0",
-                          paddingTop: "4px",
-                          paddingBottom: "4px",
-                          borderBottom: "none",
-                          backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          fontSize: "smaller",
-                        }}
-                      >
-                        {column.Cell ? column.Cell({ value }) : value}
-                      </TableCell>
-                    );
-                  })}
-              </TableRow>
-            );
-          });
-        })
-    ) : (
-      <TableRow>
-        <TableCell
-          colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
-          style={{
-            textAlign: 'center',
-            padding: '16px',
-            fontSize: '16px',
-            color: '#757575',
-          }}
-        >
-          <h4>No Data Available</h4>
-        </TableCell>
-      </TableRow>
-    )}
-</TableBody> */}
-{/* <TableBody>
-  {(() => {
-    // Group rows by ignition
-    const groupedRows = groupRowsByIgnition(
-      sortedData.filter((row) => row.distance !== 'N/A' && row.speed !== 'N/A' && parseFloat(row.speed) >= 1)
-    );
-
-    // Check if there are any groups with ignition "Yes"
-    const firstIgnitionGroup = groupedRows.find(group => group[0].ignition === 'Yes');
-    
-    if (!firstIgnitionGroup) {
-      return (
-        <TableRow>
-          <TableCell
-            colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
-            style={{
-              textAlign: 'center',
-              padding: '16px',
-              fontSize: '16px',
-              color: '#757575',
-            }}
-          >
-            <h4>No Data Available</h4>
-          </TableCell>
-        </TableRow>
-      );
-    }
-
-    return groupedRows
-      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) // Apply pagination
-      .map((group, groupIndex) => (
-        <React.Fragment key={groupIndex}>
-          {group.map((row, index) => (
+        .map((group, groupIndex) =>
+          group.map((row, index) => (
             <TableRow
               hover
               role="checkbox"
               tabIndex={-1}
-              key={row.deviceId + groupIndex + index} // Ensure uniqueness for the key
-              onClick={() =>
-                handleRowSelect(page * rowsPerPage + groupIndex * group.length + index)
-              }
+              key={row.deviceName + index + groupIndex} // Ensure uniqueness for the key
+              onClick={() => handleRowSelect(page * rowsPerPage + index)}
               selected={row.isSelected}
               style={{
                 backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
@@ -3625,15 +3469,15 @@ console.log(groupedData);
               >
                 <Switch checked={row.isSelected} color="primary" />
               </TableCell>
+
+              {/* Render the new properties of groupedData */}
               {COLUMNS()
                 .filter((col) => columnVisibility[col.accessor])
                 .map((column) => {
-                  const accessor = typeof column.accessor === 'string' ? column.accessor : '';
-                  const value = accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
+                  const value = row[column.accessor];  // Access directly since your data is flat
                   return (
                     <TableCell
-                      key={accessor}
+                      key={column.accessor}
                       align={column.align || 'left'}
                       style={{
                         borderRight: "1px solid #e0e0e0",
@@ -3649,106 +3493,12 @@ console.log(groupedData);
                   );
                 })}
             </TableRow>
-          ))}
-        </React.Fragment>
-      ));
-  })()}
-</TableBody> */}
+          ))
+        )
+    )}
+  </TableBody>
+</Table>
 
-<TableBody>
-        {sortedData.length === 0 ? (
-          <TableRow>
-            <TableCell
-              colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
-              style={{
-                textAlign: 'center',
-                padding: '16px',
-                fontSize: '16px',
-                color: '#757575',
-              }}
-            >
-              <h4>No Data Available</h4>
-            </TableCell>
-          </TableRow>
-        ) : (
-          sortedData
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((row, index) => (
-              <TableRow
-                hover
-                role="checkbox"
-                tabIndex={-1}
-                key={row.deviceId + index} // Ensure uniqueness for the key
-                onClick={() =>
-                  handleRowSelect(page * rowsPerPage + index)
-                }
-                selected={row.isSelected}
-                style={{
-                  backgroundColor:
-                    index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                  borderBottom: "none",
-                }}
-              >
-                <TableCell
-                  padding="checkbox"
-                  style={{ borderRight: "1px solid #e0e0e0" }}
-                >
-                  <Switch checked={row.isSelected} color="primary" />
-                </TableCell>
-                {/* {COLUMNS()
-                  .filter((col) => columnVisibility[col.accessor])
-                  .map((column) => {
-                    const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-                    return (
-                      <TableCell
-                        key={column.accessor}
-                        align={column.align || 'left'}
-                        style={{
-                          borderRight: "1px solid #e0e0e0",
-                          paddingTop: "4px",
-                          paddingBottom: "4px",
-                          borderBottom: "none",
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          fontSize: "smaller",
-                        }}
-                      >
-                        {column.Cell ? column.Cell({ value }) : value}
-                      </TableCell>
-                    );
-                  })} */}
-                  {COLUMNS()
-  .filter((col) => columnVisibility[col.accessor])
-  .map((column) => {
-    // Ensure column.accessor is a string before calling split
-    const accessor = typeof column.accessor === 'string' ? column.accessor : '';
-    const value = accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-    return (
-      <TableCell
-        key={accessor}
-        align={column.align || 'left'}
-        style={{
-          borderRight: "1px solid #e0e0e0",
-          paddingTop: "4px",
-          paddingBottom: "4px",
-          borderBottom: "none",
-          backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-          fontSize: "smaller",
-        }}
-      >
-        {column.Cell ? column.Cell({ value }) : value}
-      </TableCell>
-    );
-  })}
-
-              </TableRow>
-            ))
-        )}
-      </TableBody>
-
-    </Table>
             </TableContainer>
             <StyledTablePagination>
   <TablePagination

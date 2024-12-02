@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, Component } from "react";
+import React, { useState, useEffect, useContext, Component,useRef  } from "react";
 import axios from "axios";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -29,11 +29,10 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
-import { saveAs } from 'file-saver'; // Save file to the user's machine
-// import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
-//import { TextField } from '@mui/material';
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 import Select from "react-select";
+//import { TextField } from '@mui/material';
+
 const style = {
   position: "absolute",
   top: "50%",
@@ -93,6 +92,7 @@ export const DistanceReport = () => {
   }, [filterText]);
 
  
+
   const handleChangeRowsPerPage = (event) => {
     const newRowsPerPage = parseInt(event.target.value, 10);
     setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
@@ -110,21 +110,13 @@ export const DistanceReport = () => {
 
  
   const filterData = (text) => {
-    let dataToFilter = originalRows;
-  
-    // Apply date filter
-    if (startDate && endDate) {
-      dataToFilter = dataToFilter.filter((row) => {
-        const rowDate = new Date(row.dateOfBirth); // Adjust based on your date field
-        return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
-      });
-    }
-  
-    // Apply text filter
+    // Apply text-based filtering
     if (text === "") {
-      setFilteredRows(dataToFilter); // Reset to full filtered data
+      // If no text is provided, reset to original rows
+      setFilteredRows(originalRows.map(row => ({ ...row, isSelected: false })));
     } else {
-      const filteredData = dataToFilter
+      // Filter based on text
+      const filteredData = originalRows
         .filter((row) =>
           Object.values(row).some(
             (val) =>
@@ -133,8 +125,8 @@ export const DistanceReport = () => {
           )
         )
         .map((row) => ({ ...row, isSelected: false }));
-      
-      setFilteredRows(filteredData); // Update filtered rows
+  
+      setFilteredRows(filteredData);
     }
   };
   
@@ -180,75 +172,7 @@ export const DistanceReport = () => {
     }
   };
 
-  const handleDeleteSelected = async () => {
-    // Log filteredRows to check its structure
-    console.log("Filtered rows:", filteredRows);
-
-    // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
-
-    console.log("Selected IDs:", selectedIds);
-
-    if (selectedIds.length === 0) {
-      alert("No rows selected for deletion.");
-      return;
-    }
-    const userConfirmed = window.confirm(
-      `Are you sure you want to delete ${selectedIds.length} record(s)?`
-    );
-
-    if (!userConfirmed) {
-      // If the user clicks "Cancel", exit the function
-      return;
-    }
-    try {
-      // Define the API endpoint and token
-      const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
-      // Send delete requests for each selected ID
-      const deleteRequests = selectedIds.map((id) =>
-        fetch(`${apiUrl}/${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }).then((response) => {
-          if (!response.ok) {
-            throw new Error(
-              `Error deleting record with ID ${id}: ${response.statusText}`
-            );
-          }
-          return response.json();
-        })
-      );
-
-      // Wait for all delete requests to complete
-      await Promise.all(deleteRequests);
-
-      // Filter out deleted rows
-      const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
-
-      // Update state
-      setFilteredRows(newFilteredRows);
-      setSelectAll(false);
-
-      alert("Selected records deleted successfully.");
-    } catch (error) {
-      console.error("Error during deletion:", error);
-      alert("Failed to delete selected records.");
-    }
-    fetchData();
-  };
+ 
 
   const handleExport = () => {
     const dataToExport = filteredRows.map((row) => {
@@ -261,21 +185,7 @@ export const DistanceReport = () => {
     XLSX.writeFile(workbook, "DistanceReport.xlsx");
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetNames = workbook.SheetNames;
-        const sheet = workbook.Sheets[sheetNames[0]];
-        const parsedData = XLSX.utils.sheet_to_json(sheet);
-        setImportData(parsedData);
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  };
+  
 
   const sortedData = [...filteredRows];
   if (sortConfig.key !== null) {
@@ -290,16 +200,13 @@ export const DistanceReport = () => {
     });
   }
 
-  const handleAddButtonClick = () => {
-    setFormData({});
-    setAddModalOpen(true);
-  };
+  
 
   const handleModalClose = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
-    setFormData({});
     setModalOpen(false);
+    setFormData({});
   };
 
   const handleSnackbarClose = () => {
@@ -317,140 +224,69 @@ export const DistanceReport = () => {
  
 
 
-const handleEditSubmit = async () => {
-  const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-  const username = "test";
-  const password = "123456";
-  const token = btoa(`${username}:${password}`);
 
-  // Ensure formData contains the full structure with nested attributes
-  const updatedData = {
-    ...formData, // formData should have the same structure as the object you are retrieving
-    isSelected: false,
-    attributes: {
-      ...formData.attributes,
-      speedUnit: "kmh", // Ensure this is updated correctly
-    }
-  };
-
-  try {
-    console.log("Sending request to:", apiUrl);
-    console.log("Request payload:", JSON.stringify(updatedData, null, 2));
-
-    const response = await fetch(apiUrl, {
-      method: "PUT", // PUT method to update the resource
-      headers: {
-        "Authorization": `Basic ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData), // Convert updatedData to JSON
-    });
-
-    console.log("Response status:", response.status);
-    console.log("Response headers:", response.headers);
-
-    if (!response.ok) {
-      const errorResult = await response.json();
-      console.error("Error response:", errorResult);
-      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
-    }
-
-    const result = await response.json();
-    console.log("Update successful:", result);
-    alert("Updated successfully");
-
-    // Update filteredRows in state
-    const updatedRows = filteredRows.map((row) =>
-      row.id === selectedRow.id
-        ? { ...row, ...updatedData, isSelected: false } // Ensure the updated data includes nested fields
-        : row
-    );
-    setFilteredRows(updatedRows);
-
-    handleModalClose();
-    fetchData(); // Refetch data to ensure the UI is up-to-date
-  } catch (error) {
-    console.error("Error updating row:", error.message, error.stack);
-    alert("Error updating data");
-  }
-};
 
  
-  const handleAddSubmit = async () => {
-    try {
-      const newRow = {
-        ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
-      };
-
-      // POST request to the server
-      const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/parent/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newRow),
-        }
-      );
-      alert('record created successfully');
-    
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      // Assuming the server returns the created object
-      const result = await response.json();
-
-      // Update the state with the new row
-      setFilteredRows([...filteredRows, result]);
-
-      // Close the modal
-      handleModalClose();
-      fetchData();
-      console.log("error occured in post method");
-    } catch (error) {
-      console.error("Error during POST request:", error);
-      alert('unable to create record');
-      // Handle the error appropriately (e.g., show a notification to the user)
-    }
-  };
+  
 
 
-  const [devices, setDevices] = useState([]);
-  // const [loading, setLoading] = useState(true);
+ 
   const [error, setError] = useState(null);
+
+const [devices, setDevices] = useState([]); // Ensure devices is initialized as an empty array
 
   useEffect(() => {
     const fetchDevices = async () => {
       try {
         const response = await fetch('https://rocketsalestracker.com/api/devices', {
           headers: {
-            'Authorization': 'Basic ' + btoa('schoolmaster:123456'), // Replace with your username and password
+            'Authorization': 'Basic ' + btoa('schoolmaster:123456'),
           },
         });
-
+  
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-
+  
         const data = await response.json();
-        setDevices(data); // Adjust according to the actual response format
+  
+        // Ensure that data is an array before setting it
+        if (Array.isArray(data)) {
+          setDevices(data);
+        } else {
+          console.error('Fetched data is not an array:', data);
+        }
       } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+        console.error('Error fetching devices:', err);
       }
     };
+  
     fetchDevices();
-  }, []);
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error}</p>;
-  const [groups, setGroups] = useState([]);
-  // const [error, setError] = useState(null);
+  }, []); // Make sure this runs only once on component mount
+  
+  
+  // Transform devices into options for React-Select
+  const options = devices.map((device) => ({
+    value: device.id,
+    label: device.name,
+  }));
 
+  const handleChange = (selectedOption) => {
+    setSelectedDevice(selectedOption ? selectedOption.value : null);
+  };
+
+  const [groups, setGroups] = useState([]);
+  
+ // Convert groups into options for react-select
+ const groupOptions = groups.map((group) => ({
+  value: group.id,
+  label: group.name,
+}));
+
+// Handle change for groups
+const handleGroupChange = (selectedOption) => {
+  setSelectedGroup(selectedOption ? selectedOption.value : null);
+};
   useEffect(() => {
     const fetchGroups = async () => {
       try {
@@ -475,62 +311,26 @@ const handleEditSubmit = async () => {
     fetchGroups();
   }, []);
 
-  // const [startDate, setStartDate] = useState('');
-  // const [endDate, setEndDate] = useState('');
+  
   const [selectedDevice, setSelectedDevice] = useState('');
   const [selectedGroup, setSelectedGroup] = useState('');
   const [apiUrl, setApiUrl] = useState('');
-  const generateDateRange = (startDate, endDate) => {
-    const dateArray = [];
-    let currentDate = new Date(startDate);
-  
-    // Iterate over the range and add each date to the array
-    while (currentDate <= endDate) {
-      dateArray.push(new Date(currentDate)); // Add current date to the array
-      currentDate.setDate(currentDate.getDate() + 1); // Increment by 1 day
-    }
-  
-    return dateArray;
-  };
-  
-  // const handleShowClick = () => {
-  //   const formattedStartDate = formatToUTC(startDate);
-  //   const formattedEndDate = formatToUTC(endDate);
 
-  //   if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
-  //     alert('Please fill all fields');
-  //     return;
-  //   }
-
-  //   // Construct the API URL
-  //   const url = `https://rocketsalestracker.com/api/reports/route?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}`;
-    
-  //   setApiUrl(url); // Update the state with the generated URL
-  //   fetchData(url); // Call fetchData with the generated URL
-  // };
   const handleShowClick = () => {
-    const formattedStartDate = formatToUTC(startDate); // Ensure formatToUTC converts to a valid date string
+    const formattedStartDate = formatToUTC(startDate);
     const formattedEndDate = formatToUTC(endDate);
-  
-    if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
+
+    if (!formattedStartDate || !formattedEndDate || !selectedDevice || !selectedGroup) {
       alert('Please fill all fields');
       return;
     }
-  
-    // Convert the string dates back to Date objects for date range generation
-    const startDateObj = new Date(formattedStartDate);
-    const endDateObj = new Date(formattedEndDate);
-  
-    // Generate date range
-    const dateRange = generateDateRange(startDateObj, endDateObj);
-  
-    // Update state with the URL for API request
-    const url = `https://rocketsalestracker.com/api/reports/route?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}`;
+
+    // Construct the API URL
+    const url = `https://rocketsalestracker.com/api/reports/combined?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
+    
     setApiUrl(url); // Update the state with the generated URL
-    fetchData(url, dateRange); // Pass the dateRange to fetchData to filter or display data for each date
+    fetchData(url); // Call fetchData with the generated URL
   };
-  
-  
   const formatToUTC = (localDateTime) => {
     if (!localDateTime) return '';
     const localDate = new Date(localDateTime);
@@ -538,166 +338,8 @@ const handleEditSubmit = async () => {
     return utcDate.toISOString();
   };
   
-  
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
-
-//   try {
-//     const username = "schoolmaster";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     // Log the content type of the response
-//     console.log('Content-Type:', response.headers['content-type']);
-//     const deviceIdToNameMap = devices.reduce((acc, device) => {
-//       acc[device.id] = device.name; // Use device.id and device.name as key-value pair
-//       return acc;
-//     }, {});
-//     // Handle JSON response
-//     if (response.headers['content-type'] === 'application/json') {
-//       const text = await response.data.text(); // Convert Blob to text
-//       console.log('JSON Response:', text); // Log JSON response
-//       const jsonResponse = JSON.parse(text); // Parse JSON
-//       // Process the JSON response
-//       console.log('Processed JSON Data:', jsonResponse);
-
-//       // Example: Set filtered rows and total responses from JSON data
-//       setFilteredRows(jsonResponse.map(data => ({
-//         deviceId: data.deviceId || 'N/A',
-//         eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
-//         latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
-//         longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
-//         speed : data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
-
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
-//         accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol || 'N/A',
-//         deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
-//         serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
-//         fixTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes?.sat || 'N/A',
-//         RSSI: data.attributes?.rssi || 'N/A',
-//         odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
-//         batteryLevel: data.attributes?.batteryLevel || 'N/A',
-//         ignition: data.attributes?.ignition ? 'Yes' : 'No',
-//         charge: data.attributes?.charge ? 'Yes' : 'No',
-//         archive: data.attributes?.archive ? 'Yes' : 'No',
-//         distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
-//         totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
-//         motion: data.attributes?.motion ? 'Yes' : 'No',
-//         blocked: data.attributes?.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes?.alarm1Status || 'N/A',
-//         otherStatus: data.attributes?.otherStatus || 'N/A',
-//         alarm2Status: data.attributes?.alarm2Status || 'N/A',
-//         engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
-        
-//       })));
-
-//       setTotalResponses(jsonResponse.length);
-
-//     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-//       // Handle Excel response
-//       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//       saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//       // Process the file to extract data
-//       const reader = new FileReader();
-//       reader.onload = (e) => {
-//         const data = new Uint8Array(e.target.result);
-//         const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-//         const firstSheetName = reportWorkbook.SheetNames[0];
-//         const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-        
-//         // Convert worksheet data to JSON
-//         const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//         console.log('Extracted JSON Data from Excel:', jsonData);
-
-//         // Process the data
-//         const processedEvents = jsonData.map(data => ({
-//           deviceId: data.deviceId,
-//           eventTime: new Date(data.fixTime).toLocaleString(),
-//           latitude: `${data.latitude.toFixed(6)}°`,
-//           longitude: `${data.longitude.toFixed(6)}°`,
-//           speed: `${data.speed.toFixed(2)} mph`,
-//           address: data.address || 'Show Address',
-//           course: data.course > 0 ? '↑' : '↓',
-//           altitude: `${data.altitude.toFixed(2)} m`,
-//           accuracy: `${data.accuracy.toFixed(2)}`,
-//           valid: data.valid ? 'Yes' : 'No',
-//           protocol: data.protocol,
-//           deviceTime: new Date(data.deviceTime).toLocaleString(),
-//           serverTime: new Date(data.serverTime).toLocaleString(),
-//           geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//           satellites: data.attributes.sat || '',
-//           RSSI: data.attributes.rssi || '',
-//           odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//           batteryLevel: data.attributes.batteryLevel || '',
-//           ignition: data.attributes.ignition ? 'Yes' : 'No',
-//           charge: data.attributes.charge ? 'Yes' : 'No',
-//           archive: data.attributes.archive ? 'Yes' : 'No',
-//           distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//           totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//           motion: data.attributes.motion ? 'Yes' : 'No',
-//           blocked: data.attributes.blocked ? 'Yes' : 'No',
-//           alarm1Status: data.attributes.alarm1Status || '',
-//           otherStatus: data.attributes.otherStatus || '',
-//           alarm2Status: data.attributes.alarm2Status || '',
-//           engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//           adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//         }));
-
-//         console.log('Processed Events:', processedEvents);
-
-//         // setFilteredRows(processedEvents.map(event => ({
-//         //   ...event,
-//         //   isSelected: false
-//         // })));
-//         // setOriginalRows(processedEvents.map((row) => ({ ...row, isSelected: false })));
-//         setFilteredRows(
-//           processedEvents.map((row) => ({ ...row, isSelected: false }))
-//         );
-//         setOriginalRows(processedEvents.map((row) => ({ ...row, isSelected: false })));
-        
-//         setTotalResponses(processedEvents.length);
-
-//         // Optionally export the processed data back to an Excel file
-//         const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-//         const outputWorkbook = XLSX.utils.book_new();
-//         XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//         // Trigger file download
-//         XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//       };
-
-//       reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//     } else {
-//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
-//     }
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert("please select device and date");
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
+ 
 const fetchData = async (url) => {
-  console.log('Fetching report...');
   setLoading(true);
 
   try {
@@ -705,171 +347,223 @@ const fetchData = async (url) => {
     const password = "123456";
     const token = btoa(`${username}:${password}`);
 
+    // Make the GET request to fetch the data
     const response = await axios.get(url, {
       headers: {
         Authorization: `Basic ${token}`,
       },
-      responseType: 'blob', // Downloading as binary data
     });
 
-    // Log the content type of the response
-    console.log('Content-Type:', response.headers['content-type']);
+    const responseData = response.data;
 
+    console.log("Fetched data:", responseData);
+
+    // Create a deviceId to deviceName map from the devices array
     const deviceIdToNameMap = devices.reduce((acc, device) => {
       acc[device.id] = device.name; // Use device.id and device.name as key-value pair
       return acc;
     }, {});
 
-    // Handle JSON response
-    if (response.headers['content-type'] === 'application/json') {
-      const text = await response.data.text(); // Convert Blob to text
-      console.log('JSON Response:', text); // Log JSON response
-      const jsonResponse = JSON.parse(text); // Parse JSON
-
-      // Process the JSON response
-      console.log('Processed JSON Data:', jsonResponse);
-
-      // Example: Set filtered rows and total responses from JSON data
-      setFilteredRows(jsonResponse.map(data => ({
-        deviceId: data.deviceId || 'N/A',
-        deviceName: deviceIdToNameMap[data.deviceId] || 'Unknown Device', // Fetch device name based on deviceId
-        eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
-        latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
-        longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
-        speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
-        address: data.address || 'Show Address',
-        course: data.course > 0 ? '↑' : '↓',
-        altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
-        accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
-        valid: data.valid ? 'Yes' : 'No',
-        protocol: data.protocol || 'N/A',
-        deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
-        serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
-        fixTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
-        geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-        satellites: data.attributes?.sat || 'N/A',
-        RSSI: data.attributes?.rssi || 'N/A',
-        odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
-        batteryLevel: data.attributes?.batteryLevel || 'N/A',
-        ignition: data.attributes?.ignition ? 'Yes' : 'No',
-        charge: data.attributes?.charge ? 'Yes' : 'No',
-        archive: data.attributes?.archive ? 'Yes' : 'No',
-        distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
-        totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
-        motion: data.attributes?.motion ? 'Yes' : 'No',
-        blocked: data.attributes?.blocked ? 'Yes' : 'No',
-        alarm1Status: data.attributes?.alarm1Status || 'N/A',
-        otherStatus: data.attributes?.otherStatus || 'N/A',
-        alarm2Status: data.attributes?.alarm2Status || 'N/A',
-        engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
-        adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
-      })));
-
-      setTotalResponses(jsonResponse.length);
-
-    } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-      // Handle Excel response
-      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-      // Process the file to extract data
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-        const firstSheetName = reportWorkbook.SheetNames[0];
-        const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-        
-        // Convert worksheet data to JSON
-        const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-        console.log('Extracted JSON Data from Excel:', jsonData);
-
-        // Process the data
-        const processedEvents = jsonData.map(data => ({
-          deviceId: data.deviceId,
-          deviceName: deviceIdToNameMap[data.deviceId] || 'Unknown Device', // Fetch device name based on deviceId
-          eventTime: new Date(data.fixTime).toLocaleString(),
-          latitude: `${data.latitude.toFixed(6)}°`,
-          longitude: `${data.longitude.toFixed(6)}°`,
-          speed: `${data.speed.toFixed(2)} mph`,
-          address: data.address || 'Show Address',
-          course: data.course > 0 ? '↑' : '↓',
-          altitude: `${data.altitude.toFixed(2)} m`,
-          accuracy: `${data.accuracy.toFixed(2)}`,
-          valid: data.valid ? 'Yes' : 'No',
-          protocol: data.protocol,
-          deviceTime: new Date(data.deviceTime).toLocaleString(),
-          serverTime: new Date(data.serverTime).toLocaleString(),
-          geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-          satellites: data.attributes.sat || '',
-          RSSI: data.attributes.rssi || '',
-          odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-          batteryLevel: data.attributes.batteryLevel || '',
-          ignition: data.attributes.ignition ? 'Yes' : 'No',
-          charge: data.attributes.charge ? 'Yes' : 'No',
-          archive: data.attributes.archive ? 'Yes' : 'No',
-          distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-          totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-          motion: data.attributes.motion ? 'Yes' : 'No',
-          blocked: data.attributes.blocked ? 'Yes' : 'No',
-          alarm1Status: data.attributes.alarm1Status || '',
-          otherStatus: data.attributes.otherStatus || '',
-          alarm2Status: data.attributes.alarm2Status || '',
-          engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-          adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
+    // Check if the data is an array and process it
+    if (Array.isArray(responseData) && responseData.length > 0) {
+     
+      const processedData = responseData.map((item) => {
+        // Find the deviceName using the deviceId
+        const deviceName = deviceIdToNameMap[item.deviceId];
+      
+        // Process each device's events
+        const processedEvents = (item.events || []).map((event) => ({
+          deviceId: item.deviceId,
+          deviceName: deviceName, // Add deviceName from mapping
+          eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
+          type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
         }));
+    
+        // Process positions with serverTime
+        const processedPositions = Array.isArray(item.positions)
+        ? item.positions.map((position) => ({
+            id: position.id,
+            deviceId: item.deviceId,
+            deviceName: deviceName,
+            serverTime: position.serverTime ? new Date(position.serverTime).toLocaleString() : 'N/A',
+            deviceTime: position.deviceTime ? new Date(position.deviceTime).toLocaleString() : 'N/A',
+            fixTime: position.fixTime ? new Date(position.fixTime).toLocaleString() : 'N/A',
+            latitude: position.latitude,
+            longitude: position.longitude,
+            speed: position.speed ? position.speed.toFixed(2) : '0.00',
+            valid: position.valid,
+            attributes: position.attributes,
+          }))
+        : [];
+      
+        return {
+          deviceId: item.deviceId,
+          deviceName: deviceName, // Add deviceName from mapping
+          processedEvents,
+          processedPositions,
+        };
+      });
+      
+      console.log("Processed Data11:", processedData);
 
-        console.log('Processed Events:', processedEvents);
+      // Update state with processed events
+      setFilteredRows(
+        processedData.flatMap(({ processedEvents }) =>
+          processedEvents.map((event) => ({
+            ...event,
+            isSelected: false,
+          }))
+        )
+      );
 
-        setFilteredRows(
-          processedEvents.map((row) => ({ ...row, isSelected: false }))
-        );
-        setOriginalRows(processedEvents.map((row) => ({ ...row, isSelected: false })));
-        
-        setTotalResponses(processedEvents.length);
-
-        // Optionally export the processed data back to an Excel file
-        const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-        const outputWorkbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-        // Trigger file download
-        XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-      };
-
-      reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
+      // Update the total number of events
+      setTotalResponses(
+        processedData.reduce((total, item) => total + item.processedEvents.length, 0)
+      );
     } else {
-      throw new Error('Unexpected content type: ' + response.headers['content-type']);
+      console.error("Expected an array but got:", responseData);
+      alert("Unexpected data format.");
     }
   } catch (error) {
-    console.error('Error fetching the report:', error);
-    alert("please select device and date");
+    console.error("Fetch data error:", error);
+    alert("please select device,group and date");
   } finally {
     setLoading(false);
   }
 };
 
-const options = devices.map((device) => ({
-  value: device.id,
-  label: device.name,
-}));
+// const fetchData = async (url) => {
+//   setLoading(true);
 
-const handleChange = (selectedOption) => {
-  setSelectedDevice(selectedOption ? selectedOption.value : null);
-};
+//   try {
+//     const username = "schoolmaster";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     // Make the GET request to fetch the data
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//     });
+
+//     const responseData = response.data;
+
+//     console.log("Fetched data:", responseData);
+
+//     // Create a deviceId to deviceName map from the devices array
+//     const deviceIdToNameMap = devices.reduce((acc, device) => {
+//       acc[device.id] = device.name; // Use device.id and device.name as key-value pair
+//       return acc;
+//     }, {});
+
+//     // Check if the data is an array and process it
+//     if (Array.isArray(responseData) && responseData.length > 0) {
+//       const processedData = responseData.map((item) => {
+//         // Find the deviceName using the deviceId
+//         const deviceName = deviceIdToNameMap[item.deviceId];
+
+//         // Process positions with serverTime
+//         const processedPositions = Array.isArray(item.positions)
+//           ? item.positions.map((position) => ({
+//               id: position.id,
+//               deviceId: item.deviceId,
+//               deviceName: deviceName,
+//               serverTime: position.serverTime ? new Date(position.serverTime).toLocaleString() : "N/A",
+//               deviceTime: position.deviceTime ? new Date(position.deviceTime).toLocaleString() : "N/A",
+//               fixTime: position.fixTime ? new Date(position.fixTime).toLocaleString() : "N/A",
+//               latitude: position.latitude,
+//               longitude: position.longitude,
+//               speed: position.speed ? position.speed.toFixed(2) : "0.00",
+//               valid: position.valid,
+//               attributes: position.attributes,
+//             }))
+//           : [];
+
+//         // Match eventTime in processedEvents with fixTime in processedPositions
+//         const enrichedEvents = (item.events || []).map((event) => {
+//           const eventTimeFormatted = new Date(event.eventTime).toLocaleString();
+//           const matchingPosition = processedPositions.find(
+//             (position) => position.fixTime === eventTimeFormatted && position.deviceId === item.deviceId
+//           );
+
+//           return {
+//             deviceId: item.deviceId,
+//             deviceName: deviceName,
+//             eventTime: eventTimeFormatted,
+//             type: event.type.replace(/([A-Z])/g, " $1").trim(), // Format type (optional)
+//             serverTime: matchingPosition ? matchingPosition.serverTime : "N/A", // Add serverTime if a match is found
+//           };
+//         });
+
+//         return {
+//           deviceId: item.deviceId,
+//           deviceName: deviceName,
+//           processedEvents: enrichedEvents,
+//           processedPositions,
+//         };
+//       });
+
+//       console.log("Processed Data with Enriched Events:", processedData);
+
+//       // Update state with processed and enriched events
+//       setFilteredRows(
+//         processedData.flatMap(({ processedEvents }) =>
+//           processedEvents.map((event) => ({
+//             ...event,
+//             isSelected: false,
+//           }))
+//         )
+//       );
+
+//       // Update the total number of events
+//       setTotalResponses(
+//         processedData.reduce((total, item) => total + item.processedEvents.length, 0)
+//       );
+//     } else {
+//       console.error("Expected an array but got:", responseData);
+//       alert("Unexpected data format.");
+//     }
+//   } catch (error) {
+//     console.error("Fetch data error:", error);
+//     alert("please select device, group and date");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
 const [searchText, setSearchText] = useState("");
+const [isOpen, setIsOpen] = useState(false);
+const dropdownRef = useRef();
+
 const filteredDevices = Array.isArray(devices)
   ? devices.filter((device) =>
       device.name.toLowerCase().includes(searchText.toLowerCase())
     )
   : [];
 
+const handleSelect = (deviceId) => {
+  setSelectedDevice(deviceId);
+  setIsOpen(false);
+};
+
+// Handle outside click to close the dropdown
+const handleClickOutside = (event) => {
+  if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    setIsOpen(false);
+  }
+};
+
+React.useEffect(() => {
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+
   return (
     <>
       <h1 style={{ textAlign: "center", marginTop: "80px" }}>
-       Distance Report 
+       Device Status
       </h1>
       <div>
         <div
@@ -879,7 +573,7 @@ const filteredDevices = Array.isArray(devices)
             marginBottom: "10px",
           }}
         >
-       <TextField
+          <TextField
     label="Search"
     variant="outlined"
     value={filterText}
@@ -908,7 +602,7 @@ const filteredDevices = Array.isArray(devices)
       ),
     }}
   />
-             <Button
+          <Button
   onClick={() => setModalOpen(true)}
   sx={{
     backgroundColor: "rgb(85, 85, 85)",
@@ -927,11 +621,8 @@ const filteredDevices = Array.isArray(devices)
   <ImportExportIcon />
   Column Visibility
 </Button>
-         
-         
-         
-         
-<Button variant="contained" color="error" onClick={handleExport}>
+       
+          <Button variant="contained" color="error" onClick={handleExport}>
             Export
           </Button>
         </div>
@@ -943,7 +634,9 @@ const filteredDevices = Array.isArray(devices)
         marginBottom: "10px",
       }}
     >
-      <div
+    
+    <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
+  <div
   style={{
     width: "250px",
     position: "relative",
@@ -975,18 +668,39 @@ const filteredDevices = Array.isArray(devices)
     }}
   />
 </div>
-
-      {/* <select
-        value={selectedGroup}
-        onChange={(e) => setSelectedGroup(e.target.value)}
-        style={{ marginRight: "10px", padding: "5px" }}
-      >
-        <option value="">Select Group</option>
-        {groups.map(group => (
-          <option key={group.id} value={group.id}>{group.name}</option>
-        ))}
-      </select> */}
-
+ <div
+      style={{
+        width: "250px",
+        position: "relative",
+        zIndex: "10",
+        border: "1px solid #000",
+        // borderRadius: "4px", // Optional rounded corners
+      }}
+    >
+      <Select
+        options={groupOptions}
+        value={groupOptions.find((option) => option.value === selectedGroup) || null}
+        onChange={handleGroupChange}
+        placeholder="Select Group"
+        isClearable
+        styles={{
+          control: (provided) => ({
+            ...provided,
+            border: "none", // Remove react-select's default border
+            boxShadow: "none", // Remove focus outline
+          }),
+          dropdownIndicator: (provided) => ({
+            ...provided,
+            color: "#000", // Black dropdown arrow
+          }),
+          clearIndicator: (provided) => ({
+            ...provided,
+            color: "#000", // Black clear icon
+          }),
+        }}
+      />
+    </div>
+    </div>
       <div style={{ marginRight: "10px", padding: "5px" }}>
         <label htmlFor="start-date">Start Date & Time:</label>
         <input
@@ -1016,7 +730,7 @@ const filteredDevices = Array.isArray(devices)
         Show
       </button>
 
-      {/* {apiUrl && (
+        {/* {apiUrl && (
         <div style={{ marginTop: '10px' }}>
           <label htmlFor="api-url">Generated API URL:</label>
           <textarea
@@ -1027,7 +741,7 @@ const filteredDevices = Array.isArray(devices)
             style={{ width: '100%', padding: '5px' }}
           ></textarea>
         </div>
-      )} */}
+      )}   */}
     </div>
 
        
@@ -1053,8 +767,8 @@ const filteredDevices = Array.isArray(devices)
               }}
             >
             
-              
- {/* <Table
+
+ <Table
       stickyHeader
       aria-label="sticky table"
       style={{ border: "1px solid black" }}
@@ -1148,194 +862,34 @@ const filteredDevices = Array.isArray(devices)
                 >
                   <Switch checked={row.isSelected} color="primary" />
                 </TableCell>
-               
-                  {COLUMNS()
-  .filter((col) => columnVisibility[col.accessor])
-  .map((column) => {
-    // Ensure column.accessor is a string before calling split
-    const accessor = typeof column.accessor === 'string' ? column.accessor : '';
-    const value = accessor.split('.').reduce((acc, part) => acc && acc[part], row);
+                {COLUMNS()
+                  .filter((col) => columnVisibility[col.accessor])
+                  .map((column) => {
+                    const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
 
-    return (
-      <TableCell
-        key={accessor}
-        align={column.align || 'left'}
-        style={{
-          borderRight: "1px solid #e0e0e0",
-          paddingTop: "4px",
-          paddingBottom: "4px",
-          borderBottom: "none",
-          backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-          fontSize: "smaller",
-        }}
-      >
-        {column.Cell ? column.Cell({ value }) : value}
-      </TableCell>
-    );
-  })}
-
+                    return (
+                      <TableCell
+                        key={column.accessor}
+                        align={column.align || 'left'}
+                        style={{
+                          borderRight: "1px solid #e0e0e0",
+                          paddingTop: "4px",
+                          paddingBottom: "4px",
+                          borderBottom: "none",
+                          backgroundColor:
+                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
+                          fontSize: "smaller",
+                        }}
+                      >
+                        {column.Cell ? column.Cell({ value }) : value}
+                      </TableCell>
+                    );
+                  })}
               </TableRow>
             ))
         )}
       </TableBody>
-    </Table> */}
-   <Table stickyHeader aria-label="sticky table" style={{ border: "1px solid black" }}>
-  <TableHead>
-    <TableRow
-      style={{
-        borderBottom: "1px solid black",
-        borderTop: "1px solid black",
-      }}
-    >
-      <TableCell
-        padding="checkbox"
-        style={{
-          borderRight: "1px solid #e0e0e0",
-          borderBottom: "2px solid black",
-        }}
-      >
-        <Switch
-          checked={selectAll}
-          onChange={handleSelectAll}
-          color="primary"
-        />
-      </TableCell>
-
-      {/* Static Columns (like the ones in COLUMNS) */}
-      {COLUMNS()
-        .filter((col) => columnVisibility[col.accessor])
-        .map((column) => (
-          <TableCell
-            key={column.accessor}
-            align={column.align || 'left'}
-            style={{
-              minWidth: column.minWidth || '100px',
-              cursor: "pointer",
-              borderRight: "1px solid #e0e0e0",
-              borderBottom: "2px solid black",
-              padding: "4px 4px",
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-            onClick={() => requestSort(column.accessor)}
-          >
-            {column.Header}
-            {sortConfig.key === column.accessor ? (
-              sortConfig.direction === "ascending" ? (
-                <ArrowUpwardIcon fontSize="small" />
-              ) : (
-                <ArrowDownwardIcon fontSize="small" />
-              )
-            ) : null}
-          </TableCell>
-        ))}
-
-      {/* Dynamic Date Columns (from date range) */}
-      {generateDateRange(startDate, endDate).map((date) => {
-        const formattedDate = date.toISOString().split('T')[0]; // 'YYYY-MM-DD'
-        return (
-          <TableCell
-            key={formattedDate}
-            align="center"
-            style={{
-              borderRight: "1px solid #e0e0e0",
-              borderBottom: "2px solid black",
-              padding: "4px 4px",
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-          >
-            {formattedDate}
-          </TableCell>
-        );
-      })}
-    </TableRow>
-  </TableHead>
-  <TableBody>
-    {sortedData.length === 0 ? (
-      <TableRow>
-        <TableCell
-          colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length + generateDateRange(startDate, endDate).length}
-          style={{
-            textAlign: 'center',
-            padding: '16px',
-            fontSize: '16px',
-            color: '#757575',
-          }}
-        >
-          <h4>No Data Available</h4>
-        </TableCell>
-      </TableRow>
-    ) : (
-      sortedData
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .map((row, index) => (
-          <TableRow
-            hover
-            role="checkbox"
-            tabIndex={-1}
-            key={row.deviceId + index} // Ensure uniqueness for the key
-            onClick={() => handleRowSelect(page * rowsPerPage + index)}
-            selected={row.isSelected}
-            style={{
-              backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-              borderBottom: "none",
-            }}
-          >
-            <TableCell padding="checkbox" style={{ borderRight: "1px solid #e0e0e0" }}>
-              <Switch checked={row.isSelected} color="primary" />
-            </TableCell>
-
-            {/* Static Columns (like the ones in COLUMNS) */}
-            {COLUMNS()
-              .filter((col) => columnVisibility[col.accessor])
-              .map((column) => {
-                const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-                return (
-                  <TableCell
-                    key={column.accessor}
-                    align={column.align || 'left'}
-                    style={{
-                      borderRight: "1px solid #e0e0e0",
-                      paddingTop: "4px",
-                      paddingBottom: "4px",
-                      backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                      fontSize: "smaller",
-                    }}
-                  >
-                    {column.Cell ? column.Cell({ value }) : value}
-                  </TableCell>
-                );
-              })}
-
-            {/* Dynamic Date Columns */}
-            {generateDateRange(startDate, endDate).map((date) => {
-              const formattedDate = date.toISOString().split('T')[0]; // 'YYYY-MM-DD'
-              const value = row[formattedDate] || 'No Data'; // Get the value for this date
-
-              return (
-                <TableCell
-                  key={formattedDate}
-                  align="center"
-                  style={{
-                    borderRight: "1px solid #e0e0e0",
-                    paddingTop: "4px",
-                    paddingBottom: "4px",
-                    backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                    fontSize: "smaller",
-                  }}
-                >
-                  {value}
-                </TableCell>
-              );
-            })}
-          </TableRow>
-        ))
-    )}
-  </TableBody>
-</Table>
-
-
+    </Table>
             </TableContainer>
             <StyledTablePagination>
   <TablePagination
@@ -1357,7 +911,7 @@ const filteredDevices = Array.isArray(devices)
             {/* //</></div> */}
           </>
         )}
-              <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
           <Box sx={style}>
             {/* <h2></h2> */}
             <Box
@@ -1385,103 +939,9 @@ const filteredDevices = Array.isArray(devices)
             ))}
           </Box>
         </Modal>
-        <Modal open={editModalOpen} onClose={handleModalClose}>
-          <Box sx={style}>
-            {/* <h2>Edit Row</h2> */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleEditSubmit}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Modal>
-        <Modal open={addModalOpen} onClose={handleModalClose}>
-          <Box sx={style}>
-            {/* <h2>Add Row</h2> */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddSubmit}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Modal>
-        <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
-          <Box sx={style}>
-            <h2>Import Data</h2>
-            <input type="file" onChange={handleFileUpload} />
-            {importData.length > 0 && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  setFilteredRows([
-                    ...filteredRows,
-                    ...importData.map((row) => ({ ...row, isSelected: false })),
-                  ])
-                }
-                sx={{ marginTop: "10px" }}
-              >
-                Import
-              </Button>
-            )}
-          </Box>
-        </Modal>
+      
+      
+   
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={3000}
@@ -1497,3 +957,4 @@ const filteredDevices = Array.isArray(devices)
 };
 
 
+//comented for deployment

@@ -125,57 +125,68 @@
 
 
 export const COLUMNS = () => [
-  // {
-  //   Header: 'ID',
-  //   accessor: 'id',
-  // },
-  // {
-  //   Header: 'Device ID',
-  //   accessor: 'deviceId',
-  // },
   {
-    Header: 'device Name',
-    accessor: 'deviceName',
+    Header: "Device Name",
+    accessor: "deviceName",
+    align: "left"
   },
   {
-    Header: 'Total Distance',
-    accessor: 'sumDistance',
+    Header: "Start Time",
+    accessor: "startTime",
+    align: "left"
   },
   {
-    Header: 'start Time',
-    accessor: 'startTime',
+    Header: "Start Latitude",
+    accessor: "startLatitude",
+    align: "left"
   },
   {
-    Header: 'end Time',
-    accessor: 'endTime',
+    Header: "Start Longitude",
+    accessor: "startLongitude",
+    align: "left"
   },
   {
-    Header: 'start Latitude',
-    accessor: 'startLatitude',
-  },
-
-  {
-    Header: 'start Longitude',
-    accessor: 'startLongitude',
+    Header: "End Time",
+    accessor: "endTime",
+    align: "left"
   },
   {
-    Header: 'end Latitude',
-    accessor: 'endLatitude',
+    Header: "End Latitude",
+    accessor: "endLatitude",
+    align: "left"
   },
   {
-    Header: 'end Longitude',
-    accessor: 'endLongitude',
+    Header: "End Longitude",
+    accessor: "endLongitude",
+    align: "left"
   },
-  {
-    Header: 'Average Speed',
-    accessor: 'avgSpeed',
-  },
- 
  
   
-
+  // {
+  //   Header: "Total Distance",
+  //   accessor: "totalDistance",
+  //   align: "right"
+  // }
+  {
+    Header: "distance",
+    accessor: "distance1",
+    align: "left",
+    Cell: ({ value }) => {
+      // Convert meters to kilometers
+      const distanceInKm = value / 1000; // Divide by 1000 to convert meters to kilometers
+      return `${distanceInKm.toFixed(2)} km`; // Format the value to 2 decimal places and append "km"
+    }
+  },
+    // {
+    //   Header: "Total Distance",
+    //   accessor: "totalDistance",
+    //   align: "right",
+    //   Cell: ({ value }) => {
+    //     // Convert meters to kilometers
+    //     const distanceInKm = value / 1000; // Divide by 1000 to convert meters to kilometers
+    //     return `${distanceInKm.toFixed(2)} km`; // Format the value to 2 decimal places and append "km"
+    //   }
+    // }
+  
   
 ];
-
-
-  
