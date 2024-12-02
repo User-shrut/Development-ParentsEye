@@ -2503,6 +2503,157 @@ const handleEditSubmit = async () => {
 //   }
 // };
 
+// const fetchData = async (url) => {
+//   console.log('Fetching report...');
+//   setLoading(true);
+
+//   try {
+//     const username = "schoolmaster";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
+
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//       responseType: 'blob', // Downloading as binary data
+//     });
+
+//     console.log('Content-Type:', response.headers['content-type']);
+
+//     const deviceIdToNameMap = devices.reduce((acc, device) => {
+//       acc[device.id] = device.name; // Mapping device IDs to names
+//       return acc;
+//     }, {});
+
+//     if (response.headers['content-type'] === 'application/json') {
+//       const text = await response.data.text(); // Convert Blob to text
+//       console.log('JSON Response:', text);
+//       const jsonResponse = JSON.parse(text); // Parse JSON response
+
+//       console.log('Processed JSON Data:', jsonResponse);
+
+//       let startStoring = false;
+
+//       // Grouping the data by serverTime date and applying ignition filtering logic
+//       const groupedDataMap = jsonResponse.reduce((acc, data) => {
+//         const dateKey = new Date(data.serverTime).toLocaleDateString(); // Extract the date part
+
+//         if (!acc[dateKey]) {
+//           acc[dateKey] = []; // Initialize an array for this date
+//         }
+
+//         // Only start storing records once ignition is true
+//         if (data.attributes?.ignition && !startStoring) {
+//           startStoring = true; // Start storing from the first ignition = true
+//         }
+
+//         // Store the record if ignition is true or after ignition is true
+//         if (startStoring) {
+//           const processedRecord = {
+//             deviceId: data.deviceId || 'N/A',
+//             deviceName: deviceIdToNameMap[data.deviceId] || 'Unknown Device',
+//             eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+//             latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
+//             longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
+//             speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
+//             address: data.address || 'Show Address',
+//             course: data.course > 0 ? '↑' : '↓',
+//             altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
+//             accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
+//             valid: data.valid ? 'Yes' : 'No',
+//             protocol: data.protocol || 'N/A',
+//             deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
+//             serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
+//             fixTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+//             geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+//             satellites: data.attributes?.sat || 'N/A',
+//             RSSI: data.attributes?.rssi || 'N/A',
+//             odometer: data.attributes?.odometer || 'N/A',
+//             batteryLevel: data.attributes?.batteryLevel || 'N/A',
+//             ignition: data.attributes?.ignition ? 'Yes' : 'No',
+//             charge: data.attributes?.charge ? 'Yes' : 'No',
+//             archive: data.attributes?.archive ? 'Yes' : 'No',
+//             distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
+//             totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+//             motion: data.attributes?.motion ? 'Yes' : 'No',
+//             blocked: data.attributes?.blocked ? 'Yes' : 'No',
+//             alarm1Status: data.attributes?.alarm1Status || 'N/A',
+//             otherStatus: data.attributes?.otherStatus || 'N/A',
+//             alarm2Status: data.attributes?.alarm2Status || 'N/A',
+//             engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
+//             adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A',
+//           };
+
+//           acc[dateKey].push(processedRecord);
+//         }
+
+//         // Stop storing records once we encounter the last ignition = true
+//         if (data.attributes?.ignition && startStoring) {
+//           startStoring = false; // Stop storing after the last ignition = true
+//         }
+
+//         return acc;
+//       }, {});
+
+
+//       console.log("groupedDataMap",groupedDataMap);
+//       // Now process each group and create a single object for each date group
+//       const summarizedData = Object.values(groupedDataMap).map(group => {
+//         const startObject = group[0]; // First object in the group
+//         const endObject = group[group.length - 1]; // Last object in the group
+
+//         // Initialize variables for summary data
+//         let totalDistance = 0; // To calculate total distance from ignition records
+
+//         // Loop through the group and sum the distances for records with ignition "Yes"
+//         for (let i = 0; i < group.length; i++) {
+//           const current = group[i];
+
+//           // Only sum distances if ignition is "Yes"
+//           if (current.ignition === 'Yes') {
+//             totalDistance += parseFloat(current.distance.replace(' mi', '')) || 0;
+//           }
+//         }
+
+//         // Convert the totalDistance to kilometers (divide by 1000)
+//         const distance1 = totalDistance ? (totalDistance / 1000).toFixed(2) : 'N/A'; // Convert miles to kilometers
+
+//         // Create the summarized object
+//         const summary = {
+//           deviceName: startObject.deviceName ||endObject.deviceName || 'N/A', // Add deviceName from the first object
+//           startTime: startObject.serverTime,
+//           startLatitude: startObject.latitude,
+//           startLongitude: startObject.longitude,
+//           startOdometer: startObject.odometer,
+//           endTime: endObject.serverTime,
+//           endLatitude: endObject.latitude,
+//           endLongitude: endObject.longitude,
+          
+//           endOdometer: endObject.odometer,
+        
+         
+//           distance1: distance1 ? `${distance1} km` : 'N/A', // Total distance in kilometers
+//           events: group, // Include all events in the group
+//         };
+
+//         return summary;
+//       });
+
+//       console.log('Summarized Data:', summarizedData);
+
+//       setFilteredRows(summarizedData); // Update the state with summarized data
+//       setTotalResponses(summarizedData.length); // Number of summarized groups
+//     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+//       // Handle Excel response (similar to the original code)
+//       // The code for processing Excel files remains the same, you can add similar logic for ignition filtering here as well
+//     }
+//   } catch (error) {
+//     console.error('Error fetching data:', error);
+//   } finally {
+//     setLoading(false); // Stop the loading indicator
+//   }
+// };
 const fetchData = async (url) => {
   console.log('Fetching report...');
   setLoading(true);
@@ -2596,49 +2747,48 @@ const fetchData = async (url) => {
         return acc;
       }, {});
 
+      console.log("groupedDataMap", groupedDataMap);
 
-      console.log("groupedDataMap",groupedDataMap);
       // Now process each group and create a single object for each date group
-      const summarizedData = Object.values(groupedDataMap).map(group => {
-        const startObject = group[0]; // First object in the group
-        const endObject = group[group.length - 1]; // Last object in the group
+      const summarizedData = Object.values(groupedDataMap)
+        .filter(group => group.length > 0) // Exclude empty groups
+        .map(group => {
+          const startObject = group[0]; // First object in the group
+          const endObject = group[group.length - 1]; // Last object in the group
 
-        // Initialize variables for summary data
-        let totalDistance = 0; // To calculate total distance from ignition records
+          // Initialize variables for summary data
+          let totalDistance = 0; // To calculate total distance from ignition records
 
-        // Loop through the group and sum the distances for records with ignition "Yes"
-        for (let i = 0; i < group.length; i++) {
-          const current = group[i];
+          // Loop through the group and sum the distances for records with ignition "Yes"
+          for (let i = 0; i < group.length; i++) {
+            const current = group[i];
 
-          // Only sum distances if ignition is "Yes"
-          if (current.ignition === 'Yes') {
-            totalDistance += parseFloat(current.distance.replace(' mi', '')) || 0;
+            // Only sum distances if ignition is "Yes"
+            if (current.ignition === 'Yes') {
+              totalDistance += parseFloat(current.distance.replace(' mi', '')) || 0;
+            }
           }
-        }
 
-        // Convert the totalDistance to kilometers (divide by 1000)
-        const distance1 = totalDistance ? (totalDistance / 1000).toFixed(2) : 'N/A'; // Convert miles to kilometers
+          // Convert the totalDistance to kilometers (divide by 1000)
+          const distance1 = totalDistance ? (totalDistance / 1000).toFixed(2) : 'N/A'; // Convert miles to kilometers
 
-        // Create the summarized object
-        const summary = {
-          deviceName: startObject.deviceName ||'N/A', // Add deviceName from the first object
-          startTime: startObject.serverTime,
-          startLatitude: startObject.latitude,
-          startLongitude: startObject.longitude,
-          startOdometer: startObject.odometer,
-          endTime: endObject.serverTime,
-          endLatitude: endObject.latitude,
-          endLongitude: endObject.longitude,
-          
-          endOdometer: endObject.odometer,
-        
-         
-          distance1: distance1 ? `${distance1} km` : 'N/A', // Total distance in kilometers
-          events: group, // Include all events in the group
-        };
+          // Create the summarized object
+          const summary = {
+            deviceName: startObject.deviceName || endObject.deviceName || 'N/A', // Add deviceName from the first object
+            startTime: startObject.serverTime,
+            startLatitude: startObject.latitude,
+            startLongitude: startObject.longitude,
+            startOdometer: startObject.odometer,
+            endTime: endObject.serverTime,
+            endLatitude: endObject.latitude,
+            endLongitude: endObject.longitude,
+            endOdometer: endObject.odometer,
+            distance1: distance1 ? `${distance1} km` : 'N/A', // Total distance in kilometers
+            events: group, // Include all events in the group
+          };
 
-        return summary;
-      });
+          return summary;
+        });
 
       console.log('Summarized Data:', summarizedData);
 
@@ -2654,7 +2804,6 @@ const fetchData = async (url) => {
     setLoading(false); // Stop the loading indicator
   }
 };
-
 const options = devices.map((device) => ({
   value: device.id,
   label: device.name,

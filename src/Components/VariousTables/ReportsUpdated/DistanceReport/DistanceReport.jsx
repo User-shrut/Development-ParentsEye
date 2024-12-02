@@ -339,98 +339,99 @@ const handleGroupChange = (selectedOption) => {
   };
   
  
-const fetchData = async (url) => {
-  setLoading(true);
+// const fetchData = async (url) => {
+//   setLoading(true);
 
-  try {
-    const username = "schoolmaster";
-    const password = "123456";
-    const token = btoa(`${username}:${password}`);
+//   try {
+//     const username = "schoolmaster";
+//     const password = "123456";
+//     const token = btoa(`${username}:${password}`);
 
-    // Make the GET request to fetch the data
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Basic ${token}`,
-      },
-    });
+//     // Make the GET request to fetch the data
+//     const response = await axios.get(url, {
+//       headers: {
+//         Authorization: `Basic ${token}`,
+//       },
+//     });
 
-    const responseData = response.data;
+//     const responseData = response.data;
 
-    console.log("Fetched data:", responseData);
+//     console.log("Fetched data:", responseData);
 
-    // Create a deviceId to deviceName map from the devices array
-    const deviceIdToNameMap = devices.reduce((acc, device) => {
-      acc[device.id] = device.name; // Use device.id and device.name as key-value pair
-      return acc;
-    }, {});
+//     // Create a deviceId to deviceName map from the devices array
+//     const deviceIdToNameMap = devices.reduce((acc, device) => {
+//       acc[device.id] = device.name; // Use device.id and device.name as key-value pair
+//       return acc;
+//     }, {});
 
-    // Check if the data is an array and process it
-    if (Array.isArray(responseData) && responseData.length > 0) {
+//     // Check if the data is an array and process it
+//     if (Array.isArray(responseData) && responseData.length > 0) {
      
-      const processedData = responseData.map((item) => {
-        // Find the deviceName using the deviceId
-        const deviceName = deviceIdToNameMap[item.deviceId];
+//       const processedData = responseData.map((item) => {
+//         // Find the deviceName using the deviceId
+//         const deviceName = deviceIdToNameMap[item.deviceId];
       
-        // Process each device's events
-        const processedEvents = (item.events || []).map((event) => ({
-          deviceId: item.deviceId,
-          deviceName: deviceName, // Add deviceName from mapping
-          eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
-          type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
-        }));
+//         // Process each device's events
+//         const processedEvents = (item.events || []).map((event) => ({
+//           deviceId: item.deviceId,
+//           deviceName: deviceName, // Add deviceName from mapping
+//           eventTime: new Date(event.eventTime).toLocaleString(), // Convert event time to local time
+//           type: event.type.replace(/([A-Z])/g, ' $1').trim(),   // Format type (optional)
+//         }));
     
-        // Process positions with serverTime
-        const processedPositions = Array.isArray(item.positions)
-        ? item.positions.map((position) => ({
-            id: position.id,
-            deviceId: item.deviceId,
-            deviceName: deviceName,
-            serverTime: position.serverTime ? new Date(position.serverTime).toLocaleString() : 'N/A',
-            deviceTime: position.deviceTime ? new Date(position.deviceTime).toLocaleString() : 'N/A',
-            fixTime: position.fixTime ? new Date(position.fixTime).toLocaleString() : 'N/A',
-            latitude: position.latitude,
-            longitude: position.longitude,
-            speed: position.speed ? position.speed.toFixed(2) : '0.00',
-            valid: position.valid,
-            attributes: position.attributes,
-          }))
-        : [];
+//         // Process positions with serverTime
+//         const processedPositions = Array.isArray(item.positions)
+//         ? item.positions.map((position) => ({
+//             id: position.id,
+//             deviceId: item.deviceId,
+//             deviceName: deviceName,
+//             distance: position.attributes?.distance || 'N/A',
+//             serverTime: position.serverTime ? new Date(position.serverTime).toLocaleString() : 'N/A',
+//             deviceTime: position.deviceTime ? new Date(position.deviceTime).toLocaleString() : 'N/A',
+//             fixTime: position.fixTime ? new Date(position.fixTime).toLocaleString() : 'N/A',
+//             latitude: position.latitude,
+//             longitude: position.longitude,
+//             speed: position.speed ? position.speed.toFixed(2) : '0.00',
+//             valid: position.valid,
+//             attributes: position.attributes,
+//           }))
+//         : [];
       
-        return {
-          deviceId: item.deviceId,
-          deviceName: deviceName, // Add deviceName from mapping
-          processedEvents,
-          processedPositions,
-        };
-      });
+//         return {
+//           deviceId: item.deviceId,
+//           deviceName: deviceName, // Add deviceName from mapping
+//           processedEvents,
+//           processedPositions,
+//         };
+//       });
       
-      console.log("Processed Data11:", processedData);
+//       console.log("Processed Data11:", processedData);
 
-      // Update state with processed events
-      setFilteredRows(
-        processedData.flatMap(({ processedEvents }) =>
-          processedEvents.map((event) => ({
-            ...event,
-            isSelected: false,
-          }))
-        )
-      );
+//       // Update state with processed events
+//       setFilteredRows(
+//         processedData.flatMap(({ processedEvents }) =>
+//           processedEvents.map((event) => ({
+//             ...event,
+//             isSelected: false,
+//           }))
+//         )
+//       );
 
-      // Update the total number of events
-      setTotalResponses(
-        processedData.reduce((total, item) => total + item.processedEvents.length, 0)
-      );
-    } else {
-      console.error("Expected an array but got:", responseData);
-      alert("Unexpected data format.");
-    }
-  } catch (error) {
-    console.error("Fetch data error:", error);
-    alert("please select device,group and date");
-  } finally {
-    setLoading(false);
-  }
-};
+//       // Update the total number of events
+//       setTotalResponses(
+//         processedData.reduce((total, item) => total + item.processedEvents.length, 0)
+//       );
+//     } else {
+//       console.error("Expected an array but got:", responseData);
+//       alert("Unexpected data format.");
+//     }
+//   } catch (error) {
+//     console.error("Fetch data error:", error);
+//     alert("please select device,group and date");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
 
 // const fetchData = async (url) => {
 //   setLoading(true);
@@ -531,6 +532,89 @@ const fetchData = async (url) => {
 //     setLoading(false);
 //   }
 // };
+const fetchData = async (url) => {
+  setLoading(true);
+
+  try {
+    const username = "schoolmaster";
+    const password = "123456";
+    const token = btoa(`${username}:${password}`);
+
+    // Make the GET request to fetch the data
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Basic ${token}`,
+      },
+    });
+
+    const responseData = response.data;
+
+    console.log("Fetched data:", responseData);
+
+    // Create a deviceId to deviceName map from the devices array
+    const deviceIdToNameMap = devices.reduce((acc, device) => {
+      acc[device.id] = device.name; // Use device.id and device.name as key-value pair
+      return acc;
+    }, {});
+
+    // Check if the data is an array and process only positions data
+    if (Array.isArray(responseData) && responseData.length > 0) {
+     
+      const processedData = responseData.map((item) => {
+        const deviceName = deviceIdToNameMap[item.deviceId];
+
+        // Process positions with serverTime
+        const processedPositions = Array.isArray(item.positions)
+          ? item.positions.map((position) => ({
+              id: position.id,
+              deviceId: item.deviceId,
+              deviceName: deviceName,
+              serverTime: position.serverTime ? new Date(position.serverTime).toLocaleString() : 'N/A',
+              deviceTime: position.deviceTime ? new Date(position.deviceTime).toLocaleString() : 'N/A',
+              fixTime: position.fixTime ? new Date(position.fixTime).toLocaleString() : 'N/A',
+              latitude: position.latitude,
+              longitude: position.longitude,
+              distance: position.attributes?.distance || 'N/A',
+              speed: position.speed ? position.speed.toFixed(2) : '0.00',
+              valid: position.valid,
+              attributes: position.attributes,
+            }))
+          : [];
+
+        return {
+          deviceId: item.deviceId,
+          deviceName: deviceName, // Add deviceName from mapping
+          processedPositions,
+        };
+      });
+
+      console.log("Processed Position Data:", processedData);
+
+      // Update state with processed positions
+      setFilteredRows(
+        processedData.flatMap(({ processedPositions }) =>
+          processedPositions.map((position) => ({
+            ...position,
+            isSelected: false,
+          }))
+        )
+      );
+
+      // Update the total number of positions
+      setTotalResponses(
+        processedData.reduce((total, item) => total + item.processedPositions.length, 0)
+      );
+    } else {
+      console.error("Expected an array but got:", responseData);
+      alert("Unexpected data format.");
+    }
+  } catch (error) {
+    console.error("Fetch data error:", error);
+    alert("Please select device, group, and date");
+  } finally {
+    setLoading(false);
+  }
+};
 
 const [searchText, setSearchText] = useState("");
 const [isOpen, setIsOpen] = useState(false);
