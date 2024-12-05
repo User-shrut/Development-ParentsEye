@@ -109,7 +109,7 @@ const Logoprac = () => {
     // First, attempt login as user (role 4), then try other roles
     if (
       await login(
-        `https://parentseye.onrender.com/superadmin/login/schooluser`,
+        `${process.env.REACT_APP_SUPER_ADMIN_API}/login/branchgroupuser`,
         4,
         "User login successful"
       )

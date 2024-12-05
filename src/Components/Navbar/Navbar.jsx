@@ -161,7 +161,7 @@ export const Navbar = (props) => {
 
     if (role == 1) {
       setFilteredPages(pages);
-    } else if (role == 2 || role == 3) {
+    } else if (role == 2 || role == 3 || role==4) {
       const pagesToFilter = [
         "Home",
         "School",
@@ -213,7 +213,7 @@ export const Navbar = (props) => {
           item.name !== "My Branch Devices" &&
           item.name !== "User Access"
       );
-    } else if (role == 3) {
+    } else if (role == 3 || role ==4) {
       updatedArr = arr.filter(
         (item) =>
           item.name !== "School Master" &&

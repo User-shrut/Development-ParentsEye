@@ -1985,6 +1985,12 @@ export const Geofence = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+      }else if (role == 4) {
+        response = await axios.get(`http://63.142.251.13:4000/branchgroupuser/getgeofence`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       }
   
       console.log("fetch data", response.data);
@@ -2038,8 +2044,17 @@ export const Geofence = () => {
           }));
         
           console.log(allData);
+        } else if (role == 4) {
+          allData = response?.data?.branches.flatMap(branch =>
+            branch.geofences?.map(geofence => ({
+              ...geofence, // Retain all geofence properties
+              branchId: branch.branchId, // Add branchId to each geofence
+              branchName: branch.branchName, // Add branchName to each geofence
+              
+            })) || [] // Handle the case where geofences is undefined or empty
+          );
         }
-        
+       
         
         
    
@@ -2359,7 +2374,9 @@ export const Geofence = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/geofences`
-          : `${process.env.REACT_APP_BRANCH_API}/geofences`;
+          : role == 3
+          ? `${process.env.REACT_APP_BRANCH_API}/geofences`
+          :`http://63.142.251.13:4000/branchgroupuser//deletegeofence`
 
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID

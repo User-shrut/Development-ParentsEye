@@ -99,44 +99,153 @@ export const StudentDetail = () => {
 
   // const [dropdownOptions1, setDropdownOptions1] = useState([]);
   // const [selectedValue1, setSelectedValue1] = useState("");
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     let response;
+  //     if (role == 1) {
+  //       const token = localStorage.getItem("token");
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 2) {
+  //       const token = localStorage.getItem("token");
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SCHOOL_API}/read-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 3) {
+  //       const token = localStorage.getItem("token");
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_BRANCH_API}/read-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }else if (role == 4) {
+  //       const token = localStorage.getItem("token");
+  //       response = await axios.get(
+  //         `http://63.142.251.13:4000/branchgroupuser/read-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }
+
+  //     console.log("fetch data", response.data); // Log the entire response data
+  //     // fetchgeofencepoint();
+  //     if (response?.data) {
+  //       const allData =
+  //         role == 1
+  //           ? response.data.data.flatMap((school) =>
+  //               school.branches.flatMap((branch) =>
+  //                 Array.isArray(branch.children) && branch.children.length > 0
+  //                   ? branch.children.map((child) => ({
+  //                       ...child, // Spread child object to retain all existing properties
+  //                       schoolName: school.schoolName,
+  //                       branchName: branch.branchName,
+  //                     }))
+  //                   : []
+  //               )
+  //             )
+  //           : role == 2
+  //           ? response?.data.branches.flatMap((branch) =>
+  //               Array.isArray(branch.children) && branch.children.length > 0
+  //                 ? branch.children
+  //                 : []
+  //             )
+  //           : response?.data.data
+            
+
+  //       console.log(allData);
+
+  //       const filteredData =
+  //         startDate || endDate
+  //           ? allData.filter((row) => {
+  //               const registrationDate = parseDate(
+  //                 row.formattedRegistrationDate
+  //               );
+  //               const start = parseDate(startDate);
+  //               const end = parseDate(endDate);
+
+  //               return (
+  //                 (!startDate || registrationDate >= start) &&
+  //                 (!endDate || registrationDate <= end)
+  //               );
+  //             })
+  //           : allData; // If no date range, use all data
+  //       const reversedData = filteredData.reverse();
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponses(reversedData.length);
+  //       // Log the date range and filtered data
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
+  //       console.log(filteredData);
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.children);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching completes
+  //   }
+  // };
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       let response;
+      const token = localStorage.getItem("token");
+  
       if (role == 1) {
-        const token = localStorage.getItem("token");
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
       } else if (role == 2) {
-        const token = localStorage.getItem("token");
         response = await axios.get(
           `${process.env.REACT_APP_SCHOOL_API}/read-children`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
       } else if (role == 3) {
-        const token = localStorage.getItem("token");
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/read-children`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+      } else if (role == 4) {
+        response = await axios.get(
+          `http://63.142.251.13:4000/branchgroupuser/read-children`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
       }
-
-      console.log("fetch data", response.data); // Log the entire response data
-      // fetchgeofencepoint();
+  
+      console.log("fetch data", response.data);
+  
       if (response?.data) {
         const allData =
           role == 1
@@ -144,7 +253,7 @@ export const StudentDetail = () => {
                 school.branches.flatMap((branch) =>
                   Array.isArray(branch.children) && branch.children.length > 0
                     ? branch.children.map((child) => ({
-                        ...child, // Spread child object to retain all existing properties
+                        ...child,
                         schoolName: school.schoolName,
                         branchName: branch.branchName,
                       }))
@@ -157,10 +266,22 @@ export const StudentDetail = () => {
                   ? branch.children
                   : []
               )
-            : response?.data.data;
-
-        console.log(allData);
-
+            : role == 3
+            ? response?.data.data
+            : role == 4
+            ? response?.data.updatedChildData.map((child) => ({
+                ...child,
+                schoolName: child.schoolId?.schoolName || "N/A",
+                branchName: child.branchId?.branchName || "N/A",
+                parentName: child.parentId?.parentName || "N/A",
+                 email:child.parentId?.email || "N/A",
+                 password:child.parentId?.password || "N/A",
+                formattedRegistrationDate: formatDate(child.registrationDate),
+              }))
+            : [];
+  
+        console.log("Processed allData:", allData);
+  
         const filteredData =
           startDate || endDate
             ? allData.filter((row) => {
@@ -169,39 +290,172 @@ export const StudentDetail = () => {
                 );
                 const start = parseDate(startDate);
                 const end = parseDate(endDate);
-
+  
                 return (
                   (!startDate || registrationDate >= start) &&
                   (!endDate || registrationDate <= end)
                 );
               })
-            : allData; // If no date range, use all data
+            : allData;
+  
         const reversedData = filteredData.reverse();
-        // Log the date range and filtered data
-        console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        console.log(filteredData);
+        console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
+  
         setFilteredRows(
           reversedData.map((row) => ({ ...row, isSelected: false }))
         );
         setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
         setTotalResponses(reversedData.length);
-        // Log the date range and filtered data
-        console.log(`Data fetched between ${startDate} and ${endDate}:`);
-        console.log(filteredData);
       } else {
-        console.error("Expected an array but got:", response.data.children);
+        console.error("Expected data but got:", response.data);
       }
     } catch (error) {
       console.error("Error:", error);
     } finally {
-      setLoading(false); // Set loading to false after fetching completes
+      setLoading(false);
     }
   };
-
-  const parseDate = (dateString) => {
+  
+  // Helper function to parse dates
+  function formatDate(date) {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0"); // Add leading zero if single digit
+    const month = String(d.getMonth() + 1).padStart(2, "0"); // Add leading zero to month
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+  
+  function parseDate(dateString) {
     const [day, month, year] = dateString.split("-").map(Number);
-    return new Date(year, month - 1, day); // Months are 0-indexed
-  };
+    return new Date(year, month - 1, day);
+  }
+  
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     let response;
+  //     const token = localStorage.getItem("token");
+  
+  //     // Fetch data based on the role
+  //     if (role == 1) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 2) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_SCHOOL_API}/read-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 3) {
+  //       response = await axios.get(
+  //         `${process.env.REACT_APP_BRANCH_API}/read-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     } else if (role == 4) {
+  //       response = await axios.get(
+  //         `http://63.142.251.13:4000/branchgroupuser/read-children`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //         }
+  //       );
+  //     }
+  
+  //     console.log("Fetch data response:", response.data);
+  
+  //     if (response?.data) {
+  //       // Process data based on the role
+  //       const allData =
+  //         role == 1
+  //           ? response.data.data.flatMap((school) =>
+  //               school.branches.flatMap((branch) =>
+  //                 Array.isArray(branch.children) && branch.children.length > 0
+  //                   ? branch.children.map((child) => ({
+  //                       ...child,
+  //                       schoolName: school.schoolName,
+  //                       branchName: branch.branchName,
+  //                     }))
+  //                   : []
+  //               )
+  //             )
+  //           : role == 2
+  //           ? response.data.branches.flatMap((branch) =>
+  //               Array.isArray(branch.children) && branch.children.length > 0
+  //                 ? branch.children
+  //                 : []
+  //             )
+  //           : role == 3
+  //           ? response.data.data
+  //           : role == 4
+  //           ? response.data.childData.map((child) => ({
+  //               ...child,
+  //               schoolName: child.schoolId.schoolName,
+  //               branchName: child.branchId.branchName,
+  //               parentName:child.parentId.parentName,
+  //               formattedRegistrationDate: formatDate(child.registrationDate),
+  //             }))
+  //           : [];
+  //           function formatDate(date) {
+  //             const d = new Date(date);
+  //             const day = String(d.getDate()).padStart(2, '0'); // Adds leading zero if single digit
+  //             const month = String(d.getMonth() + 1).padStart(2, '0'); // Adds leading zero to month
+  //             const year = d.getFullYear();
+  //             return `${day}-${month}-${year}`;
+  //           }
+  //       console.log("Processed allData:", allData);
+  
+  //       const filteredData =
+  //         startDate || endDate
+  //           ? allData.filter((row) => {
+  //               const registrationDate = parseDate(
+  //                 row.formattedRegistrationDate
+  //               );
+  //               const start = parseDate(startDate);
+  //               const end = parseDate(endDate);
+  
+  //               return (
+  //                 (!startDate || registrationDate >= start) &&
+  //                 (!endDate || registrationDate <= end)
+  //               );
+  //             })
+  //           : allData;
+  
+  //       const reversedData = filteredData.reverse();
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
+  
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponses(reversedData.length);
+  //     } else {
+  //       console.error("Expected data but got:", response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  
+  // const parseDate = (dateString) => {
+  //   const [day, month, year] = dateString.split("-").map(Number);
+  //   return new Date(year, month - 1, day); // Months are 0-indexed
+  // };
 
   const handleApplyDateRange = () => {
     const startDate = document.getElementById("startDate").value;
@@ -219,10 +473,10 @@ export const StudentDetail = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split("-").map(Number);
-    return `${day}-${month}-${year}`;
-  };
+  // const formatDate = (dateString) => {
+  //   const [year, month, day] = dateString.split("-").map(Number);
+  //   return `${day}-${month}-${year}`;
+  // };
 
   useEffect(() => {
     fetchData();
@@ -354,7 +608,9 @@ export const StudentDetail = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete/child`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/delete/child`
-          : `${process.env.REACT_APP_BRANCH_API}/delete/child`;
+          : role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/delete/child`
+          : `http://63.142.251.13:4000/branchgroupuser/deletechildbybranchgroup`
 
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID

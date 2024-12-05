@@ -8,22 +8,15 @@
     
 //   }
 // ];
-export const COLUMNS = () => [
-  // {
-  //   Header: 'ID',
-  //   accessor: 'id',
-  // },
-  // {
-  //   Header: 'Device ID',
-  //   accessor: 'deviceId',
-  // },
-  {
-    Header: 'device Name',
-    accessor: 'deviceName',
-  },
+// export const COLUMNS = () => [
+ 
+//   {
+//     Header: 'device Name',
+//     accessor: 'deviceName',
+//   },
   
  
-];
+// ];
 
 
   
