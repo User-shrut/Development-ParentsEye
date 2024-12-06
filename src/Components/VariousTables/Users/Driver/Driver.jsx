@@ -742,6 +742,15 @@ export const Driver = () => {
             },
           }
         );
+      }else if (role == 4) {
+        response = await axios.get(
+          `http://63.142.251.13:4000/branchgroupuser/getdriverdata`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       console.log("fetch data", response.data);
@@ -946,7 +955,14 @@ export const Driver = () => {
           console.log("Processing row:", row);
           return row.id;
         });
-    } else {
+    } else if(role==3) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          console.log("Processing row:", row);
+          return row.id;
+        });
+    }else if(role==4) {
       selectedIds = filteredRows
         .filter((row) => row.isSelected)
         .map((row) => {
@@ -976,7 +992,9 @@ export const Driver = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-driver`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/delete-driver`
-          : `${process.env.REACT_APP_BRANCH_API}/delete-driver`;
+          :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/delete-driver`
+           :`http://63.142.251.13:4000/branchgroupuser/deletedriverdata`
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -1445,6 +1463,16 @@ export const Driver = () => {
             },
           }
         );
+      }else if (role == 4) {
+        response = await axios.post(
+          `http://63.142.251.13:4000/branchgroupuser/approvedriver/${_id}`,
+          { action: "approve" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       if (response && response.status === 200) {
@@ -1492,6 +1520,16 @@ export const Driver = () => {
       } else if (role == 3) {
         response = await axios.post(
           `${process.env.REACT_APP_BRANCH_API}/registerStatus-driver/${_id}`,
+          { action: "reject" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else if (role == 4) {
+        response = await axios.post(
+          `http://63.142.251.13:4000/branchgroupuser/approvedriver/${_id}`,
           { action: "reject" },
           {
             headers: {

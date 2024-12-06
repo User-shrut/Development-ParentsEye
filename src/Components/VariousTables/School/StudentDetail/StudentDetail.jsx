@@ -583,6 +583,9 @@ export const StudentDetail = () => {
       .map((row) => {
         // Log each row to check its structure
         console.log("Processing row:", row);
+        if(role==4){
+          return row._id;
+        }
         return row.childId; // Ensure id exists and is not undefined
       });
 
@@ -610,7 +613,7 @@ export const StudentDetail = () => {
           ? `${process.env.REACT_APP_SCHOOL_API}/delete/child`
           : role==3
           ? `${process.env.REACT_APP_BRANCH_API}/delete/child`
-          : `http://63.142.251.13:4000/branchgroupuser/deletechildbybranchgroup`
+          : `http://63.142.251.13:4000/branchgroupuser/deletechildbybranchgroup`;
 
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
@@ -1640,7 +1643,7 @@ export const StudentDetail = () => {
             }
           );
         }
-
+console.log("my geofences",response.data)
         if (response?.data) {
           let fetchedData = {};
 
@@ -1669,20 +1672,26 @@ export const StudentDetail = () => {
                 });
               }
             });
-          } else if (role == 3) {
+          } if (role == 3) {
             // For role 3, handle geofences by device
-            response.data.devices.forEach((device) => {
-              device.geofences.forEach((geofence) => {
-                if (!fetchedData[device.deviceId]) {
-                  fetchedData[device.deviceId] = [];
-                }
-                fetchedData[device.deviceId].push({
-                  ...geofence,
-                  deviceId: device.deviceId,
-                });
+            response.data.geofences.forEach((geofence) => {
+              if (!fetchedData[geofence.deviceId]) {
+                fetchedData[geofence.deviceId] = [];
+              }
+              fetchedData[geofence.deviceId].push({
+                name: geofence.name,
+                area: geofence.area,
+                isCrossed: geofence.isCrossed,
+                busStopTime: geofence.busStopTime,
+                arrivalTime: geofence.arrivalTime,
+                departureTime: geofence.departureTime,
+                lastUpdated: geofence.lastUpdated,
+                branchName: geofence.branchName,
+                schoolName: geofence.schoolName,
               });
             });
           }
+          
 
           console.log("role is:", role);
           console.log("geofences are:", fetchedData);

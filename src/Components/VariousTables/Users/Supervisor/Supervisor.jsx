@@ -752,6 +752,15 @@ export const Supervisor = () => {
             },
           }
         );
+      }else if (role == 4) {
+        response = await axios.get(
+          `http://63.142.251.13:4000/branchgroupuser/readSuperviserBybranchgroupuser`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       console.log("fetch data", response.data); // Log the entire response data
@@ -986,7 +995,9 @@ export const Supervisor = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-supervisor`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/delete-supervisor`
-          : `${process.env.REACT_APP_BRANCH_API}/delete-supervisor`;
+          :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/delete-supervisor`
+          :`http://63.142.251.13:4000/branchgroupuser/deleteSupervisorByBranchGroupUser`
 
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
@@ -1521,7 +1532,18 @@ export const Supervisor = () => {
             },
           }
         );
+      }else if (role == 4) {
+        response = await axios.post(
+          `http://63.142.251.13:4000/branchgroupuser/approvesupervisor/${_id}`,
+          { action: "approve" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
+
 
       if (response && response.status === 200) {
         setSnackbarOpen(true);
@@ -1568,6 +1590,16 @@ export const Supervisor = () => {
       } else if (role == 3) {
         response = await axios.post(
           `${process.env.REACT_APP_BRANCH_API}/registerStatus-supervisor/${_id}`,
+          { action: "reject" },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }else if (role == 4) {
+        response = await axios.post(
+          `http://63.142.251.13:4000/branchgroupuser/approvesupervisor/${_id}`,
           { action: "reject" },
           {
             headers: {
