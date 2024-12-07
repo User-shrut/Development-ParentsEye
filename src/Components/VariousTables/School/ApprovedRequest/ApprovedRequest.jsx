@@ -197,9 +197,18 @@ export const ApprovedRequest = () => {
             }
           }
         );
-      } else {
+      } else  if (role == 3) {
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/approved-requests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+      }else  if (role == 4) {
+        response = await axios.get(
+          `http://63.142.251.13:4000/branchgroupuser/approverequests`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -233,7 +242,28 @@ export const ApprovedRequest = () => {
               }))
             : []
         );
-      } else {
+      }
+      else if (role == 4) {
+        // Process data from branches for role 4
+        allData = response.data.data.flatMap((branch) =>
+          Array.isArray(branch.requests) && branch.requests.length > 0
+            ? branch.requests.map((request) => ({
+                ...request,
+                branchId: branch.branchId, // Use branch.branchId directly (it's a string)
+                branchName: branch.branchName, // Add branchName from the branch object
+                schoolName: request.schoolId.schoolName, // Add schoolName from the main data object
+                childName:request.childId.childName,
+                class:request.childId.class,
+                parentName:request.parentId.parentName,
+                email:request.parentId.email,
+                phone:request.parentId.phone,
+                requestDate:formatDate(request.requestDate)
+              }))
+            : []
+        );
+      }
+      
+      else {
         // For role 3, data is directly in the requests array
         allData = Array.isArray(response.data.requests) ? response.data.requests : [];
       }
@@ -294,11 +324,18 @@ export const ApprovedRequest = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split("-").map(Number);
+  // const formatDate = (dateString) => {
+  //   const [year, month, day] = dateString.split("-").map(Number);
+  //   return `${day}-${month}-${year}`;
+  // };
+function formatDate(date){
+  const d=new Date(date);
+  const day=String(d.getDate()).padStart(2,"0");
+    const month=String(d.getMonth()+1).padStart(2,"0");
+    const year = d.getFullYear();
     return `${day}-${month}-${year}`;
-  };
-
+  
+}
   useEffect(() => {
     fetchData();
   }, []);

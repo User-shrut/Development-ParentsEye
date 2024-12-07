@@ -227,7 +227,9 @@ export const Absent = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/absent-children`
-          : `${process.env.REACT_APP_BRANCH_API}/absent-children`; // for role == 3
+          :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/absent-children`
+          :`http://63.142.251.13:4000/branchgroupuser/absentchildrenByBranchgroup`
   
       const response = await axios.get(apiUrl, {
         headers: {
@@ -266,7 +268,19 @@ export const Absent = () => {
       }  else if (role == 3) {
         // Handle for role 3 where data is in children array
         allData = Array.isArray(response.data.children) ? response.data.children : [];
-      }
+      }else if (role == 4) {
+        // Handle for role 2 (this is your specified data structure)
+        allData = response?.data.branches.flatMap((branch) =>
+          Array.isArray(branch.children) && branch.children.length > 0
+            ? branch.children.map(child => ({
+                ...child,
+                branchName: branch.branchName,  // Assign branchName to child data
+                schoolName: response.data.schoolName,  // Assign schoolName to child data
+                date:formatDate(child.date),
+              }))
+            : []
+        );
+      } 
   
       // Apply local date filtering if dates are provided
       const filteredData =

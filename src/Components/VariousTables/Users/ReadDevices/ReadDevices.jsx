@@ -185,39 +185,100 @@ export const ReadDevices = () => {
             },
           }
         );
+      }else if (role == 4) {
+        const token = localStorage.getItem("token");
+        response = await axios.get(
+          `http://63.142.251.13:4000/branchgroupuser/getdevicebranchgroupuser`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       console.log("fetch data", response.data); // Log the entire response data
       // fetchgeofencepoint();
       if (response?.data) {
-        const allData = role == 1
+      //   const allData = role == 1
+      //     ? response.data.data.flatMap((school) =>
+      //         school.branches.flatMap((branch) =>
+      //           Array.isArray(branch.devices) && branch.devices.length > 0
+      //             ? branch.devices.map((device) => ({
+      //                 ...device,
+      //                 schoolName: school.schoolName,
+      //                 branchName: branch.branchName,
+      //               }))
+      //             : []
+      //         )
+      //       )
+      //       :role==4
+      //       ?response.data.data.branches.flatMap((branch)=>
+      //  Array.isArray(branch.devices)&& branch.devices.length>0?
+      //         branch.devices.map((device)=>({
+      //           ...device,
+      //           branchName:branch.branchName,
+      //         }))
+      //         :[]
+      //       )
+      //       : role ==2
+      //       ? response.data.branches.flatMap((branch) =>
+      //           Array.isArray(branch.devices) && branch.devices.length > 0
+      //             ? branch.devices.map((device) => ({
+      //                 ...device,
+      //                 branchName: branch.branchName,
+      //               }))
+      //             : []
+      //         )
+      //         :role == 3
+      //         ? response.data.devices.map((device) => ({
+      //             ...device,
+      //             schoolName: response.data.schoolName,
+      //             branchName: response.data.branchName,
+      //           }))
+      //         : []
+      const allData =
+      role == 1
+        ? response.data.data.flatMap((school) =>
+            school.branches.flatMap((branch) =>
+              Array.isArray(branch.devices) && branch.devices.length > 0
+                ? branch.devices.map((device) => ({
+                    ...device,
+                    schoolName: school.schoolName,
+                    branchName: branch.branchName,
+                  }))
+                : []
+            )
+          )
+          : role == 4
           ? response.data.data.flatMap((school) =>
               school.branches.flatMap((branch) =>
                 Array.isArray(branch.devices) && branch.devices.length > 0
                   ? branch.devices.map((device) => ({
                       ...device,
-                      schoolName: school.schoolName,
                       branchName: branch.branchName,
+                      schoolName: school.schoolName,
                     }))
                   : []
               )
             )
-            : role ==2
-            ? response.data.branches.flatMap((branch) =>
-                Array.isArray(branch.devices) && branch.devices.length > 0
-                  ? branch.devices.map((device) => ({
-                      ...device,
-                      branchName: branch.branchName,
-                    }))
-                  : []
-              )
-              :role == 3
-              ? response.data.devices.map((device) => ({
+        : role == 2
+        ? response.data.branches.flatMap((branch) =>
+            Array.isArray(branch.devices) && branch.devices.length > 0
+              ? branch.devices.map((device) => ({
                   ...device,
-                  schoolName: response.data.schoolName,
-                  branchName: response.data.branchName,
+                  branchName: branch.branchName,
                 }))
-              : [];
+              : []
+          )
+        : role == 3
+        ? response.data.devices.map((device) => ({
+            ...device,
+            schoolName: response.data.schoolName,
+            branchName: response.data.branchName,
+          }))
+        : [];
+    
 
         console.log(allData);
 
@@ -407,6 +468,15 @@ export const ReadDevices = () => {
           console.log("Processing row:", row);
           return row.actualDeviceId; // Ensure id exists and is not undefined
         });
+    }
+    else if (role == 4) {
+      selectedIds = filteredRows
+        .filter((row) => row.isSelected)
+        .map((row) => {
+          // Log each row to check its structure
+          console.log("Processing row:", row);
+          return row.actualDeviceId; // Ensure id exists and is not undefined
+        });
     } else {
       selectedIds = filteredRows
         .filter((row) => row.isSelected)
@@ -438,7 +508,9 @@ export const ReadDevices = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-device`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/delete-device`
-          : `${process.env.REACT_APP_BRANCH_API}/delete-device`;
+          :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/delete-device`
+          :`http://63.142.251.13:4000/branchgroupuser/deletedevicebybranchgroup`;
 
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID

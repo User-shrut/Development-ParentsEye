@@ -1131,6 +1131,15 @@ export const DeniedRequest = () => {
             },
           }
         );
+      }else if (role == 4) {
+        response = await axios.get(
+          `http://63.142.251.13:4000/branchgroupuser/deniedrequests`, // Replace with correct API URL
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
   
       console.log("fetch data", response.data); // Log the entire response data
@@ -1152,6 +1161,25 @@ export const DeniedRequest = () => {
                   ? branch.requests
                   : []
               )
+              : role == 4 
+                // Process data from branches for role 4
+               ?  response.data.data.flatMap((branch) =>
+                  Array.isArray(branch.requests) && branch.requests.length > 0
+                    ? branch.requests.map((request) => ({
+                        ...request,
+                        branchId: branch.branchId, // Use branch.branchId directly (it's a string)
+                        branchName: branch.branchName, // Add branchName from the branch object
+                        schoolName: request.schoolId.schoolName, // Add schoolName from the main data object
+                        childName:request.childId.childName,
+                        class:request.childId.class,
+                        parentName:request.parentId.parentName,
+                        email:request.parentId.email,
+                        phone:request.parentId.phone,
+                        formattedRequestDate:formatDate(request.requestDate)
+                      }))
+                    : []
+                )
+              
             : role == 3
             ? response.data.requests // Handle the requests directly for role == 3
             : [];
@@ -1214,10 +1242,14 @@ export const DeniedRequest = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split("-").map(Number);
-    return `${day}-${month}-${year}`;
-  };
+  function formatDate(date){
+    const d=new Date(date);
+    const day=String(d.getDate()).padStart(2,"0");
+      const month=String(d.getMonth()+1).padStart(2,"0");
+      const year = d.getFullYear();
+      return `${day}-${month}-${year}`;
+    
+  }
 
   useEffect(() => {
     fetchData();
