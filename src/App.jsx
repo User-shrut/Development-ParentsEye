@@ -97,6 +97,7 @@ import '@coreui/coreui/dist/css/coreui.min.css';
 import './scss/style.scss';
 import { UserAccess } from "./Components/VariousTables/Users/UserAccess/UserAccess.jsx";
 import { DistanceReport } from "./Components/VariousTables/ReportsUpdated/DistanceReport/DistanceReport.jsx";
+import { UrgentExcel } from "./Components/VariousTables/ReportsUpdated/UrgentExcel/UrgentExcel.jsx";
 function App() {
   const [state, setState] = useState(0);
   const [sideBarItems, setSideBarItems] = useState([]);
@@ -446,6 +447,8 @@ function App() {
       setComponent("UserAccess");
     }else if (item === "Distance Report") {
       setComponent("DistanceReport");
+    }else if (item === "Kilometer Distance") {
+      setComponent("UrgentExcel");
     }
    
    
@@ -607,6 +610,7 @@ function App() {
           {component === "ReadDevices" && <ReadDevices data={mergedData} />}
           {component === "UserAccess" && <UserAccess data={mergedData} />}
           {component === "DistanceReport" && <DistanceReport data={mergedData} />}
+          {component === "UrgentExcel" && <UrgentExcel data={mergedData} />}
           {/* {component === "Newdemo" && <Newdemo data={mergedData} />}
           {component === "New2" && <New2 data={mergedData} />} */}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
@@ -697,6 +701,7 @@ function App() {
           "ReadDevices",
           "UserAccess",
          "DistanceReport",
+         "UrgentExcel"
           //  "Newdemo",
           //  "New2"
           ].includes(component) && <Tablee data={mergedData} />}

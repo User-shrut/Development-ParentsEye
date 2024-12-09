@@ -120,6 +120,15 @@ export const Leave = () => {
             },
           }
         );
+      }else if (role == 4) {
+        response = await axios.get(
+          `http://63.142.251.13:4000/branchgroupuser/pendingrequests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
   
       console.log("fetch data", response.data); // Log the entire response data
@@ -141,7 +150,27 @@ export const Leave = () => {
                   ? branch.requests
                   : []
               )
-            : role == 3
+           :role==4
+           ?response.data.data.flatMap((leave)=>(
+            Array.isArray(leave.requests)&&leave.requests.length>0?
+            leave.requests.flatMap((child)=>(
+              {
+                ...child,
+                childName:child.childId.childName,
+                parentName:child.parentId.parentName,
+                email:child.parentId.email,
+                deviceId:child.childId.deviceId,
+                deviceName:child.childId.deviceName,
+                schoolName:child.schoolId.schoolName,
+                branchName:leave.branchName,
+                startDate:child.startDate?formatDate(child.startDate):'',
+                endDate:child.endDate?formatDate(child.endDate):'',
+                requestDate:child.requestDate?formatDate(child.requestDate):'',
+              }
+            ))
+            :[]
+           ))
+            :role == 3
             ? Array.isArray(response.data.requests) && response.data.requests.length > 0
               ? response.data.requests
               : []
@@ -203,10 +232,13 @@ export const Leave = () => {
       fetchData(formattedStartDate, formattedEndDate);
     }
   };
-  const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split("-").map(Number);
-    return `${day}-${month}-${year}`;
-  };
+function formatDate(date){
+const d=new Date(date);
+const day=String(d.getDate()).padStart(2,"0");
+const month=String(d.getMonth()+1).padStart(2,"0");
+const year=d.getFullYear();
+return `${day}-${month}-${year}`;
+}
 
   useEffect(() => {
     fetchData();

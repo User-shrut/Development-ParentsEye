@@ -1727,9 +1727,15 @@ export const Parent = () => {
             },
           }
         );
+      }else if(role==4){
+        response=await axios.get(`http://63.142.251.13:4000/branchgroupuser/getparentbybranchgroup`,{
+          headers:{
+            Authorization:`Bearer ${token}`,
+          }
+        })
       }
 
-      console.log("fetch data", response.data); // Log the entire response data
+      console.log("my parent fetch data", response.data); // Log the entire response data
 
       if (response.data) {
         const allData =
@@ -1751,8 +1757,21 @@ export const Parent = () => {
                   ? branch.parents
                   : []
               )
-            : response.data.parents;
-
+              :role==3
+            ? response.data.parents
+            :response.data.data.flatMap((branch)=>
+              Array.isArray(branch.branches)&&branch.branches.length>0?
+            branch.branches.flatMap((newbranch)=>
+            Array.isArray(newbranch.parents)&& newbranch.parents.length>0?
+            newbranch.parents.flatMap((child)=>({
+              ...child,
+              schoolName:branch.schoolName,
+              branchName:newbranch.branchName,
+            })):
+            []
+            )
+          :[])
+console.log("role is:",role)
         console.log(allData);
 
         // Apply local date filtering if dates are provided
@@ -1967,7 +1986,9 @@ export const Parent = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/delete-parent`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/delete-parent`
-          : `${process.env.REACT_APP_BRANCH_API}/delete-parent`;
+          :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/delete-parent`
+          :`http://63.142.251.13:4000/branchgroupuser/deleteparentbybranchgroup`
       const token = localStorage.getItem("token");
       // Send delete requests for each selected ID
       const deleteRequests = selectedIds.map((id) =>
@@ -2357,6 +2378,18 @@ const handleApprove = async (_id) => {
         }
       );
     }
+    else if(role==4){
+      response=await axios.post(`http://63.142.251.13:4000/branchgroupuser/approveParentByBranchgroup/${_id}`,
+        {
+          action:"approve"
+        },
+        {
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        }
+      )
+    }
 
     if (response && response.status === 200) {
       setSnackbarOpen(true);
@@ -2410,6 +2443,19 @@ const handleReject = async (_id) => {
           },
         }
       );
+    }else if(role==4){
+      response=await axios.post(`http://63.142.251.13:4000/branchgroupuser/approveParentByBranchgroup/${_id}`,
+        {
+          action:'reject'
+        },
+        {
+          headers:
+          {
+             Authorization:`Bearer ${token}`
+           }
+        }
+      
+      )
     }
 
     if (response && response.status === 200) {

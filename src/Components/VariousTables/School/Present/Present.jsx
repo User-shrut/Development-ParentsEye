@@ -153,7 +153,9 @@ export const Present = () => {
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children`
         : role == 2
         ? `${process.env.REACT_APP_SCHOOL_API}/present-children`
-        : `${process.env.REACT_APP_BRANCH_API}/present-children`;
+        :role==3
+        ? `${process.env.REACT_APP_BRANCH_API}/present-children`
+        :`http://63.142.251.13:4000/branchgroupuser/presentchildrenByBranchgroup`;
         
     const response = await axios.get(apiUrl, {
       headers: {
@@ -161,7 +163,7 @@ export const Present = () => {
       },
     });
 
-    console.log("fetch data", response.data);
+    console.log("fetch data present", response.data);
 
     let allData = [];
 
@@ -188,6 +190,20 @@ export const Present = () => {
     }  else if (role == 3) {
       // Handle for role 3
       allData = Array.isArray(response.data.children) ? response.data.children : [];
+    }else if(role==4){
+      allData=response?.data?.branches.flatMap((present)=>
+      Array.isArray(present.children)&& present.children.length>0?
+    present.children.flatMap(child=>({
+      ...child,
+      branchName:present.branchName,
+      date:formatDate(child.date),
+      pickupTime:formatDate(child.pickupTime)
+    }
+    
+    )) :
+    []
+    )
+ 
     }
 
     // Apply local date filtering if dates are provided
@@ -245,10 +261,13 @@ export const Present = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    const [year, month, day] = dateString.split("-").map(Number);
-    return `${day}-${month}-${year}`;
-  };
+  function formatDate(date){
+    const date1=new Date(date);
+    const day=String(date1.getDate()).padStart(2,"0");
+    const month=String(date1.getMonth()).padStart(2,"0");
+    const year=String(date1.getFullYear());
+  return `${day}-${month}-${year}`
+  }
 
   useEffect(() => {
     fetchData();

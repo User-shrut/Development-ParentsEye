@@ -32,7 +32,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
-// import excelfilestudentdetail from "../../../../../public/studentDetail.xlsx";
+
 import {
   FormControlLabel,
   FormLabel,
@@ -97,117 +97,7 @@ export const StudentDetail = () => {
   const [branches, setBranches] = useState();
   const [buses, setBuses] = useState();
 
-  // const [dropdownOptions1, setDropdownOptions1] = useState([]);
-  // const [selectedValue1, setSelectedValue1] = useState("");
-  // const fetchData = async (startDate = "", endDate = "") => {
-  //   setLoading(true);
-  //   try {
-  //     let response;
-  //     if (role == 1) {
-  //       const token = localStorage.getItem("token");
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 2) {
-  //       const token = localStorage.getItem("token");
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SCHOOL_API}/read-children`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 3) {
-  //       const token = localStorage.getItem("token");
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_BRANCH_API}/read-children`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     }else if (role == 4) {
-  //       const token = localStorage.getItem("token");
-  //       response = await axios.get(
-  //         `http://63.142.251.13:4000/branchgroupuser/read-children`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     }
-
-  //     console.log("fetch data", response.data); // Log the entire response data
-  //     // fetchgeofencepoint();
-  //     if (response?.data) {
-  //       const allData =
-  //         role == 1
-  //           ? response.data.data.flatMap((school) =>
-  //               school.branches.flatMap((branch) =>
-  //                 Array.isArray(branch.children) && branch.children.length > 0
-  //                   ? branch.children.map((child) => ({
-  //                       ...child, // Spread child object to retain all existing properties
-  //                       schoolName: school.schoolName,
-  //                       branchName: branch.branchName,
-  //                     }))
-  //                   : []
-  //               )
-  //             )
-  //           : role == 2
-  //           ? response?.data.branches.flatMap((branch) =>
-  //               Array.isArray(branch.children) && branch.children.length > 0
-  //                 ? branch.children
-  //                 : []
-  //             )
-  //           : response?.data.data
-            
-
-  //       console.log(allData);
-
-  //       const filteredData =
-  //         startDate || endDate
-  //           ? allData.filter((row) => {
-  //               const registrationDate = parseDate(
-  //                 row.formattedRegistrationDate
-  //               );
-  //               const start = parseDate(startDate);
-  //               const end = parseDate(endDate);
-
-  //               return (
-  //                 (!startDate || registrationDate >= start) &&
-  //                 (!endDate || registrationDate <= end)
-  //               );
-  //             })
-  //           : allData; // If no date range, use all data
-  //       const reversedData = filteredData.reverse();
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-  //       setFilteredRows(
-  //         reversedData.map((row) => ({ ...row, isSelected: false }))
-  //       );
-  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       setTotalResponses(reversedData.length);
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-  //     } else {
-  //       console.error("Expected an array but got:", response.data.children);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
-  //   }
-  // };
+  
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
@@ -330,132 +220,7 @@ export const StudentDetail = () => {
     return new Date(year, month - 1, day);
   }
   
-  // const fetchData = async (startDate = "", endDate = "") => {
-  //   setLoading(true);
-  //   try {
-  //     let response;
-  //     const token = localStorage.getItem("token");
   
-  //     // Fetch data based on the role
-  //     if (role == 1) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/read-children`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 2) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SCHOOL_API}/read-children`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 3) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_BRANCH_API}/read-children`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 4) {
-  //       response = await axios.get(
-  //         `http://63.142.251.13:4000/branchgroupuser/read-children`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     }
-  
-  //     console.log("Fetch data response:", response.data);
-  
-  //     if (response?.data) {
-  //       // Process data based on the role
-  //       const allData =
-  //         role == 1
-  //           ? response.data.data.flatMap((school) =>
-  //               school.branches.flatMap((branch) =>
-  //                 Array.isArray(branch.children) && branch.children.length > 0
-  //                   ? branch.children.map((child) => ({
-  //                       ...child,
-  //                       schoolName: school.schoolName,
-  //                       branchName: branch.branchName,
-  //                     }))
-  //                   : []
-  //               )
-  //             )
-  //           : role == 2
-  //           ? response.data.branches.flatMap((branch) =>
-  //               Array.isArray(branch.children) && branch.children.length > 0
-  //                 ? branch.children
-  //                 : []
-  //             )
-  //           : role == 3
-  //           ? response.data.data
-  //           : role == 4
-  //           ? response.data.childData.map((child) => ({
-  //               ...child,
-  //               schoolName: child.schoolId.schoolName,
-  //               branchName: child.branchId.branchName,
-  //               parentName:child.parentId.parentName,
-  //               formattedRegistrationDate: formatDate(child.registrationDate),
-  //             }))
-  //           : [];
-  //           function formatDate(date) {
-  //             const d = new Date(date);
-  //             const day = String(d.getDate()).padStart(2, '0'); // Adds leading zero if single digit
-  //             const month = String(d.getMonth() + 1).padStart(2, '0'); // Adds leading zero to month
-  //             const year = d.getFullYear();
-  //             return `${day}-${month}-${year}`;
-  //           }
-  //       console.log("Processed allData:", allData);
-  
-  //       const filteredData =
-  //         startDate || endDate
-  //           ? allData.filter((row) => {
-  //               const registrationDate = parseDate(
-  //                 row.formattedRegistrationDate
-  //               );
-  //               const start = parseDate(startDate);
-  //               const end = parseDate(endDate);
-  
-  //               return (
-  //                 (!startDate || registrationDate >= start) &&
-  //                 (!endDate || registrationDate <= end)
-  //               );
-  //             })
-  //           : allData;
-  
-  //       const reversedData = filteredData.reverse();
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
-  
-  //       setFilteredRows(
-  //         reversedData.map((row) => ({ ...row, isSelected: false }))
-  //       );
-  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       setTotalResponses(reversedData.length);
-  //     } else {
-  //       console.error("Expected data but got:", response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  
-  // const parseDate = (dateString) => {
-  //   const [day, month, year] = dateString.split("-").map(Number);
-  //   return new Date(year, month - 1, day); // Months are 0-indexed
-  // };
 
   const handleApplyDateRange = () => {
     const startDate = document.getElementById("startDate").value;
@@ -473,10 +238,7 @@ export const StudentDetail = () => {
     }
   };
 
-  // const formatDate = (dateString) => {
-  //   const [year, month, day] = dateString.split("-").map(Number);
-  //   return `${day}-${month}-${year}`;
-  // };
+  
 
   useEffect(() => {
     fetchData();
@@ -663,23 +425,7 @@ export const StudentDetail = () => {
     XLSX.writeFile(workbook, "StudentDetail.xlsx");
   };
 
-  // const handleFileUpload = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       const data = new Uint8Array(e.target.result);
-  //       const workbook = XLSX.read(data, { type: "array" });
-  //       const sheetNames = workbook.SheetNames;
-  //       const sheet = workbook.Sheets[sheetNames[0]];
-  //       const parsedData = XLSX.utils.sheet_to_json(sheet);
-  //       setImportData(parsedData);
-  //       console.log("uploadedfile",parsedData);
-  //     };
-  //     reader.readAsArrayBuffer(file);
-  //   }
-  //   alert("file imported successfully");
-  // };
+  
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -865,442 +611,7 @@ export const StudentDetail = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const fetchGeofenceData = async () => {
-  //     try {
-  //       const username = "school"; // Replace with your actual username
-  //       const password = "123456"; // Replace with your actual password
-  //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-
-  //       const response = await axios.get(
-  //         "http://104.251.216.99:8082/api/geofences",
-  //         {
-  //           headers: {
-  //             Authorization: `Basic ${token}`,
-  //           },
-  //         }
-  //       );
-
-  //       const data = response.data;
-  //       console.log("pickup points: ", response.data);
-  //       // Transform data to create dropdown options
-  //       const options = data.map((item) => ({
-  //         value: item.name,
-  //         label: item.name,
-  //       }));
-
-  //       setDropdownOptions(options);
-  //     } catch (error) {
-  //       console.error("Error fetching geofence data:", error);
-  //     }
-  //   };
-
-  //   fetchGeofenceData();
-  // }, []);
-
-  // useEffect(() => {
-  //   const fetchOtherData = async () => {
-  //     try {
-  //       const username = "school"; // Replace with your actual username
-  //       const password = "123456"; // Replace with your actual password
-  //       const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-
-  //       const response = await axios.get(
-  //         "https://rocketsalestracker.com/api/devices", // Modify the endpoint if different
-  //         {
-  //           headers: {
-  //             Authorization: `Basic ${token}`,
-  //           },
-  //         }
-  //       );
-
-  //       const data = response.data;
-  //       console.log(response.data);
-
-  //       // Transform data to create dropdown options
-  //       const options = data.map((item) => ({
-  //         value: item.id,
-  //         label: item.name,
-  //       }));
-
-  //       setOtherDropdownOptions(options);
-  //     } catch (error) {
-  //       console.error("Error fetching other data:", error);
-  //     }
-  //   };
-
-  //   fetchOtherData();
-  // }, []);
-
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   const decoded = jwtDecode(localStorage.getItem("token"));
-
-  //   if (role == 2 && name == "branchName") {
-  //     setFormData({
-  //       ...formData,
-  //       schoolName: decoded.schoolName, // Fetch schoolName from token
-  //       [name]: value, // Update branch name
-  //     });
-  //     // Filter devices by the selected branch
-  //     const filteredDevices = allDevices.filter(device => device.branchName == value);
-  //     setBuses(filteredDevices); // Update buses based on selected branch
-  //   } else if (name == "schoolName") {
-  //     setFormData({
-  //       ...formData,
-  //       [name]: value,
-  //     });
-  //     const selectedSchoolData = schools.find(
-  //       (school) => school.schoolName == value
-  //     );
-
-  //     if (selectedSchoolData) {
-  //       const allBranches = [];
-  //       if (selectedSchoolData.branchName) {
-  //         allBranches.push({
-  //           branchName: selectedSchoolData.branchName,
-  //           branchId: selectedSchoolData._id,
-  //         });
-  //       }
-
-  //       if (
-  //         selectedSchoolData.branches &&
-  //         selectedSchoolData.branches.length > 0
-  //       ) {
-  //         selectedSchoolData.branches.forEach((branch) => {
-  //           allBranches.push({
-  //             branchName: branch.branchName,
-  //             branchId: branch._id,
-  //           });
-  //         });
-  //       }
-
-  //       setBranches(allBranches);
-  //       // Filter devices by selected school
-  //       const filteredDevices = allDevices.filter(device => device.schoolName == value);
-  //       setBuses(filteredDevices); // Update buses based on selected school
-  //     }
-  //   } else {
-  //     setFormData({
-  //       ...formData,
-  //       [name]: value,
-  //     });
-  //   }
-  // };
-  // const handleBusChange = (e) => {
-  //   const { value } = e.target;
-  //   const selectedBus = buses.find(bus => bus.deviceId === value);
-
-  //   setFormData({
-  //     ...formData,
-  //     deviceId: selectedBus?.deviceId,
-  //     deviceName: selectedBus?.deviceName,
-  //   });
-  // };
-
-  // const handleBusChange = (e) => {
-  //   const { value } = e.target;
-  //   const selectedBus = buses.find(bus => bus.deviceId === value);
-
-  //   // Update formData with selected bus information
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     deviceId: selectedBus?.deviceId,
-  //     deviceName: selectedBus?.deviceName,
-  //     pickupPoint: '', // Reset geofence selection
-  //   }));
-
-  //   // Construct the key for pickupPointsData
-  //   const geofenceKey = `deviceId: ${selectedBus?.deviceId}`;
-
-  //   // Get geofences for the selected device
-  //   const geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
-
-  //   // Update filtered geofences state
-  //   setFilteredGeofences(geofencesForSelectedDevice);
-
-  //   // Debugging log
-  //   console.log("Filtered Geofences:", geofencesForSelectedDevice);
-  // };
-
-  // const handleBusChange = (e) => {
-  //   const { value } = e.target;
-  //   const selectedBus = buses.find(bus => bus.deviceId === value);
-
-  //   if (!selectedBus) {
-  //     console.error("Selected bus not found");
-  //     return;
-  //   }
-
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     deviceId: selectedBus.deviceId,
-  //     deviceName: selectedBus.deviceName,
-  //     pickupPoint: '', // Reset geofence selection
-  //   }));
-
-  //   let geofencesForSelectedDevice = [];
-
-  //   if (role == 1) {
-  //     // Access geofences using deviceId as the key
-  //     const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
-  //     geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
-
-  //     if (geofencesForSelectedDevice.length === 0) {
-  //       console.error("No geofences found for this deviceId");
-  //     }
-  //   } else if (role == 2) {
-  //     const selectedBranch = branches.find(branch =>
-  //       branch.geofences && Array.isArray(branch.geofences) && branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
-  //     );
-
-  //     if (selectedBranch) {
-  //       geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
-  //     } else {
-  //       console.error("No valid geofences found for the selected branch.");
-  //     }
-  //   } else if (role == 3) {
-  //     const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
-
-  //     if (branchData) {
-  //       const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
-
-  //       if (deviceData) {
-  //         geofencesForSelectedDevice = deviceData.geofences || [];
-  //       } else {
-  //         console.error("Device data not found for selected bus");
-  //       }
-  //     } else {
-  //       console.error("Branch data not found for selected bus");
-  //     }
-  //   }
-
-  //   setFilteredGeofences(geofencesForSelectedDevice);
-  //   console.log("Filtered Geofences:", geofencesForSelectedDevice);
-  // };
-  // const handleBusChange = (e) => {
-  //   const { value } = e.target;
-
-  //   if (!buses || !Array.isArray(buses)) {
-  //     console.error("Buses data is not available or not an array");
-  //     return;
-  //   }
-
-  //   const selectedBus = buses.find(bus => bus.deviceId === value);
-
-  //   if (!selectedBus) {
-  //     console.error("Selected bus not found");
-  //     return;
-  //   }
-
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     deviceId: selectedBus.deviceId,
-  //     deviceName: selectedBus.deviceName,
-  //     pickupPoint: '', // Reset geofence selection
-  //   }));
-
-  //   let geofencesForSelectedDevice = [];
-
-  //   if (role == 1) {
-  //     const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
-  //     geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
-
-  //     if (geofencesForSelectedDevice.length === 0) {
-  //       console.error("No geofences found for this deviceId");
-  //     }
-  //   }  else if (role == 2) {
-  //     if (!branches || !Array.isArray(branches)) {
-  //         console.error("Branches data is not available or not an array");
-  //         return;
-  //     }
-
-  //     const selectedBranch = branches.find(branch =>
-  //         branch.geofences && Array.isArray(branch.geofences) &&
-  //         branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
-  //     );
-
-  //     if (selectedBranch) {
-  //         geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
-  //         if (geofencesForSelectedDevice.length === 0) {
-  //             console.error("No geofences found for this deviceId in the selected branch.");
-  //         }
-  //     } else {
-  //         console.error("No valid geofences found for the selected branch.");
-  //     }
-  // }else if (role === 3) {
-  //   if (!branches || !Array.isArray(branches)) {
-  //     console.error("Branches data is not available or not an array");
-  //     return;
-  //   }
-
-  //   const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
-
-  //   if (branchData) {
-  //     const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
-
-  //     if (deviceData) {
-  //       geofencesForSelectedDevice = deviceData.geofences || [];
-  //     } else {
-  //       console.error("Device data not found for selected bus");
-  //     }
-  //   }else {
-  //       console.error("Branch data not found for selected bus");
-  //     }
-  //   }
-
-  //   setFilteredGeofences(geofencesForSelectedDevice);
-  //   console.log("Filtered Geofences:", geofencesForSelectedDevice);
-  // };
-
-  //   const handleBusChange = (e) => {
-  //     const { value } = e.target;
-
-  //     if (!buses || !Array.isArray(buses)) {
-  //         console.error("Buses data is not available or not an array");
-  //         return;
-  //     }
-
-  //     const selectedBus = buses.find(bus => bus.deviceId === value);
-
-  //     if (!selectedBus) {
-  //         console.error("Selected bus not found");
-  //         return;
-  //     }
-
-  //     setFormData((prevData) => ({
-  //         ...prevData,
-  //         deviceId: selectedBus.deviceId,
-  //         deviceName: selectedBus.deviceName,
-  //         pickupPoint: '', // Reset geofence selection
-  //     }));
-
-  //     let geofencesForSelectedDevice = [];
-
-  //     if (role == 1) {
-  //         const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
-  //         geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
-
-  //         if (geofencesForSelectedDevice.length === 0) {
-  //             console.error("No geofences found for this deviceId");
-  //         }
-  //     } else if (role == 2) {
-  //         if (!branches || !Array.isArray(branches)) {
-  //             console.error("Branches data is not available or not an array");
-  //             return;
-  //         }
-
-  //         const selectedBranch = branches.find(branch =>
-  //             branch.geofences && Array.isArray(branch.geofences) &&
-  //             branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
-  //         );
-
-  //         if (selectedBranch) {
-  //             geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
-  //             if (geofencesForSelectedDevice.length === 0) {
-  //                 console.error("No geofences found for this deviceId in the selected branch.");
-  //             }
-  //         } else {
-  //             console.error("No valid geofences found for the selected branch.");
-  //         }
-  //     } else if (role === 3) {
-  //         if (!branches || !Array.isArray(branches)) {
-  //             console.error("Branches data is not available or not an array");
-  //             return;
-  //         }
-
-  //         const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
-
-  //         if (branchData) {
-  //             const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
-
-  //             if (deviceData) {
-  //                 geofencesForSelectedDevice = deviceData.geofences || [];
-  //             } else {
-  //                 console.error("Device data not found for selected bus");
-  //             }
-  //         } else {
-  //             console.error("Branch data not found for selected bus");
-  //         }
-  //     }
-
-  //     setFilteredGeofences(geofencesForSelectedDevice);
-  //     console.log("Filtered Geofences:", geofencesForSelectedDevice);
-  // };
-  // const handleBusChange = (e) => {
-  //   const { value } = e.target;
-
-  //   if (!buses || !Array.isArray(buses)) {
-  //       console.error("Buses data is not available or not an array");
-  //       return;
-  //   }
-
-  //   const selectedBus = buses.find(bus => bus.deviceId === value);
-
-  //   if (!selectedBus) {
-  //       console.error("Selected bus not found");
-  //       return;
-  //   }
-
-  //   setFormData((prevData) => ({
-  //       ...prevData,
-  //       deviceId: selectedBus.deviceId,
-  //       deviceName: selectedBus.deviceName,
-  //       pickupPoint: '', // Reset geofence selection
-  //   }));
-
-  //   let geofencesForSelectedDevice = [];
-
-  //   if (role == 1) {
-  //       const geofenceKey = `deviceId: ${selectedBus.deviceId}`;
-  //       geofencesForSelectedDevice = pickupPointsData[geofenceKey] || [];
-
-  //       if (geofencesForSelectedDevice.length === 0) {
-  //           console.error("No geofences found for this deviceId");
-  //       }
-  //   } else if (role == 2) {
-  //       if (!branches || !Array.isArray(branches)) {
-  //           console.error("Branches data is not available or not an array");
-  //           return;
-  //       }
-
-  //       const selectedBranch = branches.find(branch =>
-  //           branch.geofences && Array.isArray(branch.geofences) &&
-  //           branch.geofences.some(g => g.deviceId === selectedBus.deviceId)
-  //       );
-
-  //       if (selectedBranch) {
-  //           geofencesForSelectedDevice = selectedBranch.geofences.filter(g => g.deviceId === selectedBus.deviceId);
-  //           if (geofencesForSelectedDevice.length === 0) {
-  //               console.error("No geofences found for this deviceId in the selected branch.");
-  //           }
-  //       } else {
-  //           console.error("No valid geofences found for the selected branch.");
-  //       }
-  //   } else if (role === 3) {
-  //       if (!branches || !Array.isArray(branches)) {
-  //           console.error("Branches data is not available or not an array");
-  //           return;
-  //       }
-
-  //       const branchData = branches.find(branch => branch.branchId === selectedBus.branchId);
-
-  //       if (branchData) {
-  //           const deviceData = branchData.devices.find(device => device.deviceId === selectedBus.deviceId);
-
-  //           if (deviceData) {
-  //               geofencesForSelectedDevice = deviceData.geofences || [];
-  //           } else {
-  //               console.error("Device data not found for selected bus");
-  //           }
-  //       } else {
-  //           console.error("Branch data not found for selected bus");
-  //       }
-  //   }
-
-  //   setFilteredGeofences(geofencesForSelectedDevice);
-  //   console.log("Filtered Geofences:", geofencesForSelectedDevice);
-  // };
+  
   const handleBusChange = (e) => {
     const { value } = e.target;
 
@@ -1541,78 +852,7 @@ export const StudentDetail = () => {
       }
     };
 
-    // const fetchGeofence = async (startDate = "", endDate = "") => {
-    //   // setLoading(true);
-    //   try {
-    //     const token = localStorage.getItem("token");
-    //     let response;
-
-    //     // Fetch data based on role
-    //     if (role == 1) {
-    //       response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
-    //         headers: { Authorization: `Bearer ${token}` },
-    //       });
-    //     } else if (role == 2) {
-    //       response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/geofences`, {
-    //         headers: { Authorization: `Bearer ${token}` },
-    //       });
-    //     } else if (role == 3) {
-    //       response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
-    //         headers: { Authorization: `Bearer ${token}` },
-    //       });
-    //     }
-
-    //     if (response?.data) {
-    //       let fetchedData = {};
-
-    //       if (role == 1) {
-    //         // Structure geofences by deviceId
-    //         Object.entries(response.data).forEach(([deviceId, stops]) => {
-    //           fetchedData[deviceId] = stops.map(stop => ({
-    //             ...stop,
-    //             deviceId, // Include deviceId in each stop
-    //           }));
-    //         });
-    //       } else if (role == 2) {
-    //         // For role 2, assuming response contains branches with geofences
-    //         response.data?.branches.forEach(branch => {
-    //           if (branch.geofences) {
-    //             branch.geofences.forEach(geofence => {
-    //               if (!fetchedData[branch.deviceId]) {
-    //                 fetchedData[branch.deviceId] = [];
-    //               }
-    //               fetchedData[branch.deviceId].push({
-    //                 ...geofence,
-    //                 branchId: branch.branchId,
-    //                 branchName: branch.branchName,
-    //               });
-    //             });
-    //           }
-    //         });
-    //       } else if (role == 3) {
-    //         // For role 3, handle geofences by device
-    //         response.data.devices.forEach(device => {
-    //           device.geofences.forEach(geofence => {
-    //             if (!fetchedData[device.deviceId]) {
-    //               fetchedData[device.deviceId] = [];
-    //             }
-    //             fetchedData[device.deviceId].push({
-    //               ...geofence,
-    //               deviceId: device.deviceId,
-    //             });
-    //           });
-    //         });
-    //       }
-
-    //       console.log("role is:", role);
-    //       console.log("geofences are:", fetchedData);
-    //       // Update the state with fetched data
-    //       setPickupPointsData(fetchedData);
-    //     }
-    //   } catch (error) {
-    //     console.error("Error:", error);
-    //   }
-    // };
+    
 
     const fetchGeofence = async (startDate = "", endDate = "") => {
       // setLoading(true);
@@ -1707,11 +947,7 @@ console.log("my geofences",response.data)
     fetchSchool();
     fetchGeofence();
   }, [role]);
-  // const sampleData = [
-  //   ["Student Name", "Class", "Roll No.", "Section","School Name","Branch Name","DOB","Child Age","Parent Name","User Name","Phone Numnber","Password"],
-  //   ["John Doe", "10", "16", "A","Study Point","Branch1","13-03-2009","12","Vicky Doe","Vicky Doe","8989898989","5678"],
-  //   ["Jane Doe", "10", "16", "A","Udemy","Branch6","11-03-2008","13","Vicky Doe","username","8989898989","5678"],
-  // ];
+ 
   const sampleData = [
     [
       "childName",
@@ -2112,17 +1348,7 @@ console.log("my geofences",response.data)
           
  
   
-  {/* <StyledTablePagination>
-      <TablePagination
-        rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
-        component="div"
-        count={sortedData.length}
-        rowsPerPage={rowsPerPage === sortedData.length ? -1 : rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-    </StyledTablePagination> */}
+  
     <StyledTablePagination>
   <TablePagination
     rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
@@ -2172,85 +1398,7 @@ console.log("my geofences",response.data)
           </Box>
         </Modal>
         <Modal open={editModalOpen} onClose={handleModalClose}>
-          {/* <Box sx={style}>
-           
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ flexGrow: 1 }}>Edit Student Details</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -3)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
-           
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{lastThirdColumn.Header}</InputLabel>
-
-              <Select
-                value={formData[lastThirdColumn.accessor] || ""}
-                onChange={handleOtherSelectChange}
-                name={lastThirdColumn.accessor}
-                label={lastThirdColumn.Header}
-              >
-                {otherDropdownOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{lastSecondColumn.Header}</InputLabel>
-
-              <Select
-                value={formData[lastSecondColumn.accessor] || ""}
-                onChange={handleSelectChange}
-                name={lastSecondColumn.accessor}
-                label={lastSecondColumn.Header}
-              >
-                {dropdownOptions.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-           
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleEditSubmit}
-            >
-              Submit
-            </Button>
-          </Box> */}
+         
           <Box sx={style}>
             {/* <h2>Add Row</h2> */}
             <Box
@@ -2347,28 +1495,7 @@ console.log("my geofences",response.data)
               fullWidth
             />
 
-            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
-              <InputLabel id="demo-simple-select-label">Class</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                name="class"
-                value={formData["class"] || ""}
-                label="Class"
-                onChange={handleInputChange}
-              >
-                <MenuItem value={1}>1</MenuItem>
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={3}>3</MenuItem>
-                <MenuItem value={4}>4</MenuItem>
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={6}>6</MenuItem>
-                <MenuItem value={7}>7</MenuItem>
-                <MenuItem value={8}>8</MenuItem>
-                <MenuItem value={9}>9</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-              </Select>
-            </FormControl> */}
+          
             <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <Autocomplete
                 id="searchable-select"
@@ -2412,26 +1539,7 @@ console.log("my geofences",response.data)
             />
             {role == 1 ? (
               <>
-                {/* <FormControl
-                  variant="outlined"
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                >
-                  <InputLabel>{"School Name"}</InputLabel>
-
-                  <Select
-                    value={formData["schoolName"] || ""}
-                    onChange={handleInputChange}
-                    name="schoolName"
-                    label={"School Name"}
-                  >
-                    {schools?.map((option) => (
-                      <MenuItem key={option._id} value={option.schoolName}>
-                        {option.schoolName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl> */}
+               
                 <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -2467,26 +1575,7 @@ console.log("my geofences",response.data)
                     )}
                   />
                 </FormControl>
-                {/* <FormControl
-                  variant="outlined"
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                >
-                  <InputLabel>{"Branch Name"}</InputLabel>
-
-                  <Select
-                    value={formData["branchName"] || ""}
-                    onChange={handleInputChange}
-                    name="branchName"
-                    label={"Branch Name"}
-                  >
-                    {branches?.map((option) => (
-                      <MenuItem key={option.branchId} value={option.branchName}>
-                        {option.branchName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl> */}
+               
                 <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -2524,47 +1613,7 @@ console.log("my geofences",response.data)
                 </FormControl>
               </>
             ) : role == 2 ? (
-              // <FormControl
-              //   variant="outlined"
-              //   sx={{ marginBottom: "10px" }}
-              //   fullWidth
-              // >
-              //   <InputLabel>{"Branch Name"}</InputLabel>
-
-              //   <Select
-              //     value={formData["branchName"] || ""}
-              //     onChange={handleInputChange}
-              //     name="branchName"
-              //     label={"Branch Name"}
-              //   >
-              //     {branches?.map((option) => (
-              //       <MenuItem key={option.branchId} value={option.branchName}>
-              //         {option.branchName}
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
-              //   <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-              //   <Autocomplete
-              //     id="searchable-branch-select"
-              //     options={branches || []} // List of branch objects
-              //     getOptionLabel={(option) => option.branchName || ""} // Display branch name
-              //     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
-              //     onChange={(event, newValue) => {
-              //       handleInputChange({
-              //         target: { name: "branchName", value: newValue?.branchName || "" },
-              //       });
-              //     }}
-              //     renderInput={(params) => (
-              //       <TextField
-              //         {...params}
-              //         label="Branch Name"
-              //         variant="outlined"
-              //         name="branchName"
-              //       />
-              //     )}
-              //   />
-              // </FormControl>
+              
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -2598,41 +1647,8 @@ console.log("my geofences",response.data)
                 />
               </FormControl>
             ) : null}
-            {/* <FormControl
-  variant="outlined"
-  sx={{ marginBottom: "10px" }}
-  fullWidth
->
-  <InputLabel>{"Bus Name"}</InputLabel>
-  
-  <Select
-    value={formData["deviceId"] || ""}  // Select based on deviceId
-    onChange={handleBusChange}
-    name="deviceId"  // Name reflects deviceId for posting
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}  
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
-            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <InputLabel>{"Bus Name"}</InputLabel>
-  <Select
-    value={formData["deviceId"] || ""}
-    onChange={handleBusChange}
-    name="deviceId"
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
+            
+           
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -2665,26 +1681,7 @@ console.log("my geofences",response.data)
                 )}
               />
             </FormControl>
-            {/* Geofences display based on selected Bus */}
-            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
-  <InputLabel id="geofence-id-label">Select Geofence</InputLabel>
-  <Select
-    labelId="geofence-id-label"
-    name="pickupPoint"
-    value={formData["pickupPoint"] || ""}
-    onChange={handleInputChange}
-  >
-    {filteredGeofences.length > 0 ? (
-      filteredGeofences.map(geofence => (
-        <MenuItem key={geofence._id} value={geofence.name}>
-          {geofence.name} 
-        </MenuItem>
-      ))
-    ) : (
-      <MenuItem disabled>No geofences available</MenuItem>
-    )}
-  </Select>
-</FormControl> */}
+          
             <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <Autocomplete
                 id="geofence-autocomplete"

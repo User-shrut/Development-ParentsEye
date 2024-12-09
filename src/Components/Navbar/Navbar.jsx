@@ -124,7 +124,8 @@ const pages = [
       { name: 'Distance Report', icon: <DirectionsCarIcon /> },
       { name: 'Stops', icon: <StopCircleIcon /> },
       { name: 'Summary', icon: <SummarizeIcon /> },
-      { name: 'Statistics', icon: <InsightsIcon /> }
+      { name: 'Statistics', icon: <InsightsIcon /> },
+      { name: 'Kilometer Distance', icon: <DirectionsCarIcon /> },
     ]
   },
   
@@ -176,27 +177,7 @@ export const Navbar = (props) => {
   }, []);
 
 
-  // const handleNavClick = (arr, title) => {
-  //   if (role == 1) {
-  //     const updatedArr = arr.filter((item) => item !== "My Branch Devices");
-  //     props.propFunc(updatedArr);
-  //     props.propBool(true);
-  //     setSelectedPage(title);
-  //   } else if (role == 2) {
-  //     const updatedArr = arr.filter((item) => item !== "School Master" && item !== "AddDevices" && item !== "My Branch Devices" && item !== "User Access");
-  //     props.propFunc(updatedArr);
-  //     props.propBool(true);
-  //     setSelectedPage(title);
-  //   } else if (role == 3) {
-  //     const updatedArr = arr.filter(
-  //       (item) => item !== "School Master" && item !== "Branch Master" && item !== "AddDevices" && item !== "User Access"
-  //     );
-  //     props.propFunc(updatedArr);
-  //     props.propBool(true);
-  //     setSelectedPage(title);
-  //   }
-  // };
-
+  
   const handleNavClick = (arr, title) => {
     console.log("Role:", role);
     console.log("Original Array:", arr);

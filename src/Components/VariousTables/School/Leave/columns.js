@@ -19,12 +19,17 @@ export const COLUMNS = () => [
     accessor: 'deviceId',
   },
   {
+    Header: 'vehicle Name',
+    accessor: 'deviceName',
+  },
+  {
     Header: 'Request Type',
     accessor: 'requestType',
   },
   {
     Header: 'Leave from',
     accessor: 'startDate',
+    
   },
   {
     Header: 'Leave To',
