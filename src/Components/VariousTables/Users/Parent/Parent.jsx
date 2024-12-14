@@ -1642,10 +1642,26 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import dayjs from "dayjs";
-import { Autocomplete } from "@mui/material";
+import { Autocomplete,Popper  } from "@mui/material";
 //import { TextField } from '@mui/material';
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
-
+import InputAdornment from "@mui/material/InputAdornment"; // Add this import
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import CakeIcon from '@mui/icons-material/Cake';
+import Face6Icon from '@mui/icons-material/Face6';  // Import Face6Icon
+import PinIcon from '@mui/icons-material/Pin';
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
+import SchoolIcon from '@mui/icons-material/School';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import ShareLocationIcon from '@mui/icons-material/ShareLocation';
+import AbcIcon from '@mui/icons-material/Abc';
+import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
+import MailIcon from '@mui/icons-material/Mail';
+import PasswordIcon from '@mui/icons-material/Password';
+import TripOriginIcon from '@mui/icons-material/TripOrigin';
+import ClassIcon from '@mui/icons-material/Class';
+import WcIcon from '@mui/icons-material/Wc';
 const style = {
   position: "absolute",
   top: "50%",
@@ -2129,6 +2145,7 @@ console.log("role is:",role)
             console.error("No geofences found for this deviceId");
         }
     }
+    
   
     // Update the filtered geofences state
     setFilteredGeofences(geofencesForSelectedDevice);
@@ -2182,6 +2199,30 @@ console.log("role is:",role)
         ...formData,
         [name]: value,
       });
+    }if (name === "dateOfBirth" && value) {
+      // Calculate the age based on Date of Birth
+      const birthDate = new Date(value);
+      const age = new Date().getFullYear() - birthDate.getFullYear();
+      const monthDifference = new Date().getMonth() - birthDate.getMonth();
+
+      // Adjust the age if the birthday hasn't occurred this year yet
+      const calculatedAge =
+        monthDifference < 0 ||
+        (monthDifference === 0 && new Date().getDate() < birthDate.getDate())
+          ? age - 1
+          : age;
+
+      setFormData((prevData) => ({
+        ...prevData,
+        dateOfBirth: value,
+        childAge: calculatedAge, // Set the calculated age
+      }));
+    } else {
+      // For other inputs, just update the form data
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
     }
   };
   const [selectedValue, setSelectedValue] = useState("");
@@ -2200,6 +2241,7 @@ console.log("role is:",role)
     });
     setOtherSelectedValue(event.target.value);
   };
+  
   // const handleBusChange = (e) => {
   //   const { value } = e.target;
 
@@ -3313,6 +3355,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <DriveFileRenameOutlineIcon/>  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
 
             <FormControl
@@ -3363,6 +3412,7 @@ const lastThirdColumn = columns[columns.length - 3];
 
               <TextField
                 key={"childAge"}
+                label={ "Date of Birth"}
                 type="date"
                 placeholder="Date of Birth"
                 variant="outlined"
@@ -3371,6 +3421,12 @@ const lastThirdColumn = columns[columns.length - 3];
                 onChange={handleInputChange}
                 sx={{ marginBottom: "10px", width: "200px" }}
                 fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CakeIcon />
+                    </InputAdornment>
+                  ),}}
               />
             </FormControl>
 
@@ -3379,10 +3435,18 @@ const lastThirdColumn = columns[columns.length - 3];
               label={"Student Age"}
               variant="outlined"
               name="childAge"
-              value={formData["childAge"] || ""}
+              // value={formData["childAge"] || ""}
+               value={formData.childAge || ""}
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Face6Icon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
 
             {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
@@ -3424,6 +3488,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Class"
         variant="outlined"
         name="class"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <ClassIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -3437,6 +3509,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PinIcon/>  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"section"}
@@ -3447,6 +3526,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <HolidayVillageIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             {role == 1 ? (
               <>
@@ -3508,6 +3594,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="School Name"
         variant="outlined"
         name="schoolName"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <SchoolIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -3550,6 +3644,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Branch Name"
         variant="outlined"
         name="branchName"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -3615,6 +3717,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Branch Name"
         variant="outlined"
         name="branchName"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -3673,6 +3783,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Bus Name"
         variant="outlined"
         name="deviceId"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <DirectionsBusIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -3716,6 +3834,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Select Geofence"
         variant="outlined"
         name="pickupPoint"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <ShareLocationIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -3731,6 +3857,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AbcIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"phone"}
@@ -3741,6 +3874,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"email"}
@@ -3751,6 +3891,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"password"}
@@ -3761,6 +3908,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
           {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="device-id-label">Select Device</InputLabel>
@@ -3834,6 +3988,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <DriveFileRenameOutlineIcon/>  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
 
             <FormControl
@@ -3884,6 +4045,7 @@ const lastThirdColumn = columns[columns.length - 3];
 
               <TextField
                 key={"childAge"}
+                label={ "Date of Birth"}
                 type="date"
                 placeholder="Date of Birth"
                 variant="outlined"
@@ -3892,10 +4054,16 @@ const lastThirdColumn = columns[columns.length - 3];
                 onChange={handleInputChange}
                 sx={{ marginBottom: "10px", width: "200px" }}
                 fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CakeIcon />
+                    </InputAdornment>
+                  ),}}
               />
             </FormControl>
 
-            <TextField
+            {/* <TextField
               key={"childAge"}
               label={"Student Age"}
               variant="outlined"
@@ -3904,7 +4072,24 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
-            />
+            /> */}
+            <TextField
+        key={"childAge"}
+        label={"Student Age"}
+        variant="outlined"
+        name="childAge"
+        value={formData.childAge || ""}
+        sx={{ marginBottom: "10px" }}
+        fullWidth
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Face6Icon />  {/* Add Face6Icon in the input field */}
+            </InputAdornment>
+          ),
+        }}
+        // disabled // Disable the field since the age is calculated automatically
+      />
 
             {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <InputLabel id="demo-simple-select-label">Class</InputLabel>
@@ -3945,6 +4130,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Class"
         variant="outlined"
         name="class"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <ClassIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -3958,6 +4151,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PinIcon/>  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"section"}
@@ -3968,6 +4168,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <HolidayVillageIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             {role == 1 ? (
               <>
@@ -4008,6 +4215,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="School Name"
         variant="outlined"
         name="schoolName"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <SchoolIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -4049,6 +4264,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Branch Name"
         variant="outlined"
         name="branchName"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -4113,6 +4336,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Branch Name"
         variant="outlined"
         name="branchName"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -4171,6 +4402,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Bus Name"
         variant="outlined"
         name="deviceId"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <DirectionsBusIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -4212,6 +4451,14 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Select Geofence"
         variant="outlined"
         name="pickupPoint"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <ShareLocationIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -4228,6 +4475,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AbcIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"phone"}
@@ -4238,6 +4492,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"email"}
@@ -4248,6 +4509,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"password"}
@@ -4258,6 +4526,13 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
           {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="device-id-label">Select Device</InputLabel>

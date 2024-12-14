@@ -67,6 +67,13 @@ import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import InsightsIcon from '@mui/icons-material/Insights';
+import { deepOrange, deepPurple,orange,teal  } from '@mui/material/colors';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
+import axios from 'axios';
+const username = 'schoolmaster'; // Replace with your actual username
+const password = '123456'; 
 
 const pages = [
   
@@ -110,6 +117,7 @@ const pages = [
       { name: 'My Branch Devices', icon: <DevicesIcon /> },
       { name: 'Read Devices', icon: <VisibilityIcon /> },
       { name: 'User Access', icon: <LockOpenIcon /> },
+      { name: 'Notification', icon: <NotificationsIcon /> },
      
     ]
   },
@@ -145,6 +153,8 @@ export const Navbar = (props) => {
   const decode = jwtDecode(localStorage.getItem('token'))
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
+
+  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -152,6 +162,22 @@ export const Navbar = (props) => {
     setAnchorEl(null);
   };
 
+
+  const [isVolumeOn, setIsVolumeOn] = useState(true);
+  const silentFeature = (isOn) => {
+    if (isOn) {
+      console.log("Volume is ON");
+     
+    } else {
+      console.log("Volume is OFF");
+      
+    }
+  };
+  const toggleVolume = () => {
+    const newVolumeState = !isVolumeOn;
+    setIsVolumeOn(newVolumeState);
+    silentFeature(newVolumeState);
+  };
 
 
   useEffect(() => {
@@ -217,7 +243,39 @@ export const Navbar = (props) => {
   const handleCloseModal = () => {
     setOpenModal(false);
   };
+  const handleLogout = () => {
+    // Clear token from localStorage
+    localStorage.removeItem("token");
+  
+    // Programmatically navigate to login and force reload
+    navigate("/Login", { replace: true });
+    window.location.reload(); // Ensures the app state is cleared
+  };
+  
+  
+  useEffect(() => {
+    const handlePopState = () => {
+      // Redirect to Login if token is not present
+      if (!localStorage.getItem("token")) {
+        navigate("/Login", { replace: true });
+        window.history.pushState(null, null, "/Login");
+      }
+    };
 
+    // Attach popstate listener
+    window.addEventListener("popstate", handlePopState);
+
+    // Perform initial check when Navbar loads
+    if (!localStorage.getItem("token")) {
+      navigate("/Login", { replace: true });
+      window.history.pushState(null, null, "/Login");
+    }
+
+    // Cleanup listener on component unmount
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
   // ################### notification code is here ##########
 
   const token = localStorage.getItem("token");
@@ -225,21 +283,105 @@ export const Navbar = (props) => {
   const socket = io(`${process.env.REACT_APP_API}`);
   const branchId = decodedToken && decodedToken.id;
   const [notifications, setNotifications] = useState([]);
+  const [allowedNotifications, setAllowedNotifications] = useState({ data: [] });
+  const [notificationPreferences, setNotificationPreferences] = useState([]);
 
-  const notificationSocket = () => {
-    const audio = new Audio(notificationSound);
-    console.log("this is notification function and i am waiting for notification")
-    socket.emit('registerBranch', branchId);
-    socket.on("notification", (data) => {
-      console.log("Notification", data);
-      audio.play();
-      setNotifications((prevNotifications) => [...prevNotifications, data])
-    });
+  const fetchAllowedNotification = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        // `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`,
+        `${process.env.REACT_APP_API}/getnotificationtypes`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setAllowedNotifications(response.data)
+      console.log("Fetcheeeeed Allowed Notification",response.data);
+     
+  
+  
+    } catch (error) {
+      console.error('Error fetching device data:', error);
+    }
   }
+  useEffect(() => {
+    const notificationSocket = () => {
+      const audio = new Audio(notificationSound);
+      socket.emit("authenticate", { token });
+  
+      socket.on("allAlerts", (data) => {
+        console.log("Notification received:", data);
+        // if (isVolumeOn) {
+        //   audio.play();
+        // }
+  
+        // Map notifications to readable messages
+        const flattenedData = data.flat();
+        const updatedMessages = flattenedData.map((item) => {
+          const matchingDevice = allowedNotifications.data.find(
+            (device) => parseInt(device.deviceId) === item.deviceId
+          );
+  
+          if (!matchingDevice) {
+            console.log("No matching device found.");
+            return null; // Skip if no matching device
+          }else{
+            if(isVolumeOn){
+              audio.play();
+            }
+
+          }
+            
+  
+          let message = null;
+          if (item.ignition && matchingDevice.ignitionOn) {
+            message = `Bus On - ${matchingDevice.deviceName}`;
+          } else if (!item.ignition && matchingDevice.ignitionOff) {
+            message = `Bus Off - ${matchingDevice.deviceName}`;
+          } 
+          // else if (){   //write geofence and absent present logic of notification similar to above logic
+
+          // }
+  
+          return message;
+        }).filter(Boolean);
+        console.log("Generated Messages:", updatedMessages);
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          ...updatedMessages,
+        ]);
+      });
+    };
+  
+    if (allowedNotifications.data) {
+      notificationSocket(); // Initialize socket only if allowedNotifications are available
+    }
+  
+    return () => {
+      socket.off("allAlerts"); // Cleanup socket on component unmount
+    };
+  }, [allowedNotifications, isVolumeOn]);
+
+  // const notificationSocket = () => {
+  //   const audio = new Audio(notificationSound);
+  //   console.log("this is notification function and i am waiting for notification")
+  //   socket.emit('registerBranch', branchId);
+  //   socket.on("notification", (data) => {
+  //     console.log("Notification", data);
+  //     audio.play();
+  //     setNotifications((prevNotifications) => [...prevNotifications, data])
+  //   });
+  // }
 
   useEffect(() => {
     console.log("this is notification socket code");
-    notificationSocket();
+    fetchAllowedNotification();
+    // notificationSocket();
 
   }, [])
 
@@ -280,11 +422,36 @@ export const Navbar = (props) => {
               </Button>
             ))}
           </Box>
-          <CHeaderNav className="ms-auto">
-            <NotificationDropdown notifications={notifications} />
-          </CHeaderNav>
-          　
+          
+          {/* 　<CHeaderNav className="ms-auto">
+            <div>
+              {isVolumeOn ? (
+                <VolumeUpIcon
+                  style={{ fontSize: 30, cursor: "pointer", color: "#000000" }}
+                  onClick={toggleVolume}
+                />
+              ) : (
+                <VolumeOffIcon
+                  style={{ fontSize: 30, cursor: "pointer", color: "#f50057" }}
+                  onClick={toggleVolume}
+                />
+              )}
+            </div>
+          </CHeaderNav> */}
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', paddingTop: '0px' }}>
+          {/* <CHeaderNav className="ms-auto">
+              <IconButton sx={{ p: 0 }}>
+                <NotificationDropdown notifications={notifications} />
+              </IconButton>
+          </CHeaderNav> */}
+           <CHeaderNav className="ms-auto">
+              {/* Notification Dropdown with Icon from CoreUI */}
+              <Tooltip title="Notifications">
+                <div style={{ display: 'flex', alignItems: 'center', position: 'relative' ,paddingRight: '15px' }}>
+                  <NotificationDropdown notifications={notifications} />
+                </div>
+              </Tooltip>
+            </CHeaderNav>
             <Tooltip title='Red Zone Alert'>
               <IconButton sx={{ p: 0 }} onClick={handleRedAlert}>
                 <ReportProblemOutlinedIcon style={{ color: 'red', marginRight: 10 }} />
@@ -295,7 +462,7 @@ export const Navbar = (props) => {
                 <LoopSharpIcon style={{ color: 'black' }} />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Open settings">
+            <Tooltip>
               <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
                 <Tooltip title="Account settings">
                   <IconButton
@@ -306,7 +473,10 @@ export const Navbar = (props) => {
                     aria-haspopup="true"
                     aria-expanded={open ? 'true' : undefined}
                   >
-                    <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+                    {/* <Avatar sx={{ width: 32, height: 32 }}></Avatar> */}
+                    <Avatar sx={{  width: 32, height: 32  ,bgcolor: orange[900]}}>
+                    {decode.username.charAt(0).toUpperCase()} 
+                    </Avatar>
                   </IconButton>
                 </Tooltip>
               </Box>
@@ -315,39 +485,62 @@ export const Navbar = (props) => {
                 id="account-menu"
                 open={open}
                 onClose={handleClose}
-                onClick={handleClose}
+                // onClick={handleClose}
                 sx={{ zIndex: 1302 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 alignItems={{ horizontal: 'right' }}
-              ><div style={{ background: 'linear-gradient(to right, rgb(253, 215, 52), #828b94)' }}>
+              ><div style={{ background: 'linear-gradient(to right, rgb(253, 215, 52),rgba(216, 125, 34, 0.91))' }}>
                   <MenuItem onClick={handleClose}>
-                    <Avatar /> Profile : {decode.username}
+                  <ListItemIcon sx={{ marginRight: 1 }}>
+                    <Avatar fontSize="small"sx={{  bgcolor: orange[900]}} />
+                  </ListItemIcon>
+                  Profile: {decode.username}
                   </MenuItem>
-                  <MenuItem onClick={handleClose}>
+                  {/* <MenuItem onClick={handleClose}>
                     <Avatar /> My account
-                  </MenuItem>
+                  </MenuItem> */}
                 </div>
                 <Divider />
                 <MenuItem onClick={handleClose}>
                   <ListItemIcon>
                     <PersonAdd fontSize="small" />
                   </ListItemIcon>
-                  Helpline No:9370180012
+                  <a href="tel:+9370180012" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    Helpline No: 9370180012
+                  </a>
                 </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem>
+                  <ListItemIcon>
+                  <div onClick={toggleVolume} style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                 
+                    {isVolumeOn ? (
+                      <VolumeUpIcon style={{ fontSize: 25, color: "#000000" }} />
+                    ) : (
+                      <VolumeOffIcon style={{ fontSize: 25, color: "#f50057" }} />
+                    )}
+                    <span style={{ marginLeft: "8px" }}>
+                      {isVolumeOn ? "Mute notification" : "Unmute notification"}
+                    </span>
+                  </div>
+
+
+                  </ListItemIcon>
+                 
+                </MenuItem>
+                {/* <MenuItem onClick={handleClose}>
                   <ListItemIcon>
                     <Settings fontSize="small" />
                   </ListItemIcon>
                   Language
-                </MenuItem>
+                </MenuItem> */}
                 <Link to={"/Login"} >
-                  <MenuItem onClick={handleClose}>
+                  <MenuItem onClick={handleLogout}>
 
                     <ListItemIcon>
                       <Login fontSize="small" />
                     </ListItemIcon>
-                    Login
+                    Logout
 
                   </MenuItem>
                 </Link>

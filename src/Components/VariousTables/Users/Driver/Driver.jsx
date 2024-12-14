@@ -649,6 +649,10 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
+import InputAdornment from "@mui/material/InputAdornment"; // Add this import
+import SchoolIcon from '@mui/icons-material/School';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
 import {
   FormControl,
   IconButton,
@@ -2056,6 +2060,13 @@ export const Driver = () => {
                   onChange={handleInputChange}
                   sx={{ marginBottom: "10px" }}
                   fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {col.icon} {/* Add Face6Icon in the input field */}
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               ))}
             {role == 1 && (
@@ -2107,6 +2118,14 @@ export const Driver = () => {
                       label="School Name"
                       variant="outlined"
                       name="schoolName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SchoolIcon/> {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -2161,6 +2180,14 @@ export const Driver = () => {
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon/> {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -2208,6 +2235,14 @@ export const Driver = () => {
                     label="Bus Name"
                     variant="outlined"
                     name="deviceId"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <DirectionsBusIcon/> {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -2248,6 +2283,13 @@ export const Driver = () => {
                   onChange={handleInputChange}
                   sx={{ marginBottom: "10px" }}
                   fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                          {col.icon}
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               ))}
 
@@ -2301,6 +2343,14 @@ export const Driver = () => {
                         label="School Name"
                         variant="outlined"
                         name="schoolName"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SchoolIcon/> {/* Add SchoolIcon in the input field */}
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     )}
                   />
@@ -2353,6 +2403,14 @@ export const Driver = () => {
                         label="Branch Name"
                         variant="outlined"
                         name="branchName"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccountTreeIcon/> {/* Add SchoolIcon in the input field */}
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     )}
                   />
@@ -2407,6 +2465,14 @@ export const Driver = () => {
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon/> {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -2454,6 +2520,14 @@ export const Driver = () => {
                     label="Bus Name"
                     variant="outlined"
                     name="deviceId"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <DirectionsBusIcon/> {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />

@@ -2283,7 +2283,7 @@ const processGroupedEvents = (groupedEvents) => {
         // Update the state with the processed data
         console.log('groupedEvents:',groupedEvents)
         setFilteredRows(finalProcessedEvents);
-        setOriginalRows(groupedEvents.flat()); 
+        setOriginalRows(finalProcessedEvents); 
         setTotalResponses(finalProcessedEvents.length);
       } else {
         throw new Error('Unexpected content type: ' + response.headers['content-type']);

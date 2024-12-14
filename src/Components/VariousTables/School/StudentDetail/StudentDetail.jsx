@@ -43,7 +43,24 @@ import {
 import { MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 //import { TextField } from '@mui/material';
-import { Autocomplete } from "@mui/material";
+import { Autocomplete,Popper } from "@mui/material";
+import InputAdornment from "@mui/material/InputAdornment"; // Add this import
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import CakeIcon from '@mui/icons-material/Cake';
+import Face6Icon from '@mui/icons-material/Face6';  // Import Face6Icon
+import PinIcon from '@mui/icons-material/Pin';
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
+import SchoolIcon from '@mui/icons-material/School';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import ShareLocationIcon from '@mui/icons-material/ShareLocation';
+import AbcIcon from '@mui/icons-material/Abc';
+import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
+import MailIcon from '@mui/icons-material/Mail';
+import PasswordIcon from '@mui/icons-material/Password';
+import TripOriginIcon from '@mui/icons-material/TripOrigin';
+import ClassIcon from '@mui/icons-material/Class';
+import WcIcon from '@mui/icons-material/Wc';
 const style = {
   position: "absolute",
   top: "50%",
@@ -720,6 +737,31 @@ export const StudentDetail = () => {
         ...formData,
         [name]: value,
       });
+    }
+    if (name === "dateOfBirth" && value) {
+      // Calculate the age based on Date of Birth
+      const birthDate = new Date(value);
+      const age = new Date().getFullYear() - birthDate.getFullYear();
+      const monthDifference = new Date().getMonth() - birthDate.getMonth();
+
+      // Adjust the age if the birthday hasn't occurred this year yet
+      const calculatedAge =
+        monthDifference < 0 ||
+        (monthDifference === 0 && new Date().getDate() < birthDate.getDate())
+          ? age - 1
+          : age;
+
+      setFormData((prevData) => ({
+        ...prevData,
+        dateOfBirth: value,
+        childAge: calculatedAge, // Set the calculated age
+      }));
+    } else {
+      // For other inputs, just update the form data
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
     }
   };
 
@@ -1408,7 +1450,7 @@ console.log("my geofences",response.data)
                 marginBottom: "20px",
               }}
             >
-              <h2 style={{ flexGrow: 1 }}>Add student</h2>
+              <h2 style={{ flexGrow: 1 }}>Edit student</h2>
               <IconButton onClick={handleModalClose}>
                 <CloseIcon />
               </IconButton>
@@ -1423,39 +1465,50 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <DriveFileRenameOutlineIcon />
+                  </InputAdornment>
+                ),
+              }}
             />
 
+            
             <FormControl
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <FormLabel
-                id="demo-row-radio-buttons-group-label"
-                sx={{ marginRight: 4 }} // Add some space between label and radio group
-              >
-                Gender
-              </FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="gender"
-                onChange={handleInputChange}
-              >
-                <FormControlLabel
-                  value="female"
-                  control={<Radio />}
-                  label="Female"
-                />
-                <FormControlLabel
-                  value="male"
-                  control={<Radio />}
-                  label="Male"
-                />
-              </RadioGroup>
-            </FormControl>
+  sx={{
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: "10px",
+  }}
+>
+  <FormLabel
+    id="demo-row-radio-buttons-group-label"
+    sx={{ marginRight: 4 }} // Add some space between label and radio group
+  >
+    Gender
+  </FormLabel>
+  <RadioGroup
+    row
+    aria-labelledby="demo-row-radio-buttons-group-label"
+    name="gender"
+    value={formData.gender || ""} // Bind to formData.gender
+    onChange={handleInputChange} // Update formData when selection changes
+  >
+    <FormControlLabel
+      value="female"
+      control={<Radio />}
+      label="Female"
+    />
+    <FormControlLabel
+      value="male"
+      control={<Radio />}
+      label="Male"
+    />
+  </RadioGroup>
+</FormControl>
+
 
             <FormControl
               sx={{
@@ -1481,6 +1534,12 @@ console.log("my geofences",response.data)
                 onChange={handleInputChange}
                 sx={{ marginBottom: "10px", width: "200px" }}
                 fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CakeIcon />
+                    </InputAdornment>
+                  ),}}
               />
             </FormControl>
 
@@ -1493,6 +1552,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Face6Icon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
 
           
@@ -1513,6 +1579,14 @@ console.log("my geofences",response.data)
                     label="Class"
                     variant="outlined"
                     name="class"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <ClassIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -1526,6 +1600,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PinIcon/>  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"section"}
@@ -1536,6 +1617,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <HolidayVillageIcon />  {/* Add Face6Icon in the input field */}
+                    </InputAdornment>
+                  ),
+                }}
             />
             {role == 1 ? (
               <>
@@ -1571,6 +1659,14 @@ console.log("my geofences",response.data)
                         label="School Name"
                         variant="outlined"
                         name="schoolName"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SchoolIcon />  {/* Add SchoolIcon in the input field */}
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     )}
                   />
@@ -1607,13 +1703,21 @@ console.log("my geofences",response.data)
                         label="Branch Name"
                         variant="outlined"
                         name="branchName"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     )}
                   />
                 </FormControl>
               </>
             ) : role == 2 ? (
-              
+              <>
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -1642,10 +1746,19 @@ console.log("my geofences",response.data)
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
               </FormControl>
+             </>
             ) : null}
             
            
@@ -1677,6 +1790,14 @@ console.log("my geofences",response.data)
                     label="Bus Name"
                     variant="outlined"
                     name="deviceId"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <DirectionsBusIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -1706,6 +1827,14 @@ console.log("my geofences",response.data)
                     label="Select Geofence"
                     variant="outlined"
                     name="pickupPoint"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <ShareLocationIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -1720,6 +1849,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AbcIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"phone"}
@@ -1730,6 +1866,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"email"}
@@ -1740,6 +1883,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"password"}
@@ -1750,6 +1900,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="device-id-label">Select Device</InputLabel>
@@ -1777,16 +1934,7 @@ console.log("my geofences",response.data)
   </div>
 )} */}
 
-            <TextField
-              key={"fcmToken"}
-              label={"fcm Token"}
-              variant="outlined"
-              name="fcmToken"
-              value={formData["fcmToken"] || ""}
-              onChange={handleInputChange}
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            />
+            
             <Button
               variant="contained"
               color="primary"
@@ -1822,6 +1970,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <DriveFileRenameOutlineIcon />
+                  </InputAdornment>
+                ),
+              }}
             />
 
             <FormControl
@@ -1855,6 +2010,8 @@ console.log("my geofences",response.data)
                 />
               </RadioGroup>
             </FormControl>
+           
+           
 
             <FormControl
               sx={{
@@ -1872,6 +2029,7 @@ console.log("my geofences",response.data)
 
               <TextField
                 key={"childAge"}
+                label={ "Date of Birth"}
                 type="date"
                 placeholder="Date of Birth"
                 variant="outlined"
@@ -1880,10 +2038,16 @@ console.log("my geofences",response.data)
                 onChange={handleInputChange}
                 sx={{ marginBottom: "10px", width: "200px" }}
                 fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CakeIcon />
+                    </InputAdornment>
+                  ),}}
               />
             </FormControl>
 
-            <TextField
+            {/* <TextField
               key={"childAge"}
               label={"Student Age"}
               variant="outlined"
@@ -1892,8 +2056,24 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
-            />
-
+            /> */}
+ <TextField
+        key={"childAge"}
+        label={"Student Age"}
+        variant="outlined"
+        name="childAge"
+        value={formData.childAge || ""}
+        sx={{ marginBottom: "10px" }}
+        fullWidth
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Face6Icon />  {/* Add Face6Icon in the input field */}
+            </InputAdornment>
+          ),
+        }}
+        // disabled // Disable the field since the age is calculated automatically
+      />
             {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <InputLabel id="demo-simple-select-label">Class</InputLabel>
               <Select
@@ -1933,10 +2113,19 @@ console.log("my geofences",response.data)
                     label="Class"
                     variant="outlined"
                     name="class"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <ClassIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
             </FormControl>
+             
             <TextField
               key={"roleno"}
               label={"Roll No"}
@@ -1944,8 +2133,15 @@ console.log("my geofences",response.data)
               name="rollno"
               value={formData["rollno"] || ""}
               onChange={handleInputChange}
-              sx={{ marginBottom: "10px" }}
+              sx={{ marginBottom: "10px" , zIndex: 1500 }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PinIcon/>  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"section"}
@@ -1956,6 +2152,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <HolidayVillageIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             {role == 1 ? (
               <>
@@ -2010,6 +2213,14 @@ console.log("my geofences",response.data)
                         label="School Name"
                         variant="outlined"
                         name="schoolName"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <SchoolIcon />  {/* Add SchoolIcon in the input field */}
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     )}
                   />
@@ -2065,6 +2276,14 @@ console.log("my geofences",response.data)
                         label="Branch Name"
                         variant="outlined"
                         name="branchName"
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                            </InputAdornment>
+                          ),
+                        }}
                       />
                     )}
                   />
@@ -2143,6 +2362,14 @@ console.log("my geofences",response.data)
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -2211,6 +2438,14 @@ console.log("my geofences",response.data)
                     label="Bus Name"
                     variant="outlined"
                     name="deviceId"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <DirectionsBusIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -2259,6 +2494,14 @@ console.log("my geofences",response.data)
                     label="Select Geofence"
                     variant="outlined"
                     name="pickupPoint"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <ShareLocationIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -2273,6 +2516,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AbcIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"phone"}
@@ -2283,6 +2533,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"email"}
@@ -2293,6 +2550,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               key={"password"}
@@ -2303,6 +2567,13 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="device-id-label">Select Device</InputLabel>
@@ -2330,7 +2601,7 @@ console.log("my geofences",response.data)
   </div>
 )} */}
 
-            <TextField
+            {/* <TextField
               key={"fcmToken"}
               label={"fcm Token"}
               variant="outlined"
@@ -2339,7 +2610,9 @@ console.log("my geofences",response.data)
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
-            />
+              
+            /> */}
+            
             <Button
               variant="contained"
               color="primary"
@@ -2349,6 +2622,8 @@ console.log("my geofences",response.data)
             </Button>
           </Box>
         </Modal>
+        
+
         {/* <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
           <Box sx={style}>
             <h2>Import Data</h2>
