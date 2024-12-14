@@ -408,8 +408,11 @@ return `${day}-${month}-${year}`;
       const apiUrl =
         role == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}`
-          : `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`;
-
+          :role==2
+          ? `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`
+         :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/review-request/${requestId}`
+          :`${process.env.REACT_APP_USERBRANCH}/changestatusofleaverequest/${requestId}`
       const response = await axios.post(
         apiUrl,
         {
@@ -436,8 +439,11 @@ return `${day}-${month}-${year}`;
       const apiUrl =
         role == 1
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/review-request/${requestId}`
-          : `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`;
-
+          :role==2
+          ? `${process.env.REACT_APP_SCHOOL_API}/review-request/${requestId}`
+          : role==3
+          ?`${process.env.REACT_APP_BRANCH_API}/review-request/${requestId}`
+          :`${process.env.REACT_APP_USERBRANCH}/changestatusofleaverequest/${requestId}`
       const response = await axios.post(
         apiUrl,
         {
@@ -762,13 +768,13 @@ Approve      </TableCell>
                           }}
                         >
                           <Button
-                            onClick={() => handleApprove(row.requestId)}
+                            onClick={() => handleApprove(role==4?`${row._id}`:`${row.requestId}`)}
                             color="primary"
                           >
                             Approve
                           </Button>
                           <Button
-                            onClick={() => handleReject(row.requestId)}
+                            onClick={() => handleReject(role==4?`${row._id}`:`${row.requestId}`)}
                             color="secondary"
                           >
                             Reject

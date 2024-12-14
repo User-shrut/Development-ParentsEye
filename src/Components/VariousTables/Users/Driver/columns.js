@@ -25,10 +25,10 @@ export const COLUMNS = () => [
     Header: 'Email',
     accessor: 'email',
   },
-  {
-    Header: 'School Name',
-    accessor: 'schoolName',
-  },
+  // {
+  //   Header: 'School Name',
+  //   accessor: 'schoolName',
+  // },
   {
     Header: 'Branch Name',
     accessor: 'branchName',

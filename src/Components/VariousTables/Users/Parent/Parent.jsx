@@ -2128,6 +2128,13 @@ console.log("role is:",role)
         if (geofencesForSelectedDevice.length === 0) {
             console.error("No geofences found for this deviceId");
         }
+    }else if (role == 4) {
+      // Handling for role 3
+      geofencesForSelectedDevice = pickupPointsData[selectedBus.deviceId] || [];
+  
+        if (geofencesForSelectedDevice.length === 0) {
+            console.error("No geofences found for this deviceId");
+        }
     }
   
     // Update the filtered geofences state
@@ -2221,7 +2228,9 @@ console.log("role is:",role)
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-parent`
         : role == 2
         ? `${process.env.REACT_APP_SCHOOL_API}/update-parent`
-        : `${process.env.REACT_APP_BRANCH_API}/update-parent`;
+        : role==3
+        ?`${process.env.REACT_APP_BRANCH_API}/update-parent`
+        :`${process.env.REACT_APP_USERBRANCH}/updateparentbybranchgroup`
     const token = localStorage.getItem("token");
     // Prepare the updated data
     const updatedData = {
@@ -2294,6 +2303,18 @@ console.log("role is:",role)
           // id: filteredRows.length + 1,
           // isSelected: false,
         };
+      }else if (role == 2) {
+        newRow = {
+          ...formData,
+          schoolName: decoded.schoolName,
+          // id: filteredRows.length + 1,
+          // isSelected: false,
+        };
+      }else if(role==4){
+        newRow={
+          ...formData,
+          schoolName:decoded.schoolName,
+        }
       }else {
         newRow = {
           ...formData,
@@ -2520,8 +2541,30 @@ useEffect(() => {
       } catch (error) {
         console.error("Error fetching branches:", error);
       }
+    }else if(role==4){
+    try {
+      const token=localStorage.getItem("token");
+      const response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`,
+        {
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        }
+      )
+      const branchname=response.data.data.flatMap((element1)=>
+      Array.isArray(element1.branches)&&element1.branches.length>0?
+    element1.branches.map((branch)=>(
+      {branchName:branch.branchName}
+    )
+     )
+    :[])
+console.log("mybranch::",branchname);
+setBranches(branchname);
+    } catch (error) {
+      console.log("error while fetch branch",error)
     }
-  };
+    }
+  }
 
   const fetchBuses = async () => {
     try {
@@ -2531,8 +2574,9 @@ useEffect(() => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
-          : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
-  
+          :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/read-devices`
+          :`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`
       const response = await axios.get(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -2574,7 +2618,35 @@ useEffect(() => {
             }))
           : [];
       }
-  
+      // else if(role==4){
+      //   allData=response.data.data.flatMap((devices1)=>
+      //   Array.isArray(devices1.branches)&&devices1.branches.length>0?
+      //  devices1.data.flatMap((devicedata)=>
+      // Array.isArray(devicedata.devices)&&devicedata.devices.length>0?
+      //  devicedata.map((item)=>({
+      //   ...item,
+      //   branchName:devices1.branches.branchName,
+      //   schoolName:devices1.schoolName,
+      //  }))
+      //  :[]
+      // )
+      //   :[]) 
+      // }
+      else if (role == 4) {
+        allData = response.data.data.flatMap((school) =>
+            Array.isArray(school.branches) && school.branches.length > 0
+                ? school.branches.flatMap((branch) =>
+                      Array.isArray(branch.devices) && branch.devices.length > 0
+                          ? branch.devices.map((device) => ({
+                                ...device,
+                                branchName: branch.branchName,
+                                schoolName: school.schoolName,
+                            }))
+                          : []
+                  )
+                : []
+        );
+    }
       setAllDevices(allData); // Store all devices
       setBuses(allData); // Set initial buses as well
       console.log("filter devices according to branch",allData)
@@ -2675,6 +2747,12 @@ useEffect(() => {
             response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+        }else if(role==4){
+          response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          })
         }
 
         if (response?.data) {
@@ -2717,6 +2795,27 @@ useEffect(() => {
                         });
                     });
                 });
+            }if (role == 4) {
+              // const fetchedData = {}; // Initialize an empty object to store the data
+            
+              response.data.branches.forEach((branch) => {
+                if (branch.geofences) {
+                  branch.geofences.forEach((geofence) => {
+                    if (!fetchedData[geofence.deviceId]) {
+                      fetchedData[geofence.deviceId] = [];
+                    }
+                    fetchedData[geofence.deviceId].push({
+                      ...geofence,
+                      branchName: branch.branchName,
+                      branchId: branch.branchId,
+                    });
+                  });
+                }
+              });
+            
+              console.log("Fetched Data:", fetchedData);
+            
+              // Use fetchedData as needed in your application
             }
 
             console.log("role is:", role);
@@ -3556,7 +3655,44 @@ const lastThirdColumn = columns[columns.length - 3];
 </FormControl>
 
               </>
-            ) : role == 2 ? (
+            ) :role == 4 ? (
+             
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // Ensure branches is an array
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    Array.isArray(branches)
+                      ? branches.find(
+                          (branch) =>
+                            branch.branchName === formData["branchName"]
+                        ) || null
+                      : null
+                  } // Safeguard find method
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
+            ): role == 2 ? (
               // <FormControl
               //   variant="outlined"
               //   sx={{ marginBottom: "10px" }}
@@ -4054,6 +4190,43 @@ const lastThirdColumn = columns[columns.length - 3];
   />
 </FormControl>
               </>
+            ): role == 4 ? (
+             
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // Ensure branches is an array
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    Array.isArray(branches)
+                      ? branches.find(
+                          (branch) =>
+                            branch.branchName === formData["branchName"]
+                        ) || null
+                      : null
+                  } // Safeguard find method
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
             ) : role == 2 ? (
               // <FormControl
               //   variant="outlined"

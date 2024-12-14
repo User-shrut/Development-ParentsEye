@@ -430,7 +430,14 @@ export const Tablee = ({ data }) => {
             },
           }
         );
-      }
+      }else if(role==4){
+        const token=localStorage.getItem("token");
+        response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/read-children`,{
+          headers:{
+            Authorization:`Bearer ${token}`,
+          },
+        })
+      };
 
       console.log("fetch data", response.data); // Log the entire response data
       // fetchgeofencepoint();
@@ -448,6 +455,11 @@ export const Tablee = ({ data }) => {
                     : []
                 )
               )
+              : role == 4
+              ? response?.data.updatedChildData.map((child) => ({
+                  ...child,
+                }))
+              
             : role == 2
             ? response?.data.branches.flatMap((branch) =>
                 Array.isArray(branch.children) && branch.children.length > 0
@@ -571,6 +583,14 @@ export const Tablee = ({ data }) => {
             },
           }
         );
+      }else if(role==4){
+        response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/getdriverdata`,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`,
+            },
+          }
+        )
       }
 
       console.log("fetch data", response.data);
@@ -641,6 +661,14 @@ export const Tablee = ({ data }) => {
             },
           }
         );
+      }else if(role==4){
+        response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/readSuperviserBybranchgroupuser`,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`,
+            },
+          }
+        )
       }
 
       console.log("fetch data", response.data); // Log the entire response data
@@ -712,6 +740,14 @@ export const Tablee = ({ data }) => {
             },
           }
         );
+      }else if(role==4){
+        response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/getparentbybranchgroup`,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`,
+            },
+          }
+        )
       }
 
       console.log("fetch data", response.data); // Log the entire response data
@@ -729,6 +765,18 @@ export const Tablee = ({ data }) => {
                     }))
                   : []
               )
+            )
+           : role==4
+            ?response.data.data.flatMap((item)=>
+            Array.isArray(item.branches)&&item.branches.length>0?
+            item.branches.flatMap((branch)=>
+            Array.isArray(branch.parents)&&branch.parents.length>0?
+            branch.parents.map((child)=>({
+              ...child
+            }))
+            :[]
+            )
+            :[]
             )
             : role == 2
             ? response?.data.branches.flatMap((branch) =>
@@ -780,9 +828,17 @@ export const Tablee = ({ data }) => {
             Authorization: `Bearer ${token}`,
           },
         });
+      }else if(role==4){
+        response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`,
+            },
+          }
+        )
       }
   
-      console.log("fetch data", response.data);
+      console.log("fetch data geofence", response.data);
       if (response?.data) {
         let allData;
       
@@ -818,6 +874,16 @@ export const Tablee = ({ data }) => {
           }));
         
           console.log(allData);
+        }else if (role == 4) {
+          allData = response?.data?.branches.flatMap(branch =>
+            branch.geofences?.map(geofence => ({
+              ...geofence, // Retain all geofence properties
+              branchId: branch.branchId, // Add branchId to each geofence
+              branchName: branch.branchName, // Add branchName to each geofence
+              
+            })) || [] // Handle the case where geofences is undefined or empty
+          );
+          console.log("aa",allData);
         }
         
         const geofencesNames = allData.map((child) => child.name);
