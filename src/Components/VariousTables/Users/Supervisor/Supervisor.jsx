@@ -667,7 +667,23 @@ import {
 } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
-
+import InputAdornment from "@mui/material/InputAdornment"; // Add this import
+import DriveFileRenameOutlineIcon from "@mui/icons-material/DriveFileRenameOutline";
+import CakeIcon from '@mui/icons-material/Cake';
+import Face6Icon from '@mui/icons-material/Face6';  // Import Face6Icon
+import PinIcon from '@mui/icons-material/Pin';
+import HolidayVillageIcon from '@mui/icons-material/HolidayVillage';
+import SchoolIcon from '@mui/icons-material/School';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import ShareLocationIcon from '@mui/icons-material/ShareLocation';
+import AbcIcon from '@mui/icons-material/Abc';
+import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
+import MailIcon from '@mui/icons-material/Mail';
+import PasswordIcon from '@mui/icons-material/Password';
+import TripOriginIcon from '@mui/icons-material/TripOrigin';
+import ClassIcon from '@mui/icons-material/Class';
+import WcIcon from '@mui/icons-material/Wc';
 //import { TextField } from '@mui/material';
 
 const style = {
@@ -2189,6 +2205,13 @@ export const Supervisor = () => {
                   onChange={handleInputChange}
                   sx={{ marginBottom: "10px" }}
                   fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {col.icon}  {/* Add Face6Icon in the input field */}
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               ))}
             {role == 1 && (
@@ -2221,6 +2244,14 @@ export const Supervisor = () => {
                       label="School Name"
                       variant="outlined"
                       name="schoolName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SchoolIcon />  {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -2257,6 +2288,14 @@ export const Supervisor = () => {
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -2354,6 +2393,14 @@ export const Supervisor = () => {
                     label="Bus Name"
                     variant="outlined"
                     name="deviceId"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <DirectionsBusIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -2394,6 +2441,13 @@ export const Supervisor = () => {
                   onChange={handleInputChange}
                   sx={{ marginBottom: "10px" }}
                   fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        {col.icon}  {/* Add Face6Icon in the input field */}
+                      </InputAdornment>
+                    ),
+                  }}
                 />
               ))}
             {role == 1 && (
@@ -2426,6 +2480,13 @@ export const Supervisor = () => {
                       label="School Name"
                       variant="outlined"
                       name="schoolName"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SchoolIcon/>  {/* Add Face6Icon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -2462,6 +2523,13 @@ export const Supervisor = () => {
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon/>  {/* Add Face6Icon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -2495,6 +2563,13 @@ export const Supervisor = () => {
                     label="Bus Name"
                     variant="outlined"
                     name="deviceId"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <DirectionsBusIcon/>  {/* Add Face6Icon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />

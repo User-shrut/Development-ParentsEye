@@ -30,6 +30,14 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
+import PermIdentityIcon from '@mui/icons-material/PermIdentity';
+import InputAdornment from "@mui/material/InputAdornment"; // Add this import
+import SchoolIcon from '@mui/icons-material/School';
+import DirectionsBusIcon from '@mui/icons-material/DirectionsBus';
+import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
+import PasswordIcon from '@mui/icons-material/Password';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import Chip from "@mui/material/Chip";
 // import excelfileUserAccess from "../../../../../public/UserAccess.xlsx";
 import {
   FormControlLabel,
@@ -1641,6 +1649,13 @@ const handleInputChange = (e) => {
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PermIdentityIcon/>  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
 
         
@@ -1678,6 +1693,14 @@ const handleInputChange = (e) => {
         label="School Name"
         variant="outlined"
         name="schoolName"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <SchoolIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -1685,7 +1708,7 @@ const handleInputChange = (e) => {
 
               
 
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+{/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <Autocomplete
     id="searchable-branch-select"
     multiple
@@ -1710,6 +1733,58 @@ const handleInputChange = (e) => {
         label="Branch Name"
         variant="outlined"
         name="branchIds"
+      />
+    )}
+  />
+</FormControl> */}
+<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-branch-select"
+    multiple
+    options={branches || []} // Ensure branches is an array
+    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+    value={
+      Array.isArray(branches)
+        ? branches.filter(branch => formData["branchIds"]?.includes(branch.branchId)) // Filter selected branches by branchId
+        : []
+    }
+    onChange={(event, newValue) => {
+      // Update formData with selected branch IDs
+      handleInputChange({
+        target: { name: "branchIds", value: newValue.map(branch => branch.branchId) }, // Store selected branch IDs
+      });
+    }}
+    open={open}
+    onOpen={() => setOpen(true)}
+    onClose={() => setOpen(false)}
+    disableCloseOnSelect
+    isOptionEqualToValue={(option, value) => option.branchId === value.branchId} // Ensure matching by branchId
+    renderTags={(selected, getTagProps) => 
+      selected.map((option, index) => (
+        <Chip 
+          key={option.branchId} 
+          label={option.branchName} 
+          {...getTagProps({ index })} 
+        />
+      ))
+    } // Customize how selected items are shown
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Branch Name"
+        variant="outlined"
+        name="branchIds"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <>
+              <InputAdornment position="start">
+                <AccountTreeIcon /> {/* Add SchoolIcon in the input field */}
+              </InputAdornment>
+              {params.InputProps.startAdornment}
+            </>
+          ),
+        }}
       />
     )}
   />
@@ -1743,6 +1818,14 @@ const handleInputChange = (e) => {
                     label="Branch Name"
                     variant="outlined"
                     name="branchName"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -1760,6 +1843,13 @@ const handleInputChange = (e) => {
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
            
             <TextField
@@ -1771,6 +1861,13 @@ const handleInputChange = (e) => {
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
             <Button
               variant="contained"
@@ -1805,6 +1902,13 @@ const handleInputChange = (e) => {
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PermIdentityIcon/>  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
 
         
@@ -1842,6 +1946,14 @@ const handleInputChange = (e) => {
         label="School Name"
         variant="outlined"
         name="schoolName"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <InputAdornment position="start">
+              <SchoolIcon />  {/* Add SchoolIcon in the input field */}
+            </InputAdornment>
+          ),
+        }}
       />
     )}
   />
@@ -1849,7 +1961,7 @@ const handleInputChange = (e) => {
 
               
 
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+{/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
   <Autocomplete
     id="searchable-branch-select"
     multiple
@@ -1877,7 +1989,60 @@ const handleInputChange = (e) => {
       />
     )}
   />
+</FormControl> */}
+<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-branch-select"
+    multiple
+    options={branches || []} // Ensure branches is an array
+    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+    value={
+      Array.isArray(branches)
+        ? branches.filter(branch => formData["branchIds"]?.includes(branch.branchId)) // Filter selected branches by branchId
+        : []
+    }
+    onChange={(event, newValue) => {
+      // Update formData with selected branch IDs
+      handleInputChange({
+        target: { name: "branchIds", value: newValue.map(branch => branch.branchId) }, // Store selected branch IDs
+      });
+    }}
+    open={open}
+    onOpen={() => setOpen(true)}
+    onClose={() => setOpen(false)}
+    disableCloseOnSelect
+    isOptionEqualToValue={(option, value) => option.branchId === value.branchId} // Ensure matching by branchId
+    renderTags={(selected, getTagProps) => 
+      selected.map((option, index) => (
+        <Chip 
+          key={option.branchId} 
+          label={option.branchName} 
+          {...getTagProps({ index })} 
+        />
+      ))
+    } // Customize how selected items are shown
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Branch Name"
+        variant="outlined"
+        name="branchIds"
+        InputProps={{
+          ...params.InputProps,
+          startAdornment: (
+            <>
+              <InputAdornment position="start">
+                <AccountTreeIcon /> {/* Add SchoolIcon in the input field */}
+              </InputAdornment>
+              {params.InputProps.startAdornment}
+            </>
+          ),
+        }}
+      />
+    )}
+  />
 </FormControl>
+
 
               </>
             ) : role == 2 ? (
@@ -1907,6 +2072,14 @@ const handleInputChange = (e) => {
                     label="Branch Name"
                     variant="outlined"
                     name="branchName"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -1924,6 +2097,13 @@ const handleInputChange = (e) => {
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}  
             />
            
             <TextField
@@ -1935,6 +2115,13 @@ const handleInputChange = (e) => {
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
             />
       
 

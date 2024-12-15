@@ -175,15 +175,20 @@ export const Sidebar = ({ propFunc, propArr, propBoolFunc, propBoolIn, onItemCli
           variant="outlined"
           margin="normal"
           fullWidth
-          placeholder="　Filter items"
-          value={filterText}
+          placeholder="Filter items"
+          value={   filterText}
           onChange={(e) => setFilterText(e.target.value)}
-          sx={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 1, margin: '0 10px 10px 10px', width: '90%' }}
+          sx={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', borderRadius: 1, margin: '0 10px 10px 10px', width: '90%' , padding: '0px 3px' }}
+          InputProps={{
+            sx: {
+              paddingLeft: 2, // Add padding to align value and placeholder
+            },
+          }}
         />
         {filteredItems.map((item, index) => {
           const text = typeof item === 'string' ? item : item.name;
           const icon = typeof item !== 'string' && item.icon ? item.icon : null;
-
+          
           return (
             <ListItem key={index} disablePadding>
               <ListItemButton

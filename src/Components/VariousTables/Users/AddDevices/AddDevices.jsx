@@ -1323,6 +1323,24 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
 import {Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { Category } from "@mui/icons-material";
+import InputAdornment from "@mui/material/InputAdornment"; // Add this import
+
+import Grid3x3Icon from '@mui/icons-material/Grid3x3';
+import PeopleOutlineIcon from '@mui/icons-material/PeopleOutline';
+import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
+import SchoolIcon from '@mui/icons-material/School';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
+import HelpIcon from '@mui/icons-material/Help';
+import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
+import PinDropIcon from '@mui/icons-material/PinDrop';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
+import AodIcon from '@mui/icons-material/Aod';
+import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
+import CategoryIcon from '@mui/icons-material/Category';
+import NotInterestedIcon from '@mui/icons-material/NotInterested';
+import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
 //import { TextField } from '@mui/material';
 
 const style = {
@@ -2396,6 +2414,11 @@ const handleFilterChange = (event) => {
               name={col.accessor}
               value={formData[col.accessor] || ''}
               onChange={handleInputChange}
+              startAdornment={
+                <InputAdornment position="start">
+                 {col.icon} {/* Add SchoolIcon as the adornment */}
+                </InputAdornment>
+              }
             >
               {groups.map((group) => (
                 <MenuItem key={group.id} value={group.id}>
@@ -2413,6 +2436,11 @@ const handleFilterChange = (event) => {
               name={col.accessor}
               value={formData[col.accessor] || ''}
               onChange={handleInputChange}
+              startAdornment={
+                <InputAdornment position="start">
+                 {col.icon} {/* Add SchoolIcon as the adornment */}
+                </InputAdornment>
+              }
             >
               <MenuItem value={"Default"}>Default</MenuItem>
               <MenuItem value={"Animal"}>Animal</MenuItem>
@@ -2447,6 +2475,11 @@ const handleFilterChange = (event) => {
               name={col.accessor}
               value={formData[col.accessor] || ''}
               onChange={handleInputChange}
+              startAdornment={
+                <InputAdornment position="start">
+                 {col.icon} {/* Add SchoolIcon as the adornment */}
+                </InputAdornment>
+              }
             >
               {calendars.map((calendar) => (
                 <MenuItem key={calendar.id} value={calendar.id}>
@@ -2465,6 +2498,13 @@ const handleFilterChange = (event) => {
             onChange={handleInputChange}
             sx={{ marginBottom: "10px" }}
             fullWidth
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  {col.icon} {/* Render the icon dynamically */}
+                </InputAdornment>
+              ),
+            }}
           />
         )
       ))}
@@ -2476,6 +2516,11 @@ const handleFilterChange = (event) => {
         onChange={handleInputChange}
         name="schoolName"
         label="School Name"
+        startAdornment={
+          <InputAdornment position="start">
+          <SchoolIcon/> {/* Add SchoolIcon as the adornment */}
+          </InputAdornment>
+        }
       >
         {schools.map((option) => (
           <MenuItem key={option._id} value={option.schoolName}>
@@ -2493,6 +2538,11 @@ const handleFilterChange = (event) => {
         onChange={handleInputChange}
         name="branchName"
         label="Branch Name"
+        startAdornment={
+          <InputAdornment position="start">
+          <AccountTreeIcon/> {/* Add SchoolIcon as the adornment */}
+          </InputAdornment>
+        }
       >
         {branches?.map((option) => (
           <MenuItem key={option.branchId} value={option.branchName}>
@@ -2538,6 +2588,11 @@ const handleFilterChange = (event) => {
             name={col.accessor}
             value={formData[col.accessor] || ''}
             onChange={handleInputChange}
+            startAdornment={
+              <InputAdornment position="start">
+                {col.icon} {/* Add SchoolIcon as the adornment */}
+              </InputAdornment>
+            }
           >
             {groups.map((group) => (
               <MenuItem key={group.id} value={group.id}>
@@ -2555,6 +2610,11 @@ const handleFilterChange = (event) => {
             name={col.accessor}
             value={formData[col.accessor] || ''}
             onChange={handleInputChange}
+            startAdornment={
+              <InputAdornment position="start">
+                {col.icon} {/* Add SchoolIcon as the adornment */}
+              </InputAdornment>
+            }
           >
             <MenuItem value={"Default"}>Default</MenuItem>
             <MenuItem value={"Animal"}>Animal</MenuItem>
@@ -2589,6 +2649,11 @@ const handleFilterChange = (event) => {
             name={col.accessor}
             value={formData[col.accessor] || ''}
             onChange={handleInputChange}
+            startAdornment={
+              <InputAdornment position="start">
+                {col.icon} {/* Add SchoolIcon as the adornment */}
+              </InputAdornment>
+            }
           >
             {calendars.map((calendar) => (
               <MenuItem key={calendar.id} value={calendar.id}>
@@ -2607,6 +2672,13 @@ const handleFilterChange = (event) => {
           onChange={handleInputChange}
           sx={{ marginBottom: '10px' }}
           fullWidth
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                {col.icon} {/* Render the icon dynamically */}
+              </InputAdornment>
+            ),
+          }}
         />
       )
     )}
@@ -2619,6 +2691,11 @@ const handleFilterChange = (event) => {
         onChange={handleInputChange}
         name="schoolName"
         label="School Name"
+        startAdornment={
+          <InputAdornment position="start">
+           <SchoolIcon/> {/* Add SchoolIcon as the adornment */}
+          </InputAdornment>
+        }
       >
         {schools.map((option) => (
           <MenuItem key={option._id} value={option.schoolName}>
@@ -2636,6 +2713,11 @@ const handleFilterChange = (event) => {
         onChange={handleInputChange}
         name="branchName"
         label="Branch Name"
+        startAdornment={
+          <InputAdornment position="start">
+           <AccountTreeIcon/> {/* Add SchoolIcon as the adornment */}
+          </InputAdornment>
+        }
       >
         {branches?.map((option) => (
           <MenuItem key={option.branchId} value={option.branchName}>

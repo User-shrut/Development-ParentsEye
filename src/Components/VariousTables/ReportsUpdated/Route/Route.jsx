@@ -110,21 +110,38 @@ export const Route = () => {
 
  
   const filterData = (text) => {
-    let dataToFilter = originalRows;
+    // let dataToFilter = originalRows;
   
-    // Apply date filter
-    if (startDate && endDate) {
-      dataToFilter = dataToFilter.filter((row) => {
-        const rowDate = new Date(row.dateOfBirth); // Adjust based on your date field
-        return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
-      });
-    }
+    // // Apply date filter
+    // if (startDate && endDate) {
+    //   dataToFilter = dataToFilter.filter((row) => {
+    //     const rowDate = new Date(row.dateOfBirth); // Adjust based on your date field
+    //     return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
+    //   });
+    // }
   
-    // Apply text filter
+    // // Apply text filter
+    // if (text === "") {
+    //   setFilteredRows(dataToFilter); // Reset to full filtered data
+    // } else {
+    //   const filteredData = dataToFilter
+    //     .filter((row) =>
+    //       Object.values(row).some(
+    //         (val) =>
+    //           typeof val === "string" &&
+    //           val.toLowerCase().includes(text.toLowerCase())
+    //       )
+    //     )
+    //     .map((row) => ({ ...row, isSelected: false }));
+      
+    //   setFilteredRows(filteredData); // Update filtered rows
+    // }
     if (text === "") {
-      setFilteredRows(dataToFilter); // Reset to full filtered data
+      // If no text is provided, reset to original rows
+      setFilteredRows(originalRows.map(row => ({ ...row, isSelected: false })));
     } else {
-      const filteredData = dataToFilter
+      // Filter based on text
+      const filteredData = originalRows
         .filter((row) =>
           Object.values(row).some(
             (val) =>
@@ -133,8 +150,8 @@ export const Route = () => {
           )
         )
         .map((row) => ({ ...row, isSelected: false }));
-      
-      setFilteredRows(filteredData); // Update filtered rows
+  
+      setFilteredRows(filteredData);
     }
   };
   
@@ -729,7 +746,40 @@ const fetchData = async (url) => {
         engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
         adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
       })));
-
+      setOriginalRows(jsonResponse.map(data => ({
+        deviceId: data.deviceId || 'N/A',
+        deviceName: deviceIdToNameMap[data.deviceId] || 'Unknown Device', // Fetch device name based on deviceId
+        eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+        latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
+        longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
+        speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
+        address: data.address || 'Show Address',
+        course: data.course > 0 ? '↑' : '↓',
+        altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
+        accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
+        valid: data.valid ? 'Yes' : 'No',
+        protocol: data.protocol || 'N/A',
+        deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
+        serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
+        fixTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
+        geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
+        satellites: data.attributes?.sat || 'N/A',
+        RSSI: data.attributes?.rssi || 'N/A',
+        odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
+        batteryLevel: data.attributes?.batteryLevel || 'N/A',
+        ignition: data.attributes?.ignition ? 'Yes' : 'No',
+        charge: data.attributes?.charge ? 'Yes' : 'No',
+        archive: data.attributes?.archive ? 'Yes' : 'No',
+        distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
+        totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
+        motion: data.attributes?.motion ? 'Yes' : 'No',
+        blocked: data.attributes?.blocked ? 'Yes' : 'No',
+        alarm1Status: data.attributes?.alarm1Status || 'N/A',
+        otherStatus: data.attributes?.otherStatus || 'N/A',
+        alarm2Status: data.attributes?.alarm2Status || 'N/A',
+        engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
+        adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
+      })));
       setTotalResponses(jsonResponse.length);
 
     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
