@@ -68,6 +68,15 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
             },
           }
         );
+      }else if(role1==4){
+        const token=localStorage.getItem("token");
+        response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/read-children`,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`
+            },
+          }
+        )
       }
       console.log("my role is :",role1);
       console.log("fetch data", response.data); // Log the entire response data
@@ -85,6 +94,13 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
                       }))
                     : []
                 )
+              )
+              :role1==4
+              ?response.data.updatedChildData.map((school)=>
+              ({
+                ...school,
+                
+              })
               )
             : role1 == 2
             ? response?.data.branches.flatMap((branch) =>
@@ -118,7 +134,9 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/present-children`
           : role1 == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/present-children`
-          : `${process.env.REACT_APP_BRANCH_API}/present-children`;
+          : role1==3
+          ? `${process.env.REACT_APP_BRANCH_API}/present-children`
+          :`${process.env.REACT_APP_USERBRANCH}/presentchildrenByBranchgroup`
           
       const response = await axios.get(apiUrl, {
         headers: {
@@ -153,6 +171,16 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
       }  else if (role1 == 3) {
         // Handle for role 3
         allData = Array.isArray(response.data.children) ? response.data.children : [];
+      }else if(role1==4){
+        allData=response.data.branches.flatMap((item)=>
+        Array.isArray(item.children)&&item.children.length>0?
+        item.children.map((present)=>(
+          {
+            ...present
+          }
+        ))
+        :[]
+        )
       }
   
       // Apply local date filtering if dates are provided
@@ -199,6 +227,15 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
             },
           }
         );
+      }else if (role1 == 4) {
+        response = await axios.get(
+          `${process.env.REACT_APP_USERBRANCH}/getdriverdata`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
 
       console.log("fetch data", response.data);
@@ -239,8 +276,9 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/absent-children`
           : role1 == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/absent-children`
-          : `${process.env.REACT_APP_BRANCH_API}/absent-children`; // for role == 3
-  
+          :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/absent-children`// for role == 3
+          :`${process.env.REACT_APP_USERBRANCH}/absentchildrenByBranchgroup`
       const response = await axios.get(apiUrl, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -278,6 +316,14 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
       }  else if (role1 == 3) {
         // Handle for role 3 where data is in children array
         allData = Array.isArray(response.data.children) ? response.data.children : [];
+      }else if(role1==4){
+        allData=response.data.branches.flatMap((item)=>
+        Array.isArray(item.children)&&item.children.length>0?
+        item.children.map((absent)=>({
+          ...absent
+        }))
+        :[]
+        )
       }
   
     
@@ -320,6 +366,15 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
             },
           }
         );
+      }else if (role1 == 4) {
+        response = await axios.get(
+          `${process.env.REACT_APP_USERBRANCH}/pendingrequests`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
       }
   
       
@@ -341,11 +396,15 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
                   ? branch.requests
                   : []
               )
+              :role1==4
+              ? response?.data?.data?.flatMap((branch) =>
+                Array.isArray(branch.requests) ? branch.requests : []
+              )
             : role1 == 3
             ? Array.isArray(response.data.requests) && response.data.requests.length > 0
               ? response.data.requests
               : []
-            : response.data.requests;
+            : [];
   
        
   
@@ -389,6 +448,15 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
       } else if (role1 == 3) {
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/read-supervisors`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }else if (role1 == 4) {
+        response = await axios.get(
+          `${process.env.REACT_APP_USERBRANCH}/readSuperviserBybranchgroupuser`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -497,7 +565,10 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
           : role1 == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
-          : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+          :role1==3
+          ?`${process.env.REACT_APP_BRANCH_API}/read-devices`
+          
+          :`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`
   
       const response = await axios.get(apiUrl, {
         headers: {
@@ -539,6 +610,18 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
               schoolName,
             }))
           : [];
+      }else if(role1==4){
+        allData=response?.data?.data?.flatMap((school) =>
+          school?.branches?.flatMap((branch) =>
+            Array.isArray(branch.devices) && branch.devices.length > 0
+              ? branch.devices.map((device) => ({
+                  ...device,
+                  branchName: branch.branchName,
+                  schoolName: school.schoolName,
+                }))
+              : []
+          )
+        )
       }
   
       setAllDevices(allData.length); // Store all devices

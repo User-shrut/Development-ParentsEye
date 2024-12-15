@@ -770,7 +770,7 @@ export const Supervisor = () => {
         );
       }else if (role == 4) {
         response = await axios.get(
-          `http://63.142.251.13:4000/branchgroupuser/readSuperviserBybranchgroupuser`,
+         `${process.env.REACT_APP_USERBRANCH}/readSuperviserBybranchgroupuser`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -1196,37 +1196,39 @@ export const Supervisor = () => {
         );
         setBuses(filteredDevices); // Update buses based on selected school
       }
-    } else if (name === "branchName") {
+    } else if ((role==1 ||role==2 ||role==3) && name === "branchName") {
       setFormData({
         ...formData,
         [name]: value,
       });
 
-      // Filter devices for the selected branch
-      const filteredDevices = allDevices.filter(
+        const filteredDevices = allDevices.filter(
         (device) => device.branchName === value
       );
-      setBuses(filteredDevices); // Update buses based on selected branch
-    } else {
+      setBuses(filteredDevices);
+     
+    } else if ( name === "branchId") {
+      setFormData({
+        ...formData,
+        [name]: value,
+        deviceId: "",
+      });
+
+      const filteredDevices = allDevices.filter(
+        (device) =>
+          device.schoolName === formData.schoolName &&
+          device.branchId === value
+      );
+      setBuses(filteredDevices);
+     
+    }else {
       setFormData({
         ...formData,
         [name]: value,
       });
     }
   };
-  // const handleBusChange = (e) => {
-  //   const { value } = e.target;
-
-  //   // Find the selected bus object based on the selected deviceId
-  //   const selectedBus = buses.find((bus) => bus.id === value);
-
-  //   // Update formData with both deviceId and busName
-  //   setFormData({
-  //     ...formData,
-  //     deviceId: selectedBus.id, // Store deviceId
-  //     deviceName: selectedBus.name, // Store busName
-  //   });
-  // };
+  
   const handleBusChange = (e) => {
     const { value } = e.target;
 
@@ -1294,6 +1296,18 @@ export const Supervisor = () => {
             body: JSON.stringify(updatedData),
           }
         );
+      }else if (role == 4) {
+        response = await fetch(
+          `${process.env.REACT_APP_USERBRANCH}/updateSupervisorByBranchGroupUser/${updatedData.id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedData),
+          }
+        );
       } else {
         response = await fetch(
           `${process.env.REACT_APP_BRANCH_API}/update-supervisor/${updatedData.id}`,
@@ -1346,7 +1360,13 @@ export const Supervisor = () => {
           // id: filteredRows.length + 1,
           // isSelected: false,
         };
-      } else if (role == 2) {
+      }else if(role==4){
+        newRow={
+          ...formData,
+          schoolName:decoded.schoolName,
+        }
+      }
+       else if (role == 2) {
         newRow = {
           ...formData,
           schoolName: decoded.schoolName,
@@ -1443,6 +1463,31 @@ export const Supervisor = () => {
         if (response.data) {
           setBranches(response.data.school.branches);
         }
+      }else if(role==4){
+        try {
+          const token=localStorage.getItem("token");
+          const response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          })
+         const branchname= response.data.data.flatMap((newdata)=>
+          Array.isArray(newdata.branches)&&(newdata.branches.length)>0?
+            newdata.branches.map((item)=>(
+             {branchName:item.branchName,
+              branchId:item.branchId
+
+             }
+
+            )
+          ):[]
+
+        )
+        console.log("mybranch:",branchname)
+        setBranches(branchname)
+        } catch (error) {
+          console.log("error while fetching branch:",error)
+        }
       }
     };
 
@@ -1454,7 +1499,9 @@ export const Supervisor = () => {
             ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
             : role == 2
             ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
-            : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+            :role==3
+            ? `${process.env.REACT_APP_BRANCH_API}/read-devices`
+             :`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`
 
         const response = await axios.get(apiUrl, {
           headers: {
@@ -1496,7 +1543,22 @@ export const Supervisor = () => {
                 schoolName,
               }))
             : [];
-        }
+        } else if (role == 4) {
+          allData = response.data.data.flatMap((school) =>
+              Array.isArray(school.branches) && school.branches.length > 0
+                  ? school.branches.flatMap((branch) =>
+                        Array.isArray(branch.devices) && branch.devices.length > 0
+                            ? branch.devices.map((device) => ({
+                                  ...device,
+                                  branchName: branch.branchName,
+                                  schoolName: school.schoolName,
+                                  branchId:branch.branchId,
+                              }))
+                            : []
+                    )
+                  : []
+          );
+      }
 
         setAllDevices(allData); // Store all devices
         setBuses(allData); // Set initial buses as well
@@ -2018,34 +2080,7 @@ export const Supervisor = () => {
                                 </TableCell>
                               );
                             })}
-                          {/* <TableCell
-  style={{
-    borderRight: "1px solid #e0e0e0",
-    paddingTop: "4px",
-    paddingBottom: "4px",
-    borderBottom: "none",
-    display: "flex",
-    textAlign: "center",
-    justifyContent: "space-around",
-    backgroundColor: index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-    fontSize: "smaller",
-  }}
->
-  {row.statusOfRegister === "pending" ? (
-    <>
-      <Button onClick={() => handleApprove(row.id)} color="primary">
-        Approve
-      </Button>
-      <Button onClick={() => handleReject(row.id)} color="secondary">
-        Reject
-      </Button>
-    </>
-  ) : row.statusOfRegister === "approved" ? (
-    <span style={{ color: "green" }}>Approved</span>
-  ) : row.statusOfRegister === "rejected" ? (
-    <span style={{ color: "red" }}>Rejected</span>
-  ) : null}
-</TableCell> */}
+                         
                           <TableCell
                             style={{
                               borderRight: "1px solid #e0e0e0",
@@ -2180,26 +2215,7 @@ export const Supervisor = () => {
                 />
               ))}
             {role == 1 && (
-              // <FormControl
-              //   variant="outlined"
-              //   sx={{ marginBottom: "10px" }}
-              //   fullWidth
-              // >
-              //   <InputLabel>{"School Name"}</InputLabel>
-
-              //   <Select
-              //     value={formData["schoolName"] || ""}
-              //     onChange={handleInputChange}
-              //     name="schoolName"
-              //     label={"School Name"}
-              //   >
-              //     {schools.map((option) => (
-              //       <MenuItem key={option._id} value={option.schoolName}>
-              //         {option.schoolName}
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
+             
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -2242,27 +2258,8 @@ export const Supervisor = () => {
               </FormControl>
             )}
 
-            {(role == 1 || role == 2) && (
-              // <FormControl
-              //   variant="outlined"
-              //   sx={{ marginBottom: "10px" }}
-              //   fullWidth
-              // >
-              //   <InputLabel>{"Branch Name"}</InputLabel>
-
-              //   <Select
-              //     value={formData["branchName"] || ""}
-              //     onChange={handleInputChange}
-              //     name="branchName"
-              //     label={"Branch Name"}
-              //   >
-              //     {branches?.map((option) => (
-              //       <MenuItem key={option.branchId} value={option.branchName}>
-              //         {option.branchName}
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
+            {(role == 1 || role == 2 ) && (
+             
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -2304,62 +2301,72 @@ export const Supervisor = () => {
                 />
               </FormControl>
             )}
-            {/* <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"School Name"}</InputLabel>
+            {(role==4) && (
+             
+            //  <FormControl
+            //    variant="outlined"
+            //    sx={{ marginBottom: "10px" }}
+            //    fullWidth
+            //  >
+            //    <Autocomplete
+            //      id="searchable-branch-select"
+            //      options={branches || []} // List of branch objects
+            //      getOptionLabel={(option) => option.branchName || ""} // Display branch name
+            //      value={
+            //        branches.find(
+            //          (branch) => branch.branchId == formData["branchName"]
+            //        ) || null
+            //      } // Find the selected branch
+            //      onChange={(event, newValue) => {
+            //        handleInputChange({
+            //          target: {
+            //            name: "branchId",
+            //            value: newValue?.branchId || "",
+            //          },
+            //        });
+            //      }}
+            //      renderInput={(params) => (
+            //        <TextField
+            //          {...params}
+            //          label="Branch Name"
+            //          variant="outlined"
+            //          name="branchName"
+            //        />
+            //      )}
+            //    />
+            //  </FormControl>
+            <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-branch-select"
+    options={branches || []} // List of branch objects
+    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+    value={
+      branches.find(
+        (branch) => branch.branchId === formData["branchId"]
+      ) || null
+    } // Find the selected branch using branchId
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: {
+          name: "branchId",
+          value: newValue?.branchId || "",
+        },
+      });
+    }}
+    isOptionEqualToValue={(option, value) => option.branchId === value.branchId} // Ensure correct matching
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Branch Name"
+        variant="outlined"
+        name="branchName"
+      />
+    )}
+  />
+</FormControl>
 
-              <Select
-                value={formData["schoolName"] || ""}
-                onChange={handleInputChange}
-                name="schoolName"
-                label={"School Name"}
-              >
-                {schools.map((option) => (
-                  <MenuItem key={option._id} value={option.schoolName}>
-                    {option.schoolName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl
-              variant="outlined"
-              sx={{ marginBottom: "10px" }}
-              fullWidth
-            >
-              <InputLabel>{"Branch Name"}</InputLabel>
-
-              <Select
-                value={formData["branchName"] || ""}
-                onChange={handleInputChange}
-                name="branchName"
-                label={"Branch Name"}
-              >
-                {branches?.map((option) => (
-                  <MenuItem key={option.branchId} value={option.branchName}>
-                    {option.branchName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
-            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <InputLabel>{"Bus Name"}</InputLabel>
-  <Select
-    value={formData["deviceId"] || ""}
-    onChange={handleBusChange}
-    name="deviceId"
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
-            <FormControl
+           )}
+            <FormControl 
               variant="outlined"
               sx={{ marginBottom: "10px" }}
               fullWidth
@@ -2444,26 +2451,7 @@ export const Supervisor = () => {
                 />
               ))}
             {role == 1 && (
-              // <FormControl
-              //   variant="outlined"
-              //   sx={{ marginBottom: "10px" }}
-              //   fullWidth
-              // >
-              //   <InputLabel>{"School Name"}</InputLabel>
-
-              //   <Select
-              //     value={formData["schoolName"] || ""}
-              //     onChange={handleInputChange}
-              //     name="schoolName"
-              //     label={"School Name"}
-              //   >
-              //     {schools.map((option) => (
-              //       <MenuItem key={option._id} value={option.schoolName}>
-              //         {option.schoolName}
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
+              
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -2505,27 +2493,8 @@ export const Supervisor = () => {
               </FormControl>
             )}
 
-            {(role == 1 || role == 2) && (
-              // <FormControl
-              //   variant="outlined"
-              //   sx={{ marginBottom: "10px" }}
-              //   fullWidth
-              // >
-              //   <InputLabel>{"Branch Name"}</InputLabel>
-
-              //   <Select
-              //     value={formData["branchName"] || ""}
-              //     onChange={handleInputChange}
-              //     name="branchName"
-              //     label={"Branch Name"}
-              //   >
-              //     {branches?.map((option) => (
-              //       <MenuItem key={option.branchId} value={option.branchName}>
-              //         {option.branchName}
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
+            {(role == 1 || role == 2 || role==4) && (
+             
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -2566,21 +2535,7 @@ export const Supervisor = () => {
                 />
               </FormControl>
             )}
-            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <InputLabel>{"Bus Name"}</InputLabel>
-  <Select
-    value={formData["deviceId"] || ""}
-    onChange={handleBusChange}
-    name="deviceId"
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
+            
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -2642,25 +2597,7 @@ export const Supervisor = () => {
               </IconButton> */}
             <p>Please upload the file in the following format:</p>
 
-            {/* Sample Excel Format Table */}
-            {/* <Table>
-          <TableHead>
-            <TableRow>
-              {sampleData[0].map((header, index) => (
-                <TableCell key={index}>{header}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sampleData.slice(1).map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {row.map((cell, cellIndex) => (
-                  <TableCell key={cellIndex}>{cell}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table> */}
+           
             <Box sx={{ overflowX: "auto" }}>
               {" "}
               {/* Makes table scrollable if needed */}

@@ -149,10 +149,11 @@ export const StudentDetail = () => {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+     
       }
   
       console.log("fetch data", response.data);
-  
+  const myarr=[];
       if (response?.data) {
         const allData =
           role == 1
@@ -184,6 +185,7 @@ export const StudentDetail = () => {
                  email:child.parentId?.email || "N/A",
                  password:child.parentId?.password || "N/A",
                 formattedRegistrationDate: formatDate(child.registrationDate),
+            
               }))
             : [];
   
@@ -517,7 +519,9 @@ export const StudentDetail = () => {
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-child`
         : role == 2
         ? `${process.env.REACT_APP_SCHOOL_API}/update-child`
-        : `${process.env.REACT_APP_BRANCH_API}/update-child`;
+        :role==3
+        ? `${process.env.REACT_APP_BRANCH_API}/update-child`
+        :`http://63.142.251.13:4000/branchgroupuser/updatechildbybranchgroup`
 
     // Prepare the updated data
     const updatedData = {
@@ -527,7 +531,7 @@ export const StudentDetail = () => {
 
     try {
       // Perform the PUT request
-      const response = await fetch(`${apiUrl}/${updatedData.childId}`, {
+      const response = await fetch(role==4?`${apiUrl}/${updatedData._id}`:`${apiUrl}/${updatedData.childId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -583,7 +587,14 @@ export const StudentDetail = () => {
           // id: filteredRows.length + 1,
           // isSelected: false,
         };
-      } else {
+      } else if(role==4){
+        newRow={
+          ...formData,
+          schoolName:decoded.schoolName,
+        }
+      }
+      
+      else {
         newRow = {
           ...formData,
           schoolName: decoded.schoolName,
@@ -670,6 +681,13 @@ export const StudentDetail = () => {
         console.error("No geofences found for this deviceId");
       }
     } else if (role == 3) {
+      // Handling for role 3
+      geofencesForSelectedDevice = pickupPointsData[selectedBus.deviceId] || [];
+
+      if (geofencesForSelectedDevice.length === 0) {
+        console.error("No geofences found for this deviceId");
+      }
+    }else if (role == 4) {
       // Handling for role 3
       geofencesForSelectedDevice = pickupPointsData[selectedBus.deviceId] || [];
 
@@ -828,8 +846,32 @@ export const StudentDetail = () => {
           );
           console.log("Branch data fetched:", response.data);
           setBranches(response.data.school.branches);
-        } catch (error) {
+          console.log("my response",branches)
+        }
+        
+        catch (error) {
           console.error("Error fetching branches:", error);
+        }
+      }else if(role==4){
+        try {
+          const token=localStorage.getItem("token");
+          const response=await axios.get(`http://63.142.251.13:4000/branchgroupuser/getdevicebranchgroupuser`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          })
+         const branchname= response.data.data.flatMap((newdata)=>
+          Array.isArray(newdata.branches)&&(newdata.branches.length)>0?
+            newdata.branches.map((item)=>(
+             {branchName:item.branchName}
+            )
+          ):[]
+
+        )
+        console.log("mybranch:",branchname)
+        setBranches(branchname)
+        } catch (error) {
+          console.log("error while fetching branch:",error)
         }
       }
     };
@@ -842,7 +884,9 @@ export const StudentDetail = () => {
             ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
             : role == 2
             ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
-            : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+            :role==3
+            ? `${process.env.REACT_APP_BRANCH_API}/read-devices`
+            :`http://63.142.251.13:4000/branchgroupuser/getdevicebranchgroupuser`
 
         const response = await axios.get(apiUrl, {
           headers: {
@@ -885,7 +929,33 @@ export const StudentDetail = () => {
               }))
             : [];
         }
-
+      //   else if(role==4){
+      //     allData=response.data.data.flatMap((item)=>
+      //     Array.isArray(item.branches)&&item.branches>0?
+      //   item.branches.flatMap((devicearray)=>(
+      //     Array.isArray(devicearray.devices)&& devicearray.length>0?
+      //     devicearray.devices.map((device)=>({
+      //       ...device
+      //     })):[]
+      //   )):[]
+      // )
+      //   }
+      else if (role == 4) {
+        allData = response.data.data.flatMap((school) =>
+            Array.isArray(school.branches) && school.branches.length > 0
+                ? school.branches.flatMap((branch) =>
+                      Array.isArray(branch.devices) && branch.devices.length > 0
+                          ? branch.devices.map((device) => ({
+                                ...device,
+                                branchName: branch.branchName,
+                                schoolName: school.schoolName,
+                            }))
+                          : []
+                  )
+                : []
+        );
+    }
+    
         setAllDevices(allData); // Store all devices
         setBuses(allData); // Set initial buses as well
         console.log("filter devices according to branch", allData);
@@ -920,6 +990,13 @@ export const StudentDetail = () => {
         } else if (role == 3) {
           response = await axios.get(
             `${process.env.REACT_APP_BRANCH_API}/geofences`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+        }else if (role == 4) {
+          response = await axios.get(
+            `http://63.142.251.13:4000/branchgroupuser/getgeofence`,
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -972,11 +1049,34 @@ console.log("my geofences",response.data)
                 schoolName: geofence.schoolName,
               });
             });
+          }if (role == 4) {
+            // const fetchedData = {}; // Initialize an empty object to store the data
+          
+            response.data.branches.forEach((branch) => {
+              if (branch.geofences) {
+                branch.geofences.forEach((geofence) => {
+                  if (!fetchedData[geofence.deviceId]) {
+                    fetchedData[geofence.deviceId] = [];
+                  }
+                  fetchedData[geofence.deviceId].push({
+                    ...geofence,
+                    branchName: branch.branchName,
+                    branchId: branch.branchId,
+                  });
+                });
+              }
+            });
+          
+            console.log("Fetched Data:", fetchedData);
+          
+            // Use fetchedData as needed in your application
           }
+          
+        
           
 
           console.log("role is:", role);
-          console.log("geofences are:", fetchedData);
+          console.log("geofences are IS:", fetchedData);
           // Update the state with fetched data
           setPickupPointsData(fetchedData);
         }
@@ -1627,7 +1727,7 @@ console.log("my geofences",response.data)
             />
             {role == 1 ? (
               <>
-               
+             
                 <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -1716,8 +1816,44 @@ console.log("my geofences",response.data)
                   />
                 </FormControl>
               </>
-            ) : role == 2 ? (
-              <>
+            ): role == 4 ? (
+             
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // Ensure branches is an array
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    Array.isArray(branches)
+                      ? branches.find(
+                          (branch) =>
+                            branch.branchName === formData["branchName"]
+                        ) || null
+                      : null
+                  } // Safeguard find method
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
+            ):role == 2 ? (
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -1809,7 +1945,7 @@ console.log("my geofences",response.data)
                 options={filteredGeofences || []} // List of geofence objects
                 getOptionLabel={(option) => option.name || ""} // Display geofence name
                 value={
-                  filteredGeofences.find(
+                  (filteredGeofences||[]).find(
                     (geofence) => geofence.name === formData["pickupPoint"]
                   ) || null
                 } // Find the selected geofence
@@ -2096,6 +2232,7 @@ console.log("my geofences",response.data)
                 <MenuItem value={10}>10</MenuItem>
               </Select>
             </FormControl> */}
+
             <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <Autocomplete
                 id="searchable-select"
@@ -2162,26 +2299,7 @@ console.log("my geofences",response.data)
             />
             {role == 1 ? (
               <>
-                {/* <FormControl
-                  variant="outlined"
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                >
-                  <InputLabel>{"School Name"}</InputLabel>
-
-                  <Select
-                    value={formData["schoolName"] || ""}
-                    onChange={handleInputChange}
-                    name="schoolName"
-                    label={"School Name"}
-                  >
-                    {schools?.map((option) => (
-                      <MenuItem key={option._id} value={option.schoolName}>
-                        {option.schoolName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl> */}
+             
                 <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -2225,26 +2343,7 @@ console.log("my geofences",response.data)
                     )}
                   />
                 </FormControl>
-                {/* <FormControl
-                  variant="outlined"
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                >
-                  <InputLabel>{"Branch Name"}</InputLabel>
-
-                  <Select
-                    value={formData["branchName"] || ""}
-                    onChange={handleInputChange}
-                    name="branchName"
-                    label={"Branch Name"}
-                  >
-                    {branches?.map((option) => (
-                      <MenuItem key={option.branchId} value={option.branchName}>
-                        {option.branchName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl> */}
+               
                 <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -2289,48 +2388,45 @@ console.log("my geofences",response.data)
                   />
                 </FormControl>
               </>
-            ) : role == 2 ? (
-              // <FormControl
-              //   variant="outlined"
-              //   sx={{ marginBottom: "10px" }}
-              //   fullWidth
-              // >
-              //   <InputLabel>{"Branch Name"}</InputLabel>
-
-              //   <Select
-              //     value={formData["branchName"] || ""}
-              //     onChange={handleInputChange}
-              //     name="branchName"
-              //     label={"Branch Name"}
-              //   >
-              //     {branches?.map((option) => (
-              //       <MenuItem key={option.branchId} value={option.branchName}>
-              //         {option.branchName}
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
-              //   <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-              //   <Autocomplete
-              //     id="searchable-branch-select"
-              //     options={branches || []} // List of branch objects
-              //     getOptionLabel={(option) => option.branchName || ""} // Display branch name
-              //     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
-              //     onChange={(event, newValue) => {
-              //       handleInputChange({
-              //         target: { name: "branchName", value: newValue?.branchName || "" },
-              //       });
-              //     }}
-              //     renderInput={(params) => (
-              //       <TextField
-              //         {...params}
-              //         label="Branch Name"
-              //         variant="outlined"
-              //         name="branchName"
-              //       />
-              //     )}
-              //   />
-              // </FormControl>
+            ): role == 4 ? (
+             
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // Ensure branches is an array
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    Array.isArray(branches)
+                      ? branches.find(
+                          (branch) =>
+                            branch.branchName === formData["branchName"]
+                        ) || null
+                      : null
+                  } // Safeguard find method
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
+            ): role == 2 ? (
+             
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -2375,41 +2471,7 @@ console.log("my geofences",response.data)
                 />
               </FormControl>
             ) : null}
-            {/* <FormControl
-  variant="outlined"
-  sx={{ marginBottom: "10px" }}
-  fullWidth
->
-  <InputLabel>{"Bus Name"}</InputLabel>
-  
-  <Select
-    value={formData["deviceId"] || ""}  // Select based on deviceId
-    onChange={handleBusChange}
-    name="deviceId"  // Name reflects deviceId for posting
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}  
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
-            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <InputLabel>{"Bus Name"}</InputLabel>
-  <Select
-    value={formData["deviceId"] || ""}
-    onChange={handleBusChange}
-    name="deviceId"
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
+          
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -2450,33 +2512,14 @@ console.log("my geofences",response.data)
                 )}
               />
             </FormControl>
-            {/* Geofences display based on selected Bus */}
-            {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
-  <InputLabel id="geofence-id-label">Select Geofence</InputLabel>
-  <Select
-    labelId="geofence-id-label"
-    name="pickupPoint"
-    value={formData["pickupPoint"] || ""}
-    onChange={handleInputChange}
-  >
-    {filteredGeofences.length > 0 ? (
-      filteredGeofences.map(geofence => (
-        <MenuItem key={geofence._id} value={geofence.name}>
-          {geofence.name} 
-        </MenuItem>
-      ))
-    ) : (
-      <MenuItem disabled>No geofences available</MenuItem>
-    )}
-  </Select>
-</FormControl> */}
+          
             <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <Autocomplete
                 id="geofence-autocomplete"
                 options={filteredGeofences || []} // List of geofence objects
                 getOptionLabel={(option) => option.name || ""} // Display geofence name
                 value={
-                  filteredGeofences.find(
+                  (filteredGeofences || []).find(
                     (geofence) => geofence.name === formData["pickupPoint"]
                   ) || null
                 } // Find the selected geofence

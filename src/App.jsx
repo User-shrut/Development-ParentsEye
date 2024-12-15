@@ -302,7 +302,9 @@ function App() {
             ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
             : role == 2
             ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
-            : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+            : role==3
+            ? `${process.env.REACT_APP_BRANCH_API}/read-devices`
+            :`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`
   
         const response = await axios.get(apiUrl, {
           headers: {
@@ -372,7 +374,28 @@ function App() {
             // Collect deviceIds
             deviceIdsFromBuses.push(device.deviceId);
           });
-        }
+        }if (role == 4) {
+          allData = response.data.data.flatMap((school) =>
+              Array.isArray(school.branches) && school.branches.length > 0
+                  ? school.branches.flatMap((branch) =>
+                        Array.isArray(branch.devices) && branch.devices.length > 0
+                            ? branch.devices.map((device) => ({
+                                  deviceId: device.deviceId,
+                                  deviceName: device.deviceName,
+                                  actualDeviceId: device.actualDeviceId,
+                                  branchName: branch.branchName,
+                                  schoolName: school.schoolName,
+                              }))
+                            : []
+                    )
+                  : []
+          );
+      
+          // Collect all deviceIds into deviceIdsFromBuses
+          const deviceIds = allData.map((device) => device.deviceId);
+          deviceIdsFromBuses.push(...deviceIds);
+      }
+      
         
         // Store the hierarchy data for further use
         sethierarchydeviceData(allData);

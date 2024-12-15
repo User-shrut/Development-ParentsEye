@@ -748,7 +748,7 @@ export const Driver = () => {
         );
       }else if (role == 4) {
         response = await axios.get(
-          `http://63.142.251.13:4000/branchgroupuser/getdriverdata`,
+          `${process.env.REACT_APP_USERBRANCH}/getdriverdata`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -1211,8 +1211,9 @@ export const Driver = () => {
           ? `${process.env.REACT_APP_SUPER_ADMIN_API}/update-driver/${selectedRow.driverId}`
           : role == 2
           ? `${process.env.REACT_APP_SCHOOL_API}/update-driver/${selectedRow.id}`
-          : `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.id}`;
-
+          :role==3
+          ? `${process.env.REACT_APP_BRANCH_API}/update-driver/${selectedRow.id}`
+          :`${process.env.REACT_APP_USERBRANCH}/updatedriverdata/${selectedRow.id}`
       const token = localStorage.getItem("token");
       // Prepare the updated data
       const updatedData = {
@@ -1264,7 +1265,7 @@ export const Driver = () => {
     const decoded = jwtDecode(localStorage.getItem("token"));
     try {
       let newRow;
-      if (role == 2) {
+      if (role == 2 || role==4) {
         newRow = {
           ...formData,
           schoolName: decoded.schoolName,
@@ -1275,7 +1276,8 @@ export const Driver = () => {
           schoolName: decoded.schoolName,
           branchName: decoded.branchName,
         };
-      } else {
+      } 
+      else {
         newRow = {
           ...formData,
         };
@@ -1364,6 +1366,27 @@ export const Driver = () => {
         if (response.data) {
           setBranches(response.data.school.branches);
         }
+      }else if(role==4){
+        try {
+          const token=localStorage.getItem("token");
+          const response=await axios.get(`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          })
+         const branchname= response.data.data.flatMap((newdata)=>
+          Array.isArray(newdata.branches)&&(newdata.branches.length)>0?
+            newdata.branches.map((item)=>(
+             {branchName:item.branchName}
+            )
+          ):[]
+
+        )
+        console.log("mybranch:",branchname)
+        setBranches(branchname)
+        } catch (error) {
+          console.log("error while fetching branch:",error)
+        }
       }
     };
 
@@ -1375,7 +1398,9 @@ export const Driver = () => {
             ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
             : role == 2
             ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
-            : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+            :role==3
+            ? `${process.env.REACT_APP_BRANCH_API}/read-devices`
+            :`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`
 
         const response = await axios.get(apiUrl, {
           headers: {
@@ -1417,7 +1442,21 @@ export const Driver = () => {
                 schoolName,
               }))
             : [];
-        }
+        } else if (role == 4) {
+          allData = response.data.data.flatMap((school) =>
+              Array.isArray(school.branches) && school.branches.length > 0
+                  ? school.branches.flatMap((branch) =>
+                        Array.isArray(branch.devices) && branch.devices.length > 0
+                            ? branch.devices.map((device) => ({
+                                  ...device,
+                                  branchName: branch.branchName,
+                                  schoolName: school.schoolName,
+                              }))
+                            : []
+                    )
+                  : []
+          );
+      }
 
         setAllDevices(allData); // Store all devices
         setBuses(allData); // Set initial buses as well
@@ -2070,26 +2109,7 @@ export const Driver = () => {
                 />
               ))}
             {role == 1 && (
-              // <FormControl
-              //   variant="outlined"
-              //   sx={{ marginBottom: "10px" }}
-              //   fullWidth
-              // >
-              //   <InputLabel>{"School Name"}</InputLabel>
-
-              //   <Select
-              //     value={formData["schoolName"] || ""}
-              //     onChange={handleInputChange}
-              //     name="schoolName"
-              //     label={"School Name"}
-              //   >
-              //     {schools.map((option) => (
-              //       <MenuItem key={option._id} value={option.schoolName}>
-              //         {option.schoolName}
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
+             
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -2131,7 +2151,7 @@ export const Driver = () => {
                 />
               </FormControl>
             )}
-            {(role == 1 || role == 2) && (
+            {(role == 1 || role == 2 ||role==4) && (
               // <FormControl
               //   variant="outlined"
               //   sx={{ marginBottom: "10px" }}
@@ -2193,21 +2213,7 @@ export const Driver = () => {
                 />
               </FormControl>
             )}
-            {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <InputLabel>{"Bus Name"}</InputLabel>
-  <Select
-    value={formData["deviceId"] || ""}
-    onChange={handleBusChange}
-    name="deviceId"
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
+          
             <FormControl
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -2295,26 +2301,7 @@ export const Driver = () => {
 
             {role == 1 ? (
               <>
-                {/* <FormControl
-                  variant="outlined"
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                >
-                  <InputLabel>{"School Name"}</InputLabel>
-
-                  <Select
-                    value={formData["schoolName"] || ""}
-                    onChange={handleInputChange}
-                    name="schoolName"
-                    label={"School Name"}
-                  >
-                    {schools.map((option) => (
-                      <MenuItem key={option._id} value={option.schoolName}>
-                        {option.schoolName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl> */}
+              
                 <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -2355,26 +2342,7 @@ export const Driver = () => {
                     )}
                   />
                 </FormControl>
-                {/* <FormControl
-                  variant="outlined"
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                >
-                  <InputLabel>{"Branch Name"}</InputLabel>
-
-                  <Select
-                    value={formData["branchName"] || ""}
-                    onChange={handleInputChange}
-                    name="branchName"
-                    label={"Branch Name"}
-                  >
-                    {branches?.map((option) => (
-                      <MenuItem key={option.branchId} value={option.branchName}>
-                        {option.branchName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl> */}
+              
                 <FormControl
                   variant="outlined"
                   sx={{ marginBottom: "10px" }}
@@ -2416,6 +2384,43 @@ export const Driver = () => {
                   />
                 </FormControl>
               </>
+            ): role == 4 ? (
+             
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // Ensure branches is an array
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    Array.isArray(branches)
+                      ? branches.find(
+                          (branch) =>
+                            branch.branchName === formData["branchName"]
+                        ) || null
+                      : null
+                  } // Safeguard find method
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>
             ) : role == 2 ? (
               // <FormControl
               //   variant="outlined"
