@@ -269,7 +269,26 @@ function App() {
       }
     };
 
+    const fetchPositionData = async () => {
+      try {
+        const token = btoa(`${username}:${password}`); // Base64 encode the username and password
+        const response2 = await axios.get(
+          "https://rocketsalestracker.com/api/positions",
+          {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          }
+        );
+  
+        setPositionApiData(response2.data); // Update state variable with position API data
+      } catch (error) {
+        console.error("Error fetching position data:", error);
+      }
+    };
+
     fetchBuses();
+    fetchPositionData();
   }, [role, isTokenValid]);
 
   // Fetch position data
