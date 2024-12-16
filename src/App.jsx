@@ -141,8 +141,8 @@ function App() {
       window.location.href = "/Login"; // Redirect to login if token is invalid
     }
   }, []);
-
-  // Fetch bus data
+  
+  // !my anirudhh without data but with validation
   useEffect(() => {
     if (!isTokenValid) return; // Prevent fetching if token is invalid
 
@@ -150,11 +150,13 @@ function App() {
       try {
         const token = localStorage.getItem("token");
         const apiUrl =
-          role === 1
+          role == 1
             ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
-            : role === 2
+            : role == 2
             ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
-            : `${process.env.REACT_APP_BRANCH_API}/read-devices`;
+            : role==3
+            ? `${process.env.REACT_APP_BRANCH_API}/read-devices`
+            :`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`
 
         const response = await axios.get(apiUrl, {
           headers: {
@@ -165,7 +167,7 @@ function App() {
         let allData = [];
         let deviceIdsFromBuses = [];
 
-        if (role === 1) {
+        if (role == 1) {
           response.data.data.forEach((school) => {
             const schoolName = school.schoolName;
             school.branches.forEach((branch) => {
@@ -173,9 +175,9 @@ function App() {
               branch.devices.forEach((device) => {
                 allData.push({
                   schoolId: school.schoolId,
-                  schoolName,
+                  	schoolName: schoolName,
                   branchId: branch.branchId,
-                  branchName,
+                  branchName: branchName,
                   actualDeviceId: device.actualDeviceId,
                   deviceId: device.deviceId,
                   deviceName: device.deviceName,
@@ -184,14 +186,14 @@ function App() {
               });
             });
           });
-        } else if (role === 2) {
+        } else if (role == 2) {
           response.data.branches.forEach((branch) => {
             const branchName = branch.branchName;
             branch.devices.forEach((device) => {
               allData.push({
                 schoolId: response.data.schoolId,
                 branchId: branch.branchId,
-                branchName,
+                branchName: branchName,
                 actualDeviceId: device.actualDeviceId,
                 deviceId: device.deviceId,
                 deviceName: device.deviceName,
@@ -199,13 +201,13 @@ function App() {
               deviceIdsFromBuses.push(device.deviceId);
             });
           });
-        } else if (role === 3) {
+        } else if (role == 3) {
           const schoolName = response.data.schoolName;
           const branchName = response.data.branchName;
           response.data.devices.forEach((device) => {
             allData.push({
-              schoolName,
-              branchName,
+              schoolName: schoolName,
+              branchName: branchName,
               actualDeviceId: device.actualDeviceId,
               deviceId: device.deviceId,
               deviceName: device.deviceName,
@@ -213,6 +215,27 @@ function App() {
             deviceIdsFromBuses.push(device.deviceId);
           });
         }
+          if (role == 4) {
+          allData = response.data.data.flatMap((school) =>
+              Array.isArray(school.branches) && school.branches.length > 0
+                  ? school.branches.flatMap((branch) =>
+                        Array.isArray(branch.devices) && branch.devices.length > 0
+                            ? branch.devices.map((device) => ({
+                                  deviceId: device.deviceId,
+                                  deviceName: device.deviceName,
+                                  actualDeviceId: device.actualDeviceId,
+                                  branchName: branch.branchName,
+                                  schoolName: school.schoolName,
+                              }))
+                            : []
+                    )
+                  : []
+          );
+      
+          // Collect all deviceIds into deviceIdsFromBuses
+          const deviceIds = allData.map((device) => device.deviceId);
+          deviceIdsFromBuses.push(...deviceIds);
+      }
 
         setHierarchyDeviceData(allData);
         console.log("Hierarchy device data:", allData);
@@ -225,7 +248,7 @@ function App() {
 
     const fetchDeviceData = async (deviceIdsFromBuses) => {
       try {
-        const token = btoa("username:password"); // Replace with actual credentials
+       const token = btoa(`${username}:${password}`);  // Replace with actual credentials
         const response1 = await axios.get(
           "https://rocketsalestracker.com/api/devices",
           {
@@ -234,11 +257,12 @@ function App() {
             },
           }
         );
-
+        console.log("Device API Data:", response1.data);
+        console.log("Device IDs from Buses:", deviceIdsFromBuses);
         const filteredDeviceData = response1.data.filter((device) =>
           deviceIdsFromBuses.includes(String(device.id))
         );
-
+         console.log("Filtered Device Data:", filteredDeviceData);
         setDeviceApiData(filteredDeviceData);
       } catch (error) {
         console.error("Error fetching device data:", error);
@@ -254,7 +278,7 @@ function App() {
 
     const fetchPositionData = async () => {
       try {
-        const token = btoa("username:password"); // Replace with actual credentials
+        const token = btoa(`${username}:${password}`);// Replace with actual credentials
         const response2 = await axios.get(
           "https://rocketsalestracker.com/api/positions",
           {
@@ -293,7 +317,8 @@ function App() {
   }
   
 
- /*  useEffect(() => {
+//!main shruti
+  /*  useEffect(() => {
     const fetchBuses = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -475,7 +500,7 @@ function App() {
       setMergedData(merged);
       console.log("Merged data:", merged);
     }
-  }, [deviceApiData, positionApiData]); */
+  }, [deviceApiData, positionApiData]);  */
   
 
   const handleClickSideBar = (data) => {
