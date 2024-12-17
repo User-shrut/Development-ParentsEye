@@ -240,9 +240,12 @@ const [devices, setDevices] = useState([]); // Ensure devices is initialized as 
 const [mydevices, mysetDevices] = useState([]);
   
 useEffect(() => {
+  const apiUrl = process.env.REACT_APP_ROCKETSALES_API;
+console.log("API URL from env:", apiUrl);  // Verify it's correct
+
   const myfetchDevices = async () => {
     try {
-      const response = await fetch(`${process.env.ROCKETSALES_API}/devices`, {
+      const response = await fetch(`${process.env.REACT_APP_ROCKETSALES_API}/devices`, {
         headers: {
           Authorization: 'Basic ' + btoa('schoolmaster:123456'),
         },
@@ -251,7 +254,7 @@ useEffect(() => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
+      console.log("myyyyyyy",response)
       const data = await response.json();
       mysetDevices(data);
       console.log(data);
