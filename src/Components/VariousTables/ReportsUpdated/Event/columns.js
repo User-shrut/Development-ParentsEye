@@ -19,10 +19,10 @@ export const COLUMNS = () => [
     Header: 'Event Time',
     accessor: 'eventTime',
   },
-  {
-    Header: 'Position ID',
-    accessor: 'positionId',
-  },
+  // {
+  //   Header: 'Position ID',
+  //   accessor: 'positionId',
+  // },
   // {
   //   Header: 'Geofence ID',
   //   accessor: 'geofenceId',
