@@ -82,8 +82,8 @@ export const Combined = () => {
   const role=localStorage.getItem("role");
   const username = "schoolmaster";
   const password = "123456";
- 
-
+  const [loading1, setLoading1] = useState(true);
+  const [loadinggroup,setloadinggroup]=useState(true);
 
   
 
@@ -335,6 +335,7 @@ console.log("API URL from env:", apiUrl);  // Verify it's correct
     } finally {
       setLoading(false);
     }
+    setLoading1(false);
   };
 
   const loadData = async () => {
@@ -390,6 +391,7 @@ const [mygroups, mysetGroups] = useState([]);
       } catch (error) {
         setError(error.message);
       }
+      setloadinggroup(false);
     };
 
     fetchGroups();
@@ -661,7 +663,7 @@ React.useEffect(() => {
     >
     
     <div style={{ display: "flex", flexDirection: "row", gap: "5px" }}>
-  <div
+  {/* <div
   style={{
     width: "250px",
     position: "relative",
@@ -692,7 +694,39 @@ React.useEffect(() => {
       }),
     }}
   />
-</div>
+</div> */}
+  <div
+      style={{
+        width: "250px",
+        position: "relative",
+        zIndex: "10",
+        border: "1px solid #000",
+      }}
+    >
+      <Select
+        options={options}
+        value={options.find((option) => option.value === selectedDevice) || null}
+        onChange={handleChange}
+        placeholder={loading1 ? "Loading devices..." : "Select Device"}
+        isClearable
+        isLoading={loading1} // Show the loading indicator
+        styles={{
+          control: (provided) => ({
+            ...provided,
+            border: "none",
+            boxShadow: "none",
+          }),
+          dropdownIndicator: (provided) => ({
+            ...provided,
+            color: "#000",
+          }),
+          clearIndicator: (provided) => ({
+            ...provided,
+            color: "#000",
+          }),
+        }}
+      />
+    </div>
  <div
       style={{
         width: "250px",
@@ -706,8 +740,9 @@ React.useEffect(() => {
         options={groupOptions}
         value={groupOptions.find((option) => option.value === selectedGroup) || null}
         onChange={handleGroupChange}
-        placeholder="Select Group"
+        placeholder={loadinggroup?"Loading Group":"select Group"}
         isClearable
+        isLoading={loadinggroup}
         styles={{
           control: (provided) => ({
             ...provided,

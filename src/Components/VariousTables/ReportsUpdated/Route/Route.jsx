@@ -80,7 +80,7 @@ export const Route = () => {
   const role=localStorage.getItem('role');
   const username = "schoolmaster";
   const password = "123456";
- 
+ const[loadingdevice,setloadingdevice]=useState(true);
 
 
   
@@ -293,6 +293,7 @@ export const Route = () => {
       } finally {
         setLoading(false);
       }
+      setloadingdevice(false);
     };
   
   
@@ -596,7 +597,7 @@ const filteredDevices = Array.isArray(devices)
     options={options}
     value={options.find((option) => option.value === selectedDevice) || null}
     onChange={handleChange}
-    placeholder="Select Device"
+    placeholder={loadingdevice?"Loading devices...":"select Device"}
     isClearable
     styles={{
       control: (provided) => ({

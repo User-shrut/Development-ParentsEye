@@ -150,7 +150,8 @@ const { setTotalResponses } = useContext(TotalResponsesContext); // Get the cont
   const role=localStorage.getItem("role");
   const username="schoolmaster";
   const password="123456";
-  
+  const[selectdevice,setdeviceselect]=useState(true);
+  const[selectgroup,setselectgroup]=useState(true);
 
 
   
@@ -388,6 +389,7 @@ const { setTotalResponses } = useContext(TotalResponsesContext); // Get the cont
       } finally {
         setLoading(false);
       }
+      setdeviceselect(false);
     };
   
     const loadData = async () => {
@@ -420,6 +422,7 @@ const [mygroups, mysetGroups] = useState([]);
       } catch (error) {
         setError(error.message);
       }
+      setselectgroup(false)
     };
 
     fetchGroups();
@@ -608,7 +611,7 @@ const fetchData = async (url) => {
     }
   } catch (error) {
     console.error('Error fetching the report:', error);
-    alert('Failed to download or process report.');
+   
   } finally {
     setLoading(false);
   }
@@ -723,11 +726,13 @@ const fetchData = async (url) => {
     marginLeft:"8px"
   }}
 >
+
   <Select
     options={options}
     value={options.find((option) => option.value === selectedDevice) || null}
     onChange={handleChange}
-    placeholder="Select Device"
+    placeholder={selectdevice?"Loading Devices...":"Select Device"}
+    isLoading={selectdevice}
     isClearable
     styles={{
       control: (provided) => ({
@@ -791,7 +796,7 @@ const fetchData = async (url) => {
         options={groupOptions}
         value={groupOptions.find((option) => option.value === selectedGroup) || null}
         onChange={handleGroupChange}
-        placeholder="Select Group"
+        placeholder={selectgroup?"Loading Group...":"Select Group"}
         isClearable
         styles={{
           control: (provided) => ({
