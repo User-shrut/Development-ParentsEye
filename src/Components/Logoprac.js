@@ -96,7 +96,7 @@ const Logoprac = () => {
         localStorage.setItem("role", roleValue);
         setRole(roleValue);
         navigate("/");
-        alert(successMessage);
+        // alert(successMessage);
         return true;
       }
     } catch (error) {

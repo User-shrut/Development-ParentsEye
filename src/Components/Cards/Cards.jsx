@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -33,8 +33,29 @@ export const Cards = ({
     TotalResponsesAbsent,
     TotalResponsesDrivers,
     TotalResponsesSupervisor,
+    loading,
   } = useContext(TotalResponsesContext); // Consume the context
   // const { totalLeaveRequest } = useContext(TotalResponsesContext);
+  useEffect(()=>{
+    console.log("card Data",TotalResponsesStudent,
+      totalResponses,
+      allDevices,
+      totalLeaveRequest,
+      TotalResponsesPresent,
+      TotalResponsesAbsent,
+      TotalResponsesDrivers,
+      TotalResponsesSupervisor,
+      loading,)
+  },[TotalResponsesStudent,
+    totalResponses,
+    allDevices,
+    totalLeaveRequest,
+    TotalResponsesPresent,
+    TotalResponsesAbsent,
+    TotalResponsesDrivers,
+    TotalResponsesSupervisor,
+    loading,])
+  
 
   return (
     <Box
@@ -44,6 +65,7 @@ export const Cards = ({
         justifyContent: "center",
         gap: "1px 100px",
       }}
+      key={TotalResponsesStudent}
     >
       <Box
         sx={{
