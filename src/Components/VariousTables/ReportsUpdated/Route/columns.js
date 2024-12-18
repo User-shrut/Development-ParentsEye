@@ -33,14 +33,14 @@ export const COLUMNS = () => [
     Header: 'Server Time',
     accessor: 'serverTime',
   },
-  {
-    Header: 'Device Time',
-    accessor: 'deviceTime',
-  },
-  {
-    Header: 'Fix Time',
-    accessor: 'fixTime',
-  },
+  // {
+  //   Header: 'Device Time',
+  //   accessor: 'deviceTime',
+  // },
+  // {
+  //   Header: 'Fix Time',
+  //   accessor: 'fixTime',
+  // },
   // {
   //   Header: 'Outdated',
   //   accessor: 'outdated',

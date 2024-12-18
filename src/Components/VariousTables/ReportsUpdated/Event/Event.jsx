@@ -77,39 +77,9 @@ export const Event = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-
-  
- 
-// const fetchData = async () => {
-//   console.log('Fetching data...');
-//   setLoading(true); // Set loading to true when starting fetch
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get("https://rocketsalestracker.com/api/server", {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//     });
-
-//     console.log('fetch data', response.data);
-
-//     if (response.data && typeof response.data === 'object') {
-//       const wrappedData = [response.data];
-//       setFilteredRows(wrappedData.map(row => ({ ...row, isSelected: false })));
-//       setTotalResponses(wrappedData.length);
-//     } else {
-//       console.error('Expected an object but got:', response.data);
-//     }
-//   } catch (error) {
-//     console.error('Fetch data error:', error);
-//     alert('An error occurred while fetching data.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
+  const role=localStorage.getItem("role");
+  const username="schoolmaster";
+  const password="123456";
 
   
 
@@ -202,75 +172,7 @@ export const Event = () => {
     }
   };
 
-  const handleDeleteSelected = async () => {
-    // Log filteredRows to check its structure
-    console.log("Filtered rows:", filteredRows);
-
-    // Get selected row IDs
-    const selectedIds = filteredRows
-      .filter((row) => row.isSelected)
-      .map((row) => {
-        // Log each row to check its structure
-        console.log("Processing row:", row);
-        return row._id; // Ensure id exists and is not undefined
-      });
-
-    console.log("Selected IDs:", selectedIds);
-
-    if (selectedIds.length === 0) {
-      alert("No rows selected for deletion.");
-      return;
-    }
-    const userConfirmed = window.confirm(
-      `Are you sure you want to delete ${selectedIds.length} record(s)?`
-    );
-
-    if (!userConfirmed) {
-      // If the user clicks "Cancel", exit the function
-      return;
-    }
-    try {
-      // Define the API endpoint and token
-      const apiUrl =
-        "https://schoolmanagement-4-pzsf.onrender.com/school/delete";
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-
-      // Send delete requests for each selected ID
-      const deleteRequests = selectedIds.map((id) =>
-        fetch(`${apiUrl}/${id}`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }).then((response) => {
-          if (!response.ok) {
-            throw new Error(
-              `Error deleting record with ID ${id}: ${response.statusText}`
-            );
-          }
-          return response.json();
-        })
-      );
-
-      // Wait for all delete requests to complete
-      await Promise.all(deleteRequests);
-
-      // Filter out deleted rows
-      const newFilteredRows = filteredRows.filter((row) => !row.isSelected);
-
-      // Update state
-      setFilteredRows(newFilteredRows);
-      setSelectAll(false);
-
-      alert("Selected records deleted successfully.");
-    } catch (error) {
-      console.error("Error during deletion:", error);
-      alert("Failed to delete selected records.");
-    }
-    fetchData();
-  };
+ 
 
   const handleExport = () => {
     const dataToExport = filteredRows.map((row) => {
@@ -283,21 +185,7 @@ export const Event = () => {
     XLSX.writeFile(workbook, "Event.xlsx");
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const sheetNames = workbook.SheetNames;
-        const sheet = workbook.Sheets[sheetNames[0]];
-        const parsedData = XLSX.utils.sheet_to_json(sheet);
-        setImportData(parsedData);
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  };
+
 
   const sortedData = [...filteredRows];
   if (sortConfig.key !== null) {
@@ -312,14 +200,9 @@ export const Event = () => {
     });
   }
 
-  const handleAddButtonClick = () => {
-    setFormData({});
-    setAddModalOpen(true);
-  };
+ 
 
   const handleModalClose = () => {
-    setEditModalOpen(false);
-    setAddModalOpen(false);
     setFormData({});
     setModalOpen(false);
   };
@@ -336,214 +219,7 @@ export const Event = () => {
     });
   };
 
- 
 
-// const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-//   const username = "school";
-//   const password = "123456";
-//   const token = btoa(`${username}:${password}`);
-
-//   // Ensure formData contains the full structure with nested attributes
-//   const updatedData = {
-//       ...formData, // formData should have the same structure as the object you are retrieving
-//       isSelected: false,
-//   };
-
-//   try {
-//       console.log("Sending request to:", apiUrl);
-//       console.log("Request payload:", updatedData);
-
-//       const response = await fetch(apiUrl, {
-//           method: "PUT", // PUT method to update the resource
-//           headers: {
-//               "Authorization": `Basic ${token}`,
-//               "Content-Type": "application/json",
-//           },
-//           body: JSON.stringify(updatedData), // Convert updatedData to JSON
-//       });
-
-//       console.log("Response status:", response.status);
-//       console.log("Response headers:", response.headers);
-
-//       if (!response.ok) {
-//           const errorResult = await response.json();
-//           console.error("Error response:", errorResult);
-//           throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
-//       }
-
-//       const result = await response.json();
-//       console.log("Update successful:", result);
-//       alert("Updated successfully");
-
-//       // Update filteredRows in state
-//       const updatedRows = filteredRows.map((row) =>
-//           row.id === selectedRow.id
-//               ? { ...row, ...formData, isSelected: false } // Ensure the updated data includes nested fields
-//               : row
-//       );
-//       setFilteredRows(updatedRows);
-
-//       handleModalClose();
-//       fetchData(); // Refetch data to ensure the UI is up-to-date
-//   } catch (error) {
-//       console.error("Error updating row:", error.message, error.stack);
-//       alert("Error updating code");
-//   }
-// };
-// const handleEditSubmit = async () => {
-//   const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-//   const username = "school";
-//   const password = "123456";
-//   const token = btoa(`${username}:${password}`);
-
-//   // Ensure formData contains the full structure with nested attributes
-//   const updatedData = {
-//     ...formData, // formData should have the same structure as the object you are retrieving
-//     isSelected: false,
-//   };
-
-//   try {
-//     console.log("Sending request to:", apiUrl);
-//     console.log("Request payload:", JSON.stringify(updatedData, null, 2));
-
-//     const response = await fetch(apiUrl, {
-//       method: "PUT", // PUT method to update the resource
-//       headers: {
-//         "Authorization": `Basic ${token}`,
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(updatedData), // Convert updatedData to JSON
-//     });
-
-//     console.log("Response status:", response.status);
-//     console.log("Response headers:", response.headers);
-
-//     if (!response.ok) {
-//       const errorResult = await response.json();
-//       console.error("Error response:", errorResult);
-//       throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
-//     }
-
-//     const result = await response.json();
-//     console.log("Update successful:", result);
-//     alert("Updated successfully");
-
-//     // Update filteredRows in state
-//     const updatedRows = filteredRows.map((row) =>
-//       row.id === selectedRow.id
-//         ? { ...row, ...updatedData, isSelected: false } // Ensure the updated data includes nested fields
-//         : row
-//     );
-//     setFilteredRows(updatedRows);
-
-//     handleModalClose();
-//     fetchData(); // Refetch data to ensure the UI is up-to-date
-//   } catch (error) {
-//     console.error("Error updating row:", error.message, error.stack);
-//     alert("Error updating data");
-//   }
-// };
-const handleEditSubmit = async () => {
-  const apiUrl = `https://rocketsalestracker.com/api/server`; // Ensure this is correct
-  const username = "test";
-  const password = "123456";
-  const token = btoa(`${username}:${password}`);
-
-  // Ensure formData contains the full structure with nested attributes
-  const updatedData = {
-    ...formData, // formData should have the same structure as the object you are retrieving
-    isSelected: false,
-    attributes: {
-      ...formData.attributes,
-      speedUnit: "kmh", // Ensure this is updated correctly
-    }
-  };
-
-  try {
-    console.log("Sending request to:", apiUrl);
-    console.log("Request payload:", JSON.stringify(updatedData, null, 2));
-
-    const response = await fetch(apiUrl, {
-      method: "PUT", // PUT method to update the resource
-      headers: {
-        "Authorization": `Basic ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedData), // Convert updatedData to JSON
-    });
-
-    console.log("Response status:", response.status);
-    console.log("Response headers:", response.headers);
-
-    if (!response.ok) {
-      const errorResult = await response.json();
-      console.error("Error response:", errorResult);
-      throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorResult.message}`);
-    }
-
-    const result = await response.json();
-    console.log("Update successful:", result);
-    alert("Updated successfully");
-
-    // Update filteredRows in state
-    const updatedRows = filteredRows.map((row) =>
-      row.id === selectedRow.id
-        ? { ...row, ...updatedData, isSelected: false } // Ensure the updated data includes nested fields
-        : row
-    );
-    setFilteredRows(updatedRows);
-
-    handleModalClose();
-    fetchData(); // Refetch data to ensure the UI is up-to-date
-  } catch (error) {
-    console.error("Error updating row:", error.message, error.stack);
-    alert("Error updating data");
-  }
-};
-
- 
-  const handleAddSubmit = async () => {
-    try {
-      const newRow = {
-        ...formData,
-        id: filteredRows.length + 1,
-        isSelected: false,
-      };
-
-      // POST request to the server
-      const response = await fetch(
-        "https://schoolmanagement-4-pzsf.onrender.com/parent/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newRow),
-        }
-      );
-      alert('record created successfully');
-    
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      // Assuming the server returns the created object
-      const result = await response.json();
-
-      // Update the state with the new row
-      setFilteredRows([...filteredRows, result]);
-
-      // Close the modal
-      handleModalClose();
-      fetchData();
-      console.log("error occured in post method");
-    } catch (error) {
-      console.error("Error during POST request:", error);
-      alert('unable to create record');
-      // Handle the error appropriately (e.g., show a notification to the user)
-    }
-  };
 
 
   const [devices, setDevices] = useState([]);
@@ -551,125 +227,77 @@ const handleEditSubmit = async () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchDevices = async () => {
+   
+  
+    const fetchDevices = async (myDevices) => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/devices', {
-          headers: {
-            'Authorization': 'Basic ' + btoa('schoolmaster:123456'), // Replace with your username and password
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+        let response;
+        const token = localStorage.getItem('token');
+  
+        if (role == 1) {
+          response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } else if (role == 2) {
+          response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/read-devices`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } else if (role == 3) {
+          response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/read-devices`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } else if (role == 4) {
+          response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
         }
-
-        const data = await response.json();
-        setDevices(data); // Adjust according to the actual response format
-      } catch (err) {
-        setError(err.message);
+  
+        if (response?.data) {
+          const allData = role == 1
+            ? response.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.devices) ? branch.devices : []
+                )
+              )
+            : role == 2
+            ? response.data.branches.flatMap((branch) =>
+                Array.isArray(branch.devices) ? branch.devices : []
+              )
+            : role == 3
+            ? response.data.devices
+            : role == 4
+            ? response.data.data.flatMap((school) =>
+                school.branches.flatMap((branch) =>
+                  Array.isArray(branch.devices) ? branch.devices : []
+                )
+              )
+            : [];
+  
+          // Combine the data from myfetchDevices and fetchDevices
+          
+  
+          setDevices(allData);
+          console.log('Merged Devices:', allData);
+        } else {
+          console.error('Expected an array but got:', response.data);
+        }
+      } catch (error) {
+        console.error('Error:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchDevices();
-  }, []);
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error}</p>;
-  const [groups, setGroups] = useState([]);
-  // const [error, setError] = useState(null);
+  
+  
+  fetchDevices();
+   
+  }, [role]);
 
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        const response = await fetch('https://rocketsalestracker.com/api/groups', {
-          method: 'GET',
-          headers: {
-            'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        setGroups(data); // Assuming the API returns { groups: [...] }
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-
-    fetchGroups();
-  }, []);
-
-  // const [startDate, setStartDate] = useState('');
-  // const [endDate, setEndDate] = useState('');
+ 
   const [selectedDevice, setSelectedDevice] = useState('');
-  const [selectedGroup, setSelectedGroup] = useState('');
+ 
   const [apiUrl, setApiUrl] = useState('');
-  // const handleShowClick = async () => {
-  //   if (!startDate || !endDate || !selectedDevice || !selectedGroup) {
-  //     alert('Please fill all fields');
-  //     return;
-  //   }
-
-  //   // Construct the API URL
-  //   const url = `https://rocketsalestracker.com/api/reports/combined?from=${encodeURIComponent(startDate)}&to=${encodeURIComponent(endDate)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
-    
-  //   setApiUrl(url); // Update the state with the generated URL
-
-  //   console.log(url);
-    
-  // };
-  // const formatToUTC = (localDateTime) => {
-  //   if (!localDateTime) return '';
-
-  //   const localDate = new Date(localDateTime);
-  //   const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
-  //   const isoString = utcDate.toISOString();
-  //   return isoString;
-  // };
-  // const handleShowClick = async () => {
-  //   const formattedStartDate = formatToUTC(startDate);
-  //   const formattedEndDate = formatToUTC(endDate);
-
-  //   if (!formattedStartDate || !formattedEndDate || !selectedDevice || !selectedGroup) {
-  //     alert('Please fill all fields');
-  //     return;
-  //   }
-
-  //   // Construct the API URL
-  //   const url = `https://rocketsalestracker.com/api/reports/combined?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
-
-  //   setApiUrl(url); // Update the state with the generated URL
-
-  //   // try {
-  //   //   // Make the API request
-  //   //   const response = await fetch(url);
-  //   //   if (!response.ok) {
-  //   //     throw new Error('Network response was not ok');
-  //   //   }
-  //   //   const data = await response.json();
-  //   //   console.log('API response:', data); // Handle the API response data here
-  //   // } catch (error) {
-  //   //   console.error('There was a problem with the fetch operation:', error);
-  //   // }
-  // };
-  // const handleShowClick = () => {
-  //   const formattedStartDate = formatToUTC(startDate);
-  //   const formattedEndDate = formatToUTC(endDate);
-
-  //   if (!formattedStartDate || !formattedEndDate || !selectedDevice) {
-  //     alert('Please fill all fields');
-  //     return;
-  //   }
-
-  //   // Construct the API URL
-  //   const url = `https://rocketsalestracker.com/api/reports/route?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}`;
-    
-  //   setApiUrl(url); // Update the state with the generated URL
-  //   fetchData(url); // Call fetchData with the generated URL
-  // };
+  
   const handleShowClick = () => {
   const formattedStartDate = formatToUTC(startDate);
   const formattedEndDate = formatToUTC(endDate);
@@ -680,7 +308,7 @@ const handleEditSubmit = async () => {
   }
 
   // Construct the API URL
-  const url = `https://rocketsalestracker.com/api/reports/events?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&type=${encodeURIComponent(selectedNotification)}`;
+  const url = `${process.env.REACT_APP_ROCKETSALES_API}/reports/events?deviceId=${encodeURIComponent(selectedDevice)}&from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&type=${encodeURIComponent(selectedNotification)}`;
   
   setApiUrl(url); // Update the state with the generated URL
   fetchData(url); // Call fetchData with the generated URL
@@ -692,167 +320,13 @@ const formatToUTC = (localDateTime) => {
   return utcDate.toISOString();
 };
   
-// const fetchData = async (url) => {
-//   console.log('Fetching report...');
-//   setLoading(true);
 
-//   try {
-//     const username = "school";
-//     const password = "123456";
-//     const token = btoa(`${username}:${password}`);
-
-//     const response = await axios.get(url, {
-//       headers: {
-//         Authorization: `Basic ${token}`,
-//       },
-//       responseType: 'blob', // Downloading as binary data
-//     });
-
-//     // Log the content type of the response
-//     console.log('Content-Type:', response.headers['content-type']);
-
-//     // Handle JSON response
-//     if (response.headers['content-type'] === 'application/json') {
-//       const text = await response.data.text(); // Convert Blob to text
-//       console.log('JSON Response:', text); // Log JSON response
-//       const jsonResponse = JSON.parse(text); // Parse JSON
-//       // Process the JSON response
-//       console.log('Processed JSON Data:', jsonResponse);
-
-//       // Example: Set filtered rows and total responses from JSON data
-//       setFilteredRows(jsonResponse.map(data => ({
-//         deviceId: data.deviceId || 'N/A',
-//         eventTime: data.fixTime ? new Date(data.fixTime).toLocaleString() : 'N/A',
-//         latitude: data.latitude ? `${data.latitude.toFixed(6)}°` : 'N/A',
-//         longitude: data.longitude ? `${data.longitude.toFixed(6)}°` : 'N/A',
-//         speed: data.speed ? `${data.speed.toFixed(2)} mph` : 'N/A',
-//         address: data.address || 'Show Address',
-//         course: data.course > 0 ? '↑' : '↓',
-//         altitude: data.altitude ? `${data.altitude.toFixed(2)} m` : 'N/A',
-//         accuracy: data.accuracy ? `${data.accuracy.toFixed(2)}` : 'N/A',
-//         valid: data.valid ? 'Yes' : 'No',
-//         protocol: data.protocol || 'N/A',
-//         deviceTime: data.deviceTime ? new Date(data.deviceTime).toLocaleString() : 'N/A',
-//         serverTime: data.serverTime ? new Date(data.serverTime).toLocaleString() : 'N/A',
-//         geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//         satellites: data.attributes?.sat || 'N/A',
-//         RSSI: data.attributes?.rssi || 'N/A',
-//         odometer: data.attributes?.odometer ? `${data.attributes.odometer.toFixed(2)} mi` : 'N/A',
-//         batteryLevel: data.attributes?.batteryLevel || 'N/A',
-//         ignition: data.attributes?.ignition ? 'Yes' : 'No',
-//         charge: data.attributes?.charge ? 'Yes' : 'No',
-//         archive: data.attributes?.archive ? 'Yes' : 'No',
-//         distance: data.attributes?.distance ? `${data.attributes.distance.toFixed(2)} mi` : 'N/A',
-//         totalDistance: data.attributes?.totalDistance ? `${data.attributes.totalDistance.toFixed(2)} mi` : 'N/A',
-//         motion: data.attributes?.motion ? 'Yes' : 'No',
-//         blocked: data.attributes?.blocked ? 'Yes' : 'No',
-//         alarm1Status: data.attributes?.alarm1Status || 'N/A',
-//         otherStatus: data.attributes?.otherStatus || 'N/A',
-//         alarm2Status: data.attributes?.alarm2Status || 'N/A',
-//         engineStatus: data.attributes?.engineStatus ? 'On' : 'Off',
-//         adc1: data.attributes?.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : 'N/A'
-//       })));
-
-//       setTotalResponses(jsonResponse.length);
-
-//     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-//       // Handle Excel response
-//       const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-//       saveAs(blob, 'report.xlsx'); // Save the file to the user's system
-
-//       // Process the file to extract data
-//       const reader = new FileReader();
-//       reader.onload = (e) => {
-//         const data = new Uint8Array(e.target.result);
-//         const reportWorkbook = XLSX.read(data, { type: 'array' });
-
-//         const firstSheetName = reportWorkbook.SheetNames[0];
-//         const reportWorksheet = reportWorkbook.Sheets[firstSheetName];
-        
-//         // Convert worksheet data to JSON
-//         const jsonData = XLSX.utils.sheet_to_json(reportWorksheet);
-
-//         console.log('Extracted JSON Data from Excel:', jsonData);
-
-//         // Process the data
-//         const processedEvents = jsonData.map(data => ({
-//           deviceId: data.deviceId,
-//           eventTime: new Date(data.fixTime).toLocaleString(),
-//           latitude: `${data.latitude.toFixed(6)}°`,
-//           longitude: `${data.longitude.toFixed(6)}°`,
-//           speed: `${data.speed.toFixed(2)} mph`,
-//           address: data.address || 'Show Address',
-//           course: data.course > 0 ? '↑' : '↓',
-//           altitude: `${data.altitude.toFixed(2)} m`,
-//           accuracy: `${data.accuracy.toFixed(2)}`,
-//           valid: data.valid ? 'Yes' : 'No',
-//           protocol: data.protocol,
-//           deviceTime: new Date(data.deviceTime).toLocaleString(),
-//           serverTime: new Date(data.serverTime).toLocaleString(),
-//           geofences: data.geofenceIds ? data.geofenceIds.join(', ') : 'None',
-//           satellites: data.attributes.sat || '',
-//           RSSI: data.attributes.rssi || '',
-//           odometer: `${(data.attributes.odometer || 0).toFixed(2)} mi`,
-//           batteryLevel: data.attributes.batteryLevel || '',
-//           ignition: data.attributes.ignition ? 'Yes' : 'No',
-//           charge: data.attributes.charge ? 'Yes' : 'No',
-//           archive: data.attributes.archive ? 'Yes' : 'No',
-//           distance: `${(data.attributes.distance || 0).toFixed(2)} mi`,
-//           totalDistance: `${(data.attributes.totalDistance || 0).toFixed(2)} mi`,
-//           motion: data.attributes.motion ? 'Yes' : 'No',
-//           blocked: data.attributes.blocked ? 'Yes' : 'No',
-//           alarm1Status: data.attributes.alarm1Status || '',
-//           otherStatus: data.attributes.otherStatus || '',
-//           alarm2Status: data.attributes.alarm2Status || '',
-//           engineStatus: data.attributes.engineStatus ? 'On' : 'Off',
-//           adc1: data.attributes.adc1 ? `${data.attributes.adc1.toFixed(2)} V` : ''
-//         }));
-
-//         console.log('Processed Events:', processedEvents);
-
-//         setFilteredRows(processedEvents.map(event => ({
-//           ...event,
-//           isSelected: false
-//         })));
-
-//         setTotalResponses(processedEvents.length);
-
-//         // Optionally export the processed data back to an Excel file
-//         const outputWorksheet = XLSX.utils.json_to_sheet(processedEvents);
-//         const outputWorkbook = XLSX.utils.book_new();
-//         XLSX.utils.book_append_sheet(outputWorkbook, outputWorksheet, 'Processed Report');
-
-//         // Trigger file download
-//         XLSX.writeFile(outputWorkbook, 'processed_report.xlsx');
-//       };
-
-//       reader.readAsArrayBuffer(blob); // Read the Blob as an ArrayBuffer
-//     } else {
-//       throw new Error('Unexpected content type: ' + response.headers['content-type']);
-//     }
-//   } catch (error) {
-//     console.error('Error fetching the report:', error);
-//     alert('Failed to download or process report.');
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-// const sortedData = React.useMemo(() => {
-//   if (!sortConfig.key) return data;
-//   return [...data].sort((a, b) => {
-//     if (a[sortConfig.key] < b[sortConfig.key]) return sortConfig.direction === 'ascending' ? -1 : 1;
-//     if (a[sortConfig.key] > b[sortConfig.key]) return sortConfig.direction === 'ascending' ? 1 : -1;
-//     return 0;
-//   });
-// }, [data, sortConfig]);
 const fetchData = async (url) => {
   console.log('Fetching report...');
   setLoading(true);
 
   try {
-    const username = "schoolmaster";
-    const password = "123456";
+    
     const token = btoa(`${username}:${password}`);
 
     const response = await axios.get(url, {
@@ -865,7 +339,7 @@ const fetchData = async (url) => {
     // Log the content type of the response
     console.log('Content-Type:', response.headers['content-type']);
     const deviceIdToNameMap = devices.reduce((acc, device) => {
-      acc[device.id] = device.name; // Use device.id and device.name as key-value pair
+      acc[device.deviceId] = device.deviceName; // Use device.id and device.name as key-value pair
       return acc;
     }, {});
     // Handle JSON response
@@ -945,7 +419,7 @@ const fetchData = async (url) => {
     }
   } catch (error) {
     console.error('Error fetching the report:', error);
-    alert("please select device,event and date");
+    // alert("please select device,event and date");
   } finally {
     setLoading(false);
   }
@@ -958,10 +432,10 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
   useEffect(() => {
     const fetchNotificationTypes = async () => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/notifications/types', {
+        const response = await fetch(`${process.env.REACT_APP_ROCKETSALES_API}/notifications/types`, {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('school:123456'), // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa(`${username}:${password}`), // Replace with actual credentials
           },
         });
 
@@ -979,8 +453,8 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
     fetchNotificationTypes();
   }, []);
   const options = devices.map((device) => ({
-    value: device.id,
-    label: device.name,
+    value: device.deviceId,
+    label: device.deviceName,
   }));
   
   const handleChange = (selectedOption) => {
@@ -1136,16 +610,7 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
 </div>
 
 
-      {/* <select
-        value={selectedGroup}
-        onChange={(e) => setSelectedGroup(e.target.value)}
-        style={{ marginRight: "10px", padding: "5px" }}
-      >
-        <option value="">Select Group</option>
-        {groups.map(group => (
-          <option key={group.id} value={group.id}>{group.name}</option>
-        ))}
-      </select> */}
+     
 
       <div style={{ marginRight: "10px", padding: "5px" }}>
         <label htmlFor="start-date">Start Date & Time:</label>
@@ -1213,132 +678,7 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
               }}
             >
             
-              {/* <Table
-  stickyHeader
-  aria-label="sticky table"
-  style={{ border: "1px solid black" }}
->
-  <TableHead>
-    <TableRow
-      style={{
-        borderBottom: "1px solid black",
-        borderTop: "1px solid black",
-      }}
-    >
-      <TableCell
-        padding="checkbox"
-        style={{
-          borderRight: "1px solid #e0e0e0",
-          borderBottom: "2px solid black",
-        }}
-      >
-        <Switch
-          checked={selectAll}
-          onChange={handleSelectAll}
-          color="primary"
-        />
-      </TableCell>
-      {COLUMNS()
-        .filter((col) => columnVisibility[col.accessor])
-        .map((column) => (
-          <TableCell
-            key={column.accessor}
-            align={column.align}
-            style={{
-              minWidth: column.minWidth,
-              cursor: "pointer",
-              borderRight: "1px solid #e0e0e0",
-              borderBottom: "2px solid black",
-              padding: "4px 4px",
-              textAlign: "center",
-              fontWeight: "bold",
-            }}
-            onClick={() => requestSort(column.accessor)}
-          >
-            {column.Header}
-            {sortConfig.key === column.accessor ? (
-              sortConfig.direction === "ascending" ? (
-                <ArrowUpwardIcon fontSize="small" />
-              ) : (
-                <ArrowDownwardIcon fontSize="small" />
-              )
-            ) : null}
-          </TableCell>
-        ))}
-    </TableRow>
-  </TableHead>
-  <TableBody>
-    {sortedData.length === 0 ? (
-      <TableRow>
-        <TableCell
-          colSpan={COLUMNS().filter((col) => columnVisibility[col.accessor]).length}
-          style={{
-            textAlign: 'center',
-            padding: '16px',
-            fontSize: '16px',
-            color: '#757575',
-          }}
-        >
-          <h4>No Data Available</h4>
-        </TableCell>
-      </TableRow>
-    ) : (
-      sortedData
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-        .map((row, index) => (
-          <TableRow
-            hover
-            role="checkbox"
-            tabIndex={-1}
-            key={row.id}
-            onClick={() =>
-              handleRowSelect(page * rowsPerPage + index)
-            }
-            selected={row.isSelected}
-            style={{
-              backgroundColor:
-                index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-              borderBottom: "none",
-            }}
-          >
-            <TableCell
-              padding="checkbox"
-              style={{ borderRight: "1px solid #e0e0e0" }}
-            >
-              <Switch checked={row.isSelected} color="primary" />
-            </TableCell>
-            {COLUMNS()
-              .filter((col) => columnVisibility[col.accessor])
-              .map((column) => {
-                // Debug output
-                // console.log(`Row data: ${JSON.stringify(row)}, Column accessor: ${column.accessor}`);
 
-                // Access the correct value from the row
-                const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-                return (
-                  <TableCell
-                    key={column.accessor}
-                    align={column.align}
-                    style={{
-                      borderRight: "1px solid #e0e0e0",
-                      paddingTop: "4px",
-                      paddingBottom: "4px",
-                      borderBottom: "none",
-                      backgroundColor:
-                        index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                      fontSize: "smaller",
-                    }}
-                  >
-                    {column.Cell ? column.Cell({ value }) : value}
-                  </TableCell>
-                );
-              })}
-          </TableRow>
-        ))
-    )}
-  </TableBody>
-</Table> */}
  <Table
       stickyHeader
       aria-label="sticky table"
@@ -1433,29 +773,7 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
                 >
                   <Switch checked={row.isSelected} color="primary" />
                 </TableCell>
-                {/* {COLUMNS()
-                  .filter((col) => columnVisibility[col.accessor])
-                  .map((column) => {
-                    const value = column.accessor.split('.').reduce((acc, part) => acc && acc[part], row);
-
-                    return (
-                      <TableCell
-                        key={column.accessor}
-                        align={column.align || 'left'}
-                        style={{
-                          borderRight: "1px solid #e0e0e0",
-                          paddingTop: "4px",
-                          paddingBottom: "4px",
-                          borderBottom: "none",
-                          backgroundColor:
-                            index % 2 === 0 ? "#ffffff" : "#eeeeefc2",
-                          fontSize: "smaller",
-                        }}
-                      >
-                        {column.Cell ? column.Cell({ value }) : value}
-                      </TableCell>
-                    );
-                  })} */}
+              
                   {COLUMNS()
   .filter((col) => columnVisibility[col.accessor])
   .map((column) => {
@@ -1535,103 +853,8 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
             ))}
           </Box>
         </Modal>
-        <Modal open={editModalOpen} onClose={handleModalClose}>
-          <Box sx={style}>
-            {/* <h2>Edit Row</h2> */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ flexGrow: 1 }}>Edit Row</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleEditSubmit}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Modal>
-        <Modal open={addModalOpen} onClose={handleModalClose}>
-          <Box sx={style}>
-            {/* <h2>Add Row</h2> */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: "20px",
-              }}
-            >
-              <h2 style={{ flexGrow: 1 }}>Add Row</h2>
-              <IconButton onClick={handleModalClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            {COLUMNS()
-              .slice(0, -1)
-              .map((col) => (
-                <TextField
-                  key={col.accessor}
-                  label={col.Header}
-                  variant="outlined"
-                  name={col.accessor}
-                  value={formData[col.accessor] || ""}
-                  onChange={handleInputChange}
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                />
-              ))}
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddSubmit}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Modal>
-        <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
-          <Box sx={style}>
-            <h2>Import Data</h2>
-            <input type="file" onChange={handleFileUpload} />
-            {importData.length > 0 && (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() =>
-                  setFilteredRows([
-                    ...filteredRows,
-                    ...importData.map((row) => ({ ...row, isSelected: false })),
-                  ])
-                }
-                sx={{ marginTop: "10px" }}
-              >
-                Import
-              </Button>
-            )}
-          </Box>
-        </Modal>
+      
+        
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={3000}

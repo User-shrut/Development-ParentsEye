@@ -79,8 +79,9 @@ export const Combined = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-const role=localStorage.getItem("role");
-  
+  const role=localStorage.getItem("role");
+  const username = "schoolmaster";
+  const password = "123456";
  
 
 
@@ -247,7 +248,7 @@ console.log("API URL from env:", apiUrl);  // Verify it's correct
     try {
       const response = await fetch(`${process.env.REACT_APP_ROCKETSALES_API}/devices`, {
         headers: {
-          Authorization: 'Basic ' + btoa('schoolmaster:123456'),
+          Authorization: 'Basic ' + btoa(`${username}:${password}`),
         },
       });
 
@@ -372,10 +373,10 @@ const [mygroups, mysetGroups] = useState([]);
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const response = await fetch('https://rocketsalestracker.com/api/groups', {
+        const response = await fetch(`${process.env.REACT_APP_ROCKETSALES_API}/groups`, {
           method: 'GET',
           headers: {
-            'Authorization': 'Basic ' + btoa('schoolmaster:123456') // Replace with actual credentials
+            'Authorization': 'Basic ' + btoa(`${username}:${password}`) // Replace with actual credentials
           }
         });
 
@@ -442,7 +443,7 @@ useEffect(() => {
     }
 
     // Construct the API URL
-    const url = `https://rocketsalestracker.com/api/reports/combined?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
+    const url = `${process.env.REACT_APP_ROCKETSALES_API}/reports/combined?from=${encodeURIComponent(formattedStartDate)}&to=${encodeURIComponent(formattedEndDate)}&deviceId=${encodeURIComponent(selectedDevice)}&groupId=${encodeURIComponent(selectedGroup)}`;
     
     setApiUrl(url); // Update the state with the generated URL
     fetchData(url); // Call fetchData with the generated URL
@@ -461,8 +462,7 @@ const fetchData = async (url) => {
   setLoading(true);
 
   try {
-    const username = "schoolmaster";
-    const password = "123456";
+   
     const token = btoa(`${username}:${password}`);
 
     // Make the GET request to fetch the data
@@ -547,11 +547,11 @@ const fetchData = async (url) => {
       );
     } else {
       console.error("Expected an array but got:", responseData);
-      alert("Unexpected data format.");
+      // alert("Unexpected data format.");
     }
   } catch (error) {
     console.error("Fetch data error:", error);
-    alert("please select device, group and date");
+    // alert("please select device, group and date");
   } finally {
     setLoading(false);
   }
