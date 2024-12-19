@@ -32,6 +32,7 @@ import { IconButton } from "@mui/material";
 import { saveAs } from 'file-saver'; // Save file to the user's machine
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 import Select from "react-select";
+import Export from "./ExportTrip";
 const style = {
   position: "absolute",
   top: "50%",
@@ -183,23 +184,6 @@ const[loadingdevice,setloadingdevices]=useState(true);
     setFilteredRows(newFilteredRows);
     setSelectAll(newSelectAll);
   };
-
- 
-
-
-
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Trips.xlsx");
-  };
-
- 
 
   const sortedData = [...filteredRows];
   if (sortConfig.key !== null) {
@@ -709,13 +693,8 @@ console.log("Grouped Data11:", groupedData);
   <ImportExportIcon />
   Column Visibility
 </Button>
-         
-         
-         
-         
-<Button variant="contained" color="error" onClick={handleExport}>
-            Export
-          </Button>
+<Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"TRIPS REPORT"} pdfFilename={"TripsReport.pdf"} excelFilename={"TripsReport.xlsx"}/>
+       
         </div>
        
      <div

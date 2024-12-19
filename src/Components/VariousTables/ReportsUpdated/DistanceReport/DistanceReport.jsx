@@ -36,6 +36,7 @@ import { IconButton } from "@mui/material";
 import { saveAs } from 'file-saver'; // Save file to the user's machine
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 import Select from "react-select";
+import Export from "./ExportDistanceReport"
 const style = {
   position: "absolute",
   top: "50%",
@@ -111,6 +112,15 @@ const COLUMNS = () => {
         dateColumns.push(key); // Add the date as a column header if it doesn't already exist
       }
     });
+  });
+  const toSortableDate = (date) => {
+    const [day, month, year] = date.split("/").map(Number);
+    return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+  };
+
+  // Sort the dates using the sortable format
+  dateColumns.sort((a, b) => {
+    return new Date(toSortableDate(a)) - new Date(toSortableDate(b));
   });
 
   // Create columns for each date
@@ -237,16 +247,16 @@ const { setTotalResponses } = useContext(TotalResponsesContext); // Get the cont
 
   
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "DistanceReport.xlsx");
-  };
+  // const handleExport = () => {
+  //   const dataToExport = filteredRows.map((row) => {
+  //     const { isSelected, ...rowData } = row;
+  //     return rowData;
+  //   });
+  //   const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+  //   const workbook = XLSX.utils.book_new();
+  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+  //   XLSX.writeFile(workbook, "DistanceReport.xlsx");
+  // };
 
   
 
@@ -713,12 +723,8 @@ const fetchData = async (url) => {
   Column Visibility
 </Button>
          
-         
-         
-         
-<Button variant="contained" color="error" onClick={handleExport}>
-            Export
-          </Button>
+<Export sortedData={sortedData} columnVisibility={columnVisibility} COLUMNS={COLUMNS} pdfTitle={"DISTANCE REPORT"} pdfFilename={"DistanceReport"} excelFilename={"DistanceReport.xlsx"}/>
+
           <div
   style={{
     width: "250px",
@@ -1040,10 +1046,18 @@ const fetchData = async (url) => {
       }
 
       // Calculate the column total by summing up relevant values in `sortedData`
+      // const columnTotal = sortedData.reduce((sum, row) => {
+      //   const value = parseFloat(row[column.accessor] || 0); // Default to 0 if value is undefined
+      //   return sum + (isNaN(value) ? 0 : value);
+      // }, 0);
+
       const columnTotal = sortedData.reduce((sum, row) => {
-        const value = parseFloat(row[column.accessor] || 0); // Default to 0 if value is undefined
-        return sum + (isNaN(value) ? 0 : value);
+        const formattedAccessor = column.accessor.replace("date_", "").replace(/-/g, "/"); // Convert "date_05-12-2024" to "05/12/2024"
+        // Extract and parse the value for the column
+        const value = parseFloat(row[formattedAccessor] || 0); // Default to 0 if the value is missing or undefined
+        return sum + (isNaN(value) ? 0 : value); // Add only valid numeric values
       }, 0);
+
 
       return (
         <TableCell

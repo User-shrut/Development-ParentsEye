@@ -34,6 +34,7 @@ import { saveAs } from 'file-saver'; // Save file to the user's machine
 //import { TextField } from '@mui/material';
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 import Select from "react-select";
+import Export from "../../Export";
 const style = {
   position: "absolute",
   top: "50%",
@@ -171,21 +172,6 @@ export const Event = () => {
       setSnackbarOpen(true);
     }
   };
-
- 
-
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Event.xlsx");
-  };
-
-
 
   const sortedData = [...filteredRows];
   if (sortConfig.key !== null) {
@@ -530,13 +516,8 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
             <ImportExportIcon />
             Column Visibility
           </Button>
-        
-        
-         
-         
-          <Button variant="contained" color="error" onClick={handleExport}>
-            Export
-          </Button>
+<Export filteredRows={filteredRows} COLUMNS={COLUMNS} columnVisibility={columnVisibility}  pdfTitle={"EVENTS REPORT"} pdfFilename={"EventsReport.pdf"} excelFilename={"EventsReport.xlsx"}/>
+
         </div>
        
      <div
