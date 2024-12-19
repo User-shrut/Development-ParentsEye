@@ -1986,7 +1986,7 @@ export const Geofence = () => {
           },
         });
       }else if (role == 4) {
-        response = await axios.get(`http://63.142.251.13:4000/branchgroupuser/getgeofence`, {
+        response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
