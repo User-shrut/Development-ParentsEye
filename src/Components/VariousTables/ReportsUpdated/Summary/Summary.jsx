@@ -107,21 +107,39 @@ const[deviceloader,setdeviceloader]=useState(true);
 
  
   const filterData = (text) => {
-    let dataToFilter = originalRows;
+    // let dataToFilter = originalRows;
   
-    // Apply date filter
-    if (startDate && endDate) {
-      dataToFilter = dataToFilter.filter((row) => {
-        const rowDate = new Date(row.dateOfBirth); // Adjust based on your date field
-        return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
-      });
-    }
+    // // Apply date filter
+    // // if (startDate && endDate) {
+    // //   dataToFilter = dataToFilter.filter((row) => {
+    // //     const rowDate = new Date(row.dateOfBirth); // Adjust based on your date field
+    // //     return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
+    // //   });
+    // // }
   
-    // Apply text filter
-    if (text === "") {
-      setFilteredRows(dataToFilter); // Reset to full filtered data
+    // // Apply text filter
+    // if (text === "") {
+    //   setFilteredRows(dataToFilter); // Reset to full filtered data
+    // } else {
+    //   const filteredData = dataToFilter
+    //     .filter((row) =>
+    //       Object.values(row).some(
+    //         (val) =>
+    //           typeof val === "string" &&
+    //           val.toLowerCase().includes(text.toLowerCase())
+    //       )
+    //     )
+    //     .map((row) => ({ ...row, isSelected: false }));
+      
+    //   setFilteredRows(filteredData); // Update filtered rows
+    // }
+     // Apply text-based filtering
+     if (text === "") {
+      // If no text is provided, reset to original rows
+      setFilteredRows(originalRows.map(row => ({ ...row, isSelected: false })));
     } else {
-      const filteredData = dataToFilter
+      // Filter based on text
+      const filteredData = originalRows
         .filter((row) =>
           Object.values(row).some(
             (val) =>
@@ -130,8 +148,8 @@ const[deviceloader,setdeviceloader]=useState(true);
           )
         )
         .map((row) => ({ ...row, isSelected: false }));
-      
-      setFilteredRows(filteredData); // Update filtered rows
+  
+      setFilteredRows(filteredData);
     }
   };
   
@@ -474,7 +492,7 @@ const fetchData = async (url) => {
       }, {});
 
       console.log("groupedDataMap", groupedDataMap);
-
+      
       // Now process each group and create a single object for each date group
       const summarizedData = Object.values(groupedDataMap)
         .filter(group => group.length > 0) // Exclude empty groups
@@ -518,7 +536,10 @@ const fetchData = async (url) => {
 
       console.log('Summarized Data:', summarizedData);
 
+
       setFilteredRows(summarizedData); // Update the state with summarized data
+      setOriginalRows(summarizedData);
+     
       setTotalResponses(summarizedData.length); // Number of summarized groups
     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
       // Handle Excel response (similar to the original code)

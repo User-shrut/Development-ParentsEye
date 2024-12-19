@@ -30,6 +30,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
+import InputAdornment from "@mui/material/InputAdornment"; // Add this import
+import SchoolIcon from '@mui/icons-material/School';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 
 //import { TextField } from '@mui/material';
 
@@ -1213,6 +1216,13 @@ const SchoolMaster = () => {
                 onChange={handleInputChange}
                 sx={{ marginBottom: "10px" }}
                 fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      {col.icon}  {/* Add Face6Icon in the input field */}
+                    </InputAdornment>
+                  ),
+                }}
               />
             ))}
             <Button
@@ -1248,7 +1258,14 @@ const SchoolMaster = () => {
                 value={formData[col.accessor] || ""}
                 onChange={handleInputChange}
                 sx={{ marginBottom: "10px" }}
-                fullWidth
+                fullWidth 
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      {col.icon} {/* Add Face6Icon in the input field */}
+                    </InputAdornment>
+                  ),
+                }}
               />
             ))}
             <Button

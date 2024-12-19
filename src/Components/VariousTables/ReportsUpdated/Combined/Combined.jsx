@@ -522,7 +522,7 @@ const fetchData = async (url) => {
             serverTime: matchingPosition ? matchingPosition.serverTime : "N/A", // Add serverTime if a match is found
           };
         });
-
+        setOriginalRows(enrichedEvents.map((row) => ({ ...row, isSelected: false })));
         return {
           deviceId: item.deviceId,
           deviceName: deviceName,
@@ -542,7 +542,6 @@ const fetchData = async (url) => {
           }))
         )
       );
-
       // Update the total number of events
       setTotalResponses(
         processedData.reduce((total, item) => total + item.processedEvents.length, 0)

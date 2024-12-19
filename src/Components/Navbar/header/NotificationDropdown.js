@@ -10,6 +10,7 @@ import {
 } from '@coreui/react'
 
 const NotificationDropdown = ({ notifications }) => {
+  console.log("ondropdown",notifications);
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 fs-5 pe-0" caret={false}>
@@ -25,10 +26,18 @@ const NotificationDropdown = ({ notifications }) => {
           </CBadge>
         )}
       </CDropdownToggle>
-      <CDropdownMenu className="pt-2" placement="bottom-end" style={{ width: '200px' }}>
-        {notifications.map((notification, index) => (
-          <CDropdownItem key={index} style={{fontSize: "12px"}}>{notification.message}</CDropdownItem>
-        ))}
+      <CDropdownMenu className="pt-2" placement="bottom-end" style={{ width: '400px' }}>
+        {notifications.length > 0 ? (
+          notifications.map((notification, index) => (
+            <CDropdownItem key={index} style={{ fontSize: '12px', width:"100", textAlign:"center" }}>
+              {notifications[index]}
+            </CDropdownItem>
+          ))
+        ) : (
+          <CDropdownItem style={{ fontSize: '12px', textAlign:"center" }}>
+            No Notifications
+          </CDropdownItem>
+        )}
       </CDropdownMenu>
     </CDropdown>
   )

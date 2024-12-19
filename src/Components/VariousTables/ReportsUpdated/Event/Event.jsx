@@ -366,6 +366,7 @@ const fetchData = async (url) => {
 
       // Set the filtered rows and the total responses
       setFilteredRows(processedEvents);
+      setOriginalRows(processedEvents.map((row) => ({ ...row, isSelected: false })));
       setTotalResponses(processedEvents.length);
 
     } else if (response.headers['content-type'] === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
@@ -403,6 +404,7 @@ const fetchData = async (url) => {
         console.log('Processed Events:', processedEvents);
 
         setFilteredRows(processedEvents);
+        setOriginalRows(processedEvents.map((row) => ({ ...row, isSelected: false })));
         setTotalResponses(processedEvents.length);
 
         // Optionally export the processed data back to an Excel file

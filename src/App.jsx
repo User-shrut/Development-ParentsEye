@@ -98,6 +98,9 @@ import './scss/style.scss';
 import { UserAccess } from "./Components/VariousTables/Users/UserAccess/UserAccess.jsx";
 import { DistanceReport } from "./Components/VariousTables/ReportsUpdated/DistanceReport/DistanceReport.jsx";
 import { UrgentExcel } from "./Components/VariousTables/ReportsUpdated/UrgentExcel/UrgentExcel.jsx";
+import { Notification } from "./Components/VariousTables/Users/Notification/Notification.jsx";
+import { jwtDecode } from "jwt-decode";
+
 function App() {
   const [state, setState] = useState(0);
   const [sideBarItems, setSideBarItems] = useState([]);
@@ -112,13 +115,229 @@ function App() {
   const role = localStorage.getItem("role");
   const [deviceApiData, setDeviceApiData] = useState([]); // State variable to store device API data
   const [positionApiData, setPositionApiData] = useState([]); // State variable to store position API data
-  const [hierarchydeviceData,sethierarchydeviceData]=useState([]);
+  // const [hierarchydeviceData,sethierarchydeviceData]=useState([]);
+  const [hierarchydeviceData,setHierarchyDeviceData]=useState([]);
   const [mergedData, setMergedData] = useState([]);
   const username = "schoolmaster";
   const password = "123456";
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // null to represent loading state
+  const [isTokenValid, setIsTokenValid] = useState(false);
   
 
+  // Validate token on mount
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    try {
+      if (token) {
+        const decoded = jwtDecode(token);
+         // Set role from token
+        setIsTokenValid(true); // Mark token as valid
+      } else {
+        throw new Error("Token is missing or invalid");
+      }
+    } catch (error) {
+      console.error("Error validating token:", error);
+      localStorage.removeItem("token");
+      window.location.href = "/Login"; // Redirect to login if token is invalid
+    }
+  }, []);
+  
+  // !my anirudhh without data but with validation
+  useEffect(() => {
+    if (!isTokenValid) return; // Prevent fetching if token is invalid
+
+    const fetchBuses = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const apiUrl =
+          role == 1
+            ? `${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`
+            : role == 2
+            ? `${process.env.REACT_APP_SCHOOL_API}/read-devices`
+            : role==3
+            ? `${process.env.REACT_APP_BRANCH_API}/read-devices`
+            :`${process.env.REACT_APP_USERBRANCH}/getdevicebranchgroupuser`
+
+        const response = await axios.get(apiUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        let allData = [];
+        let deviceIdsFromBuses = [];
+
+        if (role == 1) {
+          response.data.data.forEach((school) => {
+            const schoolName = school.schoolName;
+            school.branches.forEach((branch) => {
+              const branchName = branch.branchName;
+              branch.devices.forEach((device) => {
+                allData.push({
+                  schoolId: school.schoolId,
+                  	schoolName: schoolName,
+                  branchId: branch.branchId,
+                  branchName: branchName,
+                  actualDeviceId: device.actualDeviceId,
+                  deviceId: device.deviceId,
+                  deviceName: device.deviceName,
+                });
+                deviceIdsFromBuses.push(device.deviceId);
+              });
+            });
+          });
+        } else if (role == 2) {
+          response.data.branches.forEach((branch) => {
+            const branchName = branch.branchName;
+            branch.devices.forEach((device) => {
+              allData.push({
+                schoolId: response.data.schoolId,
+                branchId: branch.branchId,
+                branchName: branchName,
+                actualDeviceId: device.actualDeviceId,
+                deviceId: device.deviceId,
+                deviceName: device.deviceName,
+              });
+              deviceIdsFromBuses.push(device.deviceId);
+            });
+          });
+        } else if (role == 3) {
+          const schoolName = response.data.schoolName;
+          const branchName = response.data.branchName;
+          response.data.devices.forEach((device) => {
+            allData.push({
+              schoolName: schoolName,
+              branchName: branchName,
+              actualDeviceId: device.actualDeviceId,
+              deviceId: device.deviceId,
+              deviceName: device.deviceName,
+            });
+            deviceIdsFromBuses.push(device.deviceId);
+          });
+        }
+          if (role == 4) {
+          allData = response.data.data.flatMap((school) =>
+              Array.isArray(school.branches) && school.branches.length > 0
+                  ? school.branches.flatMap((branch) =>
+                        Array.isArray(branch.devices) && branch.devices.length > 0
+                            ? branch.devices.map((device) => ({
+                                  deviceId: device.deviceId,
+                                  deviceName: device.deviceName,
+                                  actualDeviceId: device.actualDeviceId,
+                                  branchName: branch.branchName,
+                                  schoolName: school.schoolName,
+                              }))
+                            : []
+                    )
+                  : []
+          );
+      
+          // Collect all deviceIds into deviceIdsFromBuses
+          const deviceIds = allData.map((device) => device.deviceId);
+          deviceIdsFromBuses.push(...deviceIds);
+      }
+
+        setHierarchyDeviceData(allData);
+        console.log("Hierarchy device data:", allData);
+
+        await fetchDeviceData(deviceIdsFromBuses);
+      } catch (error) {
+        console.error("Error fetching buses:", error);
+      }
+    };
+
+    const fetchDeviceData = async (deviceIdsFromBuses) => {
+      try {
+       const token = btoa(`${username}:${password}`);  // Replace with actual credentials
+        const response1 = await axios.get(
+          "https://rocketsalestracker.com/api/devices",
+          {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          }
+        );
+        console.log("Device API Data:", response1.data);
+        console.log("Device IDs from Buses:", deviceIdsFromBuses);
+        const filteredDeviceData = response1.data.filter((device) =>
+          deviceIdsFromBuses.includes(String(device.id))
+        );
+         console.log("Filtered Device Data:", filteredDeviceData);
+        setDeviceApiData(filteredDeviceData);
+      } catch (error) {
+        console.error("Error fetching device data:", error);
+      }
+    };
+
+    const fetchPositionData = async () => {
+      try {
+        const token = btoa(`${username}:${password}`); // Base64 encode the username and password
+        const response2 = await axios.get(
+          "https://rocketsalestracker.com/api/positions",
+          {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          }
+        );
+  
+        setPositionApiData(response2.data); // Update state variable with position API data
+      } catch (error) {
+        console.error("Error fetching position data:", error);
+      }
+    };
+
+    fetchBuses();
+    fetchPositionData();
+  }, [role, isTokenValid]);
+
+  // Fetch position data
+  useEffect(() => {
+    if (!isTokenValid) return; // Prevent fetching if token is invalid
+
+    const fetchPositionData = async () => {
+      try {
+        const token = btoa(`${username}:${password}`);// Replace with actual credentials
+        const response2 = await axios.get(
+          "https://rocketsalestracker.com/api/positions",
+          {
+            headers: {
+              Authorization: `Basic ${token}`,
+            },
+          }
+        );
+
+        setPositionApiData(response2.data);
+      } catch (error) {
+        console.error("Error fetching position data:", error);
+      }
+    };
+
+    fetchPositionData();
+  }, [isTokenValid]);
+
+  // Merge device and position data
+  useEffect(() => {
+    if (deviceApiData?.length > 0 && positionApiData?.length > 0) {
+      const merged = deviceApiData.map((device) => {
+        const position = positionApiData.find(
+          (pos) => pos.deviceId === device.id
+        );
+        return { ...device, ...position };
+      });
+      setMergedData(merged);
+      console.log("Merged data:", merged);
+    }
+  }, [deviceApiData, positionApiData]);
+
+  // Render nothing until token validation is complete
+  if (!isTokenValid) {
+    return null; // Prevent rendering if token is invalid
+  }
+  
+
+//!main shruti
+  /*  useEffect(() => {
     const fetchBuses = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -300,7 +519,7 @@ function App() {
       setMergedData(merged);
       console.log("Merged data:", merged);
     }
-  }, [deviceApiData, positionApiData]);
+  }, [deviceApiData, positionApiData]);  */
   
 
   const handleClickSideBar = (data) => {
@@ -472,6 +691,8 @@ function App() {
       setComponent("DistanceReport");
     }else if (item === "Kilometer Distance") {
       setComponent("UrgentExcel");
+    }else if(item ==="Notification"){
+      setComponent("Notification")
     }
    
    
@@ -634,6 +855,7 @@ function App() {
           {component === "UserAccess" && <UserAccess data={mergedData} />}
           {component === "DistanceReport" && <DistanceReport data={mergedData} />}
           {component === "UrgentExcel" && <UrgentExcel data={mergedData} />}
+          {component === "Notification" && <Notification data={mergedData} />}
           {/* {component === "Newdemo" && <Newdemo data={mergedData} />}
           {component === "New2" && <New2 data={mergedData} />} */}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
@@ -724,7 +946,8 @@ function App() {
           "ReadDevices",
           "UserAccess",
          "DistanceReport",
-         "UrgentExcel"
+         "UrgentExcel",
+         "Notification"
           //  "Newdemo",
           //  "New2"
           ].includes(component) && <Tablee data={mergedData} />}

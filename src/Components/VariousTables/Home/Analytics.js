@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 
-export const AnalyticsDashboard = () => {
+export const  AnalyticsDashboard = () => {
   const theme = useTheme();
   const uData = [73, 120, 50, 95, 65, 85, 45];
   const tData = [34, 12, 60, 20, 45, 15, 25];

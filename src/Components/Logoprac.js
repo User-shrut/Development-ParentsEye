@@ -96,7 +96,7 @@ const Logoprac = () => {
         localStorage.setItem("role", roleValue);
         setRole(roleValue);
         navigate("/");
-        alert(successMessage);
+        // alert(successMessage);
         return true;
       }
     } catch (error) {
@@ -146,7 +146,12 @@ const Logoprac = () => {
     alert("An unexpected error occurred. Please try again.");
   }
 };
-
+const handleKeyPress = (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault(); // Prevent the form from submitting if inside a form
+    handleLoginClick();
+  }
+};
 
  
   
@@ -182,6 +187,7 @@ const Logoprac = () => {
             value={username}
             autoComplete="username"
             onChange={handleusernameChange}
+            onKeyDown={handleKeyPress}
           />
         </div>
 
@@ -194,6 +200,7 @@ const Logoprac = () => {
             value={password}
             autoComplete="current-password"
             onChange={handlePasswordChange}
+            onKeyDown={handleKeyPress}
           />
         </div>
 

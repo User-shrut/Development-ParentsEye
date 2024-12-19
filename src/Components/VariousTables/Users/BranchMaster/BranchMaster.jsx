@@ -1374,7 +1374,9 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
-
+import InputAdornment from "@mui/material/InputAdornment"; // Add this import
+import SchoolIcon from '@mui/icons-material/School';
+import OutlinedInput from '@mui/material/OutlinedInput';
 import {
   FormControl,
   IconButton,
@@ -2515,6 +2517,38 @@ const BranchMaster = () => {
                 <CloseIcon />
               </IconButton>
             </Box>
+            {role == 1 ? (
+              <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <InputLabel>{"School Name"}</InputLabel>
+
+                <Select
+                  value={formData["schoolId"] || ""}
+                  onChange={handleSchoolChange}
+                  name="schoolName"
+                  label={"School Name"}      
+                  input={
+                    <OutlinedInput
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <SchoolIcon />
+                        </InputAdornment>
+                      }
+                      label="School Name"
+                    />
+                  }          
+                >
+                  {schools.map((option) => (
+                    <MenuItem key={option._id} value={option._id}>
+                      {option.schoolName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : null}
             {COLUMNS().map((col) => (
               <TextField
                 key={col.accessor}
@@ -2525,6 +2559,14 @@ const BranchMaster = () => {
                 onChange={handleInputChange}
                 sx={{ marginBottom: "10px" }}
                 fullWidth
+                disabled={col.Header === 'School Name'}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      {col.icon}  {/* Add Face6Icon in the input field */}
+                    </InputAdornment>
+                  ),
+                }}
               />
             ))}
             <Button
@@ -2564,7 +2606,17 @@ const BranchMaster = () => {
                   value={formData["schoolId"] || ""}
                   onChange={handleSchoolChange}
                   name="schoolName"
-                  label={"School Name"}
+                  label={"School Name"}      
+                  input={
+                    <OutlinedInput
+                      startAdornment={
+                        <InputAdornment position="start">
+                          <SchoolIcon />
+                        </InputAdornment>
+                      }
+                      label="School Name"
+                    />
+                  }          
                 >
                   {schools.map((option) => (
                     <MenuItem key={option._id} value={option._id}>
@@ -2600,17 +2652,44 @@ const BranchMaster = () => {
                       ))}
                     </Select>
                   </FormControl>
-                ) : (
-                  <TextField
-                    key={col.accessor}
-                    label={col.Header}
-                    variant="outlined"
-                    name={col.accessor}
-                    value={formData[col.accessor] || ""}
-                    onChange={handleInputChange}
-                    sx={{ marginBottom: "10px" }}
-                    fullWidth
-                  />
+                ) : (<>{
+                  col.Header !== 'School Name' ? (
+                    <TextField
+                      key={col.accessor}
+                      label={col.Header}
+                      variant="outlined"
+                      name={col.accessor}
+                      value={formData[col.accessor] || ""}
+                      onChange={handleInputChange}
+                      sx={{ marginBottom: "10px" }}
+                      fullWidth
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            {col.icon}  {/* Add Face6Icon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+                  ) : null
+                }</>
+                  // <TextField
+                  //   key={col.accessor}
+                  //   label={col.Header}
+                  //   variant="outlined"
+                  //   name={col.accessor}
+                  //   value={formData[col.accessor] || ""}
+                  //   onChange={handleInputChange}
+                  //   sx={{ marginBottom: "10px" }}
+                  //   fullWidth
+                  //   InputProps={{
+                  //     startAdornment: (
+                  //       <InputAdornment position="start">
+                  //         {col.icon}  {/* Add Face6Icon in the input field */}
+                  //       </InputAdornment>
+                  //     ),
+                  //   }}
+                  // />
                 )
               )}
             <Button

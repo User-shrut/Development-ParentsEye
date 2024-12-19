@@ -31,13 +31,22 @@ const [TotalResponsesSupervisor,setTotalResponsesSupervisor]=useState(0);
  const [TotalResponsesDrivers,setTotalResponsesDrivers]=useState(0);
  const [TotalResponsesAbsent,setTotalResponsesAbsent]=useState(0);
  const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null,name:null });
-const [role , setRole] = useState(1);
+const [role , setRole] = useState(0);
 const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: null,latitude: null, longitude: null}); 
   const role1 = localStorage.getItem("role");
+  const [loading, setLoading] = useState(true); // Add a loading state
+  const token = localStorage.getItem("token");
   const fetchDataTotalStudent = async (startDate = "", endDate = "") => {
     
     try {
       let response;
+      const token = localStorage.getItem("token");
+
+  // If token doesn't exist, stop further execution and log a message
+      if (!token) {
+        console.log("No token found. Cannot fetch context data.");
+        return; // Exit the function or handle accordingly
+  }
       if (role1 == 1) {
         const token = localStorage.getItem("token");
         response = await axios.get(
@@ -632,19 +641,65 @@ const [selectedVehicle, setSelectedVehicle] = useState({deviceId: null, name: nu
     }
   };
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    
+
+  // // If token doesn't exist, stop further execution and log a message
+  //     if (!token) {
+  //       console.log("No token found. Cannot fetch context data.");
+  //       return; // Exit the function or handle accordingly
+  // }
+  
+      
+  
+    setLoading(true);
+    if(token){
+ // Run all fetch functions in parallel using Promise.all
+ const fetchData = async () => {
+  const token = localStorage.getItem('token');
+  
+  try {
+    setLoading(true); // Set loading state to true
+    await Promise.all([
+      fetchDataTotalStudent(),
+      fetchDataDrivers(),
+      fetchDataAbsent(),
+      fetchDataSupervisor(),
+      fetchBuses(),
+      fetchleaves(),
+      fetchpresent(),
+    ]);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    setLoading(false); // Set loading state to false once all data is fetched
+  }
+};
+
+fetchData(); // Call the function to fetch data on mount
+    }else{
+      
+    }
+   
+  
     // fetchData();
-    fetchleaves();
+    /* fetchleaves();
     fetchpresent();
     fetchDataAbsent();
     fetchDataDrivers();
     fetchDataSupervisor();
     fetchDataTotalStudent();
-    fetchBuses();
-  }, []);
+    fetchBuses(); */
+  }, [token]);
+  // if (loading) {
+  //   return <div>Loading...</div>; // Show a loading indicator until data is fetched
+  // }
   return (
     <TotalResponsesContext.Provider value={{ totalResponses,allDevices,  selectedVehicle, setSelectedVehicle,setAllDevices,TotalResponsesSupervisor,setTotalResponsesSupervisor,TotalResponsesStudent,setTotalResponsesStudent, setTotalResponses, totalLeaveRequest, settotalLeaveRequest ,TotalResponsesDrivers,setTotalResponsesDrivers,Drivers,setDrivers,TotalResponsesAbsent,setTotalResponsesAbsent,role , setRole,TotalResponsesPresent,setTotalResponsesPresent, coordinates,       // Provide the coordinates state
-      setCoordinates}}>
+      setCoordinates,loading,setLoading}}>
       {children}
+      {/* {loading ? null: children} Show loading state while fetching data */}
+      
     </TotalResponsesContext.Provider>
   );
 };
