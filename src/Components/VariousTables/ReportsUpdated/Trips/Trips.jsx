@@ -79,6 +79,8 @@ const username="schoolmaster";
 const password="123456";
 const token=localStorage.getItem("token");
 const role=localStorage.getItem("role");
+const[loadingdevice,setloadingdevices]=useState(true);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -293,6 +295,7 @@ const role=localStorage.getItem("role");
       } finally {
         setLoading(false);
       }
+      setloadingdevices(false);
     };
   
   
@@ -735,7 +738,8 @@ console.log("Grouped Data11:", groupedData);
     options={options}
     value={options.find((option) => option.value === selectedDevice) || null}
     onChange={handleChange}
-    placeholder="Select Device"
+    placeholder={loadingdevice?"Loading devices...":"Select Device"}
+    isLoading={loadingdevice}
     isClearable
     styles={{
       control: (provided) => ({

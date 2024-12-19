@@ -80,7 +80,7 @@ export const Summary = () => {
   const password = "123456";
   const token=localStorage.getItem("token");
   const role=localStorage.getItem("role");
-
+const[deviceloader,setdeviceloader]=useState(true);
   useEffect(() => {
     fetchData();
   }, []);
@@ -360,6 +360,7 @@ export const Summary = () => {
      } catch (error) {
       console.log("error while fetching devices",error);
      }
+     setdeviceloader(false);
     };
     fetchDevices();
   }, []);
@@ -655,7 +656,8 @@ const filteredDevices = Array.isArray(devices)
     options={options}
     value={options.find((option) => option.value === selectedDevice) || null}
     onChange={handleChange}
-    placeholder="Select Device"
+    placeholder={deviceloader?"Loading Devices...":"Select Devices"}
+    isLoading={deviceloader}
     isClearable
     styles={{
       control: (provided) => ({

@@ -80,8 +80,8 @@ export const Event = () => {
   const role=localStorage.getItem("role");
   const username="schoolmaster";
   const password="123456";
-
-  
+  const[loadingdevice,setloadingdevice]=useState(true);
+  const[loadingnotification,setloadingnotification]=useState(true);
 
   useEffect(() => {
     fetchData();
@@ -286,6 +286,7 @@ export const Event = () => {
       } finally {
         setLoading(false);
       }
+      setloadingdevice(false);
     };
   
   
@@ -450,6 +451,7 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
       } catch (error) {
         setError(error.message);
       }
+      setloadingnotification(false);
     };
 
     fetchNotificationTypes();
@@ -558,8 +560,9 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
     options={options}
     value={options.find((option) => option.value === selectedDevice) || null}
     onChange={handleChange}
-    placeholder="Select Device"
+    placeholder={loadingdevice?"Loading devices...":"Select Device"}
     isClearable
+    isLoading={loadingdevice}
     styles={{
       control: (provided) => ({
         ...provided,
@@ -590,8 +593,9 @@ const [selectedNotification, setSelectedNotification] = useState("allEvents");
     options={notificationOptions}  // Use the 'notificationOptions' variable instead of 'options'
     value={notificationOptions.find((option) => option.value === selectedNotification) || null}  // Use 'selectedNotification' instead of 'selectedDevice'
     onChange={handleNotificationChange}  // Use 'handleNotificationChange' instead of 'handleChange'
-    placeholder="Select Notification Type"  // Customize placeholder as needed
+    placeholder={loadingnotification?"Loading Notification":"Select Notification type"}  // Customize placeholder as needed
     isClearable
+    isLoading={loadingnotification}
     styles={{
       control: (provided) => ({
         ...provided,

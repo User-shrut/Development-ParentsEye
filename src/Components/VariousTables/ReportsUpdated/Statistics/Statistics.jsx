@@ -1105,7 +1105,7 @@ https://rocketsalestracker.com/api/statistics?from=${encodeURIComponent(
       }
     } catch (error) {
       console.error("Error fetching the report:", error);
-      alert("Failed to download or process report.");
+      // alert("Failed to download or process report.");
     } finally {
       setLoading(false);
     }

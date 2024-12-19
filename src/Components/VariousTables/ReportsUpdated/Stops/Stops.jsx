@@ -79,7 +79,7 @@ export const Stops = () => {
   const password = "123456";
   const role=localStorage.getItem("role");
   const token=localStorage.getItem("token");
-
+const[deviceloader,setdeviceloader]=useState(true);
   useEffect(() => {
     fetchData();
   }, []);
@@ -266,6 +266,7 @@ export const Stops = () => {
       } finally {
         setLoading(false);
       }
+      setdeviceloader(false);
     };
   
   
@@ -511,7 +512,7 @@ const processGroupedEvents = (groupedEvents) => {
       }
     } catch (error) {
       console.error('Error fetching the report:', error);
-      alert("Please select device and date");
+      // alert("Please select device and date");
     } finally {
       setLoading(false);
     }
@@ -616,8 +617,9 @@ const handleChange = (selectedOption) => {
     options={options}
     value={options.find((option) => option.value === selectedDevice) || null}
     onChange={handleChange}
-    placeholder="Select Device"
+    placeholder={deviceloader?"Loading Devices...":"Select Device"}
     isClearable
+    isLoading={deviceloader}
     styles={{
       control: (provided) => ({
         ...provided,
