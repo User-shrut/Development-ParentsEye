@@ -1624,6 +1624,7 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
+import Export from "./ExportParent";
 import {
   FormControl,
   FormControlLabel,
@@ -2040,17 +2041,6 @@ console.log("role is:",role)
       alert("Failed to delete selected records.");
     }
     fetchData();
-  };
-
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Parent.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -2976,9 +2966,8 @@ const lastThirdColumn = columns[columns.length - 3];
           >
             Import
           </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
+          <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"PARENT DETAIL LIST"} pdfFilename={"ParentApprove.pdf"} excelFilename={"ParentApprove.xlsx"}/>
+
         </div>
         <div
           style={{

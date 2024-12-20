@@ -658,6 +658,7 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { Autocomplete } from "@mui/material";
+import Export from "./ExportSupervisor";
 import {
   FormControl,
   IconButton,
@@ -1050,17 +1051,6 @@ export const Supervisor = () => {
       alert("Failed to delete selected records.");
     }
     fetchData();
-  };
-
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Supervisor.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -1840,9 +1830,8 @@ export const Supervisor = () => {
           >
             Import
           </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
+          <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"SUPERVISOR DETAIL LIST"} pdfFilename={"Supervisor.pdf"} excelFilename={"Supervisor.xlsx"}/>
+
         </div>
         <div
           style={{

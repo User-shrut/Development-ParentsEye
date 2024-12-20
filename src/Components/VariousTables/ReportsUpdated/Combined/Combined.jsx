@@ -35,6 +35,7 @@ import { IconButton } from "@mui/material";
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 import Select from "react-select";
 //import { TextField } from '@mui/material';
+import Export from "../../Export";
 
 const style = {
   position: "absolute",
@@ -648,9 +649,8 @@ React.useEffect(() => {
   Column Visibility
 </Button>
        
-          <Button variant="contained" color="error" onClick={handleExport}>
-            Export
-          </Button>
+<Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"DEVICE STATUS REPORT"} pdfFilename={"DeviceStatusReport.pdf"} excelFilename={"DeviceStatusReport.xlsx"}/>
+
         </div>
        
      <div
