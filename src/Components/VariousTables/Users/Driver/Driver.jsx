@@ -1121,6 +1121,7 @@ export const Driver = () => {
     setFormData({});
     setImportModalOpen(false);
     setModalOpen(false);
+    if(role!=1)fetchData();
   };
 
   const handleSnackbarClose = () => {
@@ -1134,7 +1135,7 @@ export const Driver = () => {
       setFormData({
         ...formData,
         [name]: value,
-        branchName: "", // Reset branch when school changes
+        // branchName: "", // Reset branch when school changes
       });
 
       // Filter branches for the selected school
@@ -1161,9 +1162,11 @@ export const Driver = () => {
       });
 
       // Filter devices for the selected branch
-      const filteredDevices = allDevices.filter(
-        (device) => device.branchName === value
-      );
+      const filteredDevices = allDevices.filter((device) =>
+        role === 1
+          ? device.schoolName === formData.schoolName && device.branchName === value
+          : device.branchName === value
+      ); 
       setBuses(filteredDevices); // Update buses based on selected branch
     } else {
       setFormData({
@@ -1172,7 +1175,36 @@ export const Driver = () => {
       });
     }
   };
-
+  useEffect(() => {
+      // Trigger the "onChange" behavior programmatically if a school is pre-selected
+      if (formData.schoolName && role==1) {
+        const event = {
+          target: {
+            name: "schoolName",
+            value: formData.schoolName,
+          }, 
+        };
+        handleInputChange(event); // Call the handleInputChange with the pre-selected school
+      }
+    }, [formData.schoolName, schools]);
+      useEffect(() => {
+        if (formData.branchName) {
+          const event = {
+            target: {
+              name: "branchName",
+              value: formData.branchName,
+            },
+          };
+          handleInputChange(event); // Trigger fetching buses when branchName changes
+        }
+      }, [formData.branchName, allDevices]);
+      useEffect(() => {
+        console.log("Selected School:", formData.schoolName);
+        console.log("Available Branches:", branches);
+        console.log("Selected Branch:", formData.branchName);
+        console.log("Available Devices (Buses):", buses);
+        console.log("Selected Device (Bus):", formData.deviceId);
+      }, [formData.schoolName, branches, formData.branchName, buses, formData.deviceId]);
   const handleBusChange = (e) => {
     const { value } = e.target;
 
@@ -2349,6 +2381,7 @@ export const Driver = () => {
                   fullWidth
                 >
                   <Autocomplete
+                    //  key={`${formData.schoolName}-${formData.branchName}`} 
                     id="searchable-branch-select"
                     options={branches || []} // Ensure branches is an array
                     getOptionLabel={(option) => option.branchName || ""} // Display branch name
@@ -2417,6 +2450,14 @@ export const Driver = () => {
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon/> {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />

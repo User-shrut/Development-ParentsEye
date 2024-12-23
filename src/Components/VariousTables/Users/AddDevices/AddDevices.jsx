@@ -1939,6 +1939,34 @@ const handleInputChange = (e) => {
     }
   }
 };
+ useEffect(() => {
+        // Trigger the "onChange" behavior programmatically if a school is pre-selected
+        if (formData.schoolName) {
+          const event = {
+            target: {
+              name: "schoolName",
+              value: formData.schoolName,
+            },
+          };
+          handleInputChange(event); // Call the handleInputChange with the pre-selected school
+        }
+      }, [formData.schoolName, schools]);
+        useEffect(() => {
+          if (formData.branchName) {
+            const event = {
+              target: {
+                name: "branchName",
+                value: formData.branchName,
+              },
+            };
+            handleInputChange(event); // Trigger fetching buses when branchName changes
+          }
+        }, [formData.branchName]);
+        useEffect(() => {
+          console.log("Selected School:", formData.schoolName);
+          console.log("Available Branches:", branches);
+          console.log("Selected Branch:", formData.branchName);
+        }, [formData.schoolName, branches, formData.branchName]);
 useEffect(() => {
   const fetchSchool = async (startDate = "", endDate = "") => {
     setLoading(true);

@@ -1980,7 +1980,7 @@ const BranchMaster = () => {
     };
 
     fetchSchool();
-  }, [addModalOpen]);
+  }, [addModalOpen,editModalOpen]);
 
   // useEffect(() => {
   //   const fetchOtherData = async () => {
