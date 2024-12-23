@@ -38,6 +38,7 @@ import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import PasswordIcon from '@mui/icons-material/Password';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import Chip from "@mui/material/Chip";
+import Export from "./ExportUserAccess";
 // import excelfileUserAccess from "../../../../../public/UserAccess.xlsx";
 import {
   FormControlLabel,
@@ -409,16 +410,6 @@ export const UserAccess = () => {
     fetchData();
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "UserAccess.xlsx");
-  };
 
   // const handleFileUpload = (event) => {
   //   const file = event.target.files[0];
@@ -1293,9 +1284,8 @@ const handleInputChange = (e) => {
           >
             Import
           </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
+          <Export filteredRows={filteredRows} COLUMNS={COLUMNS} columnVisibility={columnVisibility}/>
+
         </div>
         <div
           style={{

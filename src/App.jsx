@@ -8,9 +8,9 @@ import React, { useState, useEffect, useContext } from "react";
 import { Googlemap } from "./Components/googlemap/googlemap.jsx";
 import { BasicSpeedDial } from "./Components/basicSpeedDial/basicSpeedDial.jsx";
 
-import { Assets } from "./Components/VariousTables/Master/Assets/Assets.jsx";
+// import { Assets } from "./Components/VariousTables/Master/Assets/Assets.jsx";
 // import { School } from "./Components/VariousTables/Master/Assets/School.jsx";
-import { AssetsCategory } from "./Components/VariousTables/Master/AssetsCategory/AssetsCategory.jsx";
+// import { AssetsCategory } from "./Components/VariousTables/Master/AssetsCategory/AssetsCategory.jsx";
 import {Leave} from "./Components/VariousTables/School/Leave/Leave.jsx"
 import {Status} from "./Components/VariousTables/School/Status/Status.jsx"
 import {StudentDetail} from "./Components/VariousTables/School/StudentDetail/StudentDetail.jsx"
@@ -18,43 +18,43 @@ import {Present} from "./Components/VariousTables/School/Present/Present.jsx"
 import {User} from "./Components/VariousTables/School/User/User.jsx"
 
 import { AnalyticsDashboard } from "./Components/VariousTables/Home/Analytics.js";
-import {School}  from "./Components/VariousTables/Master/School/School.jsx";
-import { AssetsType } from "./Components/VariousTables/Master/AssetsType/AssetsType.jsx";
-import { AssetsCommand } from "./Components/VariousTables/Master/AssetsCommand/AssetsCommand.jsx";
-import { AssetsClass } from "./Components/VariousTables/Master/AssetsClass/AssetsClass.jsx";
-import { AssetsGroup } from "./Components/VariousTables/Master/AssetsGroup/AssetsGroup.jsx";
-import { Users } from "./Components/VariousTables/Master/Users/Users.jsx";
-import { CreateLandmark } from "./Components/VariousTables/Geofencing/CreateLandmark.jsx";
-import { EditLandmarks } from "./Components/VariousTables/Geofencing/EditLandmarks/EditLandmarks.jsx";
-import { CreateRoute } from "./Components/VariousTables/Geofencing/CreateRoute.jsx";
-import { EditRoutes } from "./Components/VariousTables/Geofencing/EditRoutes/EditRoutes.jsx";
-import { CreateArea } from "./Components/VariousTables/Geofencing/CreateArea.jsx";
-import { AssetsDivision } from "./Components/VariousTables/Master/AssetsDivision/AssetsDivision.jsx";
-import { AssetsOwner } from "./Components/VariousTables/Master/AssetsOwner/AssetsOwner.jsx";
+// import {School}  from "./Components/VariousTables/Master/School/School.jsx";
+// import { AssetsType } from "./Components/VariousTables/Master/AssetsType/AssetsType.jsx";
+// import { AssetsCommand } from "./Components/VariousTables/Master/AssetsCommand/AssetsCommand.jsx";
+// import { AssetsClass } from "./Components/VariousTables/Master/AssetsClass/AssetsClass.jsx";
+// import { AssetsGroup } from "./Components/VariousTables/Master/AssetsGroup/AssetsGroup.jsx";
+// import { Users } from "./Components/VariousTables/Master/Users/Users.jsx";
+// import { CreateLandmark } from "./Components/VariousTables/Geofencing/CreateLandmark.jsx";
+// import { EditLandmarks } from "./Components/VariousTables/Geofencing/EditLandmarks/EditLandmarks.jsx";
+// import { CreateRoute } from "./Components/VariousTables/Geofencing/CreateRoute.jsx";
+// import { EditRoutes } from "./Components/VariousTables/Geofencing/EditRoutes/EditRoutes.jsx";
+// import { CreateArea } from "./Components/VariousTables/Geofencing/CreateArea.jsx";
+// import { AssetsDivision } from "./Components/VariousTables/Master/AssetsDivision/AssetsDivision.jsx";
+// import { AssetsOwner } from "./Components/VariousTables/Master/AssetsOwner/AssetsOwner.jsx";
 import {Absent} from "./Components/VariousTables/School/Absent/Absent.jsx"
-import { AddressBook } from "./Components/VariousTables/Master/AddressBook/AddressBook.jsx";
-import { AddressBookGroup } from "./Components/VariousTables/Master/AddressBookGroup/AddressBookGroup.jsx";
-import { AssetsURL } from "./Components/VariousTables/Master/AssetsURL/AssetsURL.jsx";
-import { Broker } from "./Components/VariousTables/Master/Broker/Broker.jsx";
-import { Commands } from "./Components/VariousTables/Master/Commands/Commands.jsx";
-import { DeviceSettings } from "./Components/VariousTables/Master/DeviceSettings/DeviceSettings.jsx";
-import { DriverMaster } from "./Components/VariousTables/Master/DriverMaster/DriverMaster.jsx";
-import { Emails } from "./Components/VariousTables/Master/Emails/Emails.jsx";
-import { GeoData } from "./Components/VariousTables/Master/GeoData/GeoData.jsx";
-import { ImportLocation } from "./Components/VariousTables/Master/ImportLocation/ImportLocation.jsx";
-import { LandmarkGroup } from "./Components/VariousTables/Master/LandmarkGroup/LandmarkGroup.jsx";
-import { LandmarkImages } from "./Components/VariousTables/Master/LandmarkImages/LandmarkImages.jsx";
-import { LandmarkWaypoints } from "./Components/VariousTables/Master/LandmarkWaypoints/LandmarkWaypoints.jsx";
-import { MainMenuMaster } from "./Components/VariousTables/Master/MainMenuMaster/MainMenuMaster.jsx";
-import { RFID } from "./Components/VariousTables/Master/RFID/RFID.jsx";
-import { TelecomMaster } from "./Components/VariousTables/Master/TelecomMaster/TelecomMaster.jsx";
-import { TopMainMenuMaster } from "./Components/VariousTables/Master/TopMainMenuMaster/TopMainMenuMaster.jsx";
-import { TopMenuMaster } from "./Components/VariousTables/Master/TopMenuMaster/TopMenuMaster.jsx";
-import { UserMenuMaster } from "./Components/VariousTables/Master/UserMenuMaster/UserMenuMaster.jsx";
-import { UserProfile } from "./Components/VariousTables/Master/UserProfile/UserProfile.jsx";
-import { UsersAssetsMapping } from "./Components/VariousTables/Master/UsersAssetsMapping/UsersAssetsMapping.jsx";
-import { EditAreas } from "./Components/VariousTables/Geofencing/EditAreas/EditArea.js";
-import { EditZones } from "./Components/VariousTables/Geofencing/EditZones/EditZones.jsx";
+// import { AddressBook } from "./Components/VariousTables/Master/AddressBook/AddressBook.jsx";
+// import { AddressBookGroup } from "./Components/VariousTables/Master/AddressBookGroup/AddressBookGroup.jsx";
+// import { AssetsURL } from "./Components/VariousTables/Master/AssetsURL/AssetsURL.jsx";
+// import { Broker } from "./Components/VariousTables/Master/Broker/Broker.jsx";
+// import { Commands } from "./Components/VariousTables/Master/Commands/Commands.jsx";
+// import { DeviceSettings } from "./Components/VariousTables/Master/DeviceSettings/DeviceSettings.jsx";
+// import { DriverMaster } from "./Components/VariousTables/Master/DriverMaster/DriverMaster.jsx";
+// import { Emails } from "./Components/VariousTables/Master/Emails/Emails.jsx";
+// import { GeoData } from "./Components/VariousTables/Master/GeoData/GeoData.jsx";
+// import { ImportLocation } from "./Components/VariousTables/Master/ImportLocation/ImportLocation.jsx";
+// import { LandmarkGroup } from "./Components/VariousTables/Master/LandmarkGroup/LandmarkGroup.jsx";
+// import { LandmarkImages } from "./Components/VariousTables/Master/LandmarkImages/LandmarkImages.jsx";
+// import { LandmarkWaypoints } from "./Components/VariousTables/Master/LandmarkWaypoints/LandmarkWaypoints.jsx";
+// import { MainMenuMaster } from "./Components/VariousTables/Master/MainMenuMaster/MainMenuMaster.jsx";
+// import { RFID } from "./Components/VariousTables/Master/RFID/RFID.jsx";
+// import { TelecomMaster } from "./Components/VariousTables/Master/TelecomMaster/TelecomMaster.jsx";
+// import { TopMainMenuMaster } from "./Components/VariousTables/Master/TopMainMenuMaster/TopMainMenuMaster.jsx";
+// import { TopMenuMaster } from "./Components/VariousTables/Master/TopMenuMaster/TopMenuMaster.jsx";
+// import { UserMenuMaster } from "./Components/VariousTables/Master/UserMenuMaster/UserMenuMaster.jsx";
+// import { UserProfile } from "./Components/VariousTables/Master/UserProfile/UserProfile.jsx";
+// import { UsersAssetsMapping } from "./Components/VariousTables/Master/UsersAssetsMapping/UsersAssetsMapping.jsx";
+// import { EditAreas } from "./Components/VariousTables/Geofencing/EditAreas/EditArea.js";
+// import { EditZones } from "./Components/VariousTables/Geofencing/EditZones/EditZones.jsx";
 // import { Trips } from "./Components/VariousTables/Geofencing/Trips/Trips.jsx";
 import {Driver} from "./Components/VariousTables/Users/Driver/Driver.jsx";
 import {Parent} from "./Components/VariousTables/Users/Parent/Parent.jsx";
@@ -70,9 +70,9 @@ import { Button } from "@mui/material";
 // import { FetchData } from './Components/FetchData.jsx';
 import { VehicleDetails } from "./Components/VehicleDetails.jsx";
 import { PickupAndDrop } from "./Components/VariousTables/School/PickAndDrop/PickupAndDrop.jsx";
-import { Server } from "./Components/VariousTables/Master/Server/Server.jsx";
-import {Device} from "./Components/VariousTables/Master/Device/Device.jsx"
-import { Groups } from "./Components/VariousTables/Master/Groups/Groups.jsx";
+// import { Server } from "./Components/VariousTables/Master/Server/Server.jsx";
+// import {Device} from "./Components/VariousTables/Master/Device/Device.jsx"
+//  import { Groups } from "./Components/VariousTables/Master/Groups/Groups.jsx";
 import { Geofence } from "./Components/VariousTables/School/Geofence/Geofence.jsx";
 import { Preferences } from "./Components/VariousTables/MASTERUPDATED/Preferences/Preferences.jsx";
 import { Notifications } from "./Components/VariousTables/MASTERUPDATED/Notifications/Notifications.jsx";
@@ -733,11 +733,11 @@ function App() {
 
           {component === "Dashboard" && <Tablee data={mergedData} />}
         
-          {component === "Assets" && <Assets data={mergedData} />}
-          {component === "School" && <School data={mergedData} />}
-          {component === "AssetsCategory" && (
-            <AssetsCategory data={mergedData} />
-          )}
+         {/* {component === "Assets" && <Assets data={mergedData} />} */}
+          {/* {component === "School" && <School data={mergedData} />} */}
+          {/* {component === "AssetsCategory" && ( */}
+            {/* <AssetsCategory data={mergedData} /> */}
+          {/* )} */}
           {component === "Leave" && (
             <Leave data={mergedData} />
           )}
@@ -748,18 +748,18 @@ function App() {
             <StudentDetail data={mergedData} />
           )}
          
-          {component === "AnalyticsDashboard" && (
+          {/* {component === "AnalyticsDashboard" && (
             <AnalyticsDashboard data={mergedData} />
           )}
           {component === "AssetsType" && <AssetsType data={mergedData} />}
           {component === "AssetsCommand" && <AssetsCommand data={mergedData} />}
           {component === "AssetsClass" && <AssetsClass data={mergedData} />}
-          {component === "AssetsGroup" && <AssetsGroup data={mergedData} />}
-          {component === "Users" && <Users data={mergedData} />}
-          {component === "CreateLandmark" && (
+          {component === "AssetsGroup" && <AssetsGroup data={mergedData} />} */}
+          {/* {component === "Users" && <Users data={mergedData} />} */}
+          {/* {component === "CreateLandmark" && (
             <CreateLandmark data={mergedData} />
-          )}
-          {component === "EditLandmarks" && <EditLandmarks data={mergedData} />}
+          )} */}
+          {/* {component === "EditLandmarks" && <EditLandmarks data={mergedData} />}
           {component === "CreateRoute" && <CreateRoute data={mergedData} />}
           {component === "EditRoutes" && <EditRoutes data={mergedData} />}
           {component === "CreateArea" && <CreateArea data={mergedData} />}
@@ -768,23 +768,23 @@ function App() {
           )}
           {component === "AssetsOwner" && <AssetsOwner data={mergedData} />}
           {component === "AddressBook" && <AddressBook data={mergedData} />}
-          {component === "AddressBookGroup" && (
-            <AddressBookGroup data={mergedData} />
+          {component === "AddressBookGroup" && ( */}
+            {/* <AddressBookGroup data={mergedData} />
           )}
           {component === "AssetsURL" && <AssetsURL data={mergedData} />}
           {component === "Broker" && <Broker data={mergedData} />}
           {component === "Commands" && <Commands data={mergedData} />}
           {component === "DeviceSettings" && (
             <DeviceSettings data={mergedData} />
-          )}
-          {component === "DriverMaster" && <DriverMaster data={mergedData} />}
-          {component === "Emails" && <Emails data={mergedData} />}
-          {component === "GeoData" && <GeoData data={mergedData} />}
-          {component === "ImportLocation" && (
+          )} */}
+          {/* {component === "DriverMaster" && <DriverMaster data={mergedData} />} */}
+          {/* {component === "Emails" && <Emails data={mergedData} />}
+          {component === "GeoData" && <GeoData data={mergedData} />} */}
+          {/* {component === "ImportLocation" && (
             <ImportLocation data={mergedData} />
-          )}
-          {component === "LandmarkGroup" && <LandmarkGroup data={mergedData} />}
-          {component === "LandmarkImages" && (
+          )} */}
+          {/* {component === "LandmarkGroup" && <LandmarkGroup data={mergedData} />} */}
+          {/* {component === "LandmarkImages" && (
             <LandmarkImages data={mergedData} />
           )}
           {component === "LandmarkWaypoints" && (
@@ -801,20 +801,20 @@ function App() {
             {/* {component === "School" && (
             <School data={mergedData} />
           )} */}
-          {component === "TopMenuMaster" && <TopMenuMaster data={mergedData} />}
-          {component === "UserMenuMaster" && (
+          {/* {component === "TopMenuMaster" && <TopMenuMaster data={mergedData} />} */} 
+          {/* {component === "UserMenuMaster" && (
             <UserMenuMaster data={mergedData} />
           )}
           
           {component === "UserProfile" && <UserProfile data={mergedData} />}
          
-        
+         */}
 
 
            
 
-          {component === "EditAreas" && <EditAreas data={mergedData} />}
-          {component === "EditZones" && <EditZones data={mergedData} />}
+          {/* {component === "EditAreas" && <EditAreas data={mergedData} />}
+          {component === "EditZones" && <EditZones data={mergedData} />} */}
           {/* {component === "Trips" && <Trips data={mergedData} />} */}
 
           {component === "Absent" && <Absent data={mergedData} />}
@@ -829,9 +829,9 @@ function App() {
           {component === "ApprovedRequest" && <ApprovedRequest data={mergedData} />}
           {component === "DeniedRequest" && <DeniedRequest data={mergedData} />}
           {component === "PickupAndDrop" && <PickupAndDrop data={mergedData} />}
-          {component === "Server" && <Server data={mergedData} />}
+          {/* {component === "Server" && <Server data={mergedData} />}
           {component === "Device" && <Device data={mergedData} />}
-          {component === "Groups" && <Groups data={mergedData} />}
+          {component === "Groups" && <Groups data={mergedData} />} */}
           {component === "Geofence" && <Geofence data={mergedData} />}
           {component === "Preferences" && <Preferences data={mergedData} />}
           {component === "Notifications" && <Notifications data={mergedData} />}
