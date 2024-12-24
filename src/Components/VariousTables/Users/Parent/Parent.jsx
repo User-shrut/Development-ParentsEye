@@ -1624,6 +1624,7 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
+import Export from "./ExportParent";
 import {
   FormControl,
   FormControlLabel,
@@ -2040,17 +2041,6 @@ console.log("role is:",role)
       alert("Failed to delete selected records.");
     }
     fetchData();
-  };
-
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Parent.xlsx");
   };
 
   const handleFileUpload = (event) => {
@@ -2976,9 +2966,8 @@ const lastThirdColumn = columns[columns.length - 3];
           >
             Import
           </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
+          <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"PARENT DETAIL LIST"} pdfFilename={"ParentApprove.pdf"} excelFilename={"ParentApprove.xlsx"}/>
+
         </div>
         <div
           style={{
@@ -3445,7 +3434,7 @@ const lastThirdColumn = columns[columns.length - 3];
               </IconButton>
             </Box>
 
-            <TextField
+         {/*    <TextField
               key={"childName"}
               label={"Student Name"}
               variant="outlined"
@@ -3454,16 +3443,10 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <DriveFileRenameOutlineIcon/>  {/* Add Face6Icon in the input field */}
-                  </InputAdornment>
-                ),
-              }}
-            />
+             
+            /> */}
 
-            <FormControl
+         {/*    <FormControl
               sx={{
                 display: "flex",
                 flexDirection: "row",
@@ -3493,9 +3476,9 @@ const lastThirdColumn = columns[columns.length - 3];
                   label="Male"
                 />
               </RadioGroup>
-            </FormControl>
+            </FormControl> */}
 
-            <FormControl
+            {/* <FormControl
               sx={{
                 display: "flex",
                 flexDirection: "row",
@@ -3508,8 +3491,8 @@ const lastThirdColumn = columns[columns.length - 3];
               >
                 Date of Birth
               </FormLabel>
-
-              <TextField
+ */}
+           {/*    <TextField
                 key={"childAge"}
                 label={ "Date of Birth"}
                 type="date"
@@ -3520,16 +3503,11 @@ const lastThirdColumn = columns[columns.length - 3];
                 onChange={handleInputChange}
                 sx={{ marginBottom: "10px", width: "200px" }}
                 fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <CakeIcon />
-                    </InputAdornment>
-                  ),}}
+               
               />
-            </FormControl>
+            </FormControl> */}
 
-            <TextField
+           {/*  <TextField
               key={"childAge"}
               label={"Student Age"}
               variant="outlined"
@@ -3539,15 +3517,9 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Face6Icon />  {/* Add Face6Icon in the input field */}
-                  </InputAdornment>
-                ),
-              }}
+             
             />
-
+ */}
             {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
               <InputLabel id="demo-simple-select-label">Class</InputLabel>
               <Select
@@ -3570,7 +3542,7 @@ const lastThirdColumn = columns[columns.length - 3];
                 <MenuItem value={10}>10</MenuItem>
               </Select>
             </FormControl> */}
-<FormControl fullWidth sx={{ marginBottom: "10px" }}>
+{/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <Autocomplete
     id="searchable-select"
     options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}  // Array of values to choose from
@@ -3587,19 +3559,11 @@ const lastThirdColumn = columns[columns.length - 3];
         label="Class"
         variant="outlined"
         name="class"
-        InputProps={{
-          ...params.InputProps,
-          startAdornment: (
-            <InputAdornment position="start">
-              <ClassIcon />  {/* Add SchoolIcon in the input field */}
-            </InputAdornment>
-          ),
-        }}
       />
     )}
   />
-</FormControl>
-            <TextField
+</FormControl> */}
+           {/*  <TextField
               key={"roleno"}
               label={"Roll No"}
               variant="outlined"
@@ -3608,15 +3572,8 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PinIcon/>  {/* Add Face6Icon in the input field */}
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
+            /> */}
+           {/*  <TextField
               key={"section"}
               label={"Section"}
               variant="outlined"
@@ -3625,366 +3582,16 @@ const lastThirdColumn = columns[columns.length - 3];
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <HolidayVillageIcon />  {/* Add Face6Icon in the input field */}
-                  </InputAdornment>
-                ),
-              }}
             />
+             */}
             {role == 1 ? (
               <>
-                {/* <FormControl
-                  variant="outlined"
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                >
-                  <InputLabel>{"School Name"}</InputLabel>
-
-                  <Select
-                    value={formData["schoolName"] || ""}
-                    onChange={handleInputChange}
-                    name="schoolName"
-                    label={"School Name"}
-                  >
-                    {schools?.map((option) => (
-                      <MenuItem key={option._id} value={option.schoolName}>
-                        {option.schoolName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl> */}
-                {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-school-select"
-    options={schools || []} // List of school objects
-    getOptionLabel={(option) => option.schoolName || ""} // Display school name
-    value={schools.find(school => school.schoolName === formData["schoolName"]) || null} // Find the selected school
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "schoolName", value: newValue?.schoolName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="School Name"
-        variant="outlined"
-        name="schoolName"
-      />
-    )}
-  />
-</FormControl> */}
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-school-select"
-    options={schools || []} // Ensure schools is an array
-    getOptionLabel={(option) => option.schoolName || ""} // Display school name
-    value={Array.isArray(schools) ? schools.find(school => school.schoolName === formData["schoolName"]) : null} // Safely find the selected school
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "schoolName", value: newValue?.schoolName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="School Name"
-        variant="outlined"
-        name="schoolName"
-        InputProps={{
-          ...params.InputProps,
-          startAdornment: (
-            <InputAdornment position="start">
-              <SchoolIcon />  {/* Add SchoolIcon in the input field */}
-            </InputAdornment>
-          ),
-        }}
-      />
-    )}
-  />
-</FormControl>
-
-                {/* <FormControl
-                  variant="outlined"
-                  sx={{ marginBottom: "10px" }}
-                  fullWidth
-                >
-                  <InputLabel>{"Branch Name"}</InputLabel>
-
-                  <Select
-                    value={formData["branchName"] || ""}
-                    onChange={handleInputChange}
-                    name="branchName"
-                    label={"Branch Name"}
-                  >
-                    {branches?.map((option) => (
-                      <MenuItem key={option.branchId} value={option.branchName}>
-                        {option.branchName}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl> */}
-               <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) : null} // Safely find the selected branch
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "branchName", value: newValue?.branchName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-        InputProps={{
-          ...params.InputProps,
-          startAdornment: (
-            <InputAdornment position="start">
-              <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
-            </InputAdornment>
-          ),
-        }}
-      />
-    )}
-  />
-</FormControl>
-
-              </>
-            ) :role == 4 ? (
-             
-              <FormControl
-                variant="outlined"
-                sx={{ marginBottom: "10px" }}
-                fullWidth
-              >
-                <Autocomplete
-                  id="searchable-branch-select"
-                  options={branches || []} // Ensure branches is an array
-                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
-                  value={
-                    Array.isArray(branches)
-                      ? branches.find(
-                          (branch) =>
-                            branch.branchName === formData["branchName"]
-                        ) || null
-                      : null
-                  } // Safeguard find method
-                  onChange={(event, newValue) => {
-                    handleInputChange({
-                      target: {
-                        name: "branchName",
-                        value: newValue?.branchName || "",
-                      },
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Branch Name"
-                      variant="outlined"
-                      name="branchName"
-                    />
-                  )}
-                />
-              </FormControl>
-            ): role == 2 ? (
-              // <FormControl
-              //   variant="outlined"
-              //   sx={{ marginBottom: "10px" }}
-              //   fullWidth
-              // >
-              //   <InputLabel>{"Branch Name"}</InputLabel>
-
-              //   <Select
-              //     value={formData["branchName"] || ""}
-              //     onChange={handleInputChange}
-              //     name="branchName"
-              //     label={"Branch Name"}
-              //   >
-              //     {branches?.map((option) => (
-              //       <MenuItem key={option.branchId} value={option.branchName}>
-              //         {option.branchName}
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
-//               <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-//   <Autocomplete
-//     id="searchable-branch-select"
-//     options={branches || []} // List of branch objects
-//     getOptionLabel={(option) => option.branchName || ""} // Display branch name
-//     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
-//     onChange={(event, newValue) => {
-//       handleInputChange({
-//         target: { name: "branchName", value: newValue?.branchName || "" },
-//       });
-//     }}
-//     renderInput={(params) => (
-//       <TextField
-//         {...params}
-//         label="Branch Name"
-//         variant="outlined"
-//         name="branchName"
-//       />
-//     )}
-//   />
-// </FormControl>
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={branches || []} // List of branch objects
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) || null : null} // Ensure branches is an array before find
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "branchName", value: newValue?.branchName || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-        InputProps={{
-          ...params.InputProps,
-          startAdornment: (
-            <InputAdornment position="start">
-              <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
-            </InputAdornment>
-          ),
-        }}
-      />
-    )}
-  />
-</FormControl>
-
-            ) : null}
-            {/* <FormControl
-  variant="outlined"
-  sx={{ marginBottom: "10px" }}
-  fullWidth
->
-  <InputLabel>{"Bus Name"}</InputLabel>
-  
-  <Select
-    value={formData["deviceId"] || ""}  // Select based on deviceId
-    onChange={handleBusChange}
-    name="deviceId"  // Name reflects deviceId for posting
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}  
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
- {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <InputLabel>{"Bus Name"}</InputLabel>
-  <Select
-    value={formData["deviceId"] || ""}
-    onChange={handleBusChange}
-    name="deviceId"
-    label={"Bus Name"}
-  >
-    {buses?.map((option) => (
-      <MenuItem key={option.deviceId} value={option.deviceId}>
-        {option.deviceName}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
-<FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-bus-select"
-    options={Array.isArray(buses) ? buses : []} // Ensure buses is an array
-    getOptionLabel={(option) => option.deviceName || ""} // Display bus name
-    value={Array.isArray(buses) ? buses.find(bus => bus.deviceId === formData["deviceId"]) : null} // Safely find the selected bus
-    onChange={(event, newValue) => {
-      handleBusChange({
-        target: { name: "deviceId", value: newValue?.deviceId || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Bus Name"
-        variant="outlined"
-        name="deviceId"
-        InputProps={{
-          ...params.InputProps,
-          startAdornment: (
-            <InputAdornment position="start">
-              <DirectionsBusIcon />  {/* Add SchoolIcon in the input field */}
-            </InputAdornment>
-          ),
-        }}
-      />
-    )}
-  />
-</FormControl>
-
-{/* Geofences display based on selected Bus */}
-{/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
-  <InputLabel id="geofence-id-label">Select Geofence</InputLabel>
-  <Select
-    labelId="geofence-id-label"
-    name="pickupPoint"
-    value={formData["pickupPoint"] || ""}
-    onChange={handleInputChange}
-  >
-    {filteredGeofences.length > 0 ? (
-      filteredGeofences.map(geofence => (
-        <MenuItem key={geofence._id} value={geofence.name}>
-          {geofence.name} 
-        </MenuItem>
-      ))
-    ) : (
-      <MenuItem disabled>No geofences available</MenuItem>
-    )}
-  </Select>
-</FormControl> */}
-
-<FormControl fullWidth sx={{ marginBottom: "10px" }}>
-  <Autocomplete
-    id="geofence-autocomplete"
-    options={filteredGeofences || []} // List of geofence objects
-    getOptionLabel={(option) => option.name || ""} // Display geofence name
-    value={filteredGeofences.find(geofence => geofence.name === formData["pickupPoint"]) || null} // Find the selected geofence
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: { name: "pickupPoint", value: newValue?.name || "" },
-      });
-    }}
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Select Geofence"
-        variant="outlined"
-        name="pickupPoint"
-        InputProps={{
-          ...params.InputProps,
-          startAdornment: (
-            <InputAdornment position="start">
-              <ShareLocationIcon />  {/* Add SchoolIcon in the input field */}
-            </InputAdornment>
-          ),
-        }}
-      />
-    )}
-  />
-</FormControl>
-
-
-            <TextField
+               <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <TextField
               key={"parent"}
               label={"Parent Name"}
               variant="outlined"
@@ -4052,6 +3659,543 @@ const lastThirdColumn = columns[columns.length - 3];
                 ),
               }}
             />
+            </FormControl> 
+                {/* <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <InputLabel>{"School Name"}</InputLabel>
+
+                  <Select
+                    value={formData["schoolName"] || ""}
+                    onChange={handleInputChange}
+                    name="schoolName"
+                    label={"School Name"}
+                  >
+                    {schools?.map((option) => (
+                      <MenuItem key={option._id} value={option.schoolName}>
+                        {option.schoolName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl> */}
+                {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-school-select"
+    options={schools || []} // List of school objects
+    getOptionLabel={(option) => option.schoolName || ""} // Display school name
+    value={schools.find(school => school.schoolName === formData["schoolName"]) || null} // Find the selected school
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "schoolName", value: newValue?.schoolName || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="School Name"
+        variant="outlined"
+        name="schoolName"
+      />
+    )}
+  />
+</FormControl> */}
+{/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-school-select"
+    options={schools || []} // Ensure schools is an array
+    getOptionLabel={(option) => option.schoolName || ""} // Display school name
+    value={Array.isArray(schools) ? schools.find(school => school.schoolName === formData["schoolName"]) : null} // Safely find the selected school
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "schoolName", value: newValue?.schoolName || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="School Name"
+        variant="outlined"
+        name="schoolName"
+        
+      />
+    )}
+  />
+</FormControl> */}
+
+                {/* <FormControl
+                  variant="outlined"
+                  sx={{ marginBottom: "10px" }}
+                  fullWidth
+                >
+                  <InputLabel>{"Branch Name"}</InputLabel>
+
+                  <Select
+                    value={formData["branchName"] || ""}
+                    onChange={handleInputChange}
+                    name="branchName"
+                    label={"Branch Name"}
+                  >
+                    {branches?.map((option) => (
+                      <MenuItem key={option.branchId} value={option.branchName}>
+                        {option.branchName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl> */}
+               {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-branch-select"
+    options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
+    getOptionLabel={(option) => option.branchName || ""} // Display branch name
+    value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) : null} // Safely find the selected branch
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "branchName", value: newValue?.branchName || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Branch Name"
+        variant="outlined"
+        name="branchName"
+        
+      />
+    )}
+  />
+</FormControl> */}
+
+              </>
+            ) :role == 4 ? (<>
+             
+               {/* <FormControl
+                variant="outlined"
+                sx={{ marginBottom: "10px" }}
+                fullWidth
+              >
+                <Autocomplete
+                  id="searchable-branch-select"
+                  options={branches || []} // Ensure branches is an array
+                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                  value={
+                    Array.isArray(branches)
+                      ? branches.find(
+                          (branch) =>
+                            branch.branchName === formData["branchName"]
+                        ) || null
+                      : null
+                  } // Safeguard find method
+                  onChange={(event, newValue) => {
+                    handleInputChange({
+                      target: {
+                        name: "branchName",
+                        value: newValue?.branchName || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Branch Name"
+                      variant="outlined"
+                      name="branchName"
+                    />
+                  )}
+                />
+              </FormControl>  */}
+              <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <TextField
+              key={"parent"}
+              label={"Parent Name"}
+              variant="outlined"
+              name="parentName"
+              value={formData["parentName"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AbcIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"phone"}
+              label={"Phone Number"}
+              variant="outlined"
+              name="phone"
+              value={formData["phone"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"email"}
+              label={"Parent's Email"}
+              variant="outlined"
+              name="email"
+              value={formData["email"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"password"}
+              label={"Password"}
+              variant="outlined"
+              name="password"
+              value={formData["password"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            </FormControl> 
+            </>
+
+            ): role == 2 ? (
+              <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <TextField
+              key={"parent"}
+              label={"Parent Name"}
+              variant="outlined"
+              name="parentName"
+              value={formData["parentName"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AbcIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"phone"}
+              label={"Phone Number"}
+              variant="outlined"
+              name="phone"
+              value={formData["phone"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"email"}
+              label={"Parent's Email"}
+              variant="outlined"
+              name="email"
+              value={formData["email"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"password"}
+              label={"Password"}
+              variant="outlined"
+              name="password"
+              value={formData["password"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            </FormControl> 
+              // <FormControl
+              //   variant="outlined"
+              //   sx={{ marginBottom: "10px" }}
+              //   fullWidth
+              // >
+              //   <InputLabel>{"Branch Name"}</InputLabel>
+
+              //   <Select
+              //     value={formData["branchName"] || ""}
+              //     onChange={handleInputChange}
+              //     name="branchName"
+              //     label={"Branch Name"}
+              //   >
+              //     {branches?.map((option) => (
+              //       <MenuItem key={option.branchId} value={option.branchName}>
+              //         {option.branchName}
+              //       </MenuItem>
+              //     ))}
+              //   </Select>
+              // </FormControl>
+//               <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+//   <Autocomplete
+//     id="searchable-branch-select"
+//     options={branches || []} // List of branch objects
+//     getOptionLabel={(option) => option.branchName || ""} // Display branch name
+//     value={branches.find(branch => branch.branchName === formData["branchName"]) || null} // Find the selected branch
+//     onChange={(event, newValue) => {
+//       handleInputChange({
+//         target: { name: "branchName", value: newValue?.branchName || "" },
+//       });
+//     }}
+//     renderInput={(params) => (
+//       <TextField
+//         {...params}
+//         label="Branch Name"
+//         variant="outlined"
+//         name="branchName"
+//       />
+//     )}
+//   />
+// </FormControl>
+//  <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+//   <Autocomplete
+//     id="searchable-branch-select"
+//     options={branches || []} // List of branch objects
+//     getOptionLabel={(option) => option.branchName || ""} // Display branch name
+//     value={Array.isArray(branches) ? branches.find(branch => branch.branchName === formData["branchName"]) || null : null} // Ensure branches is an array before find
+//     onChange={(event, newValue) => {
+//       handleInputChange({
+//         target: { name: "branchName", value: newValue?.branchName || "" },
+//       });
+//     }}
+//     renderInput={(params) => (
+//       <TextField
+//         {...params}
+//         label="Branch Name"
+//         variant="outlined"
+//         name="branchName"
+        
+//       />
+//     )}
+//   />
+// </FormControl>
+            ): role == 3 ? (
+              <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <TextField
+              key={"parent"}
+              label={"Parent Name"}
+              variant="outlined"
+              name="parentName"
+              value={formData["parentName"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AbcIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"phone"}
+              label={"Phone Number"}
+              variant="outlined"
+              name="phone"
+              value={formData["phone"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneInTalkIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"email"}
+              label={"Parent's Email"}
+              variant="outlined"
+              name="email"
+              value={formData["email"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MailIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <TextField
+              key={"password"}
+              label={"Password"}
+              variant="outlined"
+              name="password"
+              value={formData["password"] || ""}
+              onChange={handleInputChange}
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PasswordIcon />  {/* Add Face6Icon in the input field */}
+                  </InputAdornment>
+                ),
+              }}
+            />
+            </FormControl> ): null}
+            {/* <FormControl
+  variant="outlined"
+  sx={{ marginBottom: "10px" }}
+  fullWidth
+>
+  <InputLabel>{"Bus Name"}</InputLabel>
+  
+  <Select
+    value={formData["deviceId"] || ""}  // Select based on deviceId
+    onChange={handleBusChange}
+    name="deviceId"  // Name reflects deviceId for posting
+    label={"Bus Name"}
+  >
+    {buses?.map((option) => (
+      <MenuItem key={option.deviceId} value={option.deviceId}>
+        {option.deviceName}  
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl> */}
+ {/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <InputLabel>{"Bus Name"}</InputLabel>
+  <Select
+    value={formData["deviceId"] || ""}
+    onChange={handleBusChange}
+    name="deviceId"
+    label={"Bus Name"}
+  >
+    {buses?.map((option) => (
+      <MenuItem key={option.deviceId} value={option.deviceId}>
+        {option.deviceName}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl> */}
+{/* <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
+  <Autocomplete
+    id="searchable-bus-select"
+    options={Array.isArray(buses) ? buses : []} // Ensure buses is an array
+    getOptionLabel={(option) => option.deviceName || ""} // Display bus name
+    value={Array.isArray(buses) ? buses.find(bus => bus.deviceId === formData["deviceId"]) : null} // Safely find the selected bus
+    onChange={(event, newValue) => {
+      handleBusChange({
+        target: { name: "deviceId", value: newValue?.deviceId || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Bus Name"
+        variant="outlined"
+        name="deviceId"
+      />
+    )}
+  />
+</FormControl> */}
+
+{/* Geofences display based on selected Bus */}
+{/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+  <InputLabel id="geofence-id-label">Select Geofence</InputLabel>
+  <Select
+    labelId="geofence-id-label"
+    name="pickupPoint"
+    value={formData["pickupPoint"] || ""}
+    onChange={handleInputChange}
+  >
+    {filteredGeofences.length > 0 ? (
+      filteredGeofences.map(geofence => (
+        <MenuItem key={geofence._id} value={geofence.name}>
+          {geofence.name} 
+        </MenuItem>
+      ))
+    ) : (
+      <MenuItem disabled>No geofences available</MenuItem>
+    )}
+  </Select>
+</FormControl> */}
+
+{/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
+  <Autocomplete
+    id="geofence-autocomplete"
+    options={filteredGeofences || []} // List of geofence objects
+    getOptionLabel={(option) => option.name || ""} // Display geofence name
+    value={filteredGeofences.find(geofence => geofence.name === formData["pickupPoint"]) || null} // Find the selected geofence
+    onChange={(event, newValue) => {
+      handleInputChange({
+        target: { name: "pickupPoint", value: newValue?.name || "" },
+      });
+    }}
+    renderInput={(params) => (
+      <TextField
+        {...params}
+        label="Select Geofence"
+        variant="outlined"
+        name="pickupPoint"
+      />
+    )}
+  />
+</FormControl> */}
+
+
+            
           {/* <FormControl fullWidth sx={{ marginBottom: "10px" }}>
   <InputLabel id="device-id-label">Select Device</InputLabel>
   <Select
@@ -4446,6 +4590,14 @@ const lastThirdColumn = columns[columns.length - 3];
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />

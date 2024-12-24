@@ -1377,6 +1377,7 @@ import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationSt
 import InputAdornment from "@mui/material/InputAdornment"; // Add this import
 import SchoolIcon from '@mui/icons-material/School';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import Export from "./ExportBranchMaster";
 import {
   FormControl,
   IconButton,
@@ -1403,6 +1404,8 @@ const style = {
   flexDirection: "column",
   padding: "1rem",
 };
+const orangeBtn ={ backgroundColor: "rgb(255, 165, 0)"}
+
 
 const BranchMaster = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
@@ -1710,16 +1713,6 @@ const BranchMaster = () => {
     fetchData();
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Branches.xlsx");
-  };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -1980,7 +1973,7 @@ const BranchMaster = () => {
     };
 
     fetchSchool();
-  }, [addModalOpen]);
+  }, [addModalOpen,editModalOpen]);
 
   // useEffect(() => {
   //   const fetchOtherData = async () => {
@@ -2191,9 +2184,8 @@ const BranchMaster = () => {
           >
             Import
           </Button> */}
-          <Button variant="contained" sx={{ backgroundColor: "rgb(255, 165, 0)"}} onClick={handleExport}>
-            Export
-          </Button>
+                    <Export orangeBtn={orangeBtn} columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"BRANCH MASTER"} pdfFilename={"BranchMaster.pdf"} excelFilename={"BranchMaster.xlsx"}/>
+
         </div>
         <div
           style={{

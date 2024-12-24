@@ -31,6 +31,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Green check icon
 import CancelIcon from "@mui/icons-material/Cancel"; // Red cross icon
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
+import Export from "../../Export";
 import {
   FormControlLabel,
   FormLabel,
@@ -321,16 +322,6 @@ console.log("abhi dekh",role)
     setSelectAll(newSelectAll);
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "PickupAndDrop.xlsx");
-  };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -529,17 +520,8 @@ console.log("abhi dekh",role)
     Column Visibility
   </Button>
 
-  <Button
-    variant="contained"
-    color="success"
-    onClick={handleExport}
-    sx={{
-      padding: "6px 12px",
-      marginRight: "10px",
-    }}
-  >
-    Export
-  </Button>
+  <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"PICKUP AND DROP LIST"} pdfFilename={"PickupDrop.pdf"} excelFilename={"PickupDrop.xlsx"} />
+
 
   <input
     type="date"

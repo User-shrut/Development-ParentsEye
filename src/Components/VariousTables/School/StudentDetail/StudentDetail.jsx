@@ -29,7 +29,7 @@ import Snackbar from "@mui/material/Snackbar";
 import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
-
+import Export from "../../Export";
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 
 
@@ -433,19 +433,6 @@ export const StudentDetail = () => {
     fetchData();
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "StudentDetail.xlsx");
-  };
-
-  
-
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -502,6 +489,12 @@ export const StudentDetail = () => {
   const handleModalClose = () => {
     setEditModalOpen(false);
     setAddModalOpen(false);
+    if(role==1){
+      setBranches();
+    }
+    if (role != 3) {
+      setBuses(undefined);  // assuming you're resetting buses state to an empty array or some other value
+  }
     setImportModalOpen(false);
     setModalOpen(false);
     setFormData({});
@@ -735,8 +728,10 @@ export const StudentDetail = () => {
       });
 
       // Filter devices for the selected branch
-      const filteredDevices = allDevices.filter(
-        (device) => device.branchName === value
+      const filteredDevices = allDevices.filter((device) =>
+        role === 1
+          ? device.schoolName === formData.schoolName && device.branchName === value
+          : device.branchName === value
       );
       setBuses(filteredDevices); // Update buses based on selected branch
     }
@@ -782,6 +777,113 @@ export const StudentDetail = () => {
       }));
     }
   };
+//! 1st use effect
+const [allDevices, setAllDevices] = useState([]);
+
+  useEffect(() => {
+    // Trigger the "onChange" behavior programmatically if a school is pre-selected
+    if (formData.schoolName && role ==1) {
+      const event = {
+        target: {
+          name: "schoolName",
+          value: formData.schoolName,
+        },
+      };
+      handleInputChange(event); // Call the handleInputChange with the pre-selected school
+    }
+  }, [formData.schoolName, schools]);
+  useEffect(() => {
+    if (formData.branchName) {
+      const event = {
+        target: {
+          name: "branchName",
+          value: formData.branchName,
+        },
+      };
+      handleInputChange(event); // Trigger fetching buses when branchName changes
+    }
+  }, [formData.branchName, allDevices]);
+  
+
+//! 2st use effect
+ /*  useEffect(() => {
+    // Trigger the onChange when schoolName changes or on initial load
+    if (formData.schoolName) {
+      const event = {
+        target: {
+          name: "schoolName",
+          value: formData.schoolName,
+        },
+      };
+      handleInputChange(event); // Populate branches based on the selected school
+    }
+  }, [formData.schoolName, schools]); // Trigger when schoolName or schools list changes
+
+  useEffect(() => {
+    // Ensure the branchName is valid for the newly populated branches list
+    if (formData.branchName && Array.isArray(branches) && branches.length > 0) {
+      const selectedBranch = branches.find(
+        (branch) => branch.branchName === formData.branchName
+      );
+  
+      if (selectedBranch) {
+        setFormData((prevData) => ({
+          ...prevData,
+          branchName: selectedBranch.branchName, // Set branchName to the selected branch if found
+        }));
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          branchName: "", // Clear branch if it doesn't exist in the new branch list
+        }));
+      }
+    }
+  }, [branches, formData.branchName]); // Trigger when branches or branchName changes
+   // Trigger when branches or branchName changes */
+//! 3st use effect
+/* useEffect(() => {
+  if (formData.schoolName && role === 1) {
+    // Find the selected school
+    const selectedSchool = schools.find(
+      (school) => school.schoolName === formData.schoolName
+    );
+
+    if (selectedSchool) {
+      // Update branches based on the selected school
+      const updatedBranches = selectedSchool.branches.map((branch) => ({
+        branchName: branch.branchName,
+        branchId: branch.branchId,
+      }));
+      setBranches(updatedBranches);
+
+      // Validate or set default branchName
+      const validBranch = updatedBranches.find(
+        (branch) => branch.branchName === formData.branchName
+      );
+
+      setFormData((prevData) => ({
+        ...prevData,
+        branchName: validBranch
+          ? formData.branchName
+          : updatedBranches[0]?.branchName || "",
+      }));
+    } else {
+      // Reset branches and branchName if no valid school is found
+      setBranches([]);
+      setFormData((prevData) => ({
+        ...prevData,
+        branchName: "",
+      }));
+    }
+  }
+}, [formData.schoolName, schools, role]); */
+useEffect(() => {
+  console.log("Selected School:", formData.schoolName);
+  console.log("Available Branches:", branches);
+  console.log("Selected Branch:", formData.branchName);
+}, [formData.schoolName, branches, formData.branchName]);
+
+  
 
   const handleSelectChange = (event) => {
     setFormData({
@@ -798,7 +900,6 @@ export const StudentDetail = () => {
     setOtherSelectedValue(event.target.value);
   };
 
-  const [allDevices, setAllDevices] = useState([]);
   const columns = COLUMNS();
   const lastSecondColumn = columns[columns.length - 2]; // Last second column
   const lastThirdColumn = columns[columns.length - 3];
@@ -1252,9 +1353,8 @@ console.log("my geofences",response.data)
           >
             Import
           </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
+          <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"STUDENTS DETAIL"} pdfFilename={"StudentDetail.pdf"} excelFilename={"StudentDetail.xlsx"} />
+
         </div>
         <div
           style={{
@@ -1778,6 +1878,7 @@ console.log("my geofences",response.data)
                   fullWidth
                 >
                   <Autocomplete
+                     key={`${formData.schoolName}-${formData.branchName}`} 
                     id="searchable-branch-select"
                     options={Array.isArray(branches) ? branches : []} // Ensure branches is an array
                     getOptionLabel={(option) => option.branchName || ""} // Display branch name
@@ -1860,6 +1961,7 @@ console.log("my geofences",response.data)
                 fullWidth
               >
                 <Autocomplete
+                  key={`${formData.schoolName}-${formData.branchName}`} 
                   id="searchable-branch-select"
                   options={branches || []} // Ensure branches is at least an empty array
                   getOptionLabel={(option) => option.branchName || ""} // Display branch name
@@ -2420,6 +2522,14 @@ console.log("my geofences",response.data)
                       label="Branch Name"
                       variant="outlined"
                       name="branchName"
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />

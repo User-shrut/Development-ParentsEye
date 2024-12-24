@@ -733,11 +733,11 @@ function App() {
 
           {component === "Dashboard" && <Tablee data={mergedData} />}
         
-          {component === "Assets" && <Assets data={mergedData} />}
-          {component === "School" && <School data={mergedData} />}
-          {component === "AssetsCategory" && (
-            <AssetsCategory data={mergedData} />
-          )}
+         {/* {component === "Assets" && <Assets data={mergedData} />} */}
+          {/* {component === "School" && <School data={mergedData} />} */}
+          {/* {component === "AssetsCategory" && ( */}
+            {/* <AssetsCategory data={mergedData} /> */}
+          {/* )} */}
           {component === "Leave" && (
             <Leave data={mergedData} />
           )}
@@ -748,18 +748,18 @@ function App() {
             <StudentDetail data={mergedData} />
           )}
          
-          {component === "AnalyticsDashboard" && (
+          {/* {component === "AnalyticsDashboard" && (
             <AnalyticsDashboard data={mergedData} />
           )}
           {component === "AssetsType" && <AssetsType data={mergedData} />}
           {component === "AssetsCommand" && <AssetsCommand data={mergedData} />}
           {component === "AssetsClass" && <AssetsClass data={mergedData} />}
-          {component === "AssetsGroup" && <AssetsGroup data={mergedData} />}
-          {component === "Users" && <Users data={mergedData} />}
-          {component === "CreateLandmark" && (
+          {component === "AssetsGroup" && <AssetsGroup data={mergedData} />} */}
+          {/* {component === "Users" && <Users data={mergedData} />} */}
+          {/* {component === "CreateLandmark" && (
             <CreateLandmark data={mergedData} />
-          )}
-          {component === "EditLandmarks" && <EditLandmarks data={mergedData} />}
+          )} */}
+          {/* {component === "EditLandmarks" && <EditLandmarks data={mergedData} />}
           {component === "CreateRoute" && <CreateRoute data={mergedData} />}
           {component === "EditRoutes" && <EditRoutes data={mergedData} />}
           {component === "CreateArea" && <CreateArea data={mergedData} />}
@@ -768,23 +768,23 @@ function App() {
           )}
           {component === "AssetsOwner" && <AssetsOwner data={mergedData} />}
           {component === "AddressBook" && <AddressBook data={mergedData} />}
-          {component === "AddressBookGroup" && (
-            <AddressBookGroup data={mergedData} />
+          {component === "AddressBookGroup" && ( */}
+            {/* <AddressBookGroup data={mergedData} />
           )}
           {component === "AssetsURL" && <AssetsURL data={mergedData} />}
           {component === "Broker" && <Broker data={mergedData} />}
           {component === "Commands" && <Commands data={mergedData} />}
           {component === "DeviceSettings" && (
             <DeviceSettings data={mergedData} />
-          )}
-          {component === "DriverMaster" && <DriverMaster data={mergedData} />}
-          {component === "Emails" && <Emails data={mergedData} />}
-          {component === "GeoData" && <GeoData data={mergedData} />}
-          {component === "ImportLocation" && (
+          )} */}
+          {/* {component === "DriverMaster" && <DriverMaster data={mergedData} />} */}
+          {/* {component === "Emails" && <Emails data={mergedData} />}
+          {component === "GeoData" && <GeoData data={mergedData} />} */}
+          {/* {component === "ImportLocation" && (
             <ImportLocation data={mergedData} />
-          )}
-          {component === "LandmarkGroup" && <LandmarkGroup data={mergedData} />}
-          {component === "LandmarkImages" && (
+          )} */}
+          {/* {component === "LandmarkGroup" && <LandmarkGroup data={mergedData} />} */}
+          {/* {component === "LandmarkImages" && (
             <LandmarkImages data={mergedData} />
           )}
           {component === "LandmarkWaypoints" && (
@@ -801,20 +801,20 @@ function App() {
             {/* {component === "School" && (
             <School data={mergedData} />
           )} */}
-          {component === "TopMenuMaster" && <TopMenuMaster data={mergedData} />}
-          {component === "UserMenuMaster" && (
+          {/* {component === "TopMenuMaster" && <TopMenuMaster data={mergedData} />} */} 
+          {/* {component === "UserMenuMaster" && (
             <UserMenuMaster data={mergedData} />
           )}
           
           {component === "UserProfile" && <UserProfile data={mergedData} />}
          
-        
+         */}
 
 
            
 
-          {component === "EditAreas" && <EditAreas data={mergedData} />}
-          {component === "EditZones" && <EditZones data={mergedData} />}
+          {/* {component === "EditAreas" && <EditAreas data={mergedData} />}
+          {component === "EditZones" && <EditZones data={mergedData} />} */}
           {/* {component === "Trips" && <Trips data={mergedData} />} */}
 
           {component === "Absent" && <Absent data={mergedData} />}
@@ -829,9 +829,9 @@ function App() {
           {component === "ApprovedRequest" && <ApprovedRequest data={mergedData} />}
           {component === "DeniedRequest" && <DeniedRequest data={mergedData} />}
           {component === "PickupAndDrop" && <PickupAndDrop data={mergedData} />}
-          {component === "Server" && <Server data={mergedData} />}
+          {/* {component === "Server" && <Server data={mergedData} />}
           {component === "Device" && <Device data={mergedData} />}
-          {component === "Groups" && <Groups data={mergedData} />}
+          {component === "Groups" && <Groups data={mergedData} />} */}
           {component === "Geofence" && <Geofence data={mergedData} />}
           {component === "Preferences" && <Preferences data={mergedData} />}
           {component === "Notifications" && <Notifications data={mergedData} />}

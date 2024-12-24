@@ -658,6 +658,7 @@ import { TotalResponsesContext } from "../../../../TotalResponsesContext";
 import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import { Autocomplete } from "@mui/material";
+import Export from "./ExportSupervisor";
 import {
   FormControl,
   IconButton,
@@ -1052,17 +1053,6 @@ export const Supervisor = () => {
     fetchData();
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Supervisor.xlsx");
-  };
-
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -1125,6 +1115,9 @@ export const Supervisor = () => {
     setImportModalOpen(false);
     setFormData({});
     setModalOpen(false);
+    if(role!=1)fetchData();
+    // if(role==1)setBranches();
+    // setBuses();
   };
 
   const handleSnackbarClose = () => {
@@ -1176,7 +1169,7 @@ export const Supervisor = () => {
       setFormData({
         ...formData,
         [name]: value,
-        branchName: "", // Reset branch when school changes
+        // branchName: "", // Reset branch when school changes
       });
 
       // Filter branches for the selected school
@@ -1196,31 +1189,41 @@ export const Supervisor = () => {
         );
         setBuses(filteredDevices); // Update buses based on selected school
       }
-    } else if ((role==1 ||role==2 ||role==3) && name === "branchName") {
+    } else if (name === "branchName") {
       setFormData({
         ...formData,
         [name]: value,
       });
 
-        const filteredDevices = allDevices.filter(
-        (device) => device.branchName === value
-      );
+      const filteredDevices = allDevices.filter((device) =>
+        role === 1
+          ? device.schoolName === formData.schoolName && device.branchName === value
+          : device.branchName === value
+      ); 
       setBuses(filteredDevices);
      
-    } else if ( name === "branchId") {
+    // } else if ( name === "branchId") {
+    //   setFormData({
+    //     ...formData,
+    //     [name]: value,
+    //     deviceId: "",
+    //   });
+
+    //   const filteredDevices = allDevices.filter(
+    //     (device) =>
+    //       device.schoolName === formData.schoolName &&
+    //       device.branchId === value
+    //   );
+    //   setBuses(filteredDevices);
+     
+    }
+    else if (name === "deviceId") {
+      setSelectedDeviceId(value); // Set the selected device ID
       setFormData({
         ...formData,
         [name]: value,
-        deviceId: "",
       });
 
-      const filteredDevices = allDevices.filter(
-        (device) =>
-          device.schoolName === formData.schoolName &&
-          device.branchId === value
-      );
-      setBuses(filteredDevices);
-     
     }else {
       setFormData({
         ...formData,
@@ -1228,7 +1231,36 @@ export const Supervisor = () => {
       });
     }
   };
-  
+    useEffect(() => {
+        // Trigger the "onChange" behavior programmatically if a school is pre-selected
+        if (formData.schoolName && role ==1) {
+          const event = {
+            target: {
+              name: "schoolName",
+              value: formData.schoolName,
+            },
+          };
+          handleInputChange(event); // Call the handleInputChange with the pre-selected school
+        }
+      }, [formData.schoolName, schools]);
+        useEffect(() => {
+          if (formData.branchName) {
+            const event = {
+              target: {
+                name: "branchName",
+                value: formData.branchName,
+              },
+            };
+            handleInputChange(event); // Trigger fetching buses when branchName changes
+          }
+        }, [formData.branchName, allDevices]);
+        useEffect(() => {
+          console.log("Selected School:", formData.schoolName);
+          console.log("Available Branches:", branches);
+          console.log("Selected Branch:", formData.branchName);
+          console.log("Available Devices (Buses):", buses);
+          console.log("Selected Device (Bus):", formData.deviceId);
+        }, [formData.schoolName, branches, formData.branchName, buses, formData.deviceId]);
   const handleBusChange = (e) => {
     const { value } = e.target;
 
@@ -1840,9 +1872,8 @@ export const Supervisor = () => {
           >
             Import
           </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
+          <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"SUPERVISOR DETAIL LIST"} pdfFilename={"Supervisor.pdf"} excelFilename={"Supervisor.xlsx"}/>
+
         </div>
         <div
           style={{
@@ -2215,7 +2246,7 @@ export const Supervisor = () => {
                 />
               ))}
             {role == 1 && (
-             
+             <>
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
@@ -2256,24 +2287,108 @@ export const Supervisor = () => {
                   )}
                 />
               </FormControl>
-            )}
-
-            {(role == 1 || role == 2 ) && (
-             
+              <FormControl
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <Autocomplete
+                id="searchable-branch-select"
+                options={branches || []} // List of branch objects
+                getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                value={
+                  branches.find(
+                    (branch) => branch.branchName === formData["branchName"]
+                  ) || null
+                } // Find the selected branch
+                onChange={(event, newValue) => {
+                  handleInputChange({
+                    target: {
+                      name: "branchName",
+                      value: newValue?.branchName || "",
+                    },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Branch Name"
+                    variant="outlined"
+                    name="branchName"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </FormControl></>
+            )}{(role == 4) && (
+                         
+                          <FormControl
+                            variant="outlined"
+                            sx={{ marginBottom: "10px" }}
+                            fullWidth
+                          >
+                            <Autocomplete
+                              id="searchable-branch-select"
+                              options={branches || []} // Ensure branches is an array
+                              getOptionLabel={(option) => option.branchName || ""} // Display branch name
+                              value={
+                                Array.isArray(branches)
+                                  ? branches.find(
+                                      (branch) =>
+                                        branch.branchName === formData["branchName"]
+                                    ) || null
+                                  : null
+                              } // Safeguard find method
+                              onChange={(event, newValue) => {
+                                handleInputChange({
+                                  target: {
+                                    name: "branchName",
+                                    value: newValue?.branchName || "",
+                                  },
+                                });
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  label="Branch Name"
+                                  variant="outlined"
+                                  name="branchName"
+                                  InputProps={{
+                                    ...params.InputProps,
+                                    startAdornment: (
+                                      <InputAdornment position="start">
+                                        <AccountTreeIcon />  {/* Add SchoolIcon in the input field */}
+                                      </InputAdornment>
+                                    ),
+                                  }}
+                                />
+                              )}
+                            />
+                          </FormControl>
+              )}
+              {(role == 2) && (
               <FormControl
                 variant="outlined"
                 sx={{ marginBottom: "10px" }}
                 fullWidth
               >
                 <Autocomplete
+                  key={`${formData.schoolName}-${formData.branchName}`} 
                   id="searchable-branch-select"
-                  options={branches || []} // List of branch objects
+                  options={branches || []} // Ensure branches is at least an empty array
                   getOptionLabel={(option) => option.branchName || ""} // Display branch name
                   value={
-                    branches.find(
+                    (branches || []).find(
                       (branch) => branch.branchName === formData["branchName"]
                     ) || null
-                  } // Find the selected branch
+                  } // Ensure branches is an array
                   onChange={(event, newValue) => {
                     handleInputChange({
                       target: {
@@ -2301,71 +2416,8 @@ export const Supervisor = () => {
                 />
               </FormControl>
             )}
-            {(role==4) && (
-             
-            //  <FormControl
-            //    variant="outlined"
-            //    sx={{ marginBottom: "10px" }}
-            //    fullWidth
-            //  >
-            //    <Autocomplete
-            //      id="searchable-branch-select"
-            //      options={branches || []} // List of branch objects
-            //      getOptionLabel={(option) => option.branchName || ""} // Display branch name
-            //      value={
-            //        branches.find(
-            //          (branch) => branch.branchId == formData["branchName"]
-            //        ) || null
-            //      } // Find the selected branch
-            //      onChange={(event, newValue) => {
-            //        handleInputChange({
-            //          target: {
-            //            name: "branchId",
-            //            value: newValue?.branchId || "",
-            //          },
-            //        });
-            //      }}
-            //      renderInput={(params) => (
-            //        <TextField
-            //          {...params}
-            //          label="Branch Name"
-            //          variant="outlined"
-            //          name="branchName"
-            //        />
-            //      )}
-            //    />
-            //  </FormControl>
-            <FormControl variant="outlined" sx={{ marginBottom: "10px" }} fullWidth>
-  <Autocomplete
-    id="searchable-branch-select"
-    options={branches || []} // List of branch objects
-    getOptionLabel={(option) => option.branchName || ""} // Display branch name
-    value={
-      branches.find(
-        (branch) => branch.branchId === formData["branchId"]
-      ) || null
-    } // Find the selected branch using branchId
-    onChange={(event, newValue) => {
-      handleInputChange({
-        target: {
-          name: "branchId",
-          value: newValue?.branchId || "",
-        },
-      });
-    }}
-    isOptionEqualToValue={(option, value) => option.branchId === value.branchId} // Ensure correct matching
-    renderInput={(params) => (
-      <TextField
-        {...params}
-        label="Branch Name"
-        variant="outlined"
-        name="branchName"
-      />
-    )}
-  />
-</FormControl>
 
-           )}
+           
             <FormControl 
               variant="outlined"
               sx={{ marginBottom: "10px" }}
@@ -2404,7 +2456,7 @@ export const Supervisor = () => {
                   />
                 )}
               />
-            </FormControl>
+            </FormControl>            
             <Button
               variant="contained"
               color="primary"
@@ -2450,90 +2502,92 @@ export const Supervisor = () => {
                   }}
                 />
               ))}
-            {role == 1 && (
-              
+            {role == 1 && (<>             
               <FormControl
-                variant="outlined"
-                sx={{ marginBottom: "10px" }}
-                fullWidth
-              >
-                <Autocomplete
-                  id="searchable-school-select"
-                  options={schools || []} // List of school objects
-                  getOptionLabel={(option) => option.schoolName || ""} // Display school name
-                  value={
-                    schools.find(
-                      (school) => school.schoolName === formData["schoolName"]
-                    ) || null
-                  } // Find the selected school
-                  onChange={(event, newValue) => {
-                    handleInputChange({
-                      target: {
-                        name: "schoolName",
-                        value: newValue?.schoolName || "",
-                      },
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="School Name"
-                      variant="outlined"
-                      name="schoolName"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SchoolIcon/>  {/* Add Face6Icon in the input field */}
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </FormControl>
-            )}
+              variant="outlined"
+              sx={{ marginBottom: "10px" }}
+              fullWidth
+            >
+              <Autocomplete
+                id="searchable-school-select"
+                options={schools || []} // Ensure schools is an array
+                getOptionLabel={(option) => option.schoolName || ""} // Display school name
+                value={
+                  schools.find(
+                    (school) => school.schoolName === formData["schoolName"]
+                  ) || null
+                } // Find the selected school
+                onChange={(event, newValue) => {
+                  handleInputChange({
+                    target: {
+                      name: "schoolName",
+                      value: newValue?.schoolName || "",
+                    },
+                  });
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="School Name"
+                    variant="outlined"
+                    name="schoolName"
+                    InputProps={{
+                      ...params.InputProps,
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SchoolIcon/> {/* Add SchoolIcon in the input field */}
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </FormControl>         
+            </> )}
 
             {(role == 1 || role == 2 || role==4) && (
              
-              <FormControl
-                variant="outlined"
-                sx={{ marginBottom: "10px" }}
-                fullWidth
-              >
-                <Autocomplete
-                  id="searchable-branch-select"
-                  options={branches || []} // List of branch objects
-                  getOptionLabel={(option) => option.branchName || ""} // Display branch name
-                  value={
-                    branches.find(
-                      (branch) => branch.branchName === formData["branchName"]
-                    ) || null
-                  } // Find the selected branch
-                  onChange={(event, newValue) => {
-                    handleInputChange({
-                      target: {
-                        name: "branchName",
-                        value: newValue?.branchName || "",
-                      },
-                    });
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Branch Name"
-                      variant="outlined"
-                      name="branchName"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <AccountTreeIcon/>  {/* Add Face6Icon in the input field */}
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  )}
-                />
-              </FormControl>
+             <FormControl
+             variant="outlined"
+             sx={{ marginBottom: "10px" }}
+             fullWidth
+           >
+             <Autocomplete
+               //  key={`${formData.schoolName}-${formData.branchName}`} 
+               id="searchable-branch-select"
+               options={branches || []} // Ensure branches is an array
+               getOptionLabel={(option) => option.branchName || ""} // Display branch name
+               value={
+                 branches.find(
+                   (branch) => branch.branchName === formData["branchName"]
+                 ) || null
+               } // Find the selected branch
+               onChange={(event, newValue) => {
+                 handleInputChange({
+                   target: {
+                     name: "branchName",
+                     value: newValue?.branchName || "",
+                   },
+                 });
+               }}
+               renderInput={(params) => (
+                 <TextField
+                   {...params}
+                   label="Branch Name"
+                   variant="outlined"
+                   name="branchName"
+                   InputProps={{
+                     ...params.InputProps,
+                     startAdornment: (
+                       <InputAdornment position="start">
+                         <AccountTreeIcon/> {/* Add SchoolIcon in the input field */}
+                       </InputAdornment>
+                     ),
+                   }}
+                 />
+               )}
+             />
+           </FormControl>
             )}
             
             <FormControl
@@ -2543,12 +2597,12 @@ export const Supervisor = () => {
             >
               <Autocomplete
                 id="searchable-bus-select"
-                options={buses || []} // List of bus objects
+                options={buses || []} // Ensure buses is an array
                 getOptionLabel={(option) => option.deviceName || ""} // Display bus name
                 value={
                   buses.find((bus) => bus.deviceId === formData["deviceId"]) ||
                   null
-                } // Find the selected bus by deviceId
+                } // Find the selected bus
                 onChange={(event, newValue) => {
                   handleBusChange({
                     target: {
@@ -2564,9 +2618,10 @@ export const Supervisor = () => {
                     variant="outlined"
                     name="deviceId"
                     InputProps={{
+                      ...params.InputProps,
                       startAdornment: (
                         <InputAdornment position="start">
-                          <DirectionsBusIcon/>  {/* Add Face6Icon in the input field */}
+                          <DirectionsBusIcon/> {/* Add SchoolIcon in the input field */}
                         </InputAdornment>
                       ),
                     }}

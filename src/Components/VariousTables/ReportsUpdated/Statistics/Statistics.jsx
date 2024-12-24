@@ -33,6 +33,7 @@ import { saveAs } from "file-saver"; // Save file to the user's machine
 // import * as XLSX from 'xlsx'; // To process and convert the excel file to JSON
 //import { TextField } from '@mui/material';
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
+import Export from "../../Export";
 const style = {
   position: "absolute",
   top: "50%",
@@ -265,16 +266,6 @@ export const Statistics = () => {
     fetchData();
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Statistics.xlsx");
-  };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -1214,9 +1205,8 @@ https://rocketsalestracker.com/api/statistics?from=${encodeURIComponent(
   Column Visibility
 </Button>
        
-          <Button variant="contained" color="error" onClick={handleExport}>
-            Export
-          </Button>
+<Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"Statistics Report"} pdfFilename={"StatisticsReport.pdf"} excelFilename={"StatisticsReport.xlsx"}/>
+
         </div>
 
         <div
