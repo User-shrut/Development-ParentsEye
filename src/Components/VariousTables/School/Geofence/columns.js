@@ -1,19 +1,5 @@
 export const COLUMNS = () => [
-  // {
-  //   Header: 'Select',
-  //   accessor: 'select',
-  //   Cell: ({ row }) => (
-  //     <input
-  //       type="checkbox"
-  //       checked={row.original.isSelected}
-  //       onChange={() => row.original.handleRowSelect(row.index)}
-  //     />
-  //   ),
-  // },
-  // {
-  //   Header: 'Device ID',
-  //   accessor: 'deviceId', // Each geofence is associated with a deviceId
-  // },
+ 
   {
     Header: 'device Name',
     accessor: 'deviceName', // Each geofence is associated with a deviceId
@@ -32,6 +18,10 @@ export const COLUMNS = () => [
     accessor: 'branchName', // The name of the geofence (e.g., "Krida Square")
   },
   {
+    Header:'Address',
+    accessor:'address'
+  },
+  {
     Header: 'Geofence Area',
     accessor: 'area', // Area in Circle or Polygon format
     Cell: ({ value }) => {
@@ -45,14 +35,6 @@ export const COLUMNS = () => [
       }
     },
   },
-  // {
-  //   Header: 'Crossed',
-  //   accessor: 'isCrossed', // Whether the geofence has been crossed
-  //   Cell: ({ value }) => (value ? 'Yes' : 'No'),
-  // },
-  // {
-  //   Header: 'Geofence ID',
-  //   accessor: '_id', // Unique ID of the geofence
-  // },
+  
  
 ];

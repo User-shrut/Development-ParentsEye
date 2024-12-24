@@ -1955,18 +1955,410 @@ export const Geofence = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const { role } = useContext(TotalResponsesContext);
-
+  // const { role } = useContext(TotalResponsesContext);
+const role=localStorage.getItem("role");
   console.log("abhi dekh : ", role);
 
+  
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+      
+  //     // Fetch data based on role
+  //     if (role == 1) {
+  //       response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     } else if (role == 2) {
+  //       response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     } else if (role == 3) {
+  //       response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     }else if (role == 4) {
+  //       response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     }
+  
+  //     console.log("fetch data", response.data);
+  //     if (response?.data) {
+  //       let allData;
+      
+  //       // Logic for role 1: Devices and stops
+  //       if (role == 1) {
+  //         allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
+  //           stops.map((stop) => {
+  //             const match = stop.area.match(/Circle\(([\d.-]+)\s+([\d.-]+)/);
+  //             const latlong = match ? { latitude: parseFloat(match[1]), longitude: parseFloat(match[2]) } : null;
+        
+  //             return {
+  //               ...stop, // Retain all stop properties
+  //               deviceId, // Add deviceId to each stop
+  //               latlong, // Add latlong parameter
+  //             };
+  //           })
+  //         );
+  //       }
+  //        else if (role == 2) {
+  //         allData = response?.data?.branches.flatMap(branch => 
+  //           branch.geofences?.map(geofence => ({
+  //             ...geofence, // Retain all geofence properties
+  //             branchId: branch.branchId, // Add branchId to each geofence
+  //             branchName: branch.branchName, // Add branchName to each geofence
+  //           })) || [] // Handle the case where geofences is undefined or empty
+  //         );
+      
+  //       // Logic for role 3: Branches and devices
+  //       } 
+       
+      
+  //       else if (role == 3) {
+  //         allData = response?.data.geofences.map((geofence) => ({
+  //           ...geofence, // Keep all geofence properties
+  //           branchId: response.data.branchId, // Add branchId from the response
+  //           branchName: response.data.branchName, // Add branchName from the response
+  //           schoolName: response.data.schoolName, // Add schoolName from the response
+  //         }));
+        
+  //         console.log(allData);
+  //       } else if (role == 4) {
+  //         allData = response?.data?.branches.flatMap(branch =>
+  //           branch.geofences?.map(geofence => ({
+  //             ...geofence, // Retain all geofence properties
+  //             branchId: branch.branchId, // Add branchId to each geofence
+  //             branchName: branch.branchName, // Add branchName to each geofence
+              
+  //           })) || [] // Handle the case where geofences is undefined or empty
+  //         );
+  //       }
+       
+        
+        
+   
+      
+  //       console.log(allData);
+      
+  //       // Filter data by date range, if applicable
+  //       const filteredData = startDate || endDate
+  //         ? allData.filter((row) => {
+  //             const registrationDate = parseDate(row.formattedRegistrationDate);
+  //             const start = parseDate(startDate);
+  //             const end = parseDate(endDate);
+      
+  //             return (
+  //               (!startDate || registrationDate >= start) &&
+  //               (!endDate || registrationDate <= end)
+  //             );
+  //           })
+  //         : allData; // Use all data if no date range specified
+      
+  //       const reversedData = filteredData.reverse();
+      
+  //       // Set filtered data and original data with default selection
+  //       setFilteredRows(
+  //         reversedData.map((row) => ({ ...row, isSelected: false }))
+  //       );
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+      
+  //       setTotalResponses(reversedData.length);
+        
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
+      
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.children);
+  //     }
+    
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after fetching completes
+  //   }
+  // };
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+  
+  //     // Fetch data based on role
+  //     if (role == 1) {
+  //       response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     } else if (role == 2) {
+  //       response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     } else if (role == 3) {
+  //       response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     } else if (role == 4) {
+  //       response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     }
+  
+  //     if (response?.data) {
+  //       let allData;
+  
+  //       if (role == 1) {
+  //         allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
+  //           stops.map((stop) => {
+  //             const match = stop.area.match(/Circle\(([\d.-]+)\s+([\d.-]+)/);
+  //             const latlong = match ? { latitude: parseFloat(match[1]), longitude: parseFloat(match[2]) } : null;
+  
+  //             return {
+  //               ...stop,
+  //               deviceId,
+  //               latlong,
+  //             };
+  //           })
+  //         );
+  //       } else if (role == 2) {
+  //         allData = response?.data?.branches.flatMap((branch) =>
+  //           branch.geofences?.map((geofence) => ({
+  //             ...geofence,
+  //             branchId: branch.branchId,
+  //             branchName: branch.branchName,
+  //           })) || []
+  //         );
+  //       } else if (role == 3) {
+  //         allData = response?.data.geofences.map((geofence) => ({
+  //           ...geofence,
+  //           branchId: response.data.branchId,
+  //           branchName: response.data.branchName,
+  //           schoolName: response.data.schoolName,
+  //         }));
+  //       } else if (role == 4) {
+  //         allData = response?.data?.branches.flatMap((branch) =>
+  //           branch.geofences?.map((geofence) => ({
+  //             ...geofence,
+  //             branchId: branch.branchId,
+  //             branchName: branch.branchName,
+  //           })) || []
+  //         );
+  //       }
+  
+  //       // Fetch addresses for each row
+  //       for (const row of allData) {
+  //         if (row.latlong) {
+  //           const { latitude, longitude } = row.latlong;
+  //           await fetchAddress(row.deviceId, longitude, latitude);
+  //         }
+  //       }
+  
+  //       console.log(allData);
+  
+  //       // Apply filters and update state
+  //       const filteredData = startDate || endDate
+  //         ? allData.filter((row) => {
+  //             const registrationDate = parseDate(row.formattedRegistrationDate);
+  //             const start = parseDate(startDate);
+  //             const end = parseDate(endDate);
+  
+  //             return (
+  //               (!startDate || registrationDate >= start) &&
+  //               (!endDate || registrationDate <= end)
+  //             );
+  //           })
+  //         : allData;
+  
+  //       const reversedData = filteredData.reverse();
+  
+  //       setFilteredRows(reversedData.map((row) => ({ ...row, isSelected: false })));
+  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
+  
+  //       setTotalResponses(reversedData.length);
+  
+  //       console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
+  //     } else {
+  //       console.error("Expected an array but got:", response.data.children);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  
+  // const updateAllDataWithAddresses = async (allData) => {
+  //   const updatedData = [...allData];
+  
+  //   for (const row of updatedData) {
+  //     if (row.latlong) {
+  //       const { latitude, longitude } = row.latlong;
+  
+  //       try {
+  //         // Fetch the address
+  //         const apiKey = "DG2zGt0KduHmgSi2kifd"; // Replace with your actual MapTiler API key
+  //         const response = await axios.get(
+  //           `https://api.maptiler.com/geocoding/${longitude},${latitude}.json?key=${apiKey}`
+  //         );
+  
+  //         // Extract the address
+  //         const address =
+  //           response.data.features.length > 0
+  //             ? response.data.features[0].place_name_en
+  //             : "Address not found";
+  
+  //         // Set the address in the row
+  //         row.address = address;
+  //       } catch (error) {
+  //         console.error("Error fetching address:", error);
+  //         row.address = "Error fetching address";
+  //       }
+  //     } else {
+  //       row.address = "No latlong data available";
+  //     }
+  //   }
+  
+  //   return updatedData;
+  // };
+  
+  // // Call this function after fetching allData
+  // const fetchData = async (startDate = "", endDate = "") => {
+  //   setLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     let response;
+  
+  //     // Fetch data based on role (same as your existing code)
+  //     if (role == 1) {
+  //       response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     } else if (role == 2) {
+  //       response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     } else if (role == 3) {
+  //       response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     } else if (role == 4) {
+  //       response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //     }
+  
+  //     if (response?.data) {
+  //       let allData;
+  
+  //       // Process data (same as your existing logic)
+  //       if (role == 1) {
+  //         allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
+  //           stops.map((stop) => {
+  //             const match = stop.area.match(/Circle\(([\d.-]+)\s+([\d.-]+)/);
+  //             const latlong = match ? { latitude: parseFloat(match[1]), longitude: parseFloat(match[2]) } : null;
+  
+  //             return {
+  //               ...stop,
+  //               deviceId,
+  //               latlong,
+  //             };
+  //           })
+  //         );
+  //       } else if (role == 2) {
+  //         allData = response?.data?.branches.flatMap((branch) =>
+  //           branch.geofences?.map((geofence) => ({
+  //             ...geofence,
+  //             branchId: branch.branchId,
+  //             branchName: branch.branchName,
+  //           })) || []
+  //         );
+  //       } else if (role == 3) {
+  //         allData = response?.data.geofences.map((geofence) => ({
+  //           ...geofence,
+  //           branchId: response.data.branchId,
+  //           branchName: response.data.branchName,
+  //           schoolName: response.data.schoolName,
+  //         }));
+  //       } else if (role == 4) {
+  //         allData = response?.data?.branches.flatMap((branch) =>
+  //           branch.geofences?.map((geofence) => ({
+  //             ...geofence,
+  //             branchId: branch.branchId,
+  //             branchName: branch.branchName,
+  //           })) || []
+  //         );
+  //       }
+  
+  //       // Add addresses to each row
+  //       const allDataWithAddresses = await updateAllDataWithAddresses(allData);
+  
+  //       // Set data into state
+  //       setFilteredRows(allDataWithAddresses.map((row) => ({ ...row, isSelected: false })));
+  //       setOriginalRows(allDataWithAddresses.map((row) => ({ ...row, isSelected: false })));
+  //       setTotalResponses(allDataWithAddresses.length);
+  
+  //       console.log("Updated Data with Addresses:", allDataWithAddresses);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  const fetchAddressForRow = async (row) => {
+    if (row.latlong) {
+      const { latitude, longitude } = row.latlong;
+      const apiKey = "DG2zGt0KduHmgSi2kifd"; // Replace with your actual MapTiler API key
+  
+      try {
+        const response = await axios.get(
+          `https://api.maptiler.com/geocoding/${longitude},${latitude}.json?key=${apiKey}`
+        );
+  
+        // Extract address
+        return response.data.features.length > 0
+          ? response.data.features[0].place_name_en
+          : "Address not found";
+      } catch (error) {
+        console.error("Error fetching address:", error);
+        return "Error fetching address";
+      }
+    } else {
+      return "No latlong data available";
+    }
+  };
   
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
       let response;
-      
-      // Fetch data based on role
+  
+      // Fetch data based on role (same as your existing code)
       if (role == 1) {
         response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
           headers: {
@@ -1985,7 +2377,7 @@ export const Geofence = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-      }else if (role == 4) {
+      } else if (role == 4) {
         response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -1993,110 +2385,142 @@ export const Geofence = () => {
         });
       }
   
-      console.log("fetch data", response.data);
       if (response?.data) {
         let allData;
-      
-        // Logic for role 1: Devices and stops
-        if (role ==1) {
+  
+        // Process data (same as your existing logic)
+        if (role == 1) {
           allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
-            stops.map((stop) => ({
-              ...stop, // Retain all stop properties
-              deviceId, // Add deviceId to each stop
-            }))
+            stops.map((stop) => {
+              const match = stop.area.match(/Circle\(([\d.-]+)\s+([\d.-]+)/);
+              const latlong = match ? { latitude: parseFloat(match[1]), longitude: parseFloat(match[2]) } : null;
+  
+              return {
+                ...stop,
+                deviceId,
+                latlong,
+                address: "Fetching Address...", // Initialize address
+              };
+            })
           );
-      
-        // Logic for role 2: Branches and geofences
-        } else if (role == 2) {
-          allData = response?.data?.branches.flatMap(branch => 
-            branch.geofences?.map(geofence => ({
-              ...geofence, // Retain all geofence properties
-              branchId: branch.branchId, // Add branchId to each geofence
-              branchName: branch.branchName, // Add branchName to each geofence
-            })) || [] // Handle the case where geofences is undefined or empty
-          );
-      
-        // Logic for role 3: Branches and devices
         } 
-       
-        // else if (role == 3) {
-        //   allData = response?.data.devices.flatMap((device) =>
-        //     device.geofences.length > 0
-        //       ? device.geofences.map((geofence) => ({
-        //           // Retain geofence properties
-        //           ...geofence,
-        //           deviceId: device.deviceId, // Associate geofence with its deviceId
-        //           // branchId: branch.branchId, // Uncomment if you need branchId
-        //           // branchName: branch.branchName, // Uncomment if you need branchName
-        //         }))
-        //       : [] // Simply return an empty array for devices with no geofences
+        // else if (role == 2) {
+        //   allData = response?.data?.branches.flatMap((branch) =>
+        //     branch.geofences?.map((geofence) => ({
+        //       ...geofence,
+        //       branchId: branch.branchId,
+        //       branchName: branch.branchName,
+        //       address: "Fetching Address...", // Initialize address
+        //     })) || []
         //   );
-        
-        
-        //   console.log(allData);
         // }
-        else if (role == 3) {
-          allData = response?.data.geofences.map((geofence) => ({
-            ...geofence, // Keep all geofence properties
-            branchId: response.data.branchId, // Add branchId from the response
-            branchName: response.data.branchName, // Add branchName from the response
-            schoolName: response.data.schoolName, // Add schoolName from the response
-          }));
+        else if (role == 2) {
+          allData = response?.data?.branches.flatMap((branch) =>
+            branch.geofences?.map((geofence) => {
+              // Extract latitude and longitude from the "area" field
+              const match = geofence.area?.match(/Circle\(([\d.-]+)\s+([\d.-]+)/);
+              const latlong = match
+                ? { latitude: parseFloat(match[1]), longitude: parseFloat(match[2]) }
+                : null;
         
-          console.log(allData);
-        } else if (role == 4) {
-          allData = response?.data?.branches.flatMap(branch =>
-            branch.geofences?.map(geofence => ({
-              ...geofence, // Retain all geofence properties
-              branchId: branch.branchId, // Add branchId to each geofence
-              branchName: branch.branchName, // Add branchName to each geofence
-              
-            })) || [] // Handle the case where geofences is undefined or empty
+              return {
+                ...geofence,
+                branchId: branch.branchId,
+                branchName: branch.branchName,
+                latlong, // Add extracted latitude and longitude
+                address: "Fetching Address...", // Initialize address
+              };
+            }) || []
           );
         }
-       
+        //  else if (role == 3) {
+        //   allData = response?.data.geofences.map((geofence) => ({
+        //     ...geofence,
+        //     branchId: response.data.branchId,
+        //     branchName: response.data.branchName,
+        //     schoolName: response.data.schoolName,
+        //     address: "Fetching Address...", // Initialize address
+        //   }));
+        // } 
+        else if (role == 3) {
+          allData = response?.data.geofences.map((geofence) => {
+            // Extract latitude and longitude from the "area" field
+            const match = geofence.area?.match(/Circle\(([\d.-]+)\s+([\d.-]+)/);
+            const latlong = match
+              ? { latitude: parseFloat(match[1]), longitude: parseFloat(match[2]) }
+              : null;
         
+            return {
+              ...geofence,
+              branchId: response.data.branchId,
+              branchName: response.data.branchName,
+              schoolName: response.data.schoolName,
+              latlong, // Add extracted latitude and longitude
+              address: "Fetching Address...", // Initialize address
+            };
+          });
+        }
         
-   
-      
-        console.log(allData);
-      
-        // Filter data by date range, if applicable
-        const filteredData = startDate || endDate
-          ? allData.filter((row) => {
-              const registrationDate = parseDate(row.formattedRegistrationDate);
-              const start = parseDate(startDate);
-              const end = parseDate(endDate);
-      
-              return (
-                (!startDate || registrationDate >= start) &&
-                (!endDate || registrationDate <= end)
-              );
-            })
-          : allData; // Use all data if no date range specified
-      
-        const reversedData = filteredData.reverse();
-      
-        // Set filtered data and original data with default selection
-        setFilteredRows(
-          reversedData.map((row) => ({ ...row, isSelected: false }))
-        );
+        // else if (role == 4) {
+        //   allData = response?.data?.branches.flatMap((branch) =>
+        //     branch.geofences?.map((geofence) => ({
+        //       ...geofence,
+        //       branchId: branch.branchId,
+        //       branchName: branch.branchName,
+        //       address: "Fetching Address...", // Initialize address
+        //     })) || []
+        //   );
+        // }
+        else if (role == 4) {
+          allData = response?.data?.branches.flatMap((branch) =>
+            branch.geofences?.map((geofence) => {
+              // Extract latitude and longitude from the "area" field
+              const match = geofence.area?.match(/Circle\(([\d.-]+)\s+([\d.-]+)/);
+              const latlong = match
+                ? { latitude: parseFloat(match[1]), longitude: parseFloat(match[2]) }
+                : null;
+        
+              return {
+                ...geofence,
+                branchId: branch.branchId,
+                branchName: branch.branchName,
+                latlong, // Add extracted latitude and longitude
+                address: "Fetching Address...", // Initialize address
+              };
+            }) || []
+          );
+        }
+        console.log("my all data",allData)
+        // Set data into state initially
+        setFilteredRows(allData.map((row) => ({ ...row, isSelected: false })));
         setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-      
-        setTotalResponses(reversedData.length);
-        
-        console.log(`Data fetched between ${startDate} and ${endDate}:`, filteredData);
-      
-      } else {
-        console.error("Expected an array but got:", response.data.children);
+        setTotalResponses(allData.length);
+  
+        // Fetch addresses asynchronously for each row
+        allData.forEach(async (row, index) => {
+          const address = await fetchAddressForRow(row);
+  
+          // Update the specific row's address
+          setFilteredRows((prevRows) => {
+            const updatedRows = [...prevRows];
+            updatedRows[index] = { ...updatedRows[index], address };
+            return updatedRows;
+          });
+  
+          setOriginalRows((prevRows) => {
+            const updatedRows = [...prevRows];
+            updatedRows[index] = { ...updatedRows[index], address };
+            return updatedRows;
+          });
+        });
       }
-    
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching data:", error);
     } finally {
-      setLoading(false); // Set loading to false after fetching completes
+      setLoading(false);
     }
   };
+  
   
   const parseDate = (dateString) => {
     const [day, month, year] = dateString.split("-").map(Number);
@@ -2260,14 +2684,42 @@ export const Geofence = () => {
     setSnackbarOpen(false);
   };
 
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({
+  //     ...formData,
+  //     [name]: value,
+  //   });
+  // };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+  
+    // Update formData
+    setFormData((prevData) => {
+      let updatedData = { ...prevData, [name]: value };
+  
+      // Handle "area" field for latitude and longitude update
+      if (name === "area") {
+        const match = value.match(/Circle\(([\d.]+) ([\d.]+), ([\d.]+)\)/);
+        if (match) {
+          const oldLatitude = parseFloat(prevData.latlong.latitude);
+          const oldLongitude = parseFloat(prevData.latlong.longitude);
+          const radius = parseFloat(match[3]);
+  
+          // Example: Adjust latitude/longitude slightly based on radius
+          const newLatitude = oldLatitude + (radius / 111); // Approx 1° latitude ~ 111 km
+          const newLongitude = oldLongitude + (radius / (111 * Math.cos((oldLatitude * Math.PI) / 180)));
+  
+          updatedData.latlong = {
+            latitude: newLatitude.toFixed(6),
+            longitude: newLongitude.toFixed(6),
+          };
+        }
+      }
+  
+      return updatedData;
     });
   };
-
    const handleModalClose = () => {
     setEditModalOpen(false);
     // setAddModalOpen(false);
@@ -2275,22 +2727,80 @@ export const Geofence = () => {
     setModalOpen(false);
   };
 
+  // const handleEditSubmit = async () => {
+  //   // Define the API URL and authentication token
+  //   const token = localStorage.getItem("token");
+  //   const apiUrl =
+  //     role == 1
+  //       ? `${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`
+  //       : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/geofences` 
+  //       :role==3?`${process.env.REACT_APP_BRANCH_API}/geofences`
+  //       :`${process.env.REACT_APP_USERBRANCH}/updategeofence`
+
+  //   // Prepare the updated data
+  //   const updatedData = {
+  //     ...formData,
+  //     isSelected: false,
+  //   };
+
+  //   try {
+  //     // Perform the PUT request
+  //     const response = await fetch(`${apiUrl}/${updatedData._id}`, {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify(updatedData),
+  //     });
+
+  //     // Check if the response is okay (status code 200-299)
+  //     if (!response.ok) {
+  //       throw new Error(`HTTP error! Status: ${response.status}`);
+  //     }
+
+  //     // Optionally: Process the response data if needed
+  //     const result = await response.json();
+  //     console.log("Update successful:", result);
+  //     alert("Updated successfully");
+
+  //     // Update local state after successful API call
+  //     const updatedRows = filteredRows.map((row) =>
+  //       row._id === selectedRow._id // Make sure to use the correct ID property
+  //         ? { ...row, ...formData, isSelected: false }
+  //         : row
+  //     );
+  //     setFilteredRows(updatedRows);
+
+  //     // Close the modal
+  //     handleModalClose();
+
+  //     // Fetch the latest data
+  //     fetchData();
+  //   } catch (error) {
+  //     console.error("Error updating row:", error);
+  //     alert(`Error updating row: ${error.message}`);
+  //   }
+  // };
   const handleEditSubmit = async () => {
-    // Define the API URL and authentication token
     const token = localStorage.getItem("token");
     const apiUrl =
       role == 1
         ? `${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`
-        : role == 2 ? `${process.env.REACT_APP_SCHOOL_API}/geofences` : `${process.env.REACT_APP_BRANCH_API}/geofences`
-
-    // Prepare the updated data
+        : role == 2
+        ? `${process.env.REACT_APP_SCHOOL_API}/geofences`
+        : role == 3
+        ? `${process.env.REACT_APP_BRANCH_API}/geofences`
+        : `${process.env.REACT_APP_USERBRANCH}/updategeofence`;
+  
     const updatedData = {
       ...formData,
       isSelected: false,
+      latitude: formData.latlong.latitude,
+      longitude: formData.latlong.longitude,
     };
-
+  
     try {
-      // Perform the PUT request
       const response = await fetch(`${apiUrl}/${updatedData._id}`, {
         method: "PUT",
         headers: {
@@ -2299,29 +2809,22 @@ export const Geofence = () => {
         },
         body: JSON.stringify(updatedData),
       });
-
-      // Check if the response is okay (status code 200-299)
+  
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-      // Optionally: Process the response data if needed
+  
       const result = await response.json();
       console.log("Update successful:", result);
       alert("Updated successfully");
-
-      // Update local state after successful API call
+  
       const updatedRows = filteredRows.map((row) =>
-        row._id === selectedRow._id // Make sure to use the correct ID property
+        row._id === selectedRow._id
           ? { ...row, ...formData, isSelected: false }
           : row
       );
       setFilteredRows(updatedRows);
-
-      // Close the modal
       handleModalClose();
-
-      // Fetch the latest data
       fetchData();
     } catch (error) {
       console.error("Error updating row:", error);
@@ -2815,8 +3318,24 @@ export const Geofence = () => {
       </IconButton>
     </Box>
 
-    {COLUMNS()
+
+   {/* {COLUMNS()
       .filter((col) => col.accessor === "name")
+      .map((col) => (
+        <TextField
+          key={col.accessor}
+          label={col.Header}
+          variant="outlined"
+          name={col.accessor}
+          value={formData[col.accessor] || ""}
+          onChange={handleInputChange}
+          sx={{ marginBottom: "10px" }}
+          fullWidth
+        />
+      ))} */}
+
+{COLUMNS()
+      .filter((col) => col.accessor === "name" || col.accessor === "area")
       .map((col) => (
         <TextField
           key={col.accessor}

@@ -1680,7 +1680,7 @@ const style = {
 };
 
 export const Status = () => {
-  const { setTotalResponses, role } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponses} = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -1711,7 +1711,7 @@ export const Status = () => {
   const [otherDropdownOptions, setOtherDropdownOptions] = useState([]);
   const [otherSelectedValue, setOtherSelectedValue] = useState("");
   const [tableData, setTableData] = useState([]);
-
+const role=localStorage.getItem("role");
   // const fetchData = async () => {
   //   setLoading(true);
   //   try {
@@ -2265,72 +2265,7 @@ export const Status = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchGeofenceData = async () => {
-      try {
-        const username = "hbgadget221@gmail.com"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
-        const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-
-        const response = await axios.get(
-          "http://104.251.216.99:8082/api/geofences",
-          {
-            headers: {
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
-
-        const data = response.data;
-        console.log(response.data);
-        // Transform data to create dropdown options
-        const options = data.map((item) => ({
-          value: item.name,
-          label: item.name,
-        }));
-
-        setDropdownOptions(options);
-      } catch (error) {
-        console.error("Error fetching geofence data:", error);
-      }
-    };
-
-    fetchGeofenceData();
-  }, []);
-
-  useEffect(() => {
-    const fetchOtherData = async () => {
-      try {
-        const username = "hbgadget221@gmail.com"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
-        const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-
-        const response = await axios.get(
-          "https://rocketsalestracker.com/api/devices", // Modify the endpoint if different
-          {
-            headers: {
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
-
-        const data = response.data;
-        console.log(response.data);
-
-        // Transform data to create dropdown options
-        const options = data.map((item) => ({
-          value: item.name,
-          label: item.name,
-        }));
-
-        setOtherDropdownOptions(options);
-      } catch (error) {
-        console.error("Error fetching other data:", error);
-      }
-    };
-
-    fetchOtherData();
-  }, []);
+ 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

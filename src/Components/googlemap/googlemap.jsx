@@ -166,6 +166,7 @@ useEffect(() => {
                   allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
                       stops.map((stop) => ({
                           ...stop,
+                          
                           deviceId,
                       }))
                   );
@@ -223,8 +224,14 @@ useEffect(() => {
           // Extract latitude, longitude, and radius from geofence area
           const areaData = geofence.area.match(/Circle\(([^ ]+) ([^,]+), ([^,]+)\)/);
           if (areaData) {
-              const lng = parseFloat(areaData[1]);
-              const lat = parseFloat(areaData[2]);
+              let lng = parseFloat(areaData[1]);
+              let lat = parseFloat(areaData[2]);
+              if (isNaN(lng) || isNaN(lat)) {
+                // If either longitude or latitude is invalid, set default values or handle the case
+                lng = 0; // Default longitude
+                lat = 0; // Default latitude
+                console.warn("Invalid coordinates, using default values: [0, 0]");
+              }
               const radius = parseFloat(areaData[3]);
 
               return (

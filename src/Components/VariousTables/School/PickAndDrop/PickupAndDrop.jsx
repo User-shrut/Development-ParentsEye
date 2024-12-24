@@ -56,7 +56,7 @@ const style = {
 };
 
 export const PickupAndDrop = () => {
-  const { setTotalResponses, role } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponses} = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -84,20 +84,11 @@ export const PickupAndDrop = () => {
   const [endDate, setEndDate] = useState("");
   const formatBoolean = (value) => (value ? "Pick" : "Absent");
   const formatBooleanDrop = (value) => (value ? "Drop" : "Not in bus");
-  //const formatetime=(value)=>value;
-  // const formatBooleanWithTime = (value, pickupTime) => {
-  //   return value ? `Pick at ${pickupTime}` : '';
-  // };
+const role=localStorage.getItem("role");
 
-  //   const formatBoolean = (value) => (
-  //     value ? <CheckCircleIcon style={{ color: 'green' }} /> : <CancelIcon style={{ color: 'red' }} />)
-  // const formatBoolean = (value) => (
-  //     value ? <CheckCircleIcon style={{ color: 'green' }} /> : <CancelIcon style={{ color: 'red' }} />
-  //   );
+console.log("abhi dekh",role)
 
-  // Format values based on the column type
-
-  //====================
+ 
   const formatValue = (column, value) => {
     if (column.accessor === "pickupStatus") {
       return formatBoolean(value);
@@ -111,382 +102,7 @@ export const PickupAndDrop = () => {
     return value;
   };
 
-  // const fetchData = async (startDate = "", endDate = "") => {
-  //   setLoading(true);
-  //   try {
-  //     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YjRhMDdmMGRkYmVjNmM3YmMzZDUzZiIsInVzZXJuYW1lIjoiYWRtaW4iLCJpYXQiOjE3MjMxMTU1MjJ9.4DgAJH_zmaoanOy4gHB87elbUMod8PunDL2qzpfPXj0"; // Replace with actual token
-  //     const response = await axios.get(
-  //       "https://schoolmanagement-fwqr.onrender.com/school/pickup-drop-status",
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     console.log("fetch data", response.data); // Log the entire response data
-
-  //     if (Array.isArray(response.data.children)) {
-  //       const allData = response.data.children;
-
-  //       // Apply local date filtering
-  //       const filteredData = allData.filter((row) => {
-  //         const registrationDate = parseDate(row.formattedDate);
-  //         const start = parseDate(startDate);
-  //         const end = parseDate(endDate);
-
-  //         return (!startDate || registrationDate >= start) &&
-  //                (!endDate || registrationDate <= end);
-  //       });
-
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-
-  //       setFilteredRows(filteredData.map((row) => ({ ...row, isSelected: false })));
-  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       setTotalResponses(filteredData.length);
-  //     } else {
-  //       console.error("Expected an array but got:", response.data.children);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
-  //   }
-  // };
-
-  // const fetchData = async (startDate = "", endDate = "") => {
-  //   setLoading(true);
-  //   try {
-  //     // const token = localStorage.getItem("token"); // Replace with actual token
-  //     const token =
-  //       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDJkN2NhZDllYzhkZjg5ZTc4ODU2MiIsInVzZXJuYW1lIjoiaGFyc2hhbF8xIiwiaWF0IjoxNzI2MTM4MTY3fQ.w2PbCygMIkVg77xzOYLJXONuysGjTVkITf-IAF9ahIo"; // Replace with actual token
-
-  //     const response = await axios.get(
-  //       `${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-
-  //     console.log("fetch data", response.data); // Log the entire response data
-
-  //     if (Array.isArray(response.data)) {
-  //       const allData = response.data
-  //         .filter(
-  //           (school) =>
-  //             Array.isArray(school.children) && school.children.length > 0
-  //         ) // Filter schools with non-empty children arrays
-  //         .flatMap((school) => school.children);
-
-  //       // Apply local date filtering if dates are provided
-  //       const filteredData = (startDate || endDate) ? allData.filter((row) => {
-  //         const registrationDate = parseDate(row.formattedDate);
-  //         const start = parseDate(startDate);
-  //         const end = parseDate(endDate);
-
-  //         return (!startDate || registrationDate >= start) &&
-  //                (!endDate || registrationDate <= end);
-  //       }) : allData; // If no date range, use all data
-  //       const reversedData = filteredData.reverse();
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-  //       setFilteredRows(
-  //         reversedData.map((row) => ({ ...row, isSelected: false }))
-  //       );
-  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       setTotalResponses(reversedData.length);
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-
-  //       // setFilteredRows(filteredData.map((row) => ({ ...row, isSelected: false })));
-  //       // setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       // setTotalResponses(filteredData.length);
-  //     } else {
-  //       console.error("Expected an array but got:", response.data.children);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
-  //   }
-  // };
-  // const fetchData = async (startDate = "", endDate = "") => {
-  //   setLoading(true);
-  //   try {
-  //     const token = localStorage.getItem("token");
-   
-  //     let response;
-
-  //     // Fetch data based on role
-  //     if (role == 1) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 2) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SCHOOL_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 3) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_BRANCH_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     }
-  //     console.log("Fetched data:", response.data);
-
-  //     // Adjust this line to access the data inside the response object
-  //     if (Array.isArray(response.data.data)) {
-  //       // Extract children from all branches of all schools
-  //       const allData = response.data.data.flatMap((school) =>
-  //         school.branches.flatMap((branch) => branch.children)
-  //       );
-
-  //       // Apply local date filtering if startDate or endDate is provided
-  //       const filteredData =
-  //         startDate || endDate
-  //           ? allData.filter((row) => {
-  //               const registrationDate = new Date(row.registrationDate);
-  //               const start = startDate ? new Date(startDate) : null;
-  //               const end = endDate ? new Date(endDate) : null;
-
-  //               return (
-  //                 (!start || registrationDate >= start) &&
-  //                 (!end || registrationDate <= end)
-  //               );
-  //             })
-  //           : allData;
-
-  //       // Reverse filtered data for display and update state
-  //       const reversedData = filteredData.reverse();
-
-  //       // Update state with filtered and original rows
-  //       setFilteredRows(
-  //         reversedData.map((row) => ({ ...row, isSelected: false }))
-  //       );
-  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       setTotalResponses(reversedData.length);
-
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-  //     } else {
-  //       console.error("Expected an array but got:", response.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
-  //   }
-  // };
-  // const fetchData = async (startDate = "", endDate = "") => {
-  //   setLoading(true);
-  //   try {
-  //     const token = localStorage.getItem("token");
   
-  //     let response;
-  
-  //     // Fetch data based on role
-  //     if (role == 1) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 2) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SCHOOL_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 3) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_BRANCH_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     }
-  
-  //     console.log("Fetched data:", response.data);
-  
-  //     // Adjust this line to access the data inside the response object
-  //     if (Array.isArray(response.data.data)) {
-  //       // Check if role is 2 to handle the specific structure
-  //       let allData;
-  
-  //       if (role === 2) {
-  //         // Extract children from all branches of all schools
-  //         allData = response.data.data.flatMap((school) =>
-  //           school.branches.flatMap((branch) => branch.children)
-  //         );
-  //       } else {
-  //         // Assuming role 1 and role 3 have similar structures
-  //         allData = response.data.data.flatMap((school) =>
-  //           school.branches.flatMap((branch) => branch.children)
-  //         );
-  //       }
-  
-  //       // Apply local date filtering if startDate or endDate is provided
-  //       const filteredData =
-  //         startDate || endDate
-  //           ? allData.filter((row) => {
-  //               const registrationDate = new Date(row.registrationDate);
-  //               const start = startDate ? new Date(startDate) : null;
-  //               const end = endDate ? new Date(endDate) : null;
-  
-  //               return (
-  //                 (!start || registrationDate >= start) &&
-  //                 (!end || registrationDate <= end)
-  //               );
-  //             })
-  //           : allData;
-  
-  //       // Reverse filtered data for display and update state
-  //       const reversedData = filteredData.reverse();
-  
-  //       // Update state with filtered and original rows
-  //       setFilteredRows(
-  //         reversedData.map((row) => ({ ...row, isSelected: false }))
-  //       );
-  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       setTotalResponses(reversedData.length);
-  
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-  //     } else {
-  //       console.error("Expected an array but got:", response.data.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
-  //   }
-  // };
-  // const fetchData = async (startDate = "", endDate = "") => {
-  //   setLoading(true);
-  //   try {
-  //     const token = localStorage.getItem("token");
-  
-  //     let response;
-  
-  //     // Fetch data based on role
-  //     if (role == 1) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 2) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_SCHOOL_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     } else if (role == 3) {
-  //       response = await axios.get(
-  //         `${process.env.REACT_APP_BRANCH_API}/pickup-drop-status`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         }
-  //       );
-  //     }
-  
-  //     console.log("Fetched data:", response.data);
-  
-  //     // Check if response data has a structure that contains the data array
-  //     if (response.data) {
-  //       let allData;
-  
-  //       // Handle data extraction based on role
-  //       if (role === 1) {
-  //         // Assuming similar structure for role 1 as previously discussed
-  //         allData = response.data.data.flatMap((school) =>
-  //           school.branches.flatMap((branch) => branch.children)
-  //         );
-  //       } else if (role === 2) {
-  //         // Extract children from branches for role 2
-  //         allData = response.data.branches.flatMap((branch) => branch.children);
-  //       } else if (role === 3) {
-  //         // Assuming role 3 has a similar structure as role 1 or needs to be handled separately
-  //         allData = response.data.data.flatMap((school) =>
-  //           school.branches.flatMap((branch) => branch.children)
-  //         );
-  //       }
-  
-  //       // Apply local date filtering if startDate or endDate is provided
-  //       const filteredData =
-  //         startDate || endDate
-  //           ? allData.filter((row) => {
-  //               const registrationDate = new Date(row.date);
-  //               const start = startDate ? new Date(startDate) : null;
-  //               const end = endDate ? new Date(endDate) : null;
-  
-  //               return (
-  //                 (!start || registrationDate >= start) &&
-  //                 (!end || registrationDate <= end)
-  //               );
-  //             })
-  //           : allData;
-  
-  //       // Reverse filtered data for display and update state
-  //       const reversedData = filteredData.reverse();
-  
-  //       // Update state with filtered and original rows
-  //       setFilteredRows(
-  //         reversedData.map((row) => ({ ...row, isSelected: false }))
-  //       );
-  //       setOriginalRows(allData.map((row) => ({ ...row, isSelected: false })));
-  //       setTotalResponses(reversedData.length);
-  
-  //       // Log the date range and filtered data
-  //       console.log(`Data fetched between ${startDate} and ${endDate}:`);
-  //       console.log(filteredData);
-  //     } else {
-  //       console.error("Expected an object but got:", response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   } finally {
-  //     setLoading(false); // Set loading to false after fetching completes
-  //   }
-  // };
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
@@ -495,7 +111,7 @@ export const PickupAndDrop = () => {
       let response;
   
       // Fetch data based on role
-      if (role === 1) {
+      if (role == 1) {
         response = await axios.get(
           `${process.env.REACT_APP_SUPER_ADMIN_API}/pickup-drop-status`,
           {
@@ -504,7 +120,7 @@ export const PickupAndDrop = () => {
             },
           }
         );
-      } else if (role === 2) {
+      } else if (role == 2) {
         response = await axios.get(
           `${process.env.REACT_APP_SCHOOL_API}/pickup-drop-status`,
           {
@@ -513,9 +129,18 @@ export const PickupAndDrop = () => {
             },
           }
         );
-      } else if (role === 3) {
+      } else if (role == 3) {
         response = await axios.get(
           `${process.env.REACT_APP_BRANCH_API}/pickup-drop-status`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }else if (role == 4) {
+        response = await axios.get(
+          `${process.env.REACT_APP_USERBRANCH}/pickupdropstatusbybranchgroupuser`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -528,17 +153,25 @@ export const PickupAndDrop = () => {
   
       // Handle data extraction based on role
       let allData;
-      if (role === 1) {
+      if (role == 1) {
         // Role 1: Flatten data from schools and branches
         allData = response.data.data.flatMap((school) =>
           school.branches.flatMap((branch) => branch.children)
         );
-      } else if (role === 2) {
+      } else if (role == 2) {
         // Role 2: Flatten data from branches
         allData = response.data.branches.flatMap((branch) => branch.children);
-      } else if (role === 3) {
+      } else if (role == 3) {
         // Role 3: Directly use the children array
         allData = response.data.children;
+      }else if(role==4){
+        allData=response.data.branches.flatMap((branch)=>
+        Array.isArray(branch.children)&&branch.children.length>0?
+        branch.children.map((child)=>({
+          ...child
+        }))
+        :[]
+        )
       }
   
       // Apply local date filtering if startDate or endDate is provided
