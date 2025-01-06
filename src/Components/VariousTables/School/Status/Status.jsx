@@ -1659,6 +1659,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
 import { MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
+import Export from "./ExportStatus";
 
 // import './TableStyles.css';
 //import { TextField } from '@mui/material';
@@ -1680,7 +1681,7 @@ const style = {
 };
 
 export const Status = () => {
-  const { setTotalResponses, role } = useContext(TotalResponsesContext); // Get the context value
+  const { setTotalResponses} = useContext(TotalResponsesContext); // Get the context value
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -1711,7 +1712,7 @@ export const Status = () => {
   const [otherDropdownOptions, setOtherDropdownOptions] = useState([]);
   const [otherSelectedValue, setOtherSelectedValue] = useState("");
   const [tableData, setTableData] = useState([]);
-
+const role=localStorage.getItem("role");
   // const fetchData = async () => {
   //   setLoading(true);
   //   try {
@@ -2116,16 +2117,6 @@ export const Status = () => {
     fetchData();
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "Status.xlsx");
-  };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -2265,72 +2256,7 @@ export const Status = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchGeofenceData = async () => {
-      try {
-        const username = "hbgadget221@gmail.com"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
-        const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-
-        const response = await axios.get(
-          "http://104.251.216.99:8082/api/geofences",
-          {
-            headers: {
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
-
-        const data = response.data;
-        console.log(response.data);
-        // Transform data to create dropdown options
-        const options = data.map((item) => ({
-          value: item.name,
-          label: item.name,
-        }));
-
-        setDropdownOptions(options);
-      } catch (error) {
-        console.error("Error fetching geofence data:", error);
-      }
-    };
-
-    fetchGeofenceData();
-  }, []);
-
-  useEffect(() => {
-    const fetchOtherData = async () => {
-      try {
-        const username = "hbgadget221@gmail.com"; // Replace with your actual username
-        const password = "123456"; // Replace with your actual password
-        const token = btoa(`${username}:${password}`); // Base64 encode the username and password
-
-        const response = await axios.get(
-          "https://rocketsalestracker.com/api/devices", // Modify the endpoint if different
-          {
-            headers: {
-              Authorization: `Basic ${token}`,
-            },
-          }
-        );
-
-        const data = response.data;
-        console.log(response.data);
-
-        // Transform data to create dropdown options
-        const options = data.map((item) => ({
-          value: item.name,
-          label: item.name,
-        }));
-
-        setOtherDropdownOptions(options);
-      } catch (error) {
-        console.error("Error fetching other data:", error);
-      }
-    };
-
-    fetchOtherData();
-  }, []);
+ 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -2480,17 +2406,8 @@ export const Status = () => {
     Column Visibility
   </Button>
 
-  <Button
-    variant="contained"
-    color="success"
-    onClick={handleExport}
-    sx={{
-      padding: "6px 12px",
-      marginRight: "10px",
-    }}
-  >
-    Export
-  </Button>
+  <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} style={{marginRight:'5px'}}/>
+
 
   <input
     type="date"

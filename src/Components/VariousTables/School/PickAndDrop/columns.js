@@ -7,7 +7,15 @@ export const COLUMNS = () => [
     Header: 'Child Name',
     accessor: 'childName',
   },
-  
+ {
+  Header: 'School Name',
+  accessor: 'schoolName',
+ },
+ {
+  Header: 'Branch Name',
+  accessor: 'branchName',
+ },
+
  
   {
     Header: 'Class',

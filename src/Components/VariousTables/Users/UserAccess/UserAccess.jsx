@@ -38,6 +38,7 @@ import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import PasswordIcon from '@mui/icons-material/Password';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import Chip from "@mui/material/Chip";
+import Export from "./ExportUserAccess";
 // import excelfileUserAccess from "../../../../../public/UserAccess.xlsx";
 import {
   FormControlLabel,
@@ -157,6 +158,7 @@ export const UserAccess = () => {
 
                 username: group.username,
                 password: group.password,
+                phoneNo: group.phoneNo,
                 formattedRegistrationDate:group.createdAt,
                 branches: group.branches.map((branch) => ({
                   branchId: branch._id,
@@ -408,16 +410,6 @@ export const UserAccess = () => {
     fetchData();
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "UserAccess.xlsx");
-  };
 
   // const handleFileUpload = (event) => {
   //   const file = event.target.files[0];
@@ -838,6 +830,9 @@ const handleBusChange = (e) => {
   setFilteredGeofences(geofencesForSelectedDevice);
   console.log("Filtered Geofences:", geofencesForSelectedDevice);
 };
+const [allDevices, setAllDevices] = useState([]);
+
+
 
 const handleInputChange = (e) => {
   const { name, value } = e.target;
@@ -910,7 +905,6 @@ const handleInputChange = (e) => {
   };
 
  
-  const [allDevices, setAllDevices] = useState([]);
   const columns = COLUMNS();
   const lastSecondColumn = columns[columns.length - 2]; // Last second column
   const lastThirdColumn = columns[columns.length - 3];
@@ -1180,7 +1174,7 @@ const handleInputChange = (e) => {
   //   ["Jane Doe", "10", "16", "A","Udemy","Branch6","11-03-2008","13","Vicky Doe","username","8989898989","5678"],
   // ];
   const sampleData = [
-    ["childName", "class", "rollno", "section", "schoolName", "branchName", "dateOfBirth", "childAge", "parentName", "email", "phone", "password","gender","pickupPoint","deviceName","deviceId"],
+    ["childName", "class", "rollno", "section", "schoolName", "branchName", "dateOfBirth", "childAge", "parentName", "email", "phoneNo", "password","gender","pickupPoint","deviceName","deviceId"],
     ["besap35", "10", "34", "A", "Podar", "Besa", "08-11-2009", "15", "parent1", "besap35", "8989898989", "123456","male","pickup1","MH5667777","2323"],
     ["besap32", "9", "15", "B", "Podar", "Besa", "03-09-2008", "14", "parent2", "besap32", "8989898989", "123456","female","pickup2","UP787878","9090"],
    
@@ -1290,9 +1284,8 @@ const handleInputChange = (e) => {
           >
             Import
           </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
+          <Export filteredRows={filteredRows} COLUMNS={COLUMNS} columnVisibility={columnVisibility}/>
+
         </div>
         <div
           style={{
@@ -1669,11 +1662,11 @@ const handleInputChange = (e) => {
     id="searchable-school-select"
     options={schools || []} // Ensure schools is an array
     getOptionLabel={(option) => option.schoolName || ""} // Display school name
-    value={Array.isArray(schools) ? schools.find(school => school._id === formData["schoolName"]) : null} // Find selected school by _id
+    value={Array.isArray(schools) ? schools.find(school => school._id === formData["schoolName"]) : null} // Find selected school by _id   
     onChange={(event, newValue) => {
       handleInputChange({
         target: { name: "schoolName", value: newValue?._id || "" }, // Store _id instead of schoolName
-      });
+      });  
 
       if (newValue) {
         const branches = newValue.branches.map(branch => ({
@@ -1835,11 +1828,11 @@ const handleInputChange = (e) => {
             ) : null}
           
             <TextField
-              key={"phone"}
+              key={"phone No"}
               label={"Phone Number"}
               variant="outlined"
-              name="phone"
-              value={formData["phone"] || ""}
+              name="phoneNo"
+              value={formData["phoneNo"] || ""}
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth
@@ -2089,11 +2082,11 @@ const handleInputChange = (e) => {
             ) : null}
           
             <TextField
-              key={"phone"}
-              label={"Phone Number"}
-              variant="outlined"
-              name="phone"
-              value={formData["phone"] || ""}
+               key={"phone No"}
+               label={"Phone Number"}
+               variant="outlined"
+               name="phoneNo"
+               value={formData["phoneNo"] || ""}
               onChange={handleInputChange}
               sx={{ marginBottom: "10px" }}
               fullWidth

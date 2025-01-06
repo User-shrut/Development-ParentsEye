@@ -33,6 +33,7 @@ import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationSt
 import InputAdornment from "@mui/material/InputAdornment"; // Add this import
 import SchoolIcon from '@mui/icons-material/School';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import Export from "../../Export"
 
 //import { TextField } from '@mui/material';
 
@@ -51,6 +52,8 @@ const style = {
   flexDirection: "column",
   padding: "1rem",
 };
+const orangeBtn ={ backgroundColor: "rgb(255, 165, 0)"}
+
 
 const SchoolMaster = () => {
   const { setTotalResponses } = useContext(TotalResponsesContext); // Get the context value
@@ -559,16 +562,6 @@ const SchoolMaster = () => {
     fetchData();
   };
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "schools.xlsx");
-  };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
@@ -861,9 +854,8 @@ const SchoolMaster = () => {
           >
             Import
           </Button> */}
-          <Button variant="contained" sx={{ backgroundColor: "rgb(255, 165, 0)"}} onClick={handleExport}>
-            Export
-          </Button>
+          <Export orangeBtn={orangeBtn} columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"SCHOOL MASTER"} pdfFilename={"SchoolMaster.pdf"} excelFilename={"SchoolMaster.xlsx"}/>
+
         </div>
         <div
           style={{

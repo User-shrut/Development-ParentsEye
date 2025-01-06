@@ -1342,6 +1342,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import NotInterestedIcon from '@mui/icons-material/NotInterested';
 import QueryBuilderIcon from '@mui/icons-material/QueryBuilder';
 //import { TextField } from '@mui/material';
+import Export from "../../Export";
 
 const style = {
   position: "absolute",
@@ -1665,17 +1666,6 @@ const handleChangePage = (event, newPage) => {
   };
  
 
-  const handleExport = () => {
-    const dataToExport = filteredRows.map((row) => {
-      const { isSelected, ...rowData } = row;
-      return rowData;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    XLSX.writeFile(workbook, "AddDevices.xlsx");
-  };
-
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -1939,6 +1929,34 @@ const handleInputChange = (e) => {
     }
   }
 };
+ useEffect(() => {
+        // Trigger the "onChange" behavior programmatically if a school is pre-selected
+        if (formData.schoolName) {
+          const event = {
+            target: {
+              name: "schoolName",
+              value: formData.schoolName,
+            },
+          };
+          handleInputChange(event); // Call the handleInputChange with the pre-selected school
+        }
+      }, [formData.schoolName, schools]);
+        useEffect(() => {
+          if (formData.branchName) {
+            const event = {
+              target: {
+                name: "branchName",
+                value: formData.branchName,
+              },
+            };
+            handleInputChange(event); // Trigger fetching buses when branchName changes
+          }
+        }, [formData.branchName]);
+        useEffect(() => {
+          console.log("Selected School:", formData.schoolName);
+          console.log("Available Branches:", branches);
+          console.log("Selected Branch:", formData.branchName);
+        }, [formData.schoolName, branches, formData.branchName]);
 useEffect(() => {
   const fetchSchool = async (startDate = "", endDate = "") => {
     setLoading(true);
@@ -2168,9 +2186,8 @@ const handleFilterChange = (event) => {
           >
             Import
           </Button>
-          <Button variant="contained" color="primary" onClick={handleExport}>
-            Export
-          </Button>
+          <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"ADD DEVICE LIST"} pdfFilename={"AddDevice.pdf"} excelFilename={"AddDevice.xlsx"}/>
+
         </div>
        
 

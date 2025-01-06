@@ -149,7 +149,13 @@ useEffect(() => {
                       Authorization: `Bearer ${token}`,
                   },
               });
-          }
+          }else if (role==4) {
+            response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+        }
 
           console.log("fetch data", response.data);
           if (response?.data) {
@@ -160,6 +166,7 @@ useEffect(() => {
                   allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
                       stops.map((stop) => ({
                           ...stop,
+                          
                           deviceId,
                       }))
                   );
@@ -182,6 +189,15 @@ useEffect(() => {
                       branchName: response.data.branchName,
                       schoolName: response.data.schoolName,
                   }));
+              }else if (role == 4) {
+                allData = response?.data?.branches.flatMap(branch =>
+                  branch.geofences?.map(geofence => ({
+                    ...geofence, // Retain all geofence properties
+                    branchId: branch.branchId, // Add branchId to each geofence
+                    branchName: branch.branchName, // Add branchName to each geofence
+                    
+                  })) || [] // Handle the case where geofences is undefined or empty
+                );
               }
 
               console.log("my geeofencesss",allData);
@@ -208,8 +224,14 @@ useEffect(() => {
           // Extract latitude, longitude, and radius from geofence area
           const areaData = geofence.area.match(/Circle\(([^ ]+) ([^,]+), ([^,]+)\)/);
           if (areaData) {
-              const lng = parseFloat(areaData[1]);
-              const lat = parseFloat(areaData[2]);
+              let lng = parseFloat(areaData[1]);
+              let lat = parseFloat(areaData[2]);
+              if (isNaN(lng) || isNaN(lat)) {
+                // If either longitude or latitude is invalid, set default values or handle the case
+                lng = 0; // Default longitude
+                lat = 0; // Default latitude
+                console.warn("Invalid coordinates, using default values: [0, 0]");
+              }
               const radius = parseFloat(areaData[3]);
 
               return (

@@ -218,7 +218,8 @@ export const Navbar = (props) => {
           item.name !== "School Master" &&
           item.name !== "AddDevices" &&
           item.name !== "My Branch Devices" &&
-          item.name !== "User Access"
+          item.name !== "User Access"&&
+          item.name!=="Notification"
       );
     } else if (role == 3 || role ==4) {
       updatedArr = arr.filter(
@@ -227,7 +228,8 @@ export const Navbar = (props) => {
           item.name !== "Branch Master" &&
           item.name !== "AddDevices" &&
           item.name !== "My Branch Devices" &&
-          item.name !== "User Access"
+          item.name !== "User Access"&&
+           item.name!=="Notification"
       );
     }
     console.log("Updated Array:", updatedArr);

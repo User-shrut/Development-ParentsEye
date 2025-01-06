@@ -9,6 +9,10 @@ export const COLUMNS = () => [
     Header: "Password",
     accessor: "password",
   },
+  {
+    Header: "Phone No",
+    accessor: "phoneNo",
+  },
   
   {
     Header: "School Name",
