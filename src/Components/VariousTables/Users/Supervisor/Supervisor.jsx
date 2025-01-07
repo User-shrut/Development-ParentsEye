@@ -1218,7 +1218,7 @@ export const Supervisor = () => {
      
     }
     else if (name === "deviceId") {
-      setSelectedDeviceId(value); // Set the selected device ID
+      // setSelectedDeviceId(value); // Set the selected device ID
       setFormData({
         ...formData,
         [name]: value,
