@@ -351,6 +351,7 @@ import Typography from "@mui/material/Typography";
 import "./GeoFencing.css";
 import Draggable from 'react-draggable'
 import GeofenceForm from "./GeofenceForm"; 
+
 import {
   Box,
   FormControl,
@@ -475,6 +476,7 @@ const IndividualTrack = (lat, long) => {
   const previousPosition = useRef(null) // Ref to store the previous position
   const [path, setPath] = useState([]) // State for polyline path
   const [open, setOpen] = useState(false);
+  const role=localStorage.getItem("role");
   const getCategory = (category) => {
     switch (category) {
       case 'bus':
@@ -563,6 +565,97 @@ const IndividualTrack = (lat, long) => {
   const [openPopup, setOpenPopup] = useState(true)
   
   const [formData, setFormData] = React.useState({});
+
+  const fetchData = async (startDate = "", endDate = "") => {
+   
+    try {
+      const token = localStorage.getItem("token");
+      let response;
+  
+      if (role == 1) {
+        response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else if (role == 2) {
+        response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/geofences`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else if (role == 3) {
+        response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } else if (role == 4) {
+        response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+  
+      if (response?.data) {
+        let allData;
+  
+        // Process data (same as your existing logic)
+        if (role == 1) {
+          allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
+            stops.map((stop) => {
+              return {
+                ...stop,
+                deviceId,    
+              };
+            })
+          );
+        } 
+        else if (role == 2) {
+          allData = response?.data?.branches.flatMap((branch) =>
+            branch.geofences?.map((geofence) => ({
+              ...geofence,
+              branchId: branch.branchId,
+              branchName: branch.branchName,
+              
+            })) || []
+          );
+        }
+       
+         else if (role == 3) {
+          allData = response?.data.geofences.map((geofence) => ({
+            ...geofence,
+            branchId: response.data.branchId,
+            branchName: response.data.branchName,
+            schoolName: response.data.schoolName,
+           
+          }));
+        } 
+      
+        
+        else if (role == 4) {
+          allData = response?.data?.branches.flatMap((branch) =>
+            branch.geofences?.map((geofence) => ({
+              ...geofence,
+              branchId: branch.branchId,
+              branchName: branch.branchName,
+              
+            })) || []
+          );
+        }
+       
+        console.log("my all data",allData)
+        
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+  
+  useEffect(() => {
+   fetchData();
+   }, []);
   return (
     <>
       <div className="row">

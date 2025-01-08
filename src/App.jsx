@@ -100,7 +100,7 @@ import { DistanceReport } from "./Components/VariousTables/ReportsUpdated/Distan
 import { UrgentExcel } from "./Components/VariousTables/ReportsUpdated/UrgentExcel/UrgentExcel.jsx";
 import { Notification } from "./Components/VariousTables/Users/Notification/Notification.jsx";
 import { jwtDecode } from "jwt-decode";
-
+import {HistoryReport} from "./Components/VariousTables/ReportsUpdated/HistoryReport/HistoryReport.js";
 function App() {
   const [state, setState] = useState(0);
   const [sideBarItems, setSideBarItems] = useState([]);
@@ -693,6 +693,8 @@ function App() {
       setComponent("UrgentExcel");
     }else if(item ==="Notification"){
       setComponent("Notification")
+    }else if(item ==="History Report"){
+      setComponent("HistoryReport")
     }
    
    
@@ -856,6 +858,7 @@ function App() {
           {component === "DistanceReport" && <DistanceReport data={mergedData} />}
           {component === "UrgentExcel" && <UrgentExcel data={mergedData} />}
           {component === "Notification" && <Notification data={mergedData} />}
+          {component === "HistoryReport" && <HistoryReport data={mergedData} />}
           {/* {component === "Newdemo" && <Newdemo data={mergedData} />}
           {component === "New2" && <New2 data={mergedData} />} */}
            {/* {component === "ComputedAttributs" && <ComputedAttributes data={mergedData} />} */}
@@ -947,7 +950,8 @@ function App() {
           "UserAccess",
          "DistanceReport",
          "UrgentExcel",
-         "Notification"
+         "Notification",
+         "HistoryReport"
           //  "Newdemo",
           //  "New2"
           ].includes(component) && <Tablee data={mergedData} />}

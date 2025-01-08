@@ -134,6 +134,7 @@ const pages = [
       { name: 'Summary', icon: <SummarizeIcon /> },
       { name: 'Statistics', icon: <InsightsIcon /> },
       { name: 'Kilometer Distance', icon: <DirectionsCarIcon /> },
+      { name: 'History Report', icon: <DirectionsCarIcon /> },
     ]
   },
   
