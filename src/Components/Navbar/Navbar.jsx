@@ -346,9 +346,11 @@ export const Navbar = (props) => {
           } else if (!item.ignition && matchingDevice.ignitionOff) {
             message = `Bus Off - ${matchingDevice.deviceName}`;
           } 
-          // else if (){   //write geofence and absent present logic of notification similar to above logic
-
-          // }
+          else if (item.geofenceAlert && matchingDevice.geofenceEnter){   //write geofence and absent present logic of notification similar to above logic
+            message = `Geofence Enter - ${matchingDevice.deviceName}`;
+          }else if (!item.geofenceAlert && matchingDevice.geofenceEnter){
+            message = `Geofence Exit - ${matchingDevice.deviceName}`;
+          }
   
           return message;
         }).filter(Boolean);
