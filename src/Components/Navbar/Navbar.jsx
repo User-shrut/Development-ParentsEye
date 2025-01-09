@@ -326,7 +326,7 @@ export const Navbar = (props) => {
         const flattenedData = data.flat();
         const updatedMessages = flattenedData.map((item) => {
           const matchingDevice = allowedNotifications.data.find(
-            (device) => parseInt(device.deviceId) === item.deviceId
+            (device) => parseInt(device.deviceId) == Number(item.deviceId)
           );
   
           if (!matchingDevice) {
@@ -343,13 +343,14 @@ export const Navbar = (props) => {
           let message = null;
           if (item.ignition && matchingDevice.ignitionOn) {
             message = `Bus On - ${matchingDevice.deviceName}`;
-          } else if (!item.ignition && matchingDevice.ignitionOff) {
+          } else if (item.ignition==false && matchingDevice.ignitionOff) {
+            console.log("ignition item",item.ignition);
             message = `Bus Off - ${matchingDevice.deviceName}`;
           } 
           else if (item.geofenceAlert && matchingDevice.geofenceEnter){   //write geofence and absent present logic of notification similar to above logic
-            message = `Geofence Enter - ${matchingDevice.deviceName}`;
-          }else if (!item.geofenceAlert && matchingDevice.geofenceEnter){
-            message = `Geofence Exit - ${matchingDevice.deviceName}`;
+            message = `Geofence Enter  ${item.name} - ${matchingDevice.deviceName}`;
+          }else if (item.geofenceAlert==false  && matchingDevice.geofenceEnter){
+            message = `Geofence Exit ${item.name} - ${matchingDevice.deviceName}`;
           }
   
           return message;
