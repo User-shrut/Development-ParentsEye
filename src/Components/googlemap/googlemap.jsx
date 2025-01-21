@@ -162,44 +162,79 @@ useEffect(() => {
               let allData;
 
               // Logic for role 1: Devices and stops
-              if (role == 1) {
-                  allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
-                      stops.map((stop) => ({
-                          ...stop,
+              // if (role == 1) {
+              //     allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
+              //         stops.map((stop) => ({
+              //             ...stop,
                           
-                          deviceId,
-                      }))
-                  );
+              //             deviceId,
+              //         }))
+              //     );
 
-              // Logic for role 2: Branches and geofences
-              } else if (role == 2) {
-                  allData = response?.data?.branches.flatMap(branch => 
-                      branch.geofences?.map(geofence => ({
-                          ...geofence,
-                          branchId: branch.branchId,
-                          branchName: branch.branchName,
-                      })) || []
-                  );
+              // // Logic for role 2: Branches and geofences
+              // } else if (role == 2) {
+              //     allData = response?.data?.branches.flatMap(branch => 
+              //         branch.geofences?.map(geofence => ({
+              //             ...geofence,
+              //             branchId: branch.branchId,
+              //             branchName: branch.branchName,
+              //         })) || []
+              //     );
 
-              // Logic for role 3: Geofences for a specific branch
-              } else if (role == 3) {
-                  allData = response?.data.geofences.map((geofence) => ({
-                      ...geofence,
-                      branchId: response.data.branchId,
-                      branchName: response.data.branchName,
-                      schoolName: response.data.schoolName,
-                  }));
-              }else if (role == 4) {
-                allData = response?.data?.branches.flatMap(branch =>
-                  branch.geofences?.map(geofence => ({
-                    ...geofence, // Retain all geofence properties
-                    branchId: branch.branchId, // Add branchId to each geofence
-                    branchName: branch.branchName, // Add branchName to each geofence
+              // // Logic for role 3: Geofences for a specific branch
+              // } else if (role == 3) {
+              //     allData = response?.data.geofences.map((geofence) => ({
+              //         ...geofence,
+              //         branchId: response.data.branchId,
+              //         branchName: response.data.branchName,
+              //         schoolName: response.data.schoolName,
+              //     }));
+              // }else if (role == 4) {
+              //   allData = response?.data?.branches.flatMap(branch =>
+              //     branch.geofences?.map(geofence => ({
+              //       ...geofence, // Retain all geofence properties
+              //       branchId: branch.branchId, // Add branchId to each geofence
+              //       branchName: branch.branchName, // Add branchName to each geofence
                     
-                  })) || [] // Handle the case where geofences is undefined or empty
+              //     })) || [] // Handle the case where geofences is undefined or empty
+              //   );
+              // }
+              if (role == 1) {
+                allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
+                    stops.map((stop) => ({
+                        ...stop,
+                        deviceId,
+                    }))
                 );
-              }
-
+            } else if (role == 2) {
+                allData = Object.entries(response.data.branches || {}).flatMap(([branchIndex, branch]) =>
+                    branch.geofences?.map((geofence) => ({
+                        ...geofence,
+                        branchId: branch.branchId,
+                        branchName: branch.branchName,
+                        deviceId: `deviceId: ${geofence.deviceId}`,
+                    })) || []
+                );
+            } else if (role == 3) {
+                allData = Object.entries(response.data.geofences || {}).flatMap(([index, geofence]) => [
+                    {
+                        ...geofence,
+                        branchId: response.data.branchId,
+                        branchName: response.data.branchName,
+                        schoolName: response.data.schoolName,
+                        deviceId: `deviceId: ${geofence.deviceId}`,
+                    },
+                ]);
+            } else if (role == 4) {
+                allData = Object.entries(response.data.branches || {}).flatMap(([branchIndex, branch]) =>
+                    branch.geofences?.map((geofence) => ({
+                        ...geofence,
+                        branchId: branch.branchId,
+                        branchName: branch.branchName,
+                    })) || []
+                );
+            }
+            
               console.log("my geeofencesss",allData);
              
               setGeofence(allData);
@@ -223,6 +258,8 @@ useEffect(() => {
       return geofences.map((geofence, index) => {
           // Extract latitude, longitude, and radius from geofence area
           const areaData = geofence.area.match(/Circle\(([^ ]+) ([^,]+), ([^,]+)\)/);
+          // const areaData = geofence.area.match(/Circle\(([^ ]+) ([^,]+), ([0-9]+(?:\.[0-9]+)?)\)/);
+          // console.log("areaData",areaData);
           if (areaData) {
               let lng = parseFloat(areaData[1]);
               let lat = parseFloat(areaData[2]);
@@ -237,7 +274,7 @@ useEffect(() => {
               return (
                   <Circle
                       key={index}
-                      center={[lat, lng]}
+                      center={[lng, lat]}
                       radius={radius}
                       color="red"
                       fillOpacity={0.2}
@@ -246,7 +283,9 @@ useEffect(() => {
                           setSelectedGeofence(geofence); // Set the selected geofence on click
                           //  alert(`Geofence Name: ${geofence.name}\nDevice Name: ${geofence.deviceName}`);
 
-                          mapRef.current.setView([lat, lng], 18); // Adjust zoom level as needed
+                          // mapRef.current.setView([lat,lng], 18); // Adjust zoom level as needed
+                          mapRef.current.setView([lng,lat], 18); // Adjust zoom level as needed
+
                         },
                         dblclick: () => {
                           // Reset the map zoom on double-clicking the selected geofence
@@ -437,6 +476,7 @@ const handleMarkerClick = (vehicle) => {
          {/* Add custom marker for current coordinates with the location icon */}
          {coordinates && coordinates.latitude && coordinates.longitude && (
           <Marker
+            // position={[coordinates.latitude, coordinates.longitude]}
             position={[coordinates.latitude, coordinates.longitude]}
             icon={customIcon}
           >
@@ -457,7 +497,8 @@ const handleMarkerClick = (vehicle) => {
              {/* Render popup for selected geofence */}
              {selectedGeofence && (
           <Popup
-            position={[parseFloat(selectedGeofence.area.split(' ')[1]), parseFloat(selectedGeofence.area.split(' ')[0].split('(')[1])]}
+            // position={[parseFloat(selectedGeofence.area.split(' ')[1]), parseFloat(selectedGeofence.area.split(' ')[0].split('(')[1])]}
+            position={[parseFloat(selectedGeofence.area.split(' ')[0].split('(')[1]),parseFloat(selectedGeofence.area.split(' ')[1])]}
             onClose={() => setSelectedGeofence(null)} // Close popup on close event
           >
             <div>
