@@ -17,6 +17,9 @@
   .leaflet-interactive{
     stroke-width: 8;
   }
+  .geofence-circle {
+    stroke-width: 2px !important;
+}
   .leaflet-tooltip {
     background-color: #000000;
     color: #ffffff;

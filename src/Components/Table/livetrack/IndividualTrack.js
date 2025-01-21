@@ -316,7 +316,7 @@
 
 
 import React, { useContext, useEffect, useState, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline,Circle } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { CButton, CCard, CCardBody, CCardHeader } from '@coreui/react'
@@ -563,11 +563,109 @@ const IndividualTrack = (lat, long) => {
   const [openPopup, setOpenPopup] = useState(true)
   
   const [formData, setFormData] = React.useState({});
+
+  // const [geofences, setGeofence] = useState([]);
+  const role = localStorage.getItem("role");
+  const [geofence, setGeofence] = useState([]);
+  const [matchingGeofences, setMatchingGeofences] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      let response;
+
+      // Fetch geofence data based on role
+      if (role == 1) {
+        response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/geofences`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (role == 2) {
+        response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/geofences`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (role == 3) {
+        response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/geofences`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (role == 4) {
+        response = await axios.get(`${process.env.REACT_APP_USERBRANCH}/getgeofence`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
+      if (response?.data) {
+        let allData = [];
+
+        // Process data based on role
+        if (role == 1) {
+          allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
+            stops.map((stop) => ({
+              ...stop,
+              deviceId,
+            }))
+          );
+        } else if (role == 2 || role == 4) {
+          allData = Object.entries(response.data.branches || {}).flatMap(([branchIndex, branch]) =>
+            branch.geofences?.map((geofence) => ({
+              ...geofence,
+              branchId: branch.branchId,
+              branchName: branch.branchName,
+              deviceId: `deviceId: ${geofence.deviceId}`,
+            })) || []
+          );
+        } else if (role == 3) {
+          allData = Object.entries(response.data.geofences || {}).flatMap(([index, geofence]) => [
+            {
+              ...geofence,
+              branchId: response.data.branchId,
+              branchName: response.data.branchName,
+              schoolName: response.data.schoolName,
+              deviceId: `deviceId: ${geofence.deviceId}`,
+            },
+          ]);
+        }
+
+        setGeofence(allData);
+
+        // Filter geofences that match the deviceId
+        const filteredGeofences = allData.filter(
+          (item) => item.deviceId == `deviceId: ${deviceId}`
+        );
+        setMatchingGeofences(filteredGeofences);
+        console.log("mmm",filteredGeofences)      }
+    } catch (error) {
+      console.error('Error fetching geofence data:', error);
+    }
+  };
+
+  const parseArea = (area) => {
+    const match = area.match(/Circle\(([\d.]+) ([\d.]+), ([\d.]+)\)/);
+    if (match) {
+      const [, lat, lng, radius] = match;
+      return { lat: parseFloat(lat), lng: parseFloat(lng), radius: parseFloat(radius) };
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const handleGeofenceSubmitSuccess = () => {
+    // After the geofence is successfully added, fetch the updated data
+    fetchData();
+  };
+  const [selectedGeofence, setSelectedGeofence] = useState(null); // State to hold the clicked geofence info
+
+  const handleGeofenceClick = (geofence) => {
+    setSelectedGeofence(geofence); // Set the selected geofence data to display its name
+    console.log("kkk")
+  };
   return (
     <>
       <div className="row">
         <div className="head">
             <h2>Tracking {name ? name : 'User Name'}</h2>
+            {/* <h2>Tracking {deviceId ? deviceId : 'User Name'}</h2> */}
             <CButton color="danger" // This makes the button red
       onClick={handleClickOnTrack}
     >
@@ -652,6 +750,7 @@ const IndividualTrack = (lat, long) => {
           individualSalesMan={individualSalesMan}
           deviceId={deviceId}
           setOpenPopup={setOpenPopup}
+          onGeofenceSubmitSuccess={handleGeofenceSubmitSuccess} // Pass the callback
         />
       </ReactLeafletDriftMarker>
     )}
@@ -662,7 +761,34 @@ const IndividualTrack = (lat, long) => {
                 individualSalesMan={individualSalesMan}
                 previousPosition={previousPosition.current}
                 setPath={setPath}
+              />/
+                {matchingGeofences.map((geofence) => {
+              const parsedArea = parseArea(geofence.area);
+              if (parsedArea) {
+                return (
+                  <Circle
+                  key={geofence._id}
+                  center={[parsedArea.lat, parsedArea.lng]}
+                  radius={parsedArea.radius}
+                  className={`geofence-circle ${geofence._id}`} 
+                  color={geofence.isCrossed ? "rgba(255, 0, 0, 0.5)" : "rgba(0, 128, 0, 0.5)"}
+                  strokeWidth={2} // Set stroke width to 2px
+                  fillColor={geofence.isCrossed ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 128, 0, 0.2)"}
+                  fillOpacity={0.2} // Optional: Adjust fill opacity
+                  onClick={() => handleGeofenceClick(geofence)} // Trigger onClick to set selected geofence
               />
+              
+                );
+              }
+              return null;
+            })}
+             {selectedGeofence && (
+              <Popup position={[selectedGeofence.latitude, selectedGeofence.longitude]}>
+                <div>
+                  <h4>{selectedGeofence.name}</h4>
+                </div>
+              </Popup>
+            )}
             </MapContainer>
           </div>
         </div>

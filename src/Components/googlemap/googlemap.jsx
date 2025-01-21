@@ -161,44 +161,7 @@ useEffect(() => {
           if (response?.data) {
               let allData;
 
-              // Logic for role 1: Devices and stops
-              // if (role == 1) {
-              //     allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
-              //         stops.map((stop) => ({
-              //             ...stop,
-                          
-              //             deviceId,
-              //         }))
-              //     );
-
-              // // Logic for role 2: Branches and geofences
-              // } else if (role == 2) {
-              //     allData = response?.data?.branches.flatMap(branch => 
-              //         branch.geofences?.map(geofence => ({
-              //             ...geofence,
-              //             branchId: branch.branchId,
-              //             branchName: branch.branchName,
-              //         })) || []
-              //     );
-
-              // // Logic for role 3: Geofences for a specific branch
-              // } else if (role == 3) {
-              //     allData = response?.data.geofences.map((geofence) => ({
-              //         ...geofence,
-              //         branchId: response.data.branchId,
-              //         branchName: response.data.branchName,
-              //         schoolName: response.data.schoolName,
-              //     }));
-              // }else if (role == 4) {
-              //   allData = response?.data?.branches.flatMap(branch =>
-              //     branch.geofences?.map(geofence => ({
-              //       ...geofence, // Retain all geofence properties
-              //       branchId: branch.branchId, // Add branchId to each geofence
-              //       branchName: branch.branchName, // Add branchName to each geofence
-                    
-              //     })) || [] // Handle the case where geofences is undefined or empty
-              //   );
-              // }
+           
               if (role == 1) {
                 allData = Object.entries(response.data).flatMap(([deviceId, stops]) =>
                     stops.map((stop) => ({
