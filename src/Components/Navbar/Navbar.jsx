@@ -549,14 +549,14 @@ export const Navbar = (props) => {
 
                   </MenuItem>
                 </Link>
-                <Link to={"/ChangePassword"} >
+                {/* <Link to={"/ChangePassword"} >
                   <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                       <LockResetTwoToneIcon fontsize="small" />
                     </ListItemIcon>
                     ChangePassword
                   </MenuItem>
-                </Link>
+                </Link> */}
               </Menu>
             </Tooltip>
           </Box>

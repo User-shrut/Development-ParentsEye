@@ -15,6 +15,7 @@ import ImportExportIcon from "@mui/icons-material/ImportExport";
 import axios from "axios";
 import Grid from "@mui/material/Grid";
 import { styled } from "@mui/material/styles";
+import { StyledTablePagination } from "../../Components/VariousTables/PaginationCssFile/TablePaginationStyles.js"
 import {
   Autocomplete,
   FormControl,
@@ -38,6 +39,10 @@ import {
   CTableHeaderCell,
   CTableRow,
 } from "@coreui/react";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+IconButton
+} from "@mui/material";
 import { IoMdBatteryCharging } from "react-icons/io";
 import { MdGpsFixed, MdGpsNotFixed } from "react-icons/md";
 import { PiEngineFill } from "react-icons/pi";
@@ -66,8 +71,8 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: "80%",
-  height: "80%",
+  width: "40%",
+  height: "60%",
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
@@ -91,6 +96,22 @@ export const Tablee = ({ data }) => {
   const [columnVisibility, setColumnVisibility] = useState(
     Object.fromEntries(COLUMNS.map((col) => [col.accessor, true]))
   );
+  const [visibleColumns, setVisibleColumns] = useState({
+    srNo: true,
+    vehicle: true,
+    deviceName: true,
+    address: true,
+    driver: true,
+    lastUpdate: true,
+    speed: true,
+    distance: true,
+    satellite: true,
+    ignition: true,
+    gps: true,
+    power: true,
+    track: true,
+  });
+  
   const [modalOpen, setModalOpen] = useState(false);
   const [selectAll, setSelectAll] = useState(false);
   const [vehicleRunningCount, setVehicleRunningCount] = useState(0);
@@ -264,10 +285,10 @@ export const Tablee = ({ data }) => {
     XLSX.writeFile(workbook, "Dashboard.xlsx");
   };
 
-  const handleColumnVisibilityChange = (accessor) => {
-    setColumnVisibility((prevState) => ({
+  const toggleColumnVisibility = (column) => {
+    setVisibleColumns((prevState) => ({
       ...prevState,
-      [accessor]: !prevState[accessor],
+      [column]: !prevState[column],
     }));
   };
 
@@ -1013,7 +1034,22 @@ const navigate = useNavigate()
     navigate(`/salesman/${vehicle.deviceId}/${vehicle.category}/${vehicle.name}`)
   }
 //till here
+  // const [page, setPage] = useState(0);
+  //  const [rowsPerPage, setRowsPerPage] = useState(25);
+const handleChangeRowsPerPage = (event) => {
+  const newRowsPerPage = parseInt(event.target.value, 10);
+  setRowsPerPage(newRowsPerPage === -1 ? sortedData.length : newRowsPerPage); // Set to all rows if -1
+  setPage(0); // Reset to the first page
+};
 
+const handleChangePage = (event, newPage) => {
+  setPage(newPage);
+};
+const handleModalClose = () => {
+  
+  setModalOpen(false);
+  
+};
   return (
     <>
       <div style={{ marginTop: "80px" }}>
@@ -1374,7 +1410,18 @@ const navigate = useNavigate()
               >
                 Manage Columns
               </Button>
-
+{/* <div>
+  {Object.keys(visibleColumns).map((column) => (
+    <label key={column}>
+      <input
+        type="checkbox"
+        checked={visibleColumns[column]}
+        onChange={() => toggleColumnVisibility(column)}
+      />
+      {column}
+    </label>
+  ))}
+</div> */}
               <Button
                 variant="contained"
                 color="primary"
@@ -1406,14 +1453,22 @@ const navigate = useNavigate()
         {individualMap ? (
           <></>
         ) : (
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <div className="paper">
+          <div style={{ display: "flex", justifyContent: "center", flexDirection:'column'}}>
+            <div className="paper"
+           >
               <CTable
                 className="my-3 border vehiclesTable mt-0"
                 hover
                 responsive
+                style={{
+                  maxHeight: "500px", // Set the desired height for the body
+                  overflowY: "auto", // Enable vertical scrolling
+                  display: "block", // Allow scrolling for the body
+                }}
               >
                 <CTableHead
+                //  stickyHeader
+                // aria-label="sticky table"
                   className="text-nowrap "
                   style={{
                     position: "sticky",
@@ -1422,7 +1477,7 @@ const navigate = useNavigate()
                   }}
                 >
                   <CTableRow>
-                    <CTableHeaderCell
+                  {visibleColumns.srNo && ( <CTableHeaderCell
                       className="text-center sr-no table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1430,15 +1485,15 @@ const navigate = useNavigate()
                       }}
                     >
                       Sr No.
-                    </CTableHeaderCell>
-                    <CTableHeaderCell
+                    </CTableHeaderCell>  )}
+                    {visibleColumns.vehicle  && ( <CTableHeaderCell
                       className="text-center vehicle table-cell headCell"
                       style={{ position: 'sticky', top: 0 }}
                     >
                       Vehicle
-                    </CTableHeaderCell>
+                    </CTableHeaderCell> )}
 
-                    <CTableHeaderCell
+                    {visibleColumns.deviceName  && (  <CTableHeaderCell
                       className="text-center device-name table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1446,9 +1501,9 @@ const navigate = useNavigate()
                       }}
                     >
                       Device Name
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
-                    <CTableHeaderCell
+                    {visibleColumns.address &&(<CTableHeaderCell
                       className="text-center address table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1460,8 +1515,9 @@ const navigate = useNavigate()
                       }}
                     >
                       Address
-                    </CTableHeaderCell>
-                    <CTableHeaderCell
+                    </CTableHeaderCell>)}
+
+                    {visibleColumns.driver &&(<CTableHeaderCell
                       className="text-center address table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1473,9 +1529,9 @@ const navigate = useNavigate()
                       }}
                     >
                       Driver
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
-                    <CTableHeaderCell
+                    {visibleColumns.lastUpdate &&(<CTableHeaderCell
                       className="text-center last-update table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1487,11 +1543,11 @@ const navigate = useNavigate()
                       }}
                     >
                       Last Update
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
                     
 
-                    <CTableHeaderCell
+                    {visibleColumns.speed&&(<CTableHeaderCell
                       className="text-center speed table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1499,9 +1555,9 @@ const navigate = useNavigate()
                       }}
                     >
                       Sp
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
-                    <CTableHeaderCell
+                    {visibleColumns.distance &&(<CTableHeaderCell
                       className="text-center distance table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1509,11 +1565,11 @@ const navigate = useNavigate()
                       }}
                     >
                       Distance
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
                   
 
-                    <CTableHeaderCell
+                    {visibleColumns.satellite &&(<CTableHeaderCell
                       className="text-center satellite table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1521,9 +1577,9 @@ const navigate = useNavigate()
                       }}
                     >
                       Sat
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
-                    <CTableHeaderCell
+                    {visibleColumns.ignition &&(<CTableHeaderCell
                       className="text-center ignition table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1531,9 +1587,9 @@ const navigate = useNavigate()
                       }}
                     >
                       Ig
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
-                    <CTableHeaderCell
+                    {visibleColumns.gps&&(<CTableHeaderCell
                       className="text-center gps table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1541,9 +1597,9 @@ const navigate = useNavigate()
                       }}
                     >
                       GPS
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
-                    <CTableHeaderCell
+                    {visibleColumns.power &&(<CTableHeaderCell
                       className="text-center power table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1551,9 +1607,9 @@ const navigate = useNavigate()
                       }}
                     >
                       Power
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
 
-                    <CTableHeaderCell
+                    {visibleColumns.track &&(<CTableHeaderCell
                       className="text-center status table-cell headCell"
                       style={{
                         position: "sticky",
@@ -1562,11 +1618,11 @@ const navigate = useNavigate()
                       }}
                     >
                       Track
-                    </CTableHeaderCell>
+                    </CTableHeaderCell>)}
                   </CTableRow>
                 </CTableHead>
-
-                <CTableBody>
+               
+                <CTableBody >
                   {currentRows.map((item, index) => (
                     <CTableRow
                       key={index}
@@ -1574,11 +1630,11 @@ const navigate = useNavigate()
                       onDoubleClick={() => handleRowDoubleClick(item)}
                     >
                       {/* Sr No. */}
-                      <CTableDataCell className="text-center sr-no table-cell">
+                      {visibleColumns.srNo &&(<CTableDataCell className="text-center sr-no table-cell">
                         {index + 1}
-                      </CTableDataCell>
+                      </CTableDataCell>)}
 
-                      <CTableDataCell className="text-center vehicle table-cell">
+                      {visibleColumns.vehicle &&  (<CTableDataCell className="text-center vehicle table-cell">
                         <div>
 
                           <img
@@ -1589,9 +1645,9 @@ const navigate = useNavigate()
 
                         </div>
 
-                      </CTableDataCell>
+                      </CTableDataCell>)}
 
-                      <CTableDataCell className="device-name table-cell n text-center">
+                      {visibleColumns.deviceName &&(<CTableDataCell className="device-name table-cell n text-center">
                         {(() => {
                           // const device = salesman.find((device) => device.id === item.deviceId)
                           if (item && item.name) {
@@ -1614,19 +1670,28 @@ const navigate = useNavigate()
                           }
                           return <div className="upperdata">Unknown</div>;
                         })()}
-                      </CTableDataCell>
+                      </CTableDataCell>)}
 
                      
-                      <CTableDataCell
-                        className="text-center address table-cell"
-                        style={{ width: "20rem" }}
-                      >
-                        <div className="upperdata" style={{ fontSize: "1rem" }}>
-                        {newAddress[item.deviceId] || 'Loading...'}
-                        </div>
-                      </CTableDataCell>
-                     
-                      <CTableDataCell
+                  
+                      {visibleColumns.address &&(<CTableDataCell
+  className="text-center address table-cell"
+  style={{ width: "18rem" }}
+>
+  <div
+    className="upperdata"
+    style={{
+      fontSize: "0.7rem",
+      wordWrap: "break-word", // Ensures long words break to fit within the container
+      overflowWrap: "break-word", // Provides compatibility for older browsers
+      whiteSpace: "normal", // Allows text wrapping instead of keeping it on a single line
+    }}
+  >
+    {newAddress[item.deviceId] || 'Loading...'}
+  </div>
+</CTableDataCell>)}
+
+{visibleColumns.driver &&(<CTableDataCell
                         className="text-center address table-cell"
                         style={{ width: "20rem" }}
                       >
@@ -1639,9 +1704,9 @@ const navigate = useNavigate()
                             return driver ? driver.driverName : "N/A";
                           })()}
                         </div>
-                      </CTableDataCell>
+                      </CTableDataCell>)}
                       {/* {visibleColumns.lastUpdate && ( */}
-                      <CTableDataCell className="text-center last-update table-cell">
+                      {visibleColumns.lastUpdate &&(<CTableDataCell className="text-center last-update table-cell">
                         {(() => {
                           // const device = salesman.find((device) => device.id === item.deviceId)
                           if (item && item.lastUpdate) {
@@ -1660,21 +1725,21 @@ const navigate = useNavigate()
                           }
                           return <div>N/A</div>;
                         })()}
-                      </CTableDataCell>
+                      </CTableDataCell>)}
                      
-                      <CTableDataCell className="text-center sp speed table-cell">
+                      {visibleColumns.speed &&(<CTableDataCell className="text-center sp speed table-cell">
                         <div className="upperdata">{`${Math.round(
                           item.speed
                         )} kmph`}</div>
-                      </CTableDataCell>
+                      </CTableDataCell>)}
                       {/* )} */}
                       {/* {visibleColumns.distance && ( */}
-                      <CTableDataCell className="text-center d distance table-cell">
+                      {visibleColumns.distance &&(<CTableDataCell className="text-center d distance table-cell">
                         {`${Math.round(item.attributes.distance)} km`}
-                      </CTableDataCell>
+                      </CTableDataCell>)}
 
                      
-                      <CTableDataCell className="text-center satelite table-cell">
+                      {visibleColumns.satellite &&(<CTableDataCell className="text-center satelite table-cell">
                         <div
                           style={{
                             position: "relative",
@@ -1697,9 +1762,9 @@ const navigate = useNavigate()
                             {item.attributes.sat}
                           </span>
                         </div>
-                      </CTableDataCell>
+                      </CTableDataCell>)}
                       {/* // )} */}
-                      <CTableDataCell className="text-center ignition table-cell">
+                      {visibleColumns.ignition &&(<CTableDataCell className="text-center ignition table-cell">
                         {(() => {
                           const { ignition } = item.attributes;
 
@@ -1722,9 +1787,9 @@ const navigate = useNavigate()
                             </div>
                           );
                         })()}
-                      </CTableDataCell>
+                      </CTableDataCell>)}
                       {/* {visibleColumns.gps && ( */}
-                      <CTableDataCell className="text-center gps table-cell">
+                      {visibleColumns.gps &&(<CTableDataCell className="text-center gps table-cell">
                         {(() => {
                           const { valid } = item;
 
@@ -1747,10 +1812,10 @@ const navigate = useNavigate()
                             </div>
                           );
                         })()}
-                      </CTableDataCell>
+                      </CTableDataCell>)}
                       {/* )} */}
                       {/* {visibleColumns.power && ( */}
-                      <CTableDataCell className="text-center power table-cell">
+                      {visibleColumns.power &&(<CTableDataCell className="text-center power table-cell">
                         {(() => {
                           const power = item.attributes.battery;
 
@@ -1773,89 +1838,81 @@ const navigate = useNavigate()
                             </div>
                           );
                         })()}
-                      </CTableDataCell>
+                      </CTableDataCell>)}
                       {/* )} */}
-                      <CTableDataCell className="text-center status table-cell">
+                      {visibleColumns.track &&(<CTableDataCell className="text-center status table-cell">
                         <button
                           className="btn btn-primary"
                         onClick={() => handleClickOnTrack(item)}
                         >
                           Live Track
                         </button>
-                      </CTableDataCell>
+                      </CTableDataCell>)}
                     </CTableRow>
                   ))}
                 </CTableBody>
+                
               </CTable>
 
-              <CRow className="justify-content-between align-items-center mt-3">
-                <CCol xs="auto">
-                  <CFormSelect
-                    id="rows-per-page"
-                    onChange={handleRowsPerPageChange}
-                    value={rowsPerPage}
-                    aria-label="Rows per page"
-                    className="me-2"
-                    style={{ width: "auto" }}
-                  >
-                    <option value={5}>5</option>
-                    <option value={10}>10</option>
-                    <option value={15}>15</option>
-                    <option value={20}>20</option>
-                    <option value={25}>25</option>
-                  </CFormSelect>
-                </CCol>
-
-                <CCol xs="auto">
-                  <ReactPaginate
-                    previousLabel={<MdKeyboardArrowLeft />}
-                    nextLabel={<MdKeyboardArrowRight />}
-                    breakLabel={"..."}
-                    pageCount={pageCount}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={handlePageClick}
-                    containerClassName={"pagination d-flex align-items-center"}
-                    activeClassName={"active"}
-                    previousLinkClassName={"previous"}
-                    nextLinkClassName={"next"}
-                    pageLinkClassName={"page"}
-                    breakLinkClassName={"break"}
-                  />
-                </CCol>
-              </CRow>
+              
             </div>
+            <StyledTablePagination>
+                <TablePagination
+                  rowsPerPageOptions={[{ label: "All", value: -1 }, 10, 25, 100, 1000]}
+                  component="div"
+                  count={sortedData.length}
+                  rowsPerPage={rowsPerPage == sortedData.length ? -1 : rowsPerPage}
+                  page={page}
+                  onPageChange={(event, newPage) => {
+                    console.log("Page changed:", newPage);
+                    handleChangePage(event, newPage);
+                  }}
+                  onRowsPerPageChange={(event) => {
+                    console.log("Rows per page changed:", event.target.value);
+                    handleChangeRowsPerPage(event);
+                  }}
+                />
+              </StyledTablePagination>
           </div>
         )}
 
       
 
-        <Modal
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <h2>Manage Columns</h2>
-            {columns.map((column) => (
-              <div
-                key={column.accessor}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <span>{column.Header}</span>
-                <Switch
-                  checked={columnVisibility[column.accessor]}
-                  onChange={() => handleColumnVisibilityChange(column.accessor)}
-                />
-              </div>
-            ))}
+<Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+            {/* <h2></h2> */}
+            <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '20px',
+      }}
+    >
+      <h2 style={{ flexGrow: 1 }}>Column Visibility</h2>
+      <IconButton onClick={handleModalClose}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+          {/* Checkbox for column visibility */}
+          <div style={{ marginBottom: '12px', display: 'flex',flexDirection:'column' }}>
+  {Object.keys(visibleColumns).map((column) => (
+    <label key={column}>
+      <input
+        type="checkbox"
+        checked={visibleColumns[column]}
+        onChange={() => toggleColumnVisibility(column)}
+      />
+      {column}
+    </label>
+  ))}
+</div>
           </Box>
-        </Modal>
+          </Modal>
         <Modal
           open={assetDetailsModalOpen}
           onClose={() => setAssetDetailsModalOpen(false)}

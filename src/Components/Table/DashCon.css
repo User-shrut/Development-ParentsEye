@@ -5,6 +5,7 @@
 /* For Firefox */
 .table-container {
   scrollbar-width: none !important; /* Hides scrollbar in Firefox */
+/* height: 300px !important; */
 }
 
 .content {
@@ -194,9 +195,11 @@ td {
 }
 
 .paper {
-  width: 98%;
+  width: 99%;
+  /* height:20%; */
   /* overflow-x: scroll; */
   border: 1px solid #fff;
+  margin: auto;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 .vehiclesTable{

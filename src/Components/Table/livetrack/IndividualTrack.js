@@ -338,7 +338,7 @@ const IndividualTrack = (lat, long) => {
     // After the geofence is successfully added, fetch the updated data
     fetchData();
   };
-  const [showGeofences, setShowGeofences] = useState(true); // Default to show geofences
+  const [showGeofences, setShowGeofences] = useState(false); // Default to show geofences
   return (
     <>
       <div className="row">
