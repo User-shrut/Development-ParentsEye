@@ -1910,15 +1910,40 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "@mui/material";
 import { StyledTablePagination } from "../../PaginationCssFile/TablePaginationStyles";
 import Export from "../../Export";
-
+// import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 //import { TextField } from '@mui/material';
+import { MapContainer, TileLayer, Marker, useMapEvents , useMap  } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import Typography from "@mui/material/Typography";
+import DialogContent from "@mui/material/DialogContent";
+import {
+  // Box,
+  FormControl,
+  // InputLabel,
+  MenuItem,
+  // Modal,
+  Select,
+  Autocomplete,
+  // TextField,
+  InputAdornment,
+} from "@mui/material";
+import { DeviceHub, LocationOn, AccessTime } from "@mui/icons-material";
+// Fix Leaflet's default icon
+delete L.Icon.Default.prototype._getIconUrl;
 
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: "80%",
+  maxWidth: '500px',
   height: "80%",
   bgcolor: "background.paper",
   boxShadow: 24,
@@ -1956,6 +1981,7 @@ export const Geofence = () => {
   const [originalRows, setOriginalRows] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   // const { role } = useContext(TotalResponsesContext);
 const role=localStorage.getItem("role");
   console.log("abhi dekh : ", role);
@@ -2330,6 +2356,172 @@ const role=localStorage.getItem("role");
   //     setLoading(false);
   //   }
   // };
+    const [open, setOpen] = React.useState(false);
+  const [radius, setRadius] = useState("");
+  const [devices, setDevices] = useState([]); // State to store fetched devices
+  const [selectedDevice, setSelectedDevice] = useState(""); // State to store selected device
+  const [addGeoModalOpen,setAddGeoModalOpen] = useState(false);
+  const handleSearch = async () => {
+    if (!searchQuery) return;
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          searchQuery
+        )}&format=json&limit=1`
+      );
+      const data = await response.json();
+
+      if (data.length > 0) {
+        const { lat, lon } = data[0];
+        setLocation({ lat: parseFloat(lat), lng: parseFloat(lon) });
+      } else {
+        alert("Location not found!  please Enter a valid location");
+      }
+    } catch (error) {
+      console.error("Error fetching location:", error);
+    }
+  };
+  const UpdateMapCenter = () => {
+    const map = useMap();
+    map.setView([location.lat, location.lng], map.getZoom());
+    return null;
+  };
+
+  const handleAddGeoModalOpen=  ()=>{
+    setAddGeoModalOpen(true)
+  };
+  const handleAddGeoModalClose=  ()=>{
+    setAddGeoModalOpen(false)
+  };
+  const handleFormSubmit = () => {
+    if (radius) {
+      console.log(`Circle(${location.lat}, ${location.lng}, ${radius})`);
+      setFormOpen(false);
+      setRadius("");
+    } else {
+      alert("Please enter a radius.");
+    }
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleGeofenceSubmit = async (e) => {
+    e.preventDefault();
+    console.log(location.lat,location.lng);
+    console.log("ye hai geofence", formData);
+    const circleFormat = `Circle(${location.lat} ${location.lng}, ${formData.radius})`;
+    const geofenceData = {
+      name: formData.name,
+      area: circleFormat,
+      busStopTime: formData.busStopTime,
+      deviceId: selectedDevice,
+    };
+    console.log("formated data: ", geofenceData);
+
+    try {
+      const accessToken = localStorage.getItem("token");
+      const response = await axios.post(`${process.env.REACT_APP_API}/geofence`, geofenceData, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status === 201) {
+        alert("successfully geofence is added");
+        handleClose();
+      }
+    } catch (error) {
+      throw error.response
+        ? error.response.data
+        : new Error("An error occurred");
+    }
+    handleClose(true);
+    setAddGeoModalOpen(false)
+    fetchData();
+    setFormData([]);
+  };
+  const fetchDevices = async () => {
+    try {
+      let response;
+      const token = localStorage.getItem("token");
+
+      if (role == 1) {
+        response = await axios.get(`${process.env.REACT_APP_SUPER_ADMIN_API}/read-devices`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (role == 2) {
+        response = await axios.get(`${process.env.REACT_APP_SCHOOL_API}/read-devices`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (role == 3) {
+        response = await axios.get(`${process.env.REACT_APP_BRANCH_API}/read-devices`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (role == 4) {
+        response = await axios.get(
+          `http://63.142.251.13:4000/branchgroupuser/getdevicebranchgroupuser`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+      }
+
+      console.log("Fetched devices:", response.data);
+      const allData =
+      role == 1
+        ? response.data.data.flatMap((school) =>
+            school.branches.flatMap((branch) =>
+              Array.isArray(branch.devices) && branch.devices.length > 0
+                ? branch.devices.map((device) => ({
+                    ...device,
+                    schoolName: school.schoolName,
+                    branchName: branch.branchName,
+                  }))
+                : []
+            )
+          )
+          : role == 4
+          ? response.data.data.flatMap((school) =>
+              school.branches.flatMap((branch) =>
+                Array.isArray(branch.devices) && branch.devices.length > 0
+                  ? branch.devices.map((device) => ({
+                      ...device,
+                      branchName: branch.branchName,
+                      schoolName: school.schoolName,
+                    }))
+                  : []
+              )
+            )
+        : role == 2
+        ? response.data.branches.flatMap((branch) =>
+            Array.isArray(branch.devices) && branch.devices.length > 0
+              ? branch.devices.map((device) => ({
+                  ...device,
+                  branchName: branch.branchName,
+                }))
+              : []
+          )
+        : role == 3
+        ? response.data.devices.map((device) => ({
+            ...device,
+            schoolName: response.data.schoolName,
+            branchName: response.data.branchName,
+          }))
+        : [];
+    
+
+        console.log(allData);
+      setDevices(allData); // Store the devices in state
+    } catch (error) {
+      console.error("Error fetching devices:", error);
+    }
+  };
+  useEffect(() => {
+    if (open) {
+      fetchDevices();
+    }
+  }, [open]);
   const fetchAddressForRow = async (row) => {
     if (row.latlong) {
       const { latitude, longitude } = row.latlong;
@@ -2352,7 +2544,20 @@ const role=localStorage.getItem("role");
       return "No latlong data available";
     }
   };
-  
+  const [formOpen, setFormOpen] = useState(false);
+  // const [location, setLocation] = useState({ lat: null, lng: null });[21.1458, 79.0882]
+  const [location, setLocation] = useState({ lat: 21.1458, lng: 79.0882 });
+  const MapClickHandler = () => {
+    useMapEvents({
+      click: (e) => {
+        setLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
+        setFormOpen(true);
+        //  setOpen(true);
+    // Open the form when the map is clicked
+      },
+    });
+    return null;
+  };
   const fetchData = async (startDate = "", endDate = "") => {
     setLoading(true);
     try {
@@ -2986,6 +3191,14 @@ const role=localStorage.getItem("role");
             startIcon={<EditIcon />}
           >
             Edit
+          </Button> <Button
+            variant="contained"
+            color="success"
+            onClick={handleAddGeoModalOpen}
+            sx={{ marginRight: "10px" }}
+            startIcon={<AddCircleIcon />}
+          >
+            Add
           </Button>
           <Export columnVisibility={columnVisibility} COLUMNS={COLUMNS} filteredRows={filteredRows} pdfTitle={"GEOFENCES LIST"} pdfFilename={"Geofences.pdf"} excelFilename={"Geofences.xlsx"}/>
 
@@ -3332,7 +3545,316 @@ const role=localStorage.getItem("role");
     </Button>
   </Box>
 </Modal>
+<Modal open={addGeoModalOpen} onClose={handleAddGeoModalClose}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "90%",
+          height: "90%",
+          bgcolor: "background.paper",
+          boxShadow: 24,
+          p: 2,
+          borderRadius: 2,
+          marginTop: 5,
+        }}
+      >
+        <h3>Select Location on Map</h3>
+        <div style={{ height: "100%", marginBottom: "16px" }}>
+          {/* Search bar */}
+      <div style={{ marginBottom: "16px" }}>
+        <input
+          type="text"
+          placeholder="Enter location name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{ width: "70%", marginRight: "8px", padding: "8px" }}
+        />
+        <button onClick={handleSearch} style={{ padding: "8px 16px" , marginRight:"10px" }}>
+          Search
+        </button>
+        <button onClick={()=>setOpen(true)} style={{ padding: "8px 16px" }}>
+          Add geofence here
+        </button>
+      </div>
+          {/* <MapContainer  center={[21.1458, 79.0882]} zoom={13} style={{ height: "80%", width: "100%" }}>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> Hb'
+            />
+            <MapClickHandler />
+            {location.lat && location.lng && (
+              <Marker position={[location.lat, location.lng]}></Marker>
+            )}
+          </MapContainer> */}
+          {/* Map container */}
+      <div style={{ height: "100%", marginBottom: "16px" }}>
+        <MapContainer
+          center={[location.lat, location.lng]}
+          zoom={13}
+          style={{ height: "80%", width: "100%" }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> Hb'
+          />
+          <UpdateMapCenter />
+          <MapClickHandler />
+          {location.lat && location.lng && (
+            <Marker position={[location.lat, location.lng]}></Marker>
+          )}
+        </MapContainer>
+      </div>
+        </div>
+        {location.lat && location.lng && (
+          <p>
+            Selected Location: Latitude: {location.lat}, Longitude: {location.lng}
+          </p>
+        )}
+        {formOpen && (
+      //     <Modal
+      //     open={open}
+      //     onClose={handleClose}
+      //     aria-labelledby="modal-modal-title"
+      //     aria-describedby="modal-modal-description"
+      //   >
+      //     <Box sx={style}>
+      //       <div className="d-flex justify-content-between">
+      //         <Typography id="modal-modal-title" variant="h6" component="h2">
+      //           Add New Geofence
+      //         </Typography>
+      //         <IconButton onClick={handleClose}>
+      //           <CloseIcon />
+      //         </IconButton>
+      //       </div>
+      //       <DialogContent>
+      //         <form onSubmit={handleGeofenceSubmit}>
+      //           <FormControl
+      //             style={{
+      //               display: "flex",
+      //               flexDirection: "column",
+      //               gap: "10px",
+      //             }}
+      //           >
+      //             {/* <Select
+      //           labelId="device-select-label"
+      //           value={selectedDevice}
+      //           onChange={(e) => setSelectedDevice(e.target.value)}
+      //         >
+      //           {devices.map((device) => (
+      //             <MenuItem key={device.deviceId} value={device.deviceId}>
+      //               {device.deviceName}
+      //             </MenuItem>
+      //           ))}
+      //         </Select> */}
+      //         {/* <Autocomplete
+      //     options={devices}
+      //     getOptionLabel={(device) => device.deviceName || ""}
+      //     value={selectedDevice}
+      //     onChange={(event, newValue) => setSelectedDevice(newValue)}
+      //     renderInput={(params) => <TextField {...params} label="Select Device" />}
+      //     disablePortal // Ensures dropdown closes after selection
+      //   />  */}
+      //   <Autocomplete
+      //   options={devices}
+      //   getOptionLabel={(device) => device.deviceName || ""}
+      //   value={devices.find(device => device.deviceId === selectedDevice) || null} // Show the selected device by deviceId
+      //   onChange={(event, newValue) => {
+      //     setSelectedDevice(newValue ? newValue.deviceId : null); // Store only the deviceId
+      //   }}
+      //   renderInput={(params) => <TextField {...params} label="Select Device" />}
+      //   disablePortal
+      // />
+      //             <TextField
+      //               label="Bus Stop Name"
+      //               name="name"
+      //               value={formData.name !== undefined ? formData.name : ""}
+      //               onChange={(e) =>
+      //                 setFormData({ ...formData, name: e.target.value })
+      //               }
+      //               required
+      //             />
+      //             <TextField
+      //               label="Radius of Area"
+      //               name="radius"
+      //               type="number"
+      //               value={formData.radius !== undefined ? formData.radius : ""}
+      //               onChange={(e) =>
+      //                 setFormData({ ...formData, radius: e.target.value })
+      //               }
+      //               required
+      //             />
+      //             <TextField
+      //               label="Bus Time"
+      //               name="time"
+      //               type="time"
+      //               InputLabelProps={{
+      //                 shrink: true,
+      //               }}
+      //               value={
+      //                 formData.busStopTime !== undefined
+      //                   ? formData.busStopTime
+      //                   : ""
+      //               }
+      //               onChange={(e) =>
+      //                 setFormData({ ...formData, busStopTime: e.target.value })
+      //               }
+      //               required
+      //             />
+      //             <Button
+      //               variant="contained"
+      //               color="primary"
+      //               type="submit"
+      //               style={{ marginTop: "20px" }}
+      //             >
+      //               Submit
+      //             </Button>
+      //           </FormControl>
+      //         </form>
+      //       </DialogContent>
+      //     </Box>
+      //   </Modal>
+      <Modal
+  open={open}
+  onClose={handleClose}
+  aria-labelledby="modal-modal-title"
+  aria-describedby="modal-modal-description"
+>
+  <Box sx={{
+    ...style,
+    maxHeight: '600px',
+    height:'auto',
+    maxWidth: '600px', // Limits the width
+    width: '300px', // Allows width to adjust according to content
+    padding: '30px', // Adds padding for better spacing inside
+    margin: 'auto', // Centers the modal on the screen
+  }}>
+    <div className="d-flex justify-content-between">
+      <Typography id="modal-modal-title" variant="h6" component="h2">
+        Add New Geofence
+      </Typography>
+      <IconButton onClick={handleClose}>
+        <CloseIcon />
+      </IconButton>
+    </div>
+    <DialogContent>
+      <form onSubmit={handleGeofenceSubmit}>
+        <FormControl
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "15px", // Adjusted gap for better visual flow
+          }}
+        >
+          {/* <Autocomplete
+            options={devices}
+            getOptionLabel={(device) => device.deviceName || ""}
+            value={devices.find(device => device.deviceId === selectedDevice) || null} // Show the selected device by deviceId
+            onChange={(event, newValue) => {
+              setSelectedDevice(newValue ? newValue.deviceId : null); // Store only the deviceId
+            }}
+            renderInput={(params) => <TextField {...params} label="Select Device" />}
+            disablePortal
+          /> */}
+          <Autocomplete
+  options={devices}
+  getOptionLabel={(device) => device.deviceName || ""}
+  value={devices.find(device => device.deviceId === selectedDevice) || null} // Show the selected device by deviceId
+  onChange={(event, newValue) => {
+    setSelectedDevice(newValue ? newValue.deviceId : null); // Store only the deviceId
+  }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Select Device"
+      InputProps={{
+        ...params.InputProps,
+        startAdornment: (
+          <InputAdornment position="start">
+            <DeviceHub /> {/* Device icon */}
+          </InputAdornment>
+        ),
+      }}
+      fullWidth
+    />
+  )}
+  disablePortal
+/>
+          <TextField
+            label="Bus Stop Name"
+            name="name"
+            value={formData.name !== undefined ? formData.name : ""}
+            onChange={(e) =>
+              setFormData({ ...formData, name: e.target.value })
+            }
+            required
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LocationOn /> {/* Bus stop icon */}
+                </InputAdornment>
+              ),
+            }}
+            fullWidth
+          />
+          <TextField
+            label="Radius of Area"
+            name="radius"
+            type="number"
+            value={formData.radius !== undefined ? formData.radius : ""}
+            onChange={(e) =>
+              setFormData({ ...formData, radius: e.target.value })
+            }
+            required
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LocationOn /> {/* Radius icon */}
+                </InputAdornment>
+              ),
+            }}
+            fullWidth
+          />
+          <TextField
+            label="Bus Time"
+            name="time"
+            type="time"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            value={formData.busStopTime !== undefined ? formData.busStopTime : ""}
+            onChange={(e) =>
+              setFormData({ ...formData, busStopTime: e.target.value })
+            }
+            required
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <AccessTime /> {/* Clock icon */}
+                </InputAdornment>
+              ),
+            }}
+            fullWidth
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            style={{ marginTop: "20px" }}
+          >
+            Submit
+          </Button>
+        </FormControl>
+      </form>
+    </DialogContent>
+  </Box>
+</Modal>
 
+        )}
+      </Box>
+    </Modal>
        
     
         <Modal open={importModalOpen} onClose={() => setImportModalOpen(false)}>
