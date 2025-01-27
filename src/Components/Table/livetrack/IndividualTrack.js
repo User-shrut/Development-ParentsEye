@@ -1,6 +1,6 @@
 
 import React, { useContext, useEffect, useState, useRef } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline,Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, useMap, Polyline,Circle , useMapEvents} from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { CButton, CCard, CCardBody, CCardHeader } from '@coreui/react'
@@ -94,7 +94,14 @@ const getVehicleIcon = (vehicle, cat) => {
     className: '', // Ensure no default styles are applied
   })
 }
-
+const geofenceIcon = L.icon({
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png", // Use the default Leaflet marker icon
+  iconSize: [30, 45], // Make it slightly larger
+  iconAnchor: [15, 45], // Anchor point corresponds to the bottom center
+  popupAnchor: [0, -40], // Position the popup slightly above the icon
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png", // Default shadow for Leaflet markers
+  shadowSize: [45, 45], // Size of the shadow
+});
 const MapController = ({ individualSalesMan, previousPosition, setPath }) => {
   const map = useMap()
   const animationRef = useRef(null)
@@ -159,6 +166,16 @@ const IndividualTrack = (lat, long) => {
   const previousPosition = useRef(null) // Ref to store the previous position
   const [path, setPath] = useState([]) // State for polyline path
   const [open, setOpen] = useState(false);
+  const [clickedLocation, setClickedLocation] = useState(null); 
+  const ClickHandler = () => {
+    useMapEvents({
+      click: (e) => {
+        const { lat, lng } = e.latlng; // Extract latitude and longitude from the event
+        setClickedLocation({ latitude: lat, longitude: lng });
+      },
+    });
+    return null; // This component doesn't render anything
+  };
   const getCategory = (category) => {
     switch (category) {
       case 'bus':
@@ -365,9 +382,10 @@ const IndividualTrack = (lat, long) => {
           <div className="individualMap">
             <MapContainer
               center={[21.1458, 79.0882]} // Default center in case data isn't available
-              zoom={13}
+              zoom={7}
               style={{ height: '650px', marginTop: '7px', border: '1px solid black'}}
             >
+              <ClickHandler />
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution="&copy; RocketSales, HB Gadget Solutions Nagpur"
@@ -425,7 +443,33 @@ const IndividualTrack = (lat, long) => {
                 </CCard>
               </Draggable>
              
-        
+              {clickedLocation && (
+                 <ReactLeafletDriftMarker
+                 position={[clickedLocation.latitude, clickedLocation.longitude]}
+                 icon={geofenceIcon}
+                 duration={100}
+               >
+                  <GeofenceForm
+                   formData={formData}
+                   setFormData={setFormData}
+                   clickedLocation={clickedLocation}
+                   deviceId={deviceId}
+                   setOpenPopup={setOpenPopup}
+                   onGeofenceSubmitSuccess={handleGeofenceSubmitSuccess} // Pass the callback
+                 />
+               </ReactLeafletDriftMarker>
+        // <Popup
+        //   position={[clickedLocation.latitude, clickedLocation.longitude]}
+        //   onClose={() => setClickedLocation(null)} // Close popup when it's closed
+        // >
+        //   <div>
+        //     <h4>Clicked Location</h4>
+        //     <p>Latitude: {clickedLocation.latitude}</p>
+        //     <p>Longitude: {clickedLocation.longitude}</p>
+            
+        //   </div>
+        // </Popup>
+      )}     
   {individualSalesMan && (
       <ReactLeafletDriftMarker
         position={[individualSalesMan.latitude, individualSalesMan.longitude]}

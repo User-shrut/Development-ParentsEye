@@ -129,7 +129,7 @@ import { TextField, Button, Typography } from "@mui/material";
 import { Popup } from "react-leaflet";
 import axios from "axios";
 
-const GeofenceForm = ({ formData, setFormData, individualSalesMan, deviceId, setOpenPopup, onGeofenceSubmitSuccess }) => {
+const GeofenceForm = ({ formData, setFormData, individualSalesMan, deviceId, setOpenPopup, onGeofenceSubmitSuccess ,clickedLocation }) => {
   const handleGeofenceSubmit = async (e) => {
     e.preventDefault();
 
@@ -138,8 +138,18 @@ const GeofenceForm = ({ formData, setFormData, individualSalesMan, deviceId, set
       alert("All fields are required.");
       return;
     }
+     // Determine source of latitude and longitude
+     const latitude =
+     clickedLocation?.latitude || individualSalesMan?.latitude || null;
+   const longitude =
+     clickedLocation?.longitude || individualSalesMan?.longitude || null;
 
-    const circleFormat = `Circle(${individualSalesMan?.latitude} ${individualSalesMan?.longitude}, ${formData.radius})`;
+     if (!latitude || !longitude) {
+      alert("Invalid location data. Please provide a valid location.");
+      return;
+    }
+    const circleFormat = `Circle(${latitude} ${longitude}, ${formData.radius})`;
+    // const circleFormat = `Circle(${clickedLocation?.latitude} ${clickedLocation?.longitude}, ${formData.radius})`;
     const geofenceData = {
       name: formData.name,
       area: circleFormat,
