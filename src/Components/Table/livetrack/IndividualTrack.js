@@ -167,6 +167,9 @@ const IndividualTrack = (lat, long) => {
   const [path, setPath] = useState([]) // State for polyline path
   const [open, setOpen] = useState(false);
   const [clickedLocation, setClickedLocation] = useState(null); 
+  const [renderTrigger, setRenderTrigger] = useState(false);
+ 
+  // const [isCrossed,setIsCrossed] = useState(false);
   const ClickHandler = () => {
     useMapEvents({
       click: (e) => {
@@ -269,7 +272,7 @@ const IndividualTrack = (lat, long) => {
   const role = localStorage.getItem("role");
   const [geofence, setGeofence] = useState([]);
   const [matchingGeofences, setMatchingGeofences] = useState([]);
-
+  const [geoStatus, setGeoStatus] = useState(null);
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -338,7 +341,25 @@ const IndividualTrack = (lat, long) => {
       console.error('Error fetching geofence data:', error);
     }
   };
+  const fetchStatus = async () =>{
+    try {
+      console.log("Devvvvvvvvvvvvvvvvvvvvv", deviceId);
 
+// Use template literal to properly pass deviceId into the URL
+const response = await fetch(`https://parentseyereplica.onrender.com/iscrossedhistory?deviceIds=${deviceId}`);
+
+if (!response.ok) {
+  throw new Error('Network response was not ok');
+}
+
+const data = await response.json();
+console.log("status data", data); // Assuming the response is in JSON format
+
+setGeoStatus(data); // Store the data in geoStatus state
+    } catch (err) {
+      // setError(err.message); // Handle error by setting the error message in state
+    }
+  }
   const parseArea = (area) => {
     const match = area.match(/Circle\(([\d.]+) ([\d.]+), ([\d.]+)\)/);
     if (match) {
@@ -348,14 +369,27 @@ const IndividualTrack = (lat, long) => {
     return null;
   };
 
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
   useEffect(() => {
+    const interval = setInterval(() => {
     fetchData();
-  }, []);
+    fetchStatus();
+  }, 5000); 
+  return () => clearInterval(interval);
+  }, [])
+  useEffect(() => {
+    // Trigger re-render whenever `geoStatus` or `matchingGeofences` changes
+    setRenderTrigger((prev) => !prev);
+  }, [geoStatus, matchingGeofences]);
   const handleGeofenceSubmitSuccess = () => {
     // After the geofence is successfully added, fetch the updated data
     fetchData();
   };
   const [showGeofences, setShowGeofences] = useState(false); // Default to show geofences
+  const [showRoutes, setShowRoutes] = useState(false); // Default to show geofences
+
   return (
     <>
       <div className="row">
@@ -374,11 +408,17 @@ const IndividualTrack = (lat, long) => {
             >
               {showGeofences ? 'Hide Geofences' : 'Show Geofences'}
             </CButton>
+            <CButton
+              color="primary"
+              onClick={() => setShowRoutes(!showRoutes)} // Toggle visibility
+            >
+              {showRoutes ? 'Hide Routes' : 'Show Routes'}
+            </CButton>
             </div>
          
         </div>
 
-        <div className="col-12">
+        <div className={showRoutes ? "col-12" : "col-12"}>
           <div className="individualMap">
             <MapContainer
               center={[21.1458, 79.0882]} // Default center in case data isn't available
@@ -392,7 +432,7 @@ const IndividualTrack = (lat, long) => {
               />
 
               <Draggable>
-                <CCard className="mb-4 parametersContainer" style={{ zIndex: '9999' }}>
+                <CCard className="mb-4 parametersContainer" style={{ zIndex: '999' }}>
                   <CCardHeader>Tasks</CCardHeader>
                   <CCardBody>
                     <div className="name">
@@ -488,13 +528,13 @@ const IndividualTrack = (lat, long) => {
     )}
 
               {/* Draw polyline based on path */}
-              <Polyline positions={path} color="blue" />
+           <Polyline positions={path} color="blue"/>
               <MapController
                 individualSalesMan={individualSalesMan}
                 previousPosition={previousPosition.current}
                 setPath={setPath}
               />/
-                {showGeofences && matchingGeofences.map((geofence) => {
+                {/* {showGeofences && matchingGeofences.map((geofence) => {
               const parsedArea = parseArea(geofence.area);
               if (parsedArea) {
                 return (
@@ -520,14 +560,296 @@ const IndividualTrack = (lat, long) => {
                 );
               }
               return null;
-            })}
-            
+            })} */}
+               {showGeofences && matchingGeofences.map((geofence) => {
+                  const parsedArea = parseArea(geofence.area);
+                  if (parsedArea) {
+                    const matchingGeoStatus = geoStatus.data.filter(
+                      (status) => status.geofenceName === geofence.name && status.status === "Exited"
+                    );
+                    var hasExitedStatus = matchingGeoStatus.length > 0;
+                   
+                    return (
+                      
+                      <Circle
+                      key={`${geofence._id}-${hasExitedStatus}`}
+                        // key={geofence._id}
+                        center={[parsedArea.lat, parsedArea.lng]}
+                        radius={parsedArea.radius}
+                        className={`geofence-circle ${geofence._id}`}
+                        color={hasExitedStatus ? "rgba(255, 0, 0, 0.5)" : "rgba(0, 128, 0, 0.5)"}
+                        strokeWidth={2}
+                        fillColor={hasExitedStatus ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 128, 0, 0.2)"}
+                        fillOpacity={0.4}
+                      >
+                        <Popup>
+                          <div>
+                            <h3>Geofence Details</h3>
+                            <p><strong>Name:</strong> {geofence.name}</p>
+                            <p><strong>Crossed:</strong> {geofence.isCrossed ? "Yes" : "No"}</p>
+                            <p><strong>Radius:</strong> {parsedArea.radius} meters</p>
+                          </div>
+                        </Popup>
+                      </Circle>
+                    );
+                  }
+                  return null;
+                })}
+                {showRoutes && (
+            <div
+              className="sidebar"
+              style={{
+                width: '300px',
+                backgroundColor: '#f8f9fa',
+                padding: '10px',
+                height: '650px', // Match map height
+                position: 'absolute',
+                right: 0,
+                top: 0,
+                boxShadow: '-2px 0 5px rgba(0,0,0,0.2)',
+                zIndex: '1000', // Ensure it appears in front of the map, but behind the "Show Routes" button
+                overflowY: 'auto',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <h4>Travel Route Information</h4>
+                {/* Close button */}
+                <CButton
+                  color="danger"
+                  size="sm"
+                  style={{ marginTop: '10px' ,marginBottom:'10px'}}
+                  onClick={() => setShowRoutes(false)}
+                >
+                  Close
+                </CButton>
+              </div>
+  
+              <div className="vehicle-list" style={{ overflowY: 'auto', height: 'calc(100% - 40px)' }}>
+              {matchingGeofences.map((geofence, index) => {
+    // Filter geostatus to find matching geofenceName and "Entered" status
+    // var arrivalStatus;
+    const arrivalStatus = geoStatus?.data?.filter(status => status.geofenceName === geofence.name && status.status === 'Entered') || [];
+    console.log("arrived at", arrivalStatus);
+    const dipartureStatus = geoStatus?.data?.filter(status => status.geofenceName === geofence.name && status.status === 'Exited') || [];
+    console.log("departed at", dipartureStatus);            
+    return (
+      <div
+        key={index}
+        // key={`${geofence._id}-${arrivalStatus}`}
+        className="vehicle-item"
+        style={{
+          marginBottom: '10px',
+          padding: '10px',
+          border: '1px solid #ddd',
+          borderRadius: '4px',
+        }}
+      >
+        <h5>{geofence.name}</h5>
+        <p><strong>Arrival Time:</strong> {arrivalStatus[0] ? new Date(arrivalStatus[0].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) : 'N/A'}</p>
+        <p><strong>Departure Time:</strong> {dipartureStatus[0] ? new Date(dipartureStatus[0].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' }) : 'N/A'}</p>
+        <p><strong>Stop Duration:</strong> {
+            arrivalStatus[0] && dipartureStatus[0] ? (() => {
+                const arrivalTime = new Date(arrivalStatus[0].createdAt);
+                const departureTime = new Date(dipartureStatus[0].createdAt);
+                const diffMs = departureTime - arrivalTime; // Difference in milliseconds
+                const minutes = Math.floor((diffMs / 1000) / 60); // Convert to minutes
+                return `${minutes} min`;
+            })() : 'N/A'
+        }</p>
+        <p><strong>ETA:</strong> {geofence.eta}</p>
+      </div>
+    );
+  })}
+              </div>
+            </div>
+          )}
             </MapContainer>
+            {/* Sidebar for Vehicle Information */}
+      {/* {showRoutes && (
+        <div className="col-4" style={{ padding: '10px', backgroundColor: '#f8f9fa' }}>
+          <h4>Vehicle Information</h4>
+          <div className="vehicle-list">
+            {matchingGeofences.map((geofence, index) => (
+              <div key={index} className="vehicle-item" style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ddd' }}>
+                <h5>{geofence.name}</h5>
+                <p><strong>Location:</strong> {geofence.location}</p>
+                <p><strong>Arrival Time:</strong> {geofence.arrivalTime}</p>
+                <p><strong>Departure Time:</strong> {geofence.departureTime}</p>
+                <p><strong>ETA:</strong> {geofence.eta}</p>
+                <p><strong>Current Location:</strong> {geofence.latitude}, {geofence.longitude}</p>
+              </div>
+            ))}
           </div>
         </div>
+      )} */}
+      
+          </div>
+        </div>
+        
       </div>
     </>
   )
+
+  // return (
+  //   <>
+  //     <div className="row">
+  //       <div className="head">
+  //         <h2>Tracking {name ? name : 'User Name'}</h2>
+  //         <div style={{ display: "flex", gap: "4px", zIndex: "999" }}>
+  //           <CButton color="danger" onClick={handleClickOnTrack}>
+  //             Back to Dashboard
+  //           </CButton>
+  //           <CButton color="primary" onClick={() => setShowGeofences(!showGeofences)}>
+  //             {showGeofences ? 'Hide Geofences' : 'Show Geofences'}
+  //           </CButton>
+  //           <CButton
+  //             color="primary"
+  //             onClick={() => setShowRoutes(!showRoutes)}
+  //             style={{
+  //               position: 'relative',
+  //               zIndex: showRoutes ? '10' : 'auto' // Ensure button stays in front of the sidebar
+  //             }}
+  //           >
+  //             {showRoutes ? 'Hide Routes' : 'Show Routes'}
+  //           </CButton>
+  //         </div>
+  //       </div>
+  
+  //       <div className="tracking-container" style={{ display: 'flex', width: '100%' }}>
+  //         {/* Map Section */}
+  //         <div className={showRoutes ? "col-12" : "col-12"} style={{ position: 'relative' }}>
+  //           <div className="individualMap">
+  //             <MapContainer
+  //               center={[21.1458, 79.0882]}
+  //               zoom={7}
+  //               style={{ height: '650px', marginTop: '7px', border: '1px solid black' }}
+  //             >
+  //               <ClickHandler />
+  //               <TileLayer
+  //                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  //                 attribution="&copy; RocketSales, HB Gadget Solutions Nagpur"
+  //               />
+  
+  //               {/* Vehicle Marker on Map */}
+  //               {individualSalesMan && (
+  //                 <ReactLeafletDriftMarker
+  //                   position={[individualSalesMan.latitude, individualSalesMan.longitude]}
+  //                   icon={getVehicleIcon(individualSalesMan, category)}
+  //                   duration={2000}
+  //                 >
+  //                   <GeofenceForm
+  //                     formData={formData}
+  //                     setFormData={setFormData}
+  //                     individualSalesMan={individualSalesMan}
+  //                     deviceId={deviceId}
+  //                     setOpenPopup={setOpenPopup}
+  //                     onGeofenceSubmitSuccess={handleGeofenceSubmitSuccess}
+  //                   />
+  //                 </ReactLeafletDriftMarker>
+  //               )}
+  
+  //               {/* Polyline for Route */}
+  //               <Polyline positions={path} color="blue" />
+  
+  //               {/* Geofence Circles */}
+  //               {showGeofences && matchingGeofences.map((geofence) => {
+  //                 const parsedArea = parseArea(geofence.area);
+  //                 if (parsedArea) {
+  //                   const matchingGeoStatus = geoStatus.data.filter(
+  //                     (status) => status.geofenceName === geofence.name && status.status === "Exited"
+  //                   );
+  //                   const hasExitedStatus = matchingGeoStatus.length > 0;
+  //                   console.log(matchingGeoStatus);
+  //                   return (
+  //                     <Circle
+  //                       key={geofence._id}
+  //                       center={[parsedArea.lat, parsedArea.lng]}
+  //                       radius={parsedArea.radius}
+  //                       className={`geofence-circle ${geofence._id}`}
+  //                       color={hasExitedStatus ? "rgba(255, 0, 0, 0.5)" : "rgba(0, 128, 0, 0.5)"}
+  //                       strokeWidth={2}
+  //                       fillColor={hasExitedStatus ? "rgba(255, 0, 0, 0.2)" : "rgba(0, 128, 0, 0.2)"}
+  //                       fillOpacity={0.4}
+  //                     >
+  //                       <Popup>
+  //                         <div>
+  //                           <h3>Geofence Details</h3>
+  //                           <p><strong>Name:</strong> {geofence.name}</p>
+  //                           <p><strong>Crossed:</strong> {geofence.isCrossed ? "Yes" : "No"}</p>
+  //                           <p><strong>Radius:</strong> {parsedArea.radius} meters</p>
+  //                         </div>
+  //                       </Popup>
+  //                     </Circle>
+  //                   );
+  //                 }
+  //                 return null;
+  //               })}
+            
+  //             </MapContainer>
+  //                 {/* Sidebar for Vehicle Information */}
+  //         {showRoutes && (
+  //           <div
+  //             className="sidebar"
+  //             style={{
+  //               width: '300px',
+  //               backgroundColor: '#f8f9fa',
+  //               padding: '10px',
+  //               height: '650px', // Match map height
+  //               position: 'absolute',
+  //               right: 0,
+  //               top: 0,
+  //               boxShadow: '-2px 0 5px rgba(0,0,0,0.2)',
+  //               zIndex: '1000', // Ensure it appears in front of the map, but behind the "Show Routes" button
+  //               overflowY: 'auto',
+  //             }}
+  //           >
+  //             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+  //               <h4>Travel Route Information</h4>
+  //               {/* Close button */}
+  //               <CButton
+  //                 color="danger"
+  //                 size="sm"
+  //                 style={{ marginTop: '10px' ,marginBottom:'10px'}}
+  //                 onClick={() => setShowRoutes(false)}
+  //               >
+  //                 Close
+  //               </CButton>
+  //             </div>
+  
+  //             <div className="vehicle-list" style={{ overflowY: 'auto', height: 'calc(100% - 40px)' }}>
+  //               {matchingGeofences.map((geofence, index) => (
+  //                 <div
+  //                   key={index}
+  //                   className="vehicle-item"
+  //                   style={{
+  //                     marginBottom: '10px',
+  //                     padding: '10px',
+  //                     border: '1px solid #ddd',
+  //                     borderRadius: '4px',
+  //                   }}
+  //                 >
+  //                   <h5>{geofence.name}</h5>
+  //                   {/* <p><strong>Location:</strong> {geofence.location}</p> */}
+  //                   <p><strong>Arrival Time:</strong> {geofence.arrivalTime}</p>
+  //                   <p><strong>Departure Time:</strong> {geofence.departureTime}</p>
+  //                   <p><strong>ETA:</strong> {geofence.eta}</p>
+  //                   {/* <p><strong>Current Location:</strong> {geofence.latitude}, {geofence.longitude}</p> */}
+  //                 </div>
+  //               ))}
+  //             </div>
+  //           </div>
+  //         )}
+  //           </div>
+  //         </div>
+  
+          
+  //       </div>
+  //     </div>
+  //   </>
+  // );
+  
+  
+  
 }
 
 export default IndividualTrack;
