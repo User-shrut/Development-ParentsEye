@@ -352,10 +352,10 @@ export const Navbar = (props) => {
             console.log("ignition item",item.ignition);
             message = `Bus Off - ${matchingDevice.deviceName}`;
           } 
-          else if (item.geofenceAlert && matchingDevice.geofenceEnter){   //write geofence and absent present logic of notification similar to above logic
-            message = `Geofence Enter  ${item.name} - ${matchingDevice.deviceName}`;
-          }else if (item.geofenceAlert==false  && matchingDevice.geofenceEnter){
-            message = `Geofence Exit ${item.name} - ${matchingDevice.deviceName}`;
+          else if (item.status == "Entered" && matchingDevice.geofenceEnter){   //write geofence and absent present logic of notification similar to above logic
+            message = `Geofence Enter  ${item.geofenceName} - ${matchingDevice.deviceName}`;
+          }else if (item.status =="Exited"  && matchingDevice.geofenceEnter){
+            message = `Geofence Exit ${item.geofenceName} - ${matchingDevice.deviceName}`;
           }
   
           return message;
