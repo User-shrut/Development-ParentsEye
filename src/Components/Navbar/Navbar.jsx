@@ -72,6 +72,10 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import axios from 'axios';
+import { Straighten as StraightenIcon } from '@mui/icons-material';
+import { Map as MapIcon } from '@mui/icons-material';
+
+
 const username = 'schoolmaster'; // Replace with your actual username
 const password = '123456'; 
 
@@ -133,7 +137,8 @@ const pages = [
       { name: 'Stops', icon: <StopCircleIcon /> },
       { name: 'Summary', icon: <SummarizeIcon /> },
       { name: 'Statistics', icon: <InsightsIcon /> },
-      { name: 'Kilometer Distance', icon: <DirectionsCarIcon /> },
+      { name: 'Kilometer Distance', icon: <StraightenIcon/> },
+      { name: 'Geofence Report', icon: <MapIcon/> },
     ]
   },
   

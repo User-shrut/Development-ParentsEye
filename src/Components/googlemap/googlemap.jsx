@@ -446,7 +446,7 @@ const handleMarkerClick = (vehicle) => {
             <Popup>
               <div>
                 <h4>Device And Location</h4>
-<p>Bus Name:{coordinates.name}</p>
+                <p>Bus Name:{coordinates.name}</p>
                 <p>Latitude: {coordinates.latitude}</p>
                 <p>Longitude: {coordinates.longitude}</p>
 
